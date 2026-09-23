@@ -3,69 +3,602 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sublime K</title>
+
+  <title>Sublime K | Créations personnalisées</title>
+
+  <meta name="description" content="Sublime K - Créations personnalisées uniques, pensées et réalisées avec passion.">
 
   <style>
-    body {
+
+    * {
+      box-sizing: border-box;
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #fff0f7;
-      color: #4b2142;
-      text-align: center;
+      padding: 0;
     }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #fffafc;
+      color: #392536;
+      line-height: 1.6;
+    }
+
+    /* ===== HEADER ===== */
 
     header {
-      background: #d96ca8;
-      color: white;
-      padding: 30px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 250, 252, 0.96);
+      border-bottom: 1px solid #f0dce7;
+      padding: 15px 25px;
     }
 
-    h1 {
-      margin: 0;
-      font-size: 42px;
+    .nav {
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
     }
 
-    .contenu {
-      padding: 50px 20px;
-    }
-
-    h2 {
+    .logo {
       font-size: 30px;
+      font-weight: bold;
+      color: #b84f91;
+      letter-spacing: 1px;
     }
 
-    p {
-      font-size: 18px;
+    nav a {
+      text-decoration: none;
+      color: #392536;
+      margin-left: 20px;
+      font-weight: 600;
+    }
+
+    nav a:hover {
+      color: #b84f91;
+    }
+
+    /* ===== HERO ===== */
+
+    .hero {
+      min-height: 620px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 70px 20px;
+      background:
+        radial-gradient(circle at 20% 20%, #fbd9ec 0, transparent 28%),
+        radial-gradient(circle at 80% 30%, #e9d8fa 0, transparent 30%),
+        linear-gradient(135deg, #fff7fb, #f8effb);
+    }
+
+    .hero-content {
+      max-width: 850px;
+    }
+
+    .petit-titre {
+      display: inline-block;
+      background: #ffffff;
+      color: #b84f91;
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 25px rgba(100, 50, 90, 0.08);
+    }
+
+    .hero h1 {
+      font-size: clamp(45px, 8vw, 82px);
+      color: #9c3f7b;
+      margin-bottom: 10px;
+      line-height: 1;
+    }
+
+    .hero h2 {
+      font-size: clamp(24px, 5vw, 42px);
+      color: #392536;
+      margin-bottom: 25px;
+    }
+
+    .hero p {
+      max-width: 650px;
+      margin: auto;
+      font-size: 19px;
+      color: #60495a;
+    }
+
+    .boutons {
+      margin-top: 35px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
     }
 
     .bouton {
       display: inline-block;
-      margin-top: 20px;
-      padding: 14px 25px;
-      background: #8e4b86;
-      color: white;
+      padding: 14px 28px;
+      border-radius: 40px;
       text-decoration: none;
-      border-radius: 30px;
+      font-weight: bold;
+      transition: 0.2s;
     }
+
+    .bouton-principal {
+      background: #b84f91;
+      color: white;
+      box-shadow: 0 8px 20px rgba(184, 79, 145, 0.25);
+    }
+
+    .bouton-secondaire {
+      background: white;
+      color: #9c3f7b;
+      border: 2px solid #e7bfd7;
+    }
+
+    .bouton:hover {
+      transform: translateY(-2px);
+    }
+
+    /* ===== SECTIONS ===== */
+
+    section {
+      padding: 80px 20px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .titre-section {
+      text-align: center;
+      margin-bottom: 45px;
+    }
+
+    .titre-section h2 {
+      font-size: 38px;
+      color: #9c3f7b;
+      margin-bottom: 10px;
+    }
+
+    .titre-section p {
+      color: #725d6d;
+    }
+
+    /* ===== CATEGORIES ===== */
+
+    .categories {
+      background: white;
+    }
+
+    .grille {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .carte {
+      background: #fff8fc;
+      border: 1px solid #f0dce7;
+      border-radius: 24px;
+      padding: 35px 25px;
+      text-align: center;
+      transition: 0.25s;
+    }
+
+    .carte:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(100, 50, 90, 0.10);
+    }
+
+    .icone {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .carte h3 {
+      color: #9c3f7b;
+      margin-bottom: 8px;
+      font-size: 22px;
+    }
+
+    .carte p {
+      color: #705d6b;
+    }
+
+    /* ===== POURQUOI ===== */
+
+    .pourquoi {
+      background: linear-gradient(135deg, #f9edf6, #f3eafb);
+    }
+
+    .avantages {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+      text-align: center;
+    }
+
+    .avantage {
+      padding: 25px;
+    }
+
+    .avantage span {
+      font-size: 42px;
+    }
+
+    .avantage h3 {
+      margin: 12px 0 8px;
+      color: #9c3f7b;
+    }
+
+    /* ===== CREATIONS ===== */
+
+    .creations {
+      background: white;
+    }
+
+    .photo-place {
+      min-height: 250px;
+      border: 2px dashed #dfbdd3;
+      border-radius: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #9c728d;
+      padding: 30px;
+      background: #fffafd;
+    }
+
+    /* ===== CONTACT ===== */
+
+    .contact {
+      text-align: center;
+      background: #9c3f7b;
+      color: white;
+    }
+
+    .contact h2 {
+      font-size: 38px;
+      margin-bottom: 15px;
+    }
+
+    .contact p {
+      max-width: 650px;
+      margin: auto;
+      opacity: 0.95;
+    }
+
+    .contact .bouton {
+      margin-top: 25px;
+      background: white;
+      color: #9c3f7b;
+    }
+
+    /* ===== FOOTER ===== */
+
+    footer {
+      background: #30202c;
+      color: #e9dce5;
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 14px;
+    }
+
+    footer strong {
+      color: white;
+    }
+
+    /* ===== MOBILE ===== */
+
+    @media (max-width: 750px) {
+
+      header {
+        padding: 13px 15px;
+      }
+
+      .nav {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .logo {
+        font-size: 26px;
+      }
+
+      nav a {
+        margin: 0 7px;
+        font-size: 14px;
+      }
+
+      .hero {
+        min-height: 560px;
+      }
+
+      .grille,
+      .avantages {
+        grid-template-columns: 1fr;
+      }
+
+      section {
+        padding: 60px 18px;
+      }
+
+      .titre-section h2,
+      .contact h2 {
+        font-size: 30px;
+      }
+
+    }
+
   </style>
 </head>
 
 <body>
 
+  <!-- HEADER -->
+
   <header>
-    <h1>Sublime K</h1>
-    <p>Créations personnalisées ✨</p>
+    <div class="nav">
+
+      <div class="logo">
+        Sublime K
+      </div>
+
+      <nav>
+        <a href="#accueil">Accueil</a>
+        <a href="#creations">Créations</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+    </div>
   </header>
 
-  <main class="contenu">
-    <h2>Bienvenue chez Sublime K 💕</h2>
+
+  <!-- ACCUEIL -->
+
+  <main>
+
+    <section class="hero" id="accueil">
+
+      <div class="hero-content">
+
+        <div class="petit-titre">
+          ✨ Créations personnalisées ✨
+        </div>
+
+        <h1>Sublime K</h1>
+
+        <h2>Parce que chaque création mérite d'être unique.</h2>
+
+        <p>
+          Découvrez des créations personnalisées imaginées avec passion
+          pour offrir, décorer, faire plaisir ou simplement se faire plaisir.
+        </p>
+
+        <div class="boutons">
+
+          <a class="bouton bouton-principal" href="#creations">
+            Découvrir mes créations
+          </a>
+
+          <a class="bouton bouton-secondaire" href="#contact">
+            Me contacter
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- CATEGORIES -->
+
+    <section class="categories" id="creations">
+
+      <div class="container">
+
+        <div class="titre-section">
+
+          <h2>Mes créations</h2>
+
+          <p>
+            Des personnalisations pensées pour toutes les occasions.
+          </p>
+
+        </div>
+
+
+        <div class="grille">
+
+          <div class="carte">
+
+            <div class="icone">🎁</div>
+
+            <h3>Cadeaux personnalisés</h3>
+
+            <p>
+              Des créations uniques pour offrir une attention vraiment personnelle.
+            </p>
+
+          </div>
+
+
+          <div class="carte">
+
+            <div class="icone">✨</div>
+
+            <h3>Créations originales</h3>
+
+            <p>
+              Des modèles imaginés pour sortir des créations que l'on voit partout.
+            </p>
+
+          </div>
+
+
+          <div class="carte">
+
+            <div class="icone">💖</div>
+
+            <h3>Sur mesure</h3>
+
+            <p>
+              Prénom, photo, illustration ou idée particulière : créons ensemble.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- POURQUOI SUBLIME K -->
+
+    <section class="pourquoi">
+
+      <div class="container">
+
+        <div class="titre-section">
+
+          <h2>Pourquoi Sublime K ?</h2>
+
+          <p>
+            Une petite entreprise, de grandes idées et beaucoup de passion.
+          </p>
+
+        </div>
+
+
+        <div class="avantages">
+
+          <div class="avantage">
+
+            <span>💎</span>
+
+            <h3>Unique</h3>
+
+            <p>
+              Des créations personnalisées qui vous ressemblent.
+            </p>
+
+          </div>
+
+
+          <div class="avantage">
+
+            <span>🎨</span>
+
+            <h3>Créatif</h3>
+
+            <p>
+              Des designs imaginés avec soin et une touche de créativité.
+            </p>
+
+          </div>
+
+
+          <div class="avantage">
+
+            <span>💌</span>
+
+            <h3>Avec passion</h3>
+
+            <p>
+              Chaque commande est préparée avec attention.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- FUTURES PHOTOS -->
+
+    <section class="creations">
+
+      <div class="container">
+
+        <div class="titre-section">
+
+          <h2>Quelques créations</h2>
+
+          <p>
+            Cette galerie accueillera bientôt tes propres photos. 📸
+          </p>
+
+        </div>
+
+        <div class="photo-place">
+
+          <div>
+            <strong>📸 Galerie Sublime K</strong>
+            <br><br>
+            Tes créations seront présentées ici.
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- CONTACT -->
+
+    <section class="contact" id="contact">
+
+      <div class="container">
+
+        <h2>Une idée ? Parlons-en ! 💕</h2>
+
+        <p>
+          Tu as une idée de personnalisation ou une création particulière
+          en tête ? Contacte Sublime K pour en discuter.
+        </p>
+
+        <a class="bouton" href="mailto:contact@sublime-k.fr">
+          Me contacter
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- FOOTER -->
+
+  <footer>
 
     <p>
-      Des créations personnalisées réalisées avec passion,
-      pour vous et vos proches.
+      © 2026 <strong>Sublime K</strong> — Créations personnalisées
     </p>
 
-    <a class="bouton" href="#">Découvrir mes créations</a>
-  </main>
+    <p>
+      Site en construction
+    </p>
+
+  </footer>
 
 </body>
 </html>
