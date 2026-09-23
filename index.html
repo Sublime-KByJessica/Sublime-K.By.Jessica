@@ -59,6 +59,7 @@
     nav {
       display: flex;
       gap: 22px;
+      align-items: center;
     }
 
     nav a {
@@ -128,6 +129,7 @@
       text-decoration: none;
       font-weight: 700;
       transition: 0.2s;
+      cursor: pointer;
     }
 
     .btn-primary {
@@ -147,6 +149,17 @@
     }
 
     .btn-secondary:hover {
+      background: #fff0f7;
+      transform: translateY(-2px);
+    }
+
+    .btn-instagram {
+      background: #fff;
+      color: #9b527a;
+      border: 2px solid #e5b8ce;
+    }
+
+    .btn-instagram:hover {
       background: #fff0f7;
       transform: translateY(-2px);
     }
@@ -243,7 +256,7 @@
     }
 
     .contact-box {
-      max-width: 700px;
+      max-width: 750px;
       margin: auto;
       background: white;
       padding: 40px 25px;
@@ -252,7 +265,7 @@
     }
 
     .contact-box p {
-      margin-bottom: 25px;
+      margin-bottom: 30px;
       color: #6e5b67;
     }
 
@@ -337,7 +350,10 @@
     <div class="nav">
 
       <a href="#accueil" class="logo">
-        <img src="logo_20260923_201733_0000.svg" alt="Sublime'K">
+        <img
+          src="logo_20260923_201733_0000.svg"
+          alt="Sublime'K"
+        >
       </a>
 
       <nav>
@@ -350,10 +366,12 @@
     </div>
   </header>
 
+
   <!-- ACCUEIL -->
   <main>
 
     <section class="hero" id="accueil">
+
       <div class="hero-content">
 
         <div class="hero-small">
@@ -372,21 +390,30 @@
 
         <div class="buttons">
 
-          <a href="#creations" class="btn btn-primary">
+          <a
+            href="#creations"
+            class="btn btn-primary"
+          >
             Découvrir les créations
           </a>
 
-          <a href="#contact" class="btn btn-secondary">
+          <a
+            href="#contact"
+            class="btn btn-secondary"
+          >
             Me contacter
           </a>
 
         </div>
 
       </div>
+
     </section>
+
 
     <!-- CRÉATIONS -->
     <section id="creations">
+
       <div class="container">
 
         <h2 class="section-title">
@@ -402,39 +429,65 @@
         <div class="cards">
 
           <div class="card">
+
             <div class="card-icon">🎁</div>
-            <h3>Cadeaux personnalisés</h3>
+
+            <h3>
+              Cadeaux personnalisés
+            </h3>
+
             <p>
               Des créations pensées spécialement pour la personne
               à qui vous souhaitez faire plaisir.
             </p>
+
           </div>
 
+
           <div class="card">
+
             <div class="card-icon">✨</div>
-            <h3>Créations originales</h3>
+
+            <h3>
+              Créations originales
+            </h3>
+
             <p>
               Des modèles originaux et des idées différentes
               pour sortir des cadeaux classiques.
             </p>
+
           </div>
 
+
           <div class="card">
+
             <div class="card-icon">💖</div>
-            <h3>Sur mesure</h3>
+
+            <h3>
+              Sur mesure
+            </h3>
+
             <p>
               Une idée particulière ? Créons ensemble quelque chose
               qui vous ressemble.
             </p>
+
           </div>
 
         </div>
 
       </div>
+
     </section>
 
+
     <!-- POURQUOI SUBLIME'K -->
-    <section class="why" id="pourquoi">
+    <section
+      class="why"
+      id="pourquoi"
+    >
+
       <div class="container">
 
         <h2 class="section-title">
@@ -449,39 +502,62 @@
         <div class="cards">
 
           <div class="card">
+
             <div class="card-icon">💎</div>
-            <h3>Unique</h3>
+
+            <h3>
+              Unique
+            </h3>
+
             <p>
               Des créations personnalisées pour rendre chaque
               objet vraiment spécial.
             </p>
+
           </div>
 
+
           <div class="card">
+
             <div class="card-icon">🎨</div>
-            <h3>Créatif</h3>
+
+            <h3>
+              Créatif
+            </h3>
+
             <p>
               Des designs imaginés pour apporter une touche
               originale à vos cadeaux.
             </p>
+
           </div>
 
+
           <div class="card">
+
             <div class="card-icon">💗</div>
-            <h3>Avec passion</h3>
+
+            <h3>
+              Avec passion
+            </h3>
+
             <p>
               Chaque commande est préparée avec soin et attention
               aux détails.
             </p>
+
           </div>
 
         </div>
 
       </div>
+
     </section>
+
 
     <!-- GALERIE -->
     <section>
+
       <div class="container">
 
         <h2 class="section-title">
@@ -509,10 +585,16 @@
         </div>
 
       </div>
+
     </section>
 
+
     <!-- CONTACT -->
-    <section class="contact" id="contact">
+    <section
+      class="contact"
+      id="contact"
+    >
+
       <div class="container">
 
         <div class="contact-box">
@@ -523,22 +605,40 @@
 
           <p>
             Vous avez une idée de personnalisation ou une demande
-            particulière ? N'hésitez pas à me contacter.
+            particulière ? N'hésitez pas à me contacter ou à découvrir
+            mes créations sur Instagram.
           </p>
 
-          <a
-            href="mailto:Sublime-k.by.jessica@proton.me"
-            class="btn btn-primary"
-          >
-            Me contacter
-          </a>
+          <div class="buttons">
+
+            <!-- EMAIL -->
+            <a
+              href="mailto:Sublime-k.by.jessica@proton.me"
+              class="btn btn-primary"
+            >
+              ✉️ Me contacter
+            </a>
+
+            <!-- INSTAGRAM -->
+            <a
+              href="https://www.instagram.com/sublimek_by_jessica?stkn=MTRlcjk3cHRvNDZzaQ=="
+              class="btn btn-instagram"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              📸 Instagram
+            </a>
+
+          </div>
 
         </div>
 
       </div>
+
     </section>
 
   </main>
+
 
   <!-- PIED DE PAGE -->
   <footer>
