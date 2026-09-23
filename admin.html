@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administration — Sublime'K</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f2ec;
+      color: #333;
+    }
+
+    header {
+      background: #ffffff;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand {
+      font-size: 22px;
+      font-weight: bold;
+      color: #65704F;
+    }
+
+    .logout {
+      border: none;
+      background: #7F8B68;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: auto;
+      padding: 25px 15px 50px;
+    }
+
+    h1 {
+      margin-top: 5px;
+      color: #65704F;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.07);
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .btn {
+      border: none;
+      background: #7F8B68;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .btn-danger {
+      background: #9b4d4d;
+    }
+
+    .btn-secondary {
+      background: #777;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    #message {
+      margin: 15px 0;
+      padding: 12px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .success {
+      background: #e5f0df;
+      color: #4d633d;
+    }
+
+    .error {
+      background: #f7dddd;
+      color: #8a3838;
+    }
+
+    .product {
+      border: 1px solid #e4e1d9;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 12px;
+      background: #faf9f6;
+    }
+
+    .product strong {
+      color: #65704F;
+      font-size: 18px;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 13px;
+      margin: 8px 0;
+      background: #eee;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .actions button {
+      margin-top: 5px;
+    }
+
+    #login {
+      max-width: 450px;
+      margin: 70px auto;
+      padding: 20px;
+    }
+
+    .logo-title {
+      text-align: center;
+      color: #65704F;
+      font-size: 30px;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #777;
+      margin-bottom: 25px;
+    }
+
+    .check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    .check input {
+      width: auto;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 14px;
+      }
+
+      .brand {
+        font-size: 18px;
+      }
+
+      main {
+        padding: 18px 10px 40px;
+      }
+
+      .card {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- CONNEXION -->
+  <section id="login" class="card">
+    <div class="logo-title">Sublime'K</div>
+    <div class="subtitle">Administration</div>
+
+    <label for="email">Adresse e-mail</label>
+    <input
+      type="email"
+      id="email"
+      value="Sublime-k.by.jessica@proton.me"
+      autocomplete="email"
+    >
+
+    <label for="password">Mot de passe</label>
+    <input
+      type="password"
+      id="password"
+      autocomplete="current-password"
+    >
+
+    <button class="btn" onclick="login()">
+      Se connecter
+    </button>
+
+    <div id="loginMessage"></div>
+  </section>
+
+
+  <!-- ADMIN -->
+  <div id="admin" class="hidden">
+
+    <header>
+      <div class="brand">Sublime'K — Admin</div>
+      <button class="logout" onclick="logout()">Déconnexion</button>
+    </header>
+
+    <main>
+
+      <h1>Tableau de bord</h1>
+
+      <div id="message"></div>
+
+
+      <!-- AJOUT / MODIFICATION -->
+      <section class="card">
+
+        <h2 id="formTitle">➕ Ajouter un produit</h2>
+
+        <input type="hidden" id="productId">
+
+        <label for="nom">Nom du produit *</label>
+        <input
+          type="text"
+          id="nom"
+          placeholder="Ex : Mug personnalisé"
+        >
+
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          placeholder="Décris ton produit..."
+        ></textarea>
+
+        <label for="prix">Prix (€)</label>
+        <input
+          type="number"
+          id="prix"
+          step="0.01"
+          min="0"
+          placeholder="Ex : 12.90"
+        >
+
+        <label for="categorie">Catégorie *</label>
+        <select id="categorie">
+          <option value="">Choisir une catégorie</option>
+        </select>
+
+        <label for="statut">Disponibilité</label>
+        <select id="statut">
+          <option value="stock">🟢 En stock</option>
+          <option value="precommande" selected>🟠 Pré-commande</option>
+          <option value="indisponible">⚫ Indisponible</option>
+        </select>
+
+        <label for="image_url">URL de la photo</label>
+        <input
+          type="url"
+          id="image_url"
+          placeholder="https://..."
+        >
+
+        <label class="check">
+          <input type="checkbox" id="visible" checked>
+          Produit visible sur la boutique
+        </label>
+
+        <button class="btn" onclick="saveProduct()">
+          💾 Enregistrer le produit
+        </button>
+
+        <button
+          class="btn btn-secondary"
+          onclick="resetForm()"
+        >
+          Annuler
+        </button>
+
+      </section>
+
+
+      <!-- PRODUITS -->
+      <section class="card">
+
+        <h2>🛍️ Mes produits</h2>
+
+        <div id="products">
+          Chargement des produits...
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+
+<script>
+
+  const SUPABASE_URL =
+    "https://buputlhpgaenlwwbrwwf.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_mjzAOL92PWfc3v59ZxdSUw_69xCaInq";
+
+  const supabaseClient =
+    supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
+  // ==========================
+  // CONNEXION
+  // ==========================
+
+  async function login() {
+
+    const email =
+      document.getElementById("email").value.trim();
+
+    const password =
+      document.getElementById("password").value;
+
+    const message =
+      document.getElementById("loginMessage");
+
+    message.style.display = "none";
+
+    const { error } =
+      await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
+
+    if (error) {
+
+      message.textContent =
+        "❌ " + error.message;
+
+      message.className = "error";
+      message.style.display = "block";
+
+      return;
+    }
+
+    showAdmin();
+  }
+
+
+  async function logout() {
+
+    await supabaseClient.auth.signOut();
+
+    document
+      .getElementById("admin")
+      .classList.add("hidden");
+
+    document
+      .getElementById("login")
+      .classList.remove("hidden");
+  }
+
+
+  async function checkSession() {
+
+    const { data } =
+      await supabaseClient.auth.getSession();
+
+    if (data.session) {
+      showAdmin();
+    }
+  }
+
+
+  function showAdmin() {
+
+    document
+      .getElementById("login")
+      .classList.add("hidden");
+
+    document
+      .getElementById("admin")
+      .classList.remove("hidden");
+
+    loadCategories();
+    loadProducts();
+  }
+
+
+  // ==========================
+  // CATEGORIES
+  // ==========================
+
+  async function loadCategories() {
+
+    const { data, error } =
+      await supabaseClient
+        .from("categories")
+        .select("id, Nom, Emoji, Ordre")
+        .order("Ordre", { ascending: true });
+
+    if (error) {
+
+      showMessage(
+        "Erreur lors du chargement des catégories : " +
+        error.message,
+        true
+      );
+
+      return;
+    }
+
+    const select =
+      document.getElementById("categorie");
+
+    select.innerHTML =
+      '<option value="">Choisir une catégorie</option>';
+
+    data.forEach(category => {
+
+      const option =
+        document.createElement("option");
+
+      option.value = category.id;
+
+      option.textContent =
+        `${category.Emoji || ""} ${category.Nom}`;
+
+      select.appendChild(option);
+    });
+  }
+
+
+  // ==========================
+  // PRODUITS
+  // ==========================
+
+  async function loadProducts() {
+
+    const container =
+      document.getElementById("products");
+
+    container.innerHTML =
+      "Chargement...";
+
+    const { data, error } =
+      await supabaseClient
+        .from("products")
+        .select(`
+          id,
+          nom,
+          description,
+          prix,
+          statut,
+          image_url,
+          visible,
+          created_at,
+          categorie_id,
+          categories (
+            Nom,
+            Emoji
+          )
+        `)
+        .order("created_at", { ascending: false });
+
+    if (error) {
+
+      container.innerHTML =
+        "❌ " + error.message;
+
+      return;
+    }
+
+    if (!data || data.length === 0) {
+
+      container.innerHTML =
+        "<p>Aucun produit pour le moment.</p>";
+
+      return;
+    }
+
+    container.innerHTML = "";
+
+    data.forEach(product => {
+
+      const div =
+        document.createElement("div");
+
+      div.className = "product";
+
+      let statusText = "🟠 Pré-commande";
+
+      if (product.statut === "stock") {
+        statusText = "🟢 En stock";
+      }
+
+      if (product.statut === "indisponible") {
+        statusText = "⚫ Indisponible";
+      }
+
+      const category =
+        product.categories
+          ? `${product.categories.Emoji || ""} ${product.categories.Nom}`
+          : "Sans catégorie";
+
+      div.innerHTML = `
+
+        <strong>${escapeHtml(product.nom)}</strong>
+
+        <div>
+          ${escapeHtml(category)}
+        </div>
+
+        <div class="status">
+          ${statusText}
+        </div>
+
+        <div>
+          <strong>
+            ${
+              product.prix !== null
+                ? Number(product.prix).toFixed(2) + " €"
+                : "
