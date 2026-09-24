@@ -1,1089 +1,144 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sublime'K — Connexion</title>
 
-<title>Administration — Sublime'K</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef0df;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
 
-<style>
+    .box {
+      background: white;
+      width: 90%;
+      max-width: 400px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
 
-*{
-  box-sizing:border-box;
-}
+    h1 {
+      color: #6f7650;
+    }
 
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f4f2ec;
-  color:#333;
-}
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+    }
 
-header{
-  background:white;
-  padding:16px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  box-shadow:0 2px 10px rgba(0,0,0,.08);
-  position:sticky;
-  top:0;
-  z-index:10;
-}
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 10px;
+      border: 0;
+      border-radius: 10px;
+      background: #7d8558;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
 
-.logo{
-  color:#65704F;
-  font-size:20px;
-  font-weight:bold;
-}
-
-button{
-  border:none;
-  border-radius:8px;
-  padding:12px 16px;
-  cursor:pointer;
-  font-weight:bold;
-}
-
-.btn{
-  background:#7F8B68;
-  color:white;
-  margin-top:15px;
-}
-
-.btn-secondary{
-  background:#777;
-  color:white;
-}
-
-.btn-danger{
-  background:#9b4d4d;
-  color:white;
-}
-
-main{
-  max-width:1000px;
-  margin:auto;
-  padding:20px 12px 50px;
-}
-
-.card{
-  background:white;
-  border-radius:14px;
-  padding:20px;
-  margin-bottom:20px;
-  box-shadow:0 3px 15px rgba(0,0,0,.07);
-}
-
-h1,h2{
-  color:#65704F;
-}
-
-label{
-  display:block;
-  font-weight:bold;
-  margin-top:14px;
-  margin-bottom:6px;
-}
-
-input,
-textarea,
-select{
-  width:100%;
-  padding:12px;
-  border:1px solid #ddd;
-  border-radius:8px;
-  font-size:16px;
-}
-
-textarea{
-  min-height:90px;
-  resize:vertical;
-}
-
-.checkbox{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  margin-top:15px;
-}
-
-.checkbox input{
-  width:auto;
-}
-
-.hidden{
-  display:none !important;
-}
-
-.message{
-  padding:12px;
-  border-radius:8px;
-  margin-bottom:15px;
-}
-
-.success{
-  background:#e5f0df;
-  color:#4d633d;
-}
-
-.error{
-  background:#f7dddd;
-  color:#8a3838;
-}
-
-#login{
-  max-width:450px;
-  margin:70px auto;
-}
-
-.login-title{
-  text-align:center;
-  color:#65704F;
-  font-size:30px;
-  font-weight:bold;
-}
-
-.login-subtitle{
-  text-align:center;
-  color:#777;
-  margin-bottom:25px;
-}
-
-.product{
-  border:1px solid #e4e1d9;
-  border-radius:12px;
-  padding:15px;
-  margin-top:12px;
-  background:#faf9f6;
-}
-
-.product-name{
-  color:#65704F;
-  font-size:18px;
-  font-weight:bold;
-}
-
-.status{
-  display:inline-block;
-  padding:6px 10px;
-  border-radius:20px;
-  background:#eee;
-  margin:8px 0;
-  font-size:13px;
-}
-
-.actions{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-}
-
-.actions button{
-  margin-top:8px;
-}
-
-@media(max-width:600px){
-
-  header{
-    padding:14px;
-  }
-
-  .logo{
-    font-size:18px;
-  }
-
-  main{
-    padding:15px 10px 40px;
-  }
-
-  .card{
-    padding:15px;
-  }
-
-}
-
-</style>
+    #resultat {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
 </head>
-
 
 <body>
 
+<div class="box">
 
-<!-- =========================
-     CONNEXION
-========================= -->
-
-<section id="login" class="card">
-
-  <div class="login-title">
-    Sublime'K
-  </div>
-
-  <div class="login-subtitle">
-    Administration
-  </div>
-
-  <label for="email">
-    Adresse e-mail
-  </label>
+  <h1>🌿 Sublime'K</h1>
+  <h2>Administration</h2>
 
   <input
     type="email"
     id="email"
-    value="sublime-k.by.jessica@proton.me"
+    value="Sublime-k.by.jessica@proton.me"
   >
-
-  <label for="password">
-    Mot de passe
-  </label>
 
   <input
     type="password"
     id="password"
-    placeholder="Ton mot de passe"
+    placeholder="Mot de passe"
   >
 
-  <button
-    class="btn"
-    id="loginButton"
-    type="button"
-  >
+  <button id="connexion">
     🔐 Se connecter
   </button>
 
-  <div
-    id="loginMessage"
-    style="margin-top:15px;"
-  ></div>
-
-</section>
-
-
-
-<!-- =========================
-     ADMIN
-========================= -->
-
-<div id="admin" class="hidden">
-
-<header>
-
-  <div class="logo">
-    Sublime'K — Admin
-  </div>
-
-  <button
-    class="btn-secondary"
-    id="logoutButton"
-  >
-    Déconnexion
-  </button>
-
-</header>
-
-
-<main>
-
-<h1>
-  📊 Tableau de bord
-</h1>
-
-
-<div id="message"></div>
-
-
-<!-- =========================
-     AJOUT PRODUIT
-========================= -->
-
-<section class="card">
-
-<h2 id="formTitle">
-  ➕ Ajouter un produit
-</h2>
-
-<input
-  type="hidden"
-  id="productId"
->
-
-
-<label for="nom">
-  Nom du produit *
-</label>
-
-<input
-  type="text"
-  id="nom"
-  placeholder="Ex : Mug personnalisé"
->
-
-
-<label for="description">
-  Description
-</label>
-
-<textarea
-  id="description"
-  placeholder="Décris ton produit..."
-></textarea>
-
-
-<label for="prix">
-  Prix (€)
-</label>
-
-<input
-  type="number"
-  id="prix"
-  step="0.01"
-  min="0"
-  placeholder="Ex : 12.90"
->
-
-
-<label for="categorie">
-  Catégorie *
-</label>
-
-<select id="categorie">
-
-  <option value="">
-    Chargement des catégories...
-  </option>
-
-</select>
-
-
-<label for="statut">
-  Disponibilité
-</label>
-
-<select id="statut">
-
-  <option value="stock">
-    🟢 En stock
-  </option>
-
-  <option
-    value="precommande"
-    selected
-  >
-    🟠 Pré-commande
-  </option>
-
-  <option value="indisponible">
-    ⚫ Indisponible
-  </option>
-
-</select>
-
-
-<label for="image_url">
-  URL de la photo
-</label>
-
-<input
-  type="url"
-  id="image_url"
-  placeholder="https://..."
->
-
-
-<label class="checkbox">
-
-  <input
-    type="checkbox"
-    id="visible"
-    checked
-  >
-
-  Produit visible sur la boutique
-
-</label>
-
-
-<button
-  class="btn"
-  id="saveButton"
->
-  💾 Enregistrer le produit
-</button>
-
-
-<button
-  class="btn btn-secondary"
-  id="cancelButton"
->
-  Annuler
-</button>
-
-</section>
-
-
-
-<!-- =========================
-     PRODUITS
-========================= -->
-
-<section class="card">
-
-<h2>
-  🛍️ Mes produits
-</h2>
-
-<div id="products">
-  Chargement...
-</div>
-
-</section>
-
-
-</main>
+  <p id="resultat"></p>
 
 </div>
-
-
 
 <script>
 
-
-/* =========================
-   SUPABASE
-========================= */
-
-const supabaseUrl =
+const URL_SUPABASE =
 "https://buputlhpgaenlwwbrwwf.supabase.co";
 
-const supabaseKey =
+const CLE_SUPABASE =
 "sb_publishable_mjzAOL92PWfc3v59ZxdSUw_69xCaInq";
 
-const supabaseClient =
+const client =
 window.supabase.createClient(
-  supabaseUrl,
-  supabaseKey
+  URL_SUPABASE,
+  CLE_SUPABASE
 );
 
-
-
-/* =========================
-   ELEMENTS
-========================= */
-
-const login =
-document.getElementById("login");
-
-const admin =
-document.getElementById("admin");
-
-const loginButton =
-document.getElementById("loginButton");
-
-const logoutButton =
-document.getElementById("logoutButton");
-
-const saveButton =
-document.getElementById("saveButton");
-
-const cancelButton =
-document.getElementById("cancelButton");
-
-
-
-/* =========================
-   CONNEXION
-========================= */
-
-loginButton.addEventListener(
-  "click",
-  loginUser
-);
-
-
-async function loginUser(){
+document
+.getElementById("connexion")
+.addEventListener("click", async function() {
 
   const email =
-    document
-      .getElementById("email")
-      .value
-      .trim();
+    document.getElementById("email").value;
 
   const password =
-    document
-      .getElementById("password")
-      .value;
+    document.getElementById("password").value;
 
-  const message =
-    document.getElementById(
-      "loginMessage"
-    );
+  const resultat =
+    document.getElementById("resultat");
 
-
-  message.className="";
-
-  message.textContent=
+  resultat.textContent =
     "⏳ Connexion en cours...";
 
-
   const { data, error } =
-    await supabaseClient.auth
-      .signInWithPassword({
-        email:email,
-        password:password
-      });
+    await client.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
 
+  if (error) {
 
-  if(error){
-
-    message.className="error";
-
-    message.textContent=
+    resultat.textContent =
       "❌ " + error.message;
 
-    return;
-  }
+  } else {
 
-
-  message.className="success";
-
-  message.textContent=
-    "✅ Connexion réussie !";
-
-
-  setTimeout(
-    showAdmin,
-    500
-  );
-
-}
-
-
-
-/* =========================
-   AFFICHER ADMIN
-========================= */
-
-function showAdmin(){
-
-  login.classList.add(
-    "hidden"
-  );
-
-  admin.classList.remove(
-    "hidden"
-  );
-
-
-  loadCategories();
-
-  loadProducts();
-
-}
-
-
-
-/* =========================
-   DECONNEXION
-========================= */
-
-logoutButton.addEventListener(
-  "click",
-  async function(){
-
-    await supabaseClient.auth.signOut();
-
-    admin.classList.add(
-      "hidden"
-    );
-
-    login.classList.remove(
-      "hidden"
-    );
+    resultat.textContent =
+      "✅ Connexion réussie !";
 
   }
-);
 
-
-
-/* =========================
-   CATEGORIES
-========================= */
-
-async function loadCategories(){
-
-  const { data, error } =
-    await supabaseClient
-      .from("categories")
-      .select(
-        "id, Nom, Emoji, Ordre"
-      )
-      .order(
-        "Ordre",
-        {
-          ascending:true
-        }
-      );
-
-
-  const select =
-    document.getElementById(
-      "categorie"
-    );
-
-
-  if(error){
-
-    select.innerHTML =
-      '<option value="">Erreur de chargement</option>';
-
-    showMessage(
-      "❌ Impossible de charger les catégories : "
-      + error.message,
-      true
-    );
-
-    return;
-  }
-
-
-  select.innerHTML =
-    '<option value="">Choisir une catégorie</option>';
-
-
-  data.forEach(
-    category => {
-
-      const option =
-        document.createElement(
-          "option"
-        );
-
-      option.value =
-        category.id;
-
-      option.textContent =
-        `${category.Emoji || ""} ${category.Nom}`;
-
-      select.appendChild(
-        option
-      );
-
-    }
-  );
-
-}
-
-
-
-/* =========================
-   CHARGER PRODUITS
-========================= */
-
-async function loadProducts(){
-
-  const container =
-    document.getElementById(
-      "products"
-    );
-
-
-  container.innerHTML =
-    "⏳ Chargement...";
-
-
-  const { data, error } =
-    await supabaseClient
-      .from("products")
-      .select(`
-        id,
-        nom,
-        description,
-        prix,
-        statut,
-        image_url,
-        visible,
-        categorie_id,
-        categories (
-          Nom,
-          Emoji
-        )
-      `)
-      .order(
-        "created_at",
-        {
-          ascending:false
-        }
-      );
-
-
-  if(error){
-
-    container.innerHTML =
-      "❌ " + error.message;
-
-    return;
-  }
-
-
-  if(!data || data.length===0){
-
-    container.innerHTML =
-      "<p>Aucun produit pour le moment.</p>";
-
-    return;
-  }
-
-
-  container.innerHTML="";
-
-
-  data.forEach(
-    product => {
-
-      const div =
-        document.createElement(
-          "div"
-        );
-
-      div.className="product";
-
-
-      let statusText =
-        "🟠 Pré-commande";
-
-
-      if(product.statut==="stock")
-        statusText=
-          "🟢 En stock";
-
-
-      if(product.statut==="indisponible")
-        statusText=
-          "⚫ Indisponible";
-
-
-      const category =
-        product.categories
-        ? `${product.categories.Emoji || ""} ${product.categories.Nom}`
-        : "Sans catégorie";
-
-
-      div.innerHTML=`
-
-        <div class="product-name">
-          ${escapeHtml(product.nom)}
-        </div>
-
-        <div>
-          ${escapeHtml(category)}
-        </div>
-
-        <div class="status">
-          ${statusText}
-        </div>
-
-        <div>
-          <strong>
-            ${
-              product.prix !== null
-              ? Number(product.prix).toFixed(2)
-                + " €"
-              : "Prix à définir"
-            }
-          </strong>
-        </div>
-
-        <p>
-          ${escapeHtml(
-            product.description || ""
-          )}
-        </p>
-
-        <div>
-          ${
-            product.visible
-            ? "👁️ Visible"
-            : "🙈 Masqué"
-          }
-        </div>
-
-      `;
-
-
-      container.appendChild(
-        div
-      );
-
-    }
-  );
-
-}
-
-
-
-/* =========================
-   ENREGISTRER PRODUIT
-========================= */
-
-saveButton.addEventListener(
-  "click",
-  saveProduct
-);
-
-
-async function saveProduct(){
-
-  const nom =
-    document
-      .getElementById("nom")
-      .value
-      .trim();
-
-
-  const description =
-    document
-      .getElementById("description")
-      .value
-      .trim();
-
-
-  const prixValue =
-    document
-      .getElementById("prix")
-      .value;
-
-
-  const categorie_id =
-    document
-      .getElementById("categorie")
-      .value;
-
-
-  const statut =
-    document
-      .getElementById("statut")
-      .value;
-
-
-  const image_url =
-    document
-      .getElementById("image_url")
-      .value
-      .trim();
-
-
-  const visible =
-    document
-      .getElementById("visible")
-      .checked;
-
-
-  if(!nom){
-
-    showMessage(
-      "❌ Le nom du produit est obligatoire.",
-      true
-    );
-
-    return;
-  }
-
-
-  if(!categorie_id){
-
-    showMessage(
-      "❌ Choisis une catégorie.",
-      true
-    );
-
-    return;
-  }
-
-
-  const product={
-
-    nom:nom,
-
-    description:
-      description || null,
-
-    prix:
-      prixValue
-      ? Number(prixValue)
-      : null,
-
-    categorie_id:
-      categorie_id,
-
-    statut:
-      statut,
-
-    image_url:
-      image_url || null,
-
-    visible:
-      visible
-
-  };
-
-
-  const { error } =
-    await supabaseClient
-      .from("products")
-      .insert(product);
-
-
-  if(error){
-
-    showMessage(
-      "❌ Erreur : " +
-      error.message,
-      true
-    );
-
-    return;
-  }
-
-
-  showMessage(
-    "✅ Produit ajouté !"
-  );
-
-
-  resetForm();
-
-  loadProducts();
-
-}
-
-
-
-/* =========================
-   ANNULER
-========================= */
-
-cancelButton.addEventListener(
-  "click",
-  resetForm
-);
-
-
-function resetForm(){
-
-  document.getElementById(
-    "nom"
-  ).value="";
-
-  document.getElementById(
-    "description"
-  ).value="";
-
-  document.getElementById(
-    "prix"
-  ).value="";
-
-  document.getElementById(
-    "categorie"
-  ).value="";
-
-  document.getElementById(
-    "statut"
-  ).value="precommande";
-
-  document.getElementById(
-    "image_url"
-  ).value="";
-
-  document.getElementById(
-    "visible"
-  ).checked=true;
-
-}
-
-
-
-/* =========================
-   MESSAGE
-========================= */
-
-function showMessage(
-  text,
-  error=false
-){
-
-  const box =
-    document.getElementById(
-      "message"
-    );
-
-
-  box.className =
-    error
-    ? "message error"
-    : "message success";
-
-
-  box.textContent =
-    text;
-
-
-  setTimeout(
-    function(){
-
-      box.className="";
-
-      box.textContent="";
-
-    },
-    5000
-  );
-
-}
-
-
-
-/* =========================
-   SECURITE HTML
-========================= */
-
-function escapeHtml(
-  value
-){
-
-  return String(value)
-
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-
-    .replace(
-      /</g,
-      "&lt;"
-    )
-
-    .replace(
-      />/g,
-      "&gt;"
-    )
-
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-
-}
-
+});
 
 </script>
 
 </body>
-</html>is' 
+</html>
