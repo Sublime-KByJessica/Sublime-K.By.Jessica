@@ -3,17 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test Sublime'K</title>
+  <title>Sublime'K — Connexion</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+
 <body>
 
-<h1>Sublime'K</h1>
+  <h1>Sublime'K — Administration</h1>
 
-<p id="test">⏳ Test en cours...</p>
+  <p>Connexion administrateur</p>
+
+  <input
+    type="email"
+    id="email"
+    value="sublime-k.by.jessica@proton.me"
+  >
+
+  <br><br>
+
+  <input
+    type="password"
+    id="password"
+    placeholder="Mot de passe"
+  >
+
+  <br><br>
+
+  <button id="loginButton">
+    Se connecter
+  </button>
+
+  <p id="result"></p>
 
 <script>
-document.getElementById("test").textContent =
-  "✅ JavaScript fonctionne !";
+
+const supabaseUrl =
+  "https://buputlhpgaenlwwbrwwf.supabase.co";
+
+const supabaseKey =
+  "sb_publishable_mjzAOL92PWfc3v59ZxdSUw_69xCaInq";
+
+const supabaseClient =
+  window.supabase.createClient(
+    supabaseUrl,
+    supabaseKey
+  );
+
+document
+  .getElementById("loginButton")
+  .addEventListener("click", async function () {
+
+    const email =
+      document.getElementById("email").value.trim();
+
+    const password =
+      document.getElementById("password").value;
+
+    const result =
+      document.getElementById("result");
+
+    result.textContent =
+      "⏳ Connexion en cours...";
+
+    const { data, error } =
+      await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+    if (error) {
+
+      result.textContent =
+        "❌ " + error.message;
+
+      return;
+    }
+
+    result.textContent =
+      "✅ Connexion réussie !";
+
+  });
+
 </script>
 
 </body>
