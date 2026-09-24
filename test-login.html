@@ -1,1 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test connexion Sublime'K</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+  <h1>Test connexion Sublime'K</h1>
+
+  <input
+    type="email"
+    id="email"
+    value="Sublime-k.by.jessica@proton.me"
+  >
+
+  <br><br>
+
+  <input
+    type="password"
+    id="password"
+    placeholder="Mot de passe"
+  >
+
+  <br><br>
+
+  <button onclick="connexion()">
+    Se connecter
+  </button>
+
+  <p id="resultat"></p>
+
+  <script>
+
+    const supabaseClient = window.supabase.createClient(
+      "https://buputlhpgaenlwwbrwwf.supabase.co",
+      "sb_publishable_mjzAOL92PWfc3v59ZxdSUw_69xCaInq"
+    );
+
+    async function connexion() {
+
+      const email =
+        document.getElementById("email").value;
+
+      const password =
+        document.getElementById("password").value;
+
+      document.getElementById("resultat").textContent =
+        "⏳ Connexion...";
+
+      const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+
+      if (error) {
+
+        document.getElementById("resultat").textContent =
+          "❌ " + error.message;
+
+      } else {
+
+        document.getElementById("resultat").textContent =
+          "✅ CONNEXION RÉUSSIE !";
+
+      }
+
+    }
+
+  </script>
+
+</body>
+</html>
