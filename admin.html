@@ -48,6 +48,10 @@
         URL_SUPABASE,
         CLE_SUPABASE
       );
+    client.auth.getSession().then(({ data, error }) => {
+  console.log("SESSION :", data.session);
+  console.log("ERREUR SESSION :", error);
+});
 
     document
       .getElementById("connexion")
