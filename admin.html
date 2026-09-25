@@ -3564,14 +3564,22 @@ function afficherMessageLivraison(
 
 async function chargerCommandes() {
 
+  const filtrePaiement =
+    document.getElementById("filtrePaiement")?.value || "tous";
+
+  let requete = client
+    .from("orders")
+    .select("*");
+
+  if (filtrePaiement !== "tous") {
+    requete = requete.eq("payment_status", filtrePaiement);
+  }
+
   const {
     data,
     error
-  } =
-    await client
-      .from("orders")
-      .select("*")
-      .order(
+  } = await requete
+    .order(
         "created_at",
         {
           ascending: false
@@ -3893,7 +3901,12 @@ document
     "click",
     chargerCommandes
   );
-
+document
+  .getElementById("filtrePaiement")
+  .addEventListener(
+    "change",
+    chargerCommandes
+  );
 
 /* =====================================================
    BIBLIOTHÈQUE
