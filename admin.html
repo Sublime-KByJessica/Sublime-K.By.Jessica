@@ -413,6 +413,50 @@
     }
 
     /* =========================
+       PERSONNALISATION
+    ========================= */
+
+    .personnalisation-admin {
+      margin-top: 25px;
+      padding: 18px;
+      background: #FAF7F5;
+      border: 1px solid var(--bordure);
+      border-radius: 16px;
+    }
+
+    .personnalisation-admin h3 {
+      margin-top: 0;
+      color: var(--rose-fonce);
+    }
+
+    .personnalisation-aide {
+      color: #766B6D;
+      font-size: 14px;
+    }
+
+    /* =========================
+       BIBLIOTHÈQUE
+    ========================= */
+
+    .bibliotheque-images {
+      margin-top: 25px;
+      padding: 20px;
+      background: #FAF7F5;
+      border: 1px solid var(--bordure);
+      border-radius: 16px;
+    }
+
+    .bibliotheque-images h3 {
+      margin-top: 0;
+      color: var(--sauge-fonce);
+    }
+
+    .bibliotheque-images p {
+      color: #766B6D;
+      font-size: 14px;
+    }
+
+    /* =========================
        MOBILE
     ========================= */
 
@@ -529,11 +573,14 @@
       </div>
 
 
-      <!-- STATISTIQUES -->
+      <!-- =========================
+           STATISTIQUES
+      ========================= -->
 
       <div class="stats">
 
         <div class="stat-card">
+
           <div
             class="nombre"
             id="nombreProduits"
@@ -544,10 +591,12 @@
           <div class="label">
             Produits
           </div>
+
         </div>
 
 
         <div class="stat-card">
+
           <div
             class="nombre"
             id="nombreVisibles"
@@ -558,10 +607,12 @@
           <div class="label">
             Produits visibles
           </div>
+
         </div>
 
 
         <div class="stat-card">
+
           <div
             class="nombre"
             id="nombrePrecommandes"
@@ -572,12 +623,15 @@
           <div class="label">
             Pré-commandes
           </div>
+
         </div>
 
       </div>
 
 
-      <!-- AJOUT / MODIFICATION -->
+      <!-- =========================
+           AJOUT / MODIFICATION
+      ========================= -->
 
       <div class="bloc">
 
@@ -701,154 +755,231 @@
           </div>
 
 
+          <!-- PRODUIT VISIBLE -->
+
           <div class="checkbox-ligne">
 
-  <input
-    type="checkbox"
-    id="visible"
-    checked
-  >
+            <input
+              type="checkbox"
+              id="visible"
+              checked
+            >
 
-  <label for="visible">
-    Produit visible sur la boutique
-  </label>
+            <label for="visible">
+              Produit visible sur la boutique
+            </label>
 
-</div>
+          </div>
 
 
-<div class="checkbox-ligne">
+          <!-- NOUVEAUTÉ -->
 
-  <input
-    type="checkbox"
-    id="nouveaute"
-  >
+          <div class="checkbox-ligne">
 
-  <label for="nouveaute">
-    ⭐ Afficher dans les nouveautés
-  </label>
+            <input
+              type="checkbox"
+              id="nouveaute"
+            >
 
-</div>
+            <label for="nouveaute">
+              ⭐ Afficher dans les nouveautés
+            </label>
+
+          </div>
+
+
+          <!-- =========================
+               PERSONNALISATION
+          ========================= -->
+
           <div class="personnalisation-admin">
 
-  <h3>
-    ✨ Personnalisation du produit
-  </h3>
+            <h3>
+              ✨ Personnalisation du produit
+            </h3>
 
-  <p class="personnalisation-aide">
-    Active uniquement les options dont ce produit a besoin.
-  </p>
-
-
-  <div class="checkbox-ligne">
-
-    <input
-      type="checkbox"
-      id="personnalisation_active"
-    >
-
-    <label for="personnalisation_active">
-      ✨ Produit personnalisable
-    </label>
-
-  </div>
+            <p class="personnalisation-aide">
+              Active uniquement les options dont ce produit a besoin.
+            </p>
 
 
-  <div class="checkbox-ligne">
+            <div class="checkbox-ligne">
 
-    <input
-      type="checkbox"
-      id="choix_image_active"
-    >
+              <input
+                type="checkbox"
+                id="personnalisation_active"
+              >
 
-    <label for="choix_image_active">
-      🖼️ Le client peut choisir une image
-    </label>
+              <label for="personnalisation_active">
+                ✨ Produit personnalisable
+              </label>
 
-  </div>
-
-
-  <div class="checkbox-ligne">
-
-    <input
-      type="checkbox"
-      id="photo_client_active"
-    >
-
-    <label for="photo_client_active">
-      📸 Le client peut envoyer sa propre photo
-    </label>
-
-  </div>
+            </div>
 
 
-  <div class="checkbox-ligne">
+            <div class="checkbox-ligne">
 
-    <input
-      type="checkbox"
-      id="prenom_active"
-    >
+              <input
+                type="checkbox"
+                id="choix_image_active"
+              >
 
-    <label for="prenom_active">
-      ✏️ Le client peut ajouter un prénom
-    </label>
+              <label for="choix_image_active">
+                🖼️ Le client peut choisir une image
+              </label>
 
-  </div>
+            </div>
 
 
-  <div class="checkbox-ligne">
+            <div class="checkbox-ligne">
 
-    <input
-      type="checkbox"
-      id="message_active"
-    >
+              <input
+                type="checkbox"
+                id="photo_client_active"
+              >
 
-    <label for="message_active">
-      💬 Le client peut ajouter un message
-    </label>
+              <label for="photo_client_active">
+                📸 Le client peut envoyer sa propre photo
+              </label>
 
-  </div>
+            </div>
 
-</div>
+
+            <div class="checkbox-ligne">
+
+              <input
+                type="checkbox"
+                id="prenom_active"
+              >
+
+              <label for="prenom_active">
+                ✏️ Le client peut ajouter un prénom
+              </label>
+
+            </div>
+
+
+            <div class="checkbox-ligne">
+
+              <input
+                type="checkbox"
+                id="message_active"
+              >
+
+              <label for="message_active">
+                💬 Le client peut ajouter un message
+              </label>
+
+            </div>
+
+          </div>
+
+
           <!-- =========================
-     BIBLIOTHÈQUE D'IMAGES
-========================= -->
+               BIBLIOTHÈQUE D'IMAGES
+          ========================= -->
 
-<div
-  id="bibliothequeImages"
-  class="bibliotheque-images"
-  style="display:none;"
->
+          <div
+            id="bibliothequeImages"
+            class="bibliotheque-images"
+            style="display:none;"
+          >
 
-  <h3>
-    🖼️ Bibliothèque d'images
-  </h3>
+            <h3>
+              🖼️ Bibliothèque de designs
+            </h3>
 
-  <p>
-    Ajoute les images que tes clients pourront choisir pour ce produit.
-  </p>
+            <p>
+              Organise tes designs par catégorie et sous-catégorie.
+            </p>
 
-  <input
-    type="file"
-    id="fichiersBibliotheque"
-    accept="image/jpeg,image/png,image/webp,image/gif"
-    multiple
-  >
 
-  <button
-    type="button"
-    class="btn btn-modifier"
-    id="boutonAjouterImages"
-  >
-    ➕ Ajouter les images
-  </button>
+            <!-- CATÉGORIE -->
 
-  <div
-    id="listeBibliothequeImages"
-    style="margin-top:15px;"
-  ></div>
+            <div class="champ">
 
-</div>
+              <label for="bibliothequeCategorie">
+                📁 Catégorie
+              </label>
 
+              <select id="bibliothequeCategorie">
+
+                <option value="">
+                  Choisir une catégorie
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <!-- SOUS-CATÉGORIE -->
+
+            <div
+              class="champ"
+              style="margin-top:15px;"
+            >
+
+              <label for="bibliothequeSousCategorie">
+                📂 Sous-catégorie
+              </label>
+
+              <select
+                id="bibliothequeSousCategorie"
+                disabled
+              >
+
+                <option value="">
+                  Choisir une sous-catégorie
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <!-- DESIGNS -->
+
+            <div
+              class="champ"
+              style="margin-top:15px;"
+            >
+
+              <label for="fichiersBibliotheque">
+                🖼️ Designs
+              </label>
+
+              <input
+                type="file"
+                id="fichiersBibliotheque"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                multiple
+              >
+
+            </div>
+
+
+            <button
+              type="button"
+              class="btn btn-modifier"
+              id="boutonAjouterImages"
+              style="margin-top:15px;"
+            >
+              ➕ Ajouter les designs
+            </button>
+
+
+            <!-- LISTE DES DESIGNS -->
+
+            <div
+              id="listeBibliothequeImages"
+              style="margin-top:20px;"
+            ></div>
+
+          </div>
+
+
+          <!-- ACTIONS -->
 
           <div class="actions-formulaire">
 
@@ -881,13 +1012,17 @@
       </div>
 
 
-      <!-- LISTE PRODUITS -->
+      <!-- =========================
+           LISTE PRODUITS
+      ========================= -->
 
       <div class="bloc">
 
         <div class="barre-produits">
 
-          <h2>🛍️ Mes produits</h2>
+          <h2>
+            🛍️ Mes produits
+          </h2>
 
           <button
             class="btn btn-modifier"
@@ -898,12 +1033,14 @@
 
         </div>
 
+
         <div
           id="messageProduits"
           class="message-produits"
         >
           Chargement des produits...
         </div>
+
 
         <div
           id="listeProduits"
@@ -981,7 +1118,10 @@
     async function connexion() {
 
       const email =
-        document.getElementById("email").value.trim();
+        document
+          .getElementById("email")
+          .value
+          .trim();
 
       const password =
         document.getElementById("password").value;
@@ -1041,6 +1181,8 @@
 
       await chargerCategories();
 
+      await chargerCategoriesBibliotheque();
+
       await chargerProduits();
 
     }
@@ -1093,7 +1235,7 @@
 
 
     /* =========================
-       CATEGORIES
+       CATEGORIES PRODUITS
     ========================= */
 
     async function chargerCategories() {
@@ -1134,6 +1276,62 @@
           (categorie.Emoji || "") +
           " " +
           categorie.Nom;
+
+        select.appendChild(option);
+
+      });
+
+    }
+
+
+    /* =========================
+       CATÉGORIES BIBLIOTHÈQUE
+    ========================= */
+
+    async function chargerCategoriesBibliotheque() {
+
+      const select =
+        document.getElementById(
+          "bibliothequeCategorie"
+        );
+
+      if (!select) {
+        return;
+      }
+
+      const { data, error } =
+        await client
+          .from("library_categories")
+          .select("id, nom, emoji, ordre")
+          .order("ordre", {
+            ascending: true
+          });
+
+      if (error) {
+
+        console.error(
+          "Erreur catégories bibliothèque :",
+          error
+        );
+
+        return;
+      }
+
+      select.innerHTML =
+        '<option value="">Choisir une catégorie</option>';
+
+      data.forEach(function(categorie) {
+
+        const option =
+          document.createElement("option");
+
+        option.value =
+          categorie.id;
+
+        option.textContent =
+          (categorie.emoji || "📁") +
+          " " +
+          categorie.nom;
 
         select.appendChild(option);
 
@@ -1372,10 +1570,16 @@
         event.preventDefault();
 
         const nom =
-          document.getElementById("nom").value.trim();
+          document
+            .getElementById("nom")
+            .value
+            .trim();
 
         const description =
-          document.getElementById("description").value.trim();
+          document
+            .getElementById("description")
+            .value
+            .trim();
 
         const prixValeur =
           document.getElementById("prix").value;
@@ -1392,31 +1596,44 @@
           document.getElementById("statut").value;
 
         const image_url =
-          document.getElementById("image_url").value.trim();
+          document
+            .getElementById("image_url")
+            .value
+            .trim();
 
         const visible =
           document.getElementById("visible").checked;
-        
-const nouveaute =
-  document.getElementById("nouveaute").checked;
-        
-          const personnalisation_active =
-  document.getElementById("personnalisation_active").checked;
 
-const choix_image_active =
-  document.getElementById("choix_image_active").checked;
+        const nouveaute =
+          document.getElementById("nouveaute").checked;
 
-const photo_client_active =
-  document.getElementById("photo_client_active").checked;
+        const personnalisation_active =
+          document
+            .getElementById("personnalisation_active")
+            .checked;
 
-const prenom_active =
-  document.getElementById("prenom_active").checked;
+        const choix_image_active =
+          document
+            .getElementById("choix_image_active")
+            .checked;
 
-const message_active =
-  document.getElementById("message_active").checked;
+        const photo_client_active =
+          document
+            .getElementById("photo_client_active")
+            .checked;
+
+        const prenom_active =
+          document
+            .getElementById("prenom_active")
+            .checked;
+
+        const message_active =
+          document
+            .getElementById("message_active")
+            .checked;
+
+
         if (!nom) {
-
-          
 
           afficherMessageFormulaire(
             "❌ Le nom du produit est obligatoire.",
@@ -1425,6 +1642,7 @@ const message_active =
 
           return;
         }
+
 
         if (!categorie_id) {
 
@@ -1436,8 +1654,11 @@ const message_active =
           return;
         }
 
+
         const bouton =
-          document.getElementById("boutonEnregistrer");
+          document.getElementById(
+            "boutonEnregistrer"
+          );
 
         bouton.disabled =
           true;
@@ -1448,21 +1669,21 @@ const message_active =
 
         const produit = {
 
-  nom,
-  description,
-  prix,
-  categorie_id,
-  statut,
-  image_url: image_url || null,
-  visible,
-  nouveaute,
-  personnalisation_active,
-  choix_image_active,
-  photo_client_active,
-  prenom_active,
-  message_active
+          nom,
+          description,
+          prix,
+          categorie_id,
+          statut,
+          image_url: image_url || null,
+          visible,
+          nouveaute,
+          personnalisation_active,
+          choix_image_active,
+          photo_client_active,
+          prenom_active,
+          message_active
 
-};
+        };
 
 
         let erreur = null;
@@ -1534,6 +1755,37 @@ const message_active =
 
 
     /* =========================
+       AFFICHER / MASQUER BIBLIOTHÈQUE
+    ========================= */
+
+    document
+      .getElementById("choix_image_active")
+      .addEventListener(
+        "change",
+        function() {
+
+          const bibliothequeImages =
+            document.getElementById(
+              "bibliothequeImages"
+            );
+
+          if (this.checked) {
+
+            bibliothequeImages.style.display =
+              "block";
+
+          } else {
+
+            bibliothequeImages.style.display =
+              "none";
+
+          }
+
+        }
+      );
+
+
+    /* =========================
        MODIFIER
     ========================= */
 
@@ -1560,6 +1812,7 @@ const message_active =
         produitEnModification =
           id;
 
+
         document.getElementById("nom").value =
           data.nom || "";
 
@@ -1582,22 +1835,50 @@ const message_active =
           data.visible !== false;
 
         document.getElementById("nouveaute").checked =
-  data.nouveaute === true;
-        
-        document.getElementById("personnalisation_active").checked =
-  data.personnalisation_active === true;
+          data.nouveaute === true;
 
-document.getElementById("choix_image_active").checked =
-  data.choix_image_active === true;
+        document.getElementById(
+          "personnalisation_active"
+        ).checked =
+          data.personnalisation_active === true;
 
-document.getElementById("photo_client_active").checked =
-  data.photo_client_active === true;
+        document.getElementById(
+          "choix_image_active"
+        ).checked =
+          data.choix_image_active === true;
 
-document.getElementById("prenom_active").checked =
-  data.prenom_active === true;
+        document.getElementById(
+          "photo_client_active"
+        ).checked =
+          data.photo_client_active === true;
 
-document.getElementById("message_active").checked =
-  data.message_active === true;
+        document.getElementById(
+          "prenom_active"
+        ).checked =
+          data.prenom_active === true;
+
+        document.getElementById(
+          "message_active"
+        ).checked =
+          data.message_active === true;
+
+
+        const bibliothequeImages =
+          document.getElementById(
+            "bibliothequeImages"
+          );
+
+        if (data.choix_image_active === true) {
+
+          bibliothequeImages.style.display =
+            "block";
+
+        } else {
+
+          bibliothequeImages.style.display =
+            "none";
+
+        }
 
 
         document.getElementById(
@@ -1690,44 +1971,90 @@ document.getElementById("message_active").checked =
 
       formulaire.reset();
 
+
       document.getElementById(
         "statut"
       ).value =
         "precommande";
 
+
       document.getElementById(
         "visible"
       ).checked =
         true;
+
+
       document.getElementById(
-  "personnalisation_active"
-).checked = false;
+        "personnalisation_active"
+      ).checked =
+        false;
 
-document.getElementById(
-  "choix_image_active"
-).checked = false;
 
-document.getElementById(
-  "photo_client_active"
-).checked = false;
+      document.getElementById(
+        "choix_image_active"
+      ).checked =
+        false;
 
-document.getElementById(
-  "prenom_active"
-).checked = false;
 
-document.getElementById(
-  "message_active"
-).checked = false;
+      document.getElementById(
+        "photo_client_active"
+      ).checked =
+        false;
+
+
+      document.getElementById(
+        "prenom_active"
+      ).checked =
+        false;
+
+
+      document.getElementById(
+        "message_active"
+      ).checked =
+        false;
+
+
+      document.getElementById(
+        "bibliothequeImages"
+      ).style.display =
+        "none";
+
+
+      document.getElementById(
+        "bibliothequeCategorie"
+      ).value =
+        "";
+
+
+      document.getElementById(
+        "bibliothequeSousCategorie"
+      ).innerHTML =
+        '<option value="">Choisir une sous-catégorie</option>';
+
+
+      document.getElementById(
+        "bibliothequeSousCategorie"
+      ).disabled =
+        true;
+
+
+      document.getElementById(
+        "fichiersBibliotheque"
+      ).value =
+        "";
+
 
       document.getElementById(
         "titreFormulaire"
       ).textContent =
         "➕ Ajouter un produit";
 
+
       document.getElementById(
         "boutonEnregistrer"
       ).textContent =
         "💾 Enregistrer le produit";
+
 
       document.getElementById(
         "boutonAnnuler"
@@ -1761,6 +2088,7 @@ document.getElementById(
 
       element.style.display =
         "block";
+
 
       setTimeout(function() {
 
