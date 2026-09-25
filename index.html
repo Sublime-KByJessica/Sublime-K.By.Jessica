@@ -11,12 +11,14 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Sublime'K — Créations personnalisées</title>
-
   <meta
     name="description"
-    content="Sublime'K — Créations personnalisées et originales réalisées sur pré-commande."
+    content="Sublime'K — Créations personnalisées et originales"
   >
+
+  <title>Sublime'K — Créations personnalisées</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
 
@@ -38,10 +40,13 @@
     }
 
     a {
-      text-decoration: none;
       color: inherit;
     }
 
+    .container {
+      width: min(1100px, 92%);
+      margin: auto;
+    }
 
     /* =========================
        HEADER
@@ -50,20 +55,19 @@
     header {
       position: sticky;
       top: 0;
-      z-index: 1000;
-      background: rgba(250,247,245,0.97);
+      z-index: 100;
+      background: rgba(250, 247, 245, 0.97);
       border-bottom: 1px solid #D8B6BC;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      backdrop-filter: blur(8px);
     }
 
     .header-inner {
-      max-width: 1200px;
-      margin: auto;
-      padding: 12px 20px;
+      min-height: 90px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 20px;
+      padding: 10px 0;
     }
 
     .logo-header {
@@ -74,304 +78,25 @@
 
     nav {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+      align-items: center;
       gap: 8px;
     }
 
     nav a {
-      padding: 9px 12px;
-      border-radius: 20px;
+      text-decoration: none;
+      color: #4A4143;
       font-weight: bold;
-      font-size: 14px;
-      transition: 0.2s;
+      padding: 10px 14px;
+      border-radius: 10px;
+      transition: 0.2s ease;
     }
 
     nav a:hover {
       background: #E9D9D5;
     }
 
-
     /* =========================
-       HERO
-    ========================= */
-
-    .hero {
-      min-height: 620px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 70px 20px;
-      background: linear-gradient(135deg, #FAF7F5, #E9D9D5);
-    }
-
-    .hero-content {
-      max-width: 850px;
-    }
-
-    .hero-logo {
-      width: min(1000px, 90%);
-      max-height: 460px;
-      object-fit: contain;
-      margin: 25px auto;
-    }
-
-    .hero h1 {
-      font-size: clamp(30px, 5vw, 56px);
-      margin-bottom: 15px;
-    }
-
-    .hero p {
-      font-size: 20px;
-      color: #666;
-      margin-bottom: 30px;
-    }
-
-    .buttons {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .btn {
-      display: inline-block;
-      padding: 13px 22px;
-      border-radius: 30px;
-      font-weight: bold;
-      transition: 0.2s;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-    }
-
-    .btn-primary {
-      background: #667052;
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: #8F5967;
-    }
-
-    .btn-secondary {
-      background: white;
-      border: 2px solid #8F9B78;
-      color: #667052;
-    }
-
-    .btn-secondary:hover {
-      background: #E9D9D5;
-    }
-
-    .btn-instagram {
-      background: #B87486;
-      color: white;
-    }
-
-
-    /* =========================
-       SECTIONS
-    ========================= */
-
-    section {
-      padding: 80px 20px;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: auto;
-    }
-
-    .section-title {
-      text-align: center;
-      font-size: 34px;
-      margin-bottom: 15px;
-      color: #8F5967;
-    }
-
-    .section-intro {
-      text-align: center;
-      max-width: 750px;
-      margin: 0 auto 45px;
-      color: #666;
-    }
-
-
-    /* =========================
-       PRE-COMMANDE
-    ========================= */
-
-    .preorder-banner {
-      background: #E9D9D5;
-      border: 1px solid #D8B6BC;
-      border-radius: 18px;
-      padding: 20px;
-      text-align: center;
-      margin-bottom: 40px;
-    }
-
-    .preorder-banner strong {
-      display: block;
-      font-size: 20px;
-      margin-bottom: 5px;
-    }
-
-
-    /* =========================
-       CATEGORIES
-    ========================= */
-
-    .categories {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 18px;
-    }
-
-    .category-card {
-      background: white;
-      border-radius: 20px;
-      padding: 25px 15px;
-      text-align: center;
-      border: 1px solid #eee;
-      box-shadow: 0 5px 18px rgba(0,0,0,0.05);
-      transition: 0.2s;
-    }
-
-    .category-card:hover {
-      transform: translateY(-4px);
-      border-color: #D8B6BC;
-    }
-
-    .category-icon {
-      font-size: 38px;
-      margin-bottom: 10px;
-    }
-
-    .category-card h3 {
-      font-size: 17px;
-    }
-
-
-    /* =========================
-       PRODUITS
-    ========================= */
-
-    .category-section {
-      margin-top: 65px;
-      scroll-margin-top: 100px;
-    }
-
-    .category-heading {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 22px;
-    }
-
-    .category-heading h3 {
-      font-size: 27px;
-      color: #B9828F;
-    }
-
-    .product-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-    }
-
-    .product-card {
-      background: white;
-      border-radius: 18px;
-      overflow: hidden;
-      border: 1px solid #eee;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    }
-
-    .product-image {
-      height: 190px;
-      background: #F1E5E5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #999;
-      text-align: center;
-      padding: 15px;
-    }
-
-    .product-content {
-      padding: 18px;
-    }
-
-    .product-content h4 {
-      margin-bottom: 7px;
-      font-size: 18px;
-    }
-
-    .product-description {
-      color: #777;
-      font-size: 14px;
-      min-height: 45px;
-      margin-bottom: 12px;
-    }
-
-    .price {
-      font-size: 19px;
-      font-weight: bold;
-      margin-bottom: 12px;
-    }
-
-
-    /* =========================
-       STATUS
-    ========================= */
-
-    .status {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-      margin-bottom: 13px;
-    }
-
-    .status-preorder {
-      background: #F1DDE1;
-      color: #8F5967;
-    }
-
-    .status-stock {
-      background: #E1E9D8;
-      color: #667052;
-    }
-
-    .status-unavailable {
-      background: #EEE9E8;
-      color: #6B6264;
-    }
-
-    .product-button {
-      display: block;
-      width: 100%;
-      text-align: center;
-      padding: 10px;
-      border-radius: 12px;
-      background: #667052;
-      color: white;
-      font-weight: bold;
-    }
-
-    .product-button:hover {
-      background: #8F5967;
-    }
-
-
-    /* =========================
-       MENU BOUTIQUE
+       BOUTIQUE MENU
     ========================= */
 
     .boutique-menu {
@@ -450,71 +175,278 @@
       color: #8F5967;
     }
 
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero {
+      background: linear-gradient(
+        135deg,
+        #FAF7F5,
+        #E9D9D5
+      );
+
+      text-align: center;
+      padding: 35px 20px 45px;
+    }
+
+    .hero-logo {
+      width: min(1000px, 90%);
+      max-height: 460px;
+      object-fit: contain;
+      margin: 25px auto;
+      display: block;
+    }
+
+    .hero h1 {
+      color: #8F5967;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      max-width: 700px;
+      margin: 0 auto 25px;
+      font-size: 1.08rem;
+    }
+
+    .hero-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      display: inline-block;
+      padding: 13px 22px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #667052;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #8F5967;
+    }
+
+    .btn-secondary {
+      border: 2px solid #8F9B78;
+      color: #667052;
+      background: transparent;
+    }
+
+    .btn-secondary:hover {
+      background: #E9D9D5;
+    }
+
+    /* =========================
+       SECTION TITLES
+    ========================= */
+
+    .section {
+      padding: 55px 0;
+    }
+
+    .section-title {
+      text-align: center;
+      color: #8F5967;
+      font-size: 2rem;
+      margin-bottom: 25px;
+    }
+
+    .section-intro {
+      text-align: center;
+      max-width: 700px;
+      margin: -10px auto 30px;
+    }
+
+    /* =========================
+       PRECOMMANDE
+    ========================= */
+
+    .preorder-banner {
+      background: #E9D9D5;
+      border: 1px solid #D8B6BC;
+      border-radius: 18px;
+      padding: 20px;
+      text-align: center;
+      margin: 25px auto;
+      max-width: 900px;
+    }
+
+    .preorder-banner strong {
+      color: #8F5967;
+    }
+
+    /* =========================
+       PRODUITS
+    ========================= */
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .product-card {
+      background: #FFFFFF;
+      border: 1px solid #E6DADB;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(74, 65, 67, 0.07);
+      transition: 0.2s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(74, 65, 67, 0.12);
+    }
+
+    .product-image {
+      height: 180px;
+      background: #F1E5E5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .product-content {
+      padding: 16px;
+    }
+
+    .product-content h3 {
+      color: #8F5967;
+      margin-bottom: 7px;
+      font-size: 1.05rem;
+    }
+
+    .product-content p {
+      font-size: 0.92rem;
+      margin-bottom: 12px;
+    }
+
+    .product-price {
+      font-weight: bold;
+      color: #667052;
+      margin-bottom: 12px;
+    }
+
+    .product-button {
+      display: inline-block;
+      background: #667052;
+      color: white;
+      text-decoration: none;
+      padding: 9px 13px;
+      border-radius: 9px;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+
+    .product-button:hover {
+      background: #8F5967;
+    }
+
+    .status-stock,
+    .status-preorder,
+    .status-unavailable {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .status-stock {
+      background: #E1E9D8;
+      color: #667052;
+    }
+
+    .status-preorder {
+      background: #F1DDE1;
+      color: #8F5967;
+    }
+
+    .status-unavailable {
+      background: #EEE9E8;
+      color: #6B6264;
+    }
 
     /* =========================
        NOUVEAUTÉS
     ========================= */
 
-    .nouveautes-section {
-      margin-top: 55px;
-      padding: 35px 25px;
-      background: #F1E5E5;
-      border: 1px solid #D8B6BC;
-      border-radius: 25px;
-      scroll-margin-top: 100px;
+    #nouveautes {
+      background: #FFFDFC;
     }
 
-    .nouveautes-heading {
-      justify-content: center;
-      margin-bottom: 10px;
-    }
-
-    .nouveautes-heading h3 {
-      color: #B9828F;
-      font-size: 32px;
-    }
-
-    .nouveautes-intro {
+    .nouveautes-empty {
       text-align: center;
-      color: #777;
-      margin-bottom: 30px;
+      padding: 25px;
+      color: #6B6264;
     }
-
-    .nouveautes-message {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 35px 20px;
-      background: white;
-      border: 1px solid #D8B6BC;
-      border-radius: 18px;
-      color: #8F5967;
-      font-weight: bold;
-    }
-
 
     /* =========================
-       POURQUOI
+       CRÉATIONS
     ========================= */
 
-    .why-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 25px;
+    #creations {
+      background: #F7F2F0;
     }
 
-    .why-card {
-      background: white;
-      padding: 30px;
-      border-radius: 20px;
+    .creations-box {
+      max-width: 850px;
+      margin: auto;
       text-align: center;
-      border: 1px solid #eee;
+      background: white;
+      border-radius: 20px;
+      padding: 35px 25px;
+      border: 1px solid #E6DADB;
     }
 
-    .why-card .icon {
-      font-size: 40px;
-      margin-bottom: 12px;
+    .creations-box p {
+      margin-bottom: 18px;
     }
 
+    /* =========================
+       CATÉGORIES
+       Cachées de l'accueil
+    ========================= */
+
+    .category-section {
+      padding: 40px 0;
+      scroll-margin-top: 110px;
+    }
+
+    .category-section h2 {
+      text-align: center;
+      color: #8F5967;
+      margin-bottom: 15px;
+    }
+
+    .category-placeholder {
+      max-width: 700px;
+      margin: auto;
+      text-align: center;
+      background: white;
+      border: 1px solid #E6DADB;
+      border-radius: 16px;
+      padding: 25px;
+    }
 
     /* =========================
        CONTACT
@@ -525,17 +457,34 @@
       margin: auto;
       text-align: center;
       background: white;
-      padding: 40px 25px;
-      border-radius: 25px;
-      border: 1px solid #eee;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+      border: 1px solid #E6DADB;
+      border-radius: 20px;
+      padding: 30px;
     }
 
-    .contact-box p {
-      margin-bottom: 20px;
-      color: #666;
+    .contact-box a {
+      color: #8F5967;
+      font-weight: bold;
+      text-decoration: none;
     }
 
+    .contact-box a:hover {
+      text-decoration: underline;
+    }
+
+    .instagram-button {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 12px 20px;
+      background: #B9828F;
+      color: white !important;
+      border-radius: 12px;
+      text-decoration: none !important;
+    }
+
+    .instagram-button:hover {
+      background: #8F5967;
+    }
 
     /* =========================
        FOOTER
@@ -545,71 +494,34 @@
       background: #667052;
       color: white;
       text-align: center;
-      padding: 35px 20px;
+      padding: 30px 20px;
+      margin-top: 30px;
     }
 
-    footer p {
-      margin: 5px 0;
+    footer a {
+      color: white;
     }
-
 
     /* =========================
        MOBILE
     ========================= */
 
-    @media (max-width: 900px) {
+    @media (max-width: 850px) {
 
-      .categories {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      .product-grid {
+      .products-grid {
         grid-template-columns: repeat(2, 1fr);
       }
-
-      .why-grid {
-        grid-template-columns: 1fr;
-      }
-
-    }
-
-
-    @media (max-width: 650px) {
 
       .header-inner {
         flex-direction: column;
       }
 
       nav {
-        width: 100%;
-      }
-
-      nav a {
-        font-size: 13px;
-      }
-
-      .hero {
-        min-height: 520px;
-      }
-
-      .categories {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .product-grid {
-        grid-template-columns: 1fr;
-      }
-
-      section {
-        padding: 60px 15px;
-      }
-
-      .category-heading h3 {
-        font-size: 23px;
+        flex-wrap: wrap;
+        justify-content: center;
       }
 
     }
-
 
     @media (max-width: 600px) {
 
@@ -631,1352 +543,806 @@
         margin-top: 8px;
       }
 
+      .products-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 20px;
+      }
+
+      .hero-logo {
+        max-height: 300px;
+      }
+
     }
 
   </style>
-
-
-  <!-- =========================
-       SUPABASE
-  ========================= -->
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 </head>
 
 
 <body>
 
+  <!-- =========================
+       HEADER
+  ========================= -->
 
-<!-- =========================
-     HEADER
-========================= -->
+  <header>
 
-<header>
+    <div class="container header-inner">
 
-  <div class="header-inner">
+      <a href="#accueil">
+        <img
+          src="logo_20260925_125513_0000.svg"
+          alt="Sublime'K"
+          class="logo-header"
+        >
+      </a>
 
-    <a href="#accueil">
+      <nav>
+
+        <a href="#accueil">
+          Accueil
+        </a>
+
+        <a href="#boutique-produits">
+          Boutique
+        </a>
+
+        <a href="#nouveautes">
+          ✨ Nouveautés
+        </a>
+
+        <a href="#creations">
+          🎨 Créations
+        </a>
+
+        <a href="#contact">
+          💌 Contact
+        </a>
+
+      </nav>
+
+    </div>
+
+  </header>
+
+
+  <main id="accueil">
+
+
+    <!-- =========================
+         HERO
+    ========================= -->
+
+    <section class="hero">
 
       <img
         src="logo_20260925_125513_0000.svg"
         alt="Sublime'K"
-        class="logo-header"
+        class="hero-logo"
       >
 
-    </a>
+      <h1>
+        Vos idées prennent vie ✨
+      </h1>
 
+      <p>
+        Créations personnalisées, originales et réalisées avec passion.
+        Chaque création est pensée pour être unique, comme vous.
+      </p>
 
-    <nav>
+      <div class="hero-buttons">
 
-      <a href="#accueil">
-        Accueil
-      </a>
+        <a
+          href="#boutique-produits"
+          class="btn-primary"
+        >
+          🛍️ Découvrir la boutique
+        </a>
 
-      <a href="#boutique">
-        🛍️ Boutique
-      </a>
+        <a
+          href="#contact"
+          class="btn-secondary"
+        >
+          💌 Me contacter
+        </a>
 
-      <a href="#creations">
-        ✨ Créations
-      </a>
+      </div>
 
-      <a href="#pourquoi">
-        💖 Pourquoi nous ?
-      </a>
-
-      <a href="#contact">
-        📩 Contact
-      </a>
-
-    </nav>
-
-  </div>
-
-</header>
-
-
-<!-- =========================
-     ACCUEIL
-========================= -->
-
-<section
-  class="hero"
-  id="accueil"
->
-
-  <div class="hero-content">
-
-    <div>
-      ✨ Créations personnalisées ✨
-    </div>
-
-
-    <img
-      src="logo_20260925_125513_0000.svg"
-      alt="Sublime'K — Créations personnalisées"
-      class="hero-logo"
-    >
-
-
-    <h1>
-      Parce que chaque création mérite d'être unique.
-    </h1>
-
-
-    <p>
-      Des créations personnalisées imaginées avec soin,
-      pour offrir, décorer, célébrer ou simplement se faire plaisir.
-    </p>
-
-
-    <div class="buttons">
-
-      <a
-        href="#boutique"
-        class="btn btn-primary"
-      >
-        🛍️ Découvrir la boutique
-      </a>
-
-
-      <a
-        href="#contact"
-        class="btn btn-secondary"
-      >
-        ✉️ Me contacter
-      </a>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =========================
-     BOUTIQUE
-========================= -->
-
-<section id="boutique">
-
-  <div class="container">
-
-
-    <h2 class="section-title">
-      🛍️ La boutique Sublime'K
-    </h2>
-
-
-    <p class="section-intro">
-      Découvrez nos différentes catégories de créations personnalisées.
-      De nouveaux articles viendront régulièrement enrichir la boutique.
-    </p>
-
-
-    <div class="preorder-banner">
-
-      <strong>
-        ✨ Boutique principalement sur pré-commande ✨
-      </strong>
-
-      Les créations sont réalisées à la demande.
-      Certains articles peuvent toutefois être disponibles immédiatement en stock.
-
-    </div>
+    </section>
 
 
     <!-- =========================
          MENU BOUTIQUE
     ========================= -->
 
-    <div class="boutique-menu">
+    <section>
 
+      <div class="container">
 
-      <a
-        href="#boutique-produits"
-        class="boutique-menu-button"
-      >
-        ✨ Voir tout
-      </a>
-
-
-      <details class="boutique-categories">
-
-        <summary class="boutique-menu-button">
-          🗂️ Catégories
-        </summary>
-
-
-        <div class="categories-dropdown">
+        <div class="boutique-menu">
 
           <a
-            href="#cuisine"
-            class="category-link"
+            href="#boutique-produits"
+            class="boutique-menu-button"
           >
-            🍳 Cuisine & Maison
+            🛍️ Voir la boutique
           </a>
 
 
-          <a
-            href="#bebe"
-            class="category-link"
-          >
-            👶 Bébé & Enfants
-          </a>
+          <details class="boutique-categories">
 
+            <summary class="boutique-menu-button">
+              📂 Catégories ▾
+            </summary>
 
-          <a
-            href="#jeux"
-            class="category-link"
-          >
-            🎲 Jeux
-          </a>
+            <div class="categories-dropdown">
 
+              <a href="#cuisine" class="category-link">
+                🍳 Cuisine & Maison
+              </a>
 
-          <a
-            href="#bureau"
-            class="category-link"
-          >
-            📚 Bureau & Études
-          </a>
+              <a href="#bebe" class="category-link">
+                👶 Bébé & Enfants
+              </a>
 
+              <a href="#jeux" class="category-link">
+                🎲 Jeux
+              </a>
 
-          <a
-            href="#animaux"
-            class="category-link"
-          >
-            🐾 Animaux
-          </a>
+              <a href="#bureau" class="category-link">
+                📚 Bureau & Études
+              </a>
 
+              <a href="#animaux" class="category-link">
+                🐾 Animaux
+              </a>
 
-          <a
-            href="#beaute"
-            class="category-link"
-          >
-            💆 Beauté & Bien-être
-          </a>
+              <a href="#beaute" class="category-link">
+                💆 Beauté & Bien-être
+              </a>
 
+              <a href="#bijoux" class="category-link">
+                💎 Bijoux
+              </a>
 
-          <a
-            href="#bijoux"
-            class="category-link"
-          >
-            💎 Bijoux
-          </a>
+              <a href="#accessoires" class="category-link">
+                🔑 Porte-clés & Accessoires
+              </a>
 
+              <a href="#voiture" class="category-link">
+                🚗 Voiture
+              </a>
 
-          <a
-            href="#accessoires"
-            class="category-link"
-          >
-            🔑 Porte-clés & Accessoires
-          </a>
+              <a href="#coffrets" class="category-link">
+                🎁 Les Coffrets
+              </a>
 
+              <a href="#evenements" class="category-link">
+                🎉 Événements
+              </a>
 
-          <a
-            href="#voiture"
-            class="category-link"
-          >
-            🚗 Voiture
-          </a>
+              <a href="#autres" class="category-link">
+                ✨ Autres
+              </a>
 
+            </div>
 
-          <a
-            href="#coffrets"
-            class="category-link"
-          >
-            🎁 Les Coffrets
-          </a>
-
-
-          <a
-            href="#evenements"
-            class="category-link"
-          >
-            🎉 Événements
-          </a>
-
-
-          <a
-            href="#autres"
-            class="category-link"
-          >
-            ✨ Autres
-          </a>
+          </details>
 
         </div>
 
-      </details>
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         BANDEAU PRÉCOMMANDE
+    ========================= -->
+
+    <div class="container">
+
+      <div class="preorder-banner">
+
+        🧡
+        <strong>
+          La majorité de nos créations sont disponibles sur précommande.
+        </strong>
+
+        <br>
+
+        Cela nous permet de créer votre personnalisation spécialement pour vous
+        et d'éviter le gaspillage.
+
+      </div>
 
     </div>
 
 
     <!-- =========================
-         PRODUITS
+         POINT D'ANCRAGE BOUTIQUE
     ========================= -->
 
     <div id="boutique-produits"></div>
 
 
     <!-- =========================
-         CUISINE & MAISON
+         NOUVEAUTÉS
     ========================= -->
 
-    <div
+    <section
+      class="section"
+      id="nouveautes"
+    >
+
+      <div class="container">
+
+        <h2 class="section-title">
+          ✨ Nouveautés
+        </h2>
+
+        <p class="section-intro">
+          Découvrez les dernières créations ajoutées à la boutique.
+        </p>
+
+        <div
+          id="nouveautes-produits"
+          class="products-grid"
+        >
+
+          <div class="nouveautes-empty">
+            Chargement des nouveautés…
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         CRÉATIONS
+    ========================= -->
+
+    <section
+      class="section"
+      id="creations"
+    >
+
+      <div class="container">
+
+        <h2 class="section-title">
+          🎨 Créations personnalisées
+        </h2>
+
+        <div class="creations-box">
+
+          <p>
+            Une idée particulière ?
+            Un prénom, une photo, une couleur ou un thème ?
+          </p>
+
+          <p>
+            Chez Sublime'K, nous pouvons créer des personnalisations
+            spécialement pour vous.
+          </p>
+
+          <a
+            href="#contact"
+            class="btn-primary"
+          >
+            💌 Demander une création
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         CATÉGORIES
+         Accessibles uniquement
+         depuis le menu Boutique
+    ========================= -->
+
+
+    <section
       class="category-section"
       id="cuisine"
     >
 
-      <div class="category-heading">
+      <div class="container">
 
-        <span>
-          🍳
-        </span>
+        <h2>🍳 Cuisine & Maison</h2>
 
-        <h3>
-          Cuisine & Maison
-        </h3>
-
-      </div>
-
-
-      <div class="product-grid">
-
-        <div class="product-card">
-
-          <div class="product-image">
-            📷<br>
-            Emplacement produit 01
-          </div>
-
-
-          <div class="product-content">
-
-            <h4>
-              Produit à venir
-            </h4>
-
-
-            <p class="product-description">
-              Description du produit à personnaliser.
-            </p>
-
-
-            <span class="status status-preorder">
-              🟠 Pré-commande
-            </span>
-
-
-            <div class="price">
-              Prix à définir
-            </div>
-
-
-            <a
-              href="#contact"
-              class="product-button"
-            >
-              Demander ce produit
-            </a>
-
-          </div>
-
+        <div class="category-placeholder">
+          Les créations de cette catégorie seront bientôt disponibles.
         </div>
 
       </div>
 
-    </div>
+    </section>
 
 
-    <!-- =========================
-         BEBE & ENFANTS
-    ========================= -->
-
-    <div
+    <section
       class="category-section"
       id="bebe"
     >
 
-      <div class="category-heading">
+      <div class="container">
 
-        <span>
-          👶
-        </span>
+        <h2>👶 Bébé & Enfants</h2>
 
-        <h3>
-          Bébé & Enfants
-        </h3>
-
-      </div>
-
-
-      <div class="product-grid">
-
-        <div class="product-card">
-
-          <div class="product-image">
-            📷<br>
-            Emplacement produit 01
-          </div>
-
-
-          <div class="product-content">
-
-            <h4>
-              Produit à venir
-            </h4>
-
-
-            <p class="product-description">
-              Description du produit à personnaliser.
-            </p>
-
-
-            <span class="status status-preorder">
-              🟠 Pré-commande
-            </span>
-
-
-            <div class="price">
-              Prix à définir
-            </div>
-
-
-            <a
-              href="#contact"
-              class="product-button"
-            >
-              Demander ce produit
-            </a>
-
-          </div>
-
+        <div class="category-placeholder">
+          Les créations de cette catégorie seront bientôt disponibles.
         </div>
 
       </div>
 
-    </div>
+    </section>
 
 
-    <!-- =========================
-         JEUX
-    ========================= -->
-
-    <div
+    <section
       class="category-section"
       id="jeux"
     >
 
-      <div class="category-heading">
+      <div class="container">
 
-        <span>
-          🎲
-        </span>
+        <h2>🎲 Jeux</h2>
 
-        <h3>
-          Jeux
-        </h3>
-
-      </div>
-
-
-      <div class="product-grid">
-
-        <div class="product-card">
-
-          <div class="product-image">
-            📷<br>
-            Emplacement produit 01
-          </div>
-
-
-          <div class="product-content">
-
-            <h4>
-              Produit à venir
-            </h4>
-
-
-            <p class="product-description">
-              Description du produit à personnaliser.
-            </p>
-
-
-            <span class="status status-preorder">
-              🟠 Pré-commande
-            </span>
-
-
-            <div class="price">
-              Prix à définir
-            </div>
-
-
-            <a
-              href="#contact"
-              class="product-button"
-            >
-              Demander ce produit
-            </a>
-
-          </div>
-
+        <div class="category-placeholder">
+          Les créations de cette catégorie seront bientôt disponibles.
         </div>
 
       </div>
 
-    </div>
+    </section>
 
 
-    <!-- =========================
-         BUREAU
-    ========================= -->
-
-    <div
+    <section
       class="category-section"
       id="bureau"
     >
 
-      <div class="category-heading">
+      <div class="container">
 
-        <span>
-          📚
-        </span>
+        <h2>📚 Bureau & Études</h2>
 
-        <h3>
-          Bureau & Études
-        </h3>
-
-      </div>
-
-
-      <div class="product-grid">
-
-        <div class="product-card">
-
-          <div class="product-image">
-            📷<br>
-            Emplacement produit 01
-          </div>
-
-
-          <div class="product-content">
-
-            <h4>
-              Produit à venir
-            </h4>
-
-
-            <p class="product-description">
-              Description du produit à personnaliser.
-            </p>
-
-
-            <span class="status status-preorder">
-              🟠 Pré-commande
-            </span>
-
-
-            <div class="price">
-              Prix à définir
-            </div>
-
-
-            <a
-              href="#contact"
-              class="product-button"
-            >
-              Demander ce produit
-            </a>
-
-          </div>
-
+        <div class="category-placeholder">
+          Les créations de cette catégorie seront bientôt disponibles.
         </div>
 
       </div>
 
-    </div>
+    </section>
 
 
-    <!-- =========================
-         ANIMAUX
-    ========================= -->
-
-    <div
+    <section
       class="category-section"
       id="animaux"
     >
 
-      <div class="category-heading">
+      <div class="container">
 
-        <span>
-          🐾
-        </span>
+        <h2>🐾 Animaux</h2>
 
-        <h3>
-          Animaux
-        </h3>
-
-      </div>
-
-
-      <div class="product-grid">
-
-        <div class="product-card">
-
-          <div class="product-image">
-            📷<br>
-            Emplacement produit 01
-          </div>
-
-
-          <div class="product-content">
-
-            <h4>
-              Produit à venir
-            </h4>
-
-
-            <p class="product-description">
-              Description du produit à personnaliser.
-            </p>
-
-
-            <span class="status status-preorder">
-              🟠 Pré-commande
-            </span>
-
-
-            <div class="price">
-              Prix à définir
-            </div>
-
-
-            <a
-              href="#contact"
-              class="product-button"
-            >
-              Demander ce produit
-            </a>
-
-          </div>
-
+        <div class="category-placeholder">
+          Les créations de cette catégorie seront bientôt disponibles.
         </div>
 
       </div>
 
-    </div>
+    </section>
 
 
-    <!-- =========================
-         BEAUTE
-    ========================= -->
-
-    <div
+    <section
       class="category-section"
       id="beaute"
     >
 
-      <div class="category-heading">
+      <div class="container">
 
-        <span>
-          💆
-        </span>
+        <h2>💆 Beauté & Bien-être</h2>
 
-        <h3>
-          Beauté & Bien-être
-        </h3>
-
-      </div>
-
-
-      <div class="product-grid">
-
-        <div class="product-card">
-
-          <div class="product-image">
-            📷<br>
-            Emplacement produit 01
-          </div>
-
-
-          <div class="product-content">
-
-            <h4>
-              Produit à venir
-            </h4>
-
-
-            <p class="product-description">
-              Description du produit à personnaliser.
-            </p>
-
-
-            <span class="status status-preorder">
-              🟠 Pré-commande
-            </span>
-
-
-            <div class="price">
-              Prix à définir
-            </div>
-
-
-            <a
-              href="#contact"
-              class="product-button"
-            >
-              Demander ce produit
-            </a>
-
-          </div>
-
+        <div class="category-placeholder">
+          Les créations de cette catégorie seront bientôt disponibles.
         </div>
 
       </div>
 
-    </div>
+    </section>
 
 
-    <!-- =========================
-         BIJOUX
-    ========================= -->
-
-    <div
+    <section
       class="category-section"
       id="bijoux"
     >
 
-      <div class="category-heading">
+      <div class="container">
 
-        <span>
-          💎
-        </span>
+        <h2>💎 Bijoux</h2>
 
-        <h3>
-          Bijoux
-        </h3>
-
-      </div>
-
-
-      <div class="product-grid">
-
-        <div class="product-card">
-
-          <div class="product-image">
-            📷<br>
-            Emplacement produit 01
-          </div>
-
-
-          <div class="product-content">
-
-            <h4>
-              Produit à venir
-            </h4>
-
-
-            <p class="product-description">
-              Description du produit à personnaliser.
-            </p>
-
-
-            <span class="status status-preorder">
-              🟠 Pré-commande
-            </span>
-
-
-            <div class="price">
-              Prix à définir
-            </div>
-
-
-            <a
-              href="#contact"
-              class="product-button"
-            >
-              Demander ce produit
-            </a>
-
-          </div>
-
+        <div class="category-placeholder">
+          Les créations de cette catégorie seront bientôt disponibles.
         </div>
 
       </div>
 
-    </div>
+    </section>
 
 
-    <!-- =========================
-         ACCESSOIRES
-    ========================= -->
-
-    <div
+    <section
       class="category-section"
       id="accessoires"
     >
 
-      <div class="category-heading">
+      <div class="container">
 
-        <span>
-          🔑
-        </span>
+        <h2>🔑 Porte-clés & Accessoires</h2>
 
-        <h3>
-          Porte-clés & Accessoires
-        </h3>
-
-      </div>
-
-
-      <div class="product-grid">
-
-        <div class="product-card">
-
-          <div class="product-image">
-            📷<br>
-            Emplacement produit 01
-          </div>
-
-
-          <div class="product-content">
-
-            <h4>
-              Produit à venir
-            </h4>
-
-
-            <p class="product-description">
-              Description du produit à personnaliser.
-            </p>
-
-
-            <span class="status status-preorder">
-              🟠 Pré-commande
-            </span>
-
-
-            <div class="price">
-              Prix à définir
-            </div>
-
-
-            <a
-              href="#contact"
-              class="product-button"
-            >
-              Demander ce produit
-            </a>
-
-          </div>
-
+        <div class="category-placeholder">
+          Les créations de cette catégorie seront bientôt disponibles.
         </div>
 
       </div>
 
-    </div>
+    </section>
 
 
-    <!-- =========================
-         VOITURE
-    ========================= -->
-
-    <div
+    <section
       class="category-section"
       id="voiture"
     >
 
-      <div class="category-heading">
+      <div class="container">
 
-        <span>
-          🚗
-        </span>
+        <h2>🚗 Voiture</h2>
 
-        <h3>
-          Voiture
-        </h3>
+        <div class="category-placeholder">
+          Les créations de cette catégorie seront bientôt disponibles.
+        </div>
 
       </div>
 
-
-      <div class="product-grid">
-
-        <div class="product-card">
-
-          <div class="product-image">
-            📷<br>
-            Emplacement produit 01
-          </div>
+    </section>
 
 
-          <div class="product-content">
+    <section
+      class="category-section"
+      id="coffrets"
+    >
 
-            <h4>
-              Produit à venir
-            </h4>
+      <div class="container">
 
+        <h2>🎁 Les Coffrets</h2>
 
-            <p class="product-description">
-              Description du produit à personnaliser.
-            </p>
+        <div class="category-placeholder">
+          Les créations de cette catégorie seront bientôt disponibles.
+        </div>
 
+      </div>
 
-            <span class="status status-preorder">
-              🟠 Pré-commande
-            </span>
-
-
-            <div class="price">
-              Prix à définir
-            </div>
+    </section>
 
 
-            <a
-              href="#contact"
-              class="product-button"
-            >
-              Demander ce produit
+    <section
+      class="category-section"
+      id="evenements"
+    >
+
+      <div class="container">
+
+        <h2>🎉 Événements</h2>
+
+        <div class="category-placeholder">
+          Les créations de cette catégorie seront bientôt disponibles.
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section
+      class="category-section"
+      id="autres"
+    >
+
+      <div class="container">
+
+        <h2>✨ Autres</h2>
+
+        <div class="category-placeholder">
+          Les créations de cette catégorie seront bientôt disponibles.
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         CONTACT
+    ========================= -->
+
+    <section
+      class="section"
+      id="contact"
+    >
+
+      <div class="container">
+
+        <h2 class="section-title">
+          💌 Contact
+        </h2>
+
+        <div class="contact-box">
+
+          <p>
+            Une question, une demande de personnalisation
+            ou une idée de création ?
+          </p>
+
+          <p>
+            Écrivez-moi à :
+          </p>
+
+          <p>
+            <a href="mailto:Sublime-k.by.jessica@proton.me">
+              Sublime-k.by.jessica@proton.me
             </a>
+          </p>
 
-          </div>
+          <a
+            href="https://www.instagram.com/sublimek_by_jessica/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="instagram-button"
+          >
+            📸 Retrouvez Sublime'K sur Instagram
+          </a>
 
         </div>
 
       </div>
 
-    </div>
+    </section>
 
 
-    <!-- =========================
-         COFFRETS
-    ========================= -->
-
-    <div id="coffrets"></div>
+  </main>
 
 
-    <!-- =========================
-         NOUVEAUTÉS
-    ========================= -->
+  <!-- =========================
+       FOOTER
+  ========================= -->
 
-    <div class="nouveautes-section">
+  <footer>
 
-      <div class="category-heading nouveautes-heading">
+    <p>
+      © 2026 Sublime'K — Créations personnalisées
+    </p>
 
-        <span>
-          ✨
+    <p>
+      Fait avec ❤️
+    </p>
+
+  </footer>
+
+
+  <!-- =========================
+       SUPABASE + NOUVEAUTÉS
+  ========================= -->
+
+  <script>
+
+    const SUPABASE_URL =
+      "https://buputlhpgaenlwwbrwwf.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_mjzAOL92PWfc3v59ZxdSUw_69xCaInq";
+
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    function afficherStatut(statut) {
+
+      if (statut === "stock") {
+
+        return `
+          <span class="status-stock">
+            🟢 En stock
+          </span>
+        `;
+
+      }
+
+      if (statut === "indisponible") {
+
+        return `
+          <span class="status-unavailable">
+            ⚫ Indisponible
+          </span>
+        `;
+
+      }
+
+      return `
+        <span class="status-preorder">
+          🟠 Pré-commande
         </span>
-
-        <h3>
-          Nouveautés
-        </h3>
-
-      </div>
-
-
-      <p class="nouveautes-intro">
-        Découvrez les dernières créations personnalisées de Sublime'K.
-      </p>
-
-
-      <div
-        id="nouveautes-produits"
-        class="product-grid"
-      >
-
-        <div class="nouveautes-message">
-          ✨ Les nouveautés arrivent bientôt...
-        </div>
-
-      </div>
-
-    </div>
-
-
-  </div>
-
-</section>
-
-
-<!-- =========================
-     CREATIONS
-========================= -->
-
-<section id="creations">
-
-  <div class="container">
-
-    <h2 class="section-title">
-      ✨ Des créations vraiment personnalisées
-    </h2>
-
-
-    <p class="section-intro">
-      Chez Sublime'K, chaque création peut être imaginée selon
-      vos envies : prénom, illustration, message, couleurs,
-      thème ou idée complètement originale.
-    </p>
-
-
-    <div class="buttons">
-
-      <a
-        href="#boutique"
-        class="btn btn-primary"
-      >
-        🛍️ Voir la boutique
-      </a>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =========================
-     POURQUOI
-========================= -->
-
-<section id="pourquoi">
-
-  <div class="container">
-
-    <h2 class="section-title">
-      💖 Pourquoi Sublime'K ?
-    </h2>
-
-
-    <p class="section-intro">
-      Des créations pensées pour être personnelles,
-      originales et adaptées à chaque envie.
-    </p>
-
-
-    <div class="why-grid">
-
-
-      <div class="why-card">
-
-        <div class="icon">
-          🎨
-        </div>
-
-        <h3>
-          Personnalisé
-        </h3>
-
-        <p>
-          Vos idées, vos couleurs, vos prénoms et vos envies.
-        </p>
-
-      </div>
-
-
-      <div class="why-card">
-
-        <div class="icon">
-          ✨
-        </div>
-
-        <h3>
-          Original
-        </h3>
-
-        <p>
-          Des créations qui sortent de l'ordinaire.
-        </p>
-
-      </div>
-
-
-      <div class="why-card">
-
-        <div class="icon">
-          💝
-        </div>
-
-        <h3>
-          Créé avec soin
-        </h3>
-
-        <p>
-          Chaque commande est préparée avec attention.
-        </p>
-
-      </div>
-
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =========================
-     CONTACT
-========================= -->
-
-<section id="contact">
-
-  <div class="container">
-
-    <div class="contact-box">
-
-      <h2 class="section-title">
-        📩 Une question ? Une idée ?
-      </h2>
-
-
-      <p>
-        Contactez Sublime'K pour discuter de votre projet
-        ou demander une personnalisation.
-      </p>
-
-
-      <div class="buttons">
-
-
-        <a
-          href="mailto:Sublime-k.by.jessica@proton.me"
-          class="btn btn-primary"
-        >
-          ✉️ Me contacter
-        </a>
-
-
-        <a
-          href="https://www.instagram.com/sublimek_by_jessica?stkn=MTRlcjk3cHRvNDZzaQ=="
-          class="btn btn-instagram"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          📸 Instagram
-        </a>
-
-
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =========================
-     FOOTER
-========================= -->
-
-<footer>
-
-  <p>
-    © 2026 Sublime'K — Créations personnalisées
-  </p>
-
-  <p>
-    ✨ Boutique sur pré-commande
-  </p>
-
-  <p>
-    Site en construction
-  </p>
-
-</footer>
-
-
-<!-- =========================
-     CHARGEMENT DES NOUVEAUTÉS
-========================= -->
-
-<script>
-
-  const SUPABASE_URL =
-    "https://buputlhpgaenlwwbrwwf.supabase.co";
-
-  const SUPABASE_KEY =
-    "sb_publishable_mjzAOL92PWfc3v59ZxdSUw_69xCaInq";
-
-
-  const client =
-    window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
-
-
-  async function chargerNouveautes() {
-
-    const zone =
-      document.getElementById(
-        "nouveautes-produits"
-      );
-
-
-    if (!zone) {
-      return;
-    }
-
-
-    const { data, error } =
-      await client
-        .from("products")
-        .select("*")
-        .eq("visible", true)
-        .eq("nouveaute", true)
-        .order("created_at", {
-          ascending: false
-        })
-        .limit(12);
-
-
-    if (error) {
-
-      console.error(
-        "Erreur chargement nouveautés :",
-        error
-      );
-
-      return;
-    }
-
-
-    if (!data || data.length === 0) {
-
-      zone.innerHTML = `
-        <div class="nouveautes-message">
-          ✨ Les nouveautés arrivent bientôt...
-        </div>
       `;
 
-      return;
     }
 
 
-    zone.innerHTML = "";
+    async function chargerNouveautes() {
+
+      const zone =
+        document.getElementById("nouveautes-produits");
 
 
-    data.forEach(produit => {
+      try {
+
+        const { data, error } =
+          await supabaseClient
+
+            .from("products")
+
+            .select(`
+              id,
+              nom,
+              description,
+              prix,
+              statut,
+              image_url,
+              visible,
+              nouveaute
+            `)
+
+            .eq("visible", true)
+
+            .eq("nouveaute", true)
+
+            .order("ordre", {
+              ascending: true
+            })
+
+            .limit(12);
 
 
-      let statutTexte =
-        "🟠 Pré-commande";
+        if (error) {
+          throw error;
+        }
 
 
-      let statutClasse =
-        "status-preorder";
+        if (!data || data.length === 0) {
 
-
-      if (
-        produit.statut === "stock"
-      ) {
-
-        statutTexte =
-          "🟢 En stock";
-
-        statutClasse =
-          "status-stock";
-
-      }
-
-
-      if (
-        produit.statut === "indisponible"
-      ) {
-
-        statutTexte =
-          "⚫ Indisponible";
-
-        statutClasse =
-          "status-unavailable";
-
-      }
-
-
-      const image =
-        produit.image_url
-          ? `
-            <img
-              src="${produit.image_url}"
-              alt="${produit.nom}"
-              style="
-                width:100%;
-                height:100%;
-                object-fit:cover;
-              "
-            >
-          `
-          : `
-            📷<br>
-            Photo à venir
+          zone.innerHTML = `
+            <div class="nouveautes-empty">
+              <p>
+                ✨ De nouvelles créations arrivent bientôt !
+              </p>
+            </div>
           `;
 
-
-      const prix =
-        produit.prix !== null &&
-        produit.prix !== undefined
-          ? `${Number(produit.prix)
-              .toFixed(2)
-              .replace(".", ",")} €`
-          : "Prix sur demande";
+          return;
+        }
 
 
-      zone.innerHTML += `
-
-        <div class="product-card">
-
-          <div class="product-image">
-            ${image}
-          </div>
+        zone.innerHTML = "";
 
 
-          <div class="product-content">
+        data.forEach(produit => {
 
-            <h4>
-              ${produit.nom}
-            </h4>
+          const prix =
+            produit.prix !== null &&
+            produit.prix !== undefined
+              ? Number(produit.prix).toFixed(2).replace(".", ",") + " €"
+              : "";
 
 
-            <p class="product-description">
-              ${produit.description || ""}
+          const image =
+            produit.image_url
+              ? `
+                <img
+                  src="${produit.image_url}"
+                  alt="${produit.nom}"
+                  loading="lazy"
+                >
+              `
+              : `
+                <span>
+                  ✨
+                </span>
+              `;
+
+
+          zone.innerHTML += `
+
+            <article class="product-card">
+
+              <div class="product-image">
+                ${image}
+              </div>
+
+              <div class="product-content">
+
+                ${afficherStatut(produit.statut)}
+
+                <h3>
+                  ${produit.nom}
+                </h3>
+
+                <p>
+                  ${produit.description || ""}
+                </p>
+
+                ${
+                  prix
+                    ? `
+                      <div class="product-price">
+                        ${prix}
+                      </div>
+                    `
+                    : ""
+                }
+
+                <a
+                  href="#contact"
+                  class="product-button"
+                >
+                  💌 Demander
+                </a>
+
+              </div>
+
+            </article>
+
+          `;
+
+        });
+
+
+      } catch (error) {
+
+        console.error(
+          "Erreur lors du chargement des nouveautés :",
+          error
+        );
+
+
+        zone.innerHTML = `
+
+          <div class="nouveautes-empty">
+
+            <p>
+              Les nouveautés ne peuvent pas être chargées pour le moment.
             </p>
 
-
-            <span
-              class="status ${statutClasse}"
-            >
-              ${statutTexte}
-            </span>
-
-
-            <div class="price">
-              ${prix}
-            </div>
-
-
-            <a
-              href="#contact"
-              class="product-button"
-            >
-              Demander ce produit
-            </a>
-
           </div>
 
-        </div>
+        `;
 
-      `;
+      }
 
-    });
-
-  }
+    }
 
 
-  chargerNouveautes();
+    chargerNouveautes();
 
-</script>
+  </script>
 
 
 </body>
