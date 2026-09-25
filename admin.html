@@ -3775,6 +3775,7 @@ async function afficherCommande(
     ↩️ Remboursé
   </option>
 </select>
+
     </div>
 
 
@@ -3932,7 +3933,50 @@ document
     "change",
     chargerCommandes
   );
+document
+  .getElementById("listeCommandes")
+  .addEventListener(
+    "change",
+    async function(event) {
 
+      if (
+        !event.target.classList.contains(
+          "statut-paiement"
+        )
+      ) {
+        return;
+      }
+
+      const orderId =
+        event.target.dataset.orderId;
+
+      const nouveauStatut =
+        event.target.value;
+
+      const { error } =
+        await client
+          .from("orders")
+          .update({
+            payment_status: nouveauStatut
+          })
+          .eq("id", orderId);
+
+      if (error) {
+
+        console.error(error);
+
+        alert(
+          "❌ Impossible de modifier le paiement : " +
+          error.message
+        );
+
+        return;
+      }
+
+      await chargerCommandes();
+
+    }
+  );
 /* =====================================================
    BIBLIOTHÈQUE
 ===================================================== */
