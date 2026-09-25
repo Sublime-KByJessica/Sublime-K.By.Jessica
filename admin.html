@@ -4,38 +4,790 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Sublime'K — Test connexion</title>
+  <title>Sublime'K — Administration</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --rose: #B9828F;
+      --rose-fonce: #8F5967;
+      --rose-poudre: #D8B6BC;
+      --sauge: #8F9B78;
+      --sauge-fonce: #667052;
+      --fond: #FAF7F5;
+      --blanc: #FFFFFF;
+      --texte: #4A4143;
+      --bordure: #E5D8D8;
+      --vert-clair: #E1E9D8;
+      --orange-clair: #F1DDE1;
+      --gris-clair: #EEE9E8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--fond);
+      color: var(--texte);
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    /* =========================
+       CONNEXION
+    ========================= */
+
+    #pageConnexion {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .connexion-card {
+      width: 100%;
+      max-width: 430px;
+      background: var(--blanc);
+      border: 1px solid var(--bordure);
+      border-radius: 24px;
+      padding: 35px;
+      box-shadow: 0 10px 35px rgba(74, 65, 67, 0.08);
+      text-align: center;
+    }
+
+    .connexion-card h1 {
+      color: var(--rose-fonce);
+      margin-bottom: 8px;
+    }
+
+    .connexion-card p {
+      margin-top: 0;
+      color: #766B6D;
+    }
+
+    .connexion-card input {
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      border: 1px solid var(--bordure);
+      border-radius: 12px;
+      outline: none;
+    }
+
+    .connexion-card input:focus {
+      border-color: var(--rose);
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 13px 18px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    .btn-principal {
+      width: 100%;
+      margin-top: 18px;
+      background: var(--rose);
+      color: white;
+    }
+
+    .btn-principal:hover {
+      background: var(--rose-fonce);
+    }
+
+    #resultatConnexion {
+      margin-top: 15px;
+      min-height: 20px;
+      font-weight: bold;
+    }
+
+    /* =========================
+       ADMIN
+    ========================= */
+
+    #pageAdmin {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .admin-header {
+      background: white;
+      border-bottom: 1px solid var(--rose-poudre);
+      padding: 16px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo-admin {
+      color: var(--rose-fonce);
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    .logo-admin span {
+      color: var(--sauge-fonce);
+    }
+
+    .btn-deconnexion {
+      background: var(--gris-clair);
+      color: var(--texte);
+    }
+
+    .btn-deconnexion:hover {
+      background: var(--rose-poudre);
+    }
+
+    .admin-container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 25px 18px 50px;
+    }
+
+    .bienvenue {
+      margin-bottom: 25px;
+    }
+
+    .bienvenue h1 {
+      color: var(--rose-fonce);
+      margin-bottom: 5px;
+    }
+
+    .bienvenue p {
+      margin-top: 0;
+      color: #766B6D;
+    }
+
+    /* =========================
+       STATISTIQUES
+    ========================= */
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid var(--bordure);
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .stat-card .nombre {
+      font-size: 32px;
+      font-weight: bold;
+      color: var(--rose-fonce);
+    }
+
+    .stat-card .label {
+      color: #766B6D;
+      margin-top: 5px;
+    }
+
+    /* =========================
+       FORMULAIRE
+    ========================= */
+
+    .bloc {
+      background: white;
+      border: 1px solid var(--bordure);
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 25px;
+    }
+
+    .bloc h2 {
+      margin-top: 0;
+      color: var(--sauge-fonce);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .champ {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .champ.full {
+      grid-column: 1 / -1;
+    }
+
+    .champ label {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .champ input,
+    .champ select,
+    .champ textarea {
+      width: 100%;
+      border: 1px solid var(--bordure);
+      border-radius: 10px;
+      padding: 12px;
+      background: white;
+      color: var(--texte);
+      outline: none;
+    }
+
+    .champ input:focus,
+    .champ select:focus,
+    .champ textarea:focus {
+      border-color: var(--rose);
+    }
+
+    .champ textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .checkbox-ligne {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    .checkbox-ligne input {
+      width: 18px;
+      height: 18px;
+    }
+
+    .actions-formulaire {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn-enregistrer {
+      background: var(--rose);
+      color: white;
+    }
+
+    .btn-enregistrer:hover {
+      background: var(--rose-fonce);
+    }
+
+    .btn-annuler {
+      background: var(--gris-clair);
+      color: var(--texte);
+      display: none;
+    }
+
+    /* =========================
+       PRODUITS
+    ========================= */
+
+    .barre-produits {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .barre-produits h2 {
+      margin: 0;
+      color: var(--sauge-fonce);
+    }
+
+    .message-produits {
+      color: #766B6D;
+    }
+
+    .produits-liste {
+      display: grid;
+      gap: 12px;
+    }
+
+    .produit {
+      border: 1px solid var(--bordure);
+      border-radius: 16px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .produit-info h3 {
+      margin: 0 0 7px;
+      color: var(--rose-fonce);
+    }
+
+    .produit-info p {
+      margin: 4px 0;
+      color: #766B6D;
+      font-size: 14px;
+    }
+
+    .produit-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn-modifier {
+      background: var(--vert-clair);
+      color: var(--sauge-fonce);
+    }
+
+    .btn-supprimer {
+      background: #F3E0E0;
+      color: #8B4F4F;
+    }
+
+    .statut {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .statut-stock {
+      background: var(--vert-clair);
+      color: var(--sauge-fonce);
+    }
+
+    .statut-precommande {
+      background: var(--orange-clair);
+      color: var(--rose-fonce);
+    }
+
+    .statut-indisponible {
+      background: var(--gris-clair);
+      color: #6B6264;
+    }
+
+    .visible {
+      color: var(--sauge-fonce);
+    }
+
+    .cache {
+      color: #8B777A;
+    }
+
+    .message {
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 15px;
+      display: none;
+    }
+
+    .message-succes {
+      background: var(--vert-clair);
+      color: var(--sauge-fonce);
+    }
+
+    .message-erreur {
+      background: #F3E0E0;
+      color: #8B4F4F;
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 700px) {
+
+      .admin-header {
+        padding: 14px;
+      }
+
+      .admin-container {
+        padding: 20px 12px 40px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .champ.full {
+        grid-column: auto;
+      }
+
+      .produit {
+        grid-template-columns: 1fr;
+      }
+
+      .produit-actions {
+        justify-content: flex-start;
+      }
+
+      .connexion-card {
+        padding: 25px 20px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-  <h1>Sublime'K — Test connexion</h1>
+  <!-- =========================
+       PAGE DE CONNEXION
+  ========================= -->
 
-  <input
-    type="email"
-    id="email"
-    value="Sublime-k.by.jessica@proton.me"
-  >
+  <section id="pageConnexion">
 
-  <br><br>
+    <div class="connexion-card">
 
-  <input
-    type="password"
-    id="password"
-    placeholder="Mot de passe"
-  >
+      <h1>Sublime'K</h1>
 
-  <br><br>
+      <p>Administration de la boutique</p>
 
-  <button id="connexion">
-    Se connecter
-  </button>
+      <input
+        type="email"
+        id="email"
+        value="Sublime-k.by.jessica@proton.me"
+        placeholder="Adresse e-mail"
+      >
 
-  <p id="resultat"></p>
+      <input
+        type="password"
+        id="password"
+        placeholder="Mot de passe"
+      >
+
+      <button
+        class="btn btn-principal"
+        id="boutonConnexion"
+      >
+        Se connecter
+      </button>
+
+      <div id="resultatConnexion"></div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       ESPACE ADMIN
+  ========================= -->
+
+  <section id="pageAdmin">
+
+    <header class="admin-header">
+
+      <div class="logo-admin">
+        Sublime'<span>K</span>
+      </div>
+
+      <button
+        class="btn btn-deconnexion"
+        id="boutonDeconnexion"
+      >
+        🚪 Déconnexion
+      </button>
+
+    </header>
+
+
+    <main class="admin-container">
+
+      <div class="bienvenue">
+
+        <h1>Tableau de bord</h1>
+
+        <p>
+          Bienvenue dans ton espace administrateur 💕
+        </p>
+
+      </div>
+
+
+      <!-- STATISTIQUES -->
+
+      <div class="stats">
+
+        <div class="stat-card">
+          <div
+            class="nombre"
+            id="nombreProduits"
+          >
+            0
+          </div>
+
+          <div class="label">
+            Produits
+          </div>
+        </div>
+
+
+        <div class="stat-card">
+          <div
+            class="nombre"
+            id="nombreVisibles"
+          >
+            0
+          </div>
+
+          <div class="label">
+            Produits visibles
+          </div>
+        </div>
+
+
+        <div class="stat-card">
+          <div
+            class="nombre"
+            id="nombrePrecommandes"
+          >
+            0
+          </div>
+
+          <div class="label">
+            Pré-commandes
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- AJOUT / MODIFICATION -->
+
+      <div class="bloc">
+
+        <h2 id="titreFormulaire">
+          ➕ Ajouter un produit
+        </h2>
+
+        <form id="formProduit">
+
+          <div class="form-grid">
+
+            <div class="champ">
+
+              <label for="nom">
+                Nom du produit *
+              </label>
+
+              <input
+                type="text"
+                id="nom"
+                required
+                placeholder="Ex : Mug personnalisé"
+              >
+
+            </div>
+
+
+            <div class="champ">
+
+              <label for="prix">
+                Prix (€)
+              </label>
+
+              <input
+                type="number"
+                id="prix"
+                step="0.01"
+                min="0"
+                placeholder="Ex : 12.90"
+              >
+
+            </div>
+
+
+            <div class="champ">
+
+              <label for="categorie">
+                Catégorie *
+              </label>
+
+              <select
+                id="categorie"
+                required
+              >
+
+                <option value="">
+                  Choisir une catégorie
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="champ">
+
+              <label for="statut">
+                Statut
+              </label>
+
+              <select id="statut">
+
+                <option value="stock">
+                  🟢 En stock
+                </option>
+
+                <option
+                  value="precommande"
+                  selected
+                >
+                  🟠 Pré-commande
+                </option>
+
+                <option value="indisponible">
+                  ⚫ Indisponible
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="champ full">
+
+              <label for="description">
+                Description
+              </label>
+
+              <textarea
+                id="description"
+                placeholder="Décris ton produit..."
+              ></textarea>
+
+            </div>
+
+
+            <div class="champ full">
+
+              <label for="image_url">
+                URL de l'image
+              </label>
+
+              <input
+                type="url"
+                id="image_url"
+                placeholder="https://..."
+              >
+
+            </div>
+
+          </div>
+
+
+          <div class="checkbox-ligne">
+
+            <input
+              type="checkbox"
+              id="visible"
+              checked
+            >
+
+            <label for="visible">
+              Produit visible sur la boutique
+            </label>
+
+          </div>
+
+
+          <div class="actions-formulaire">
+
+            <button
+              type="submit"
+              class="btn btn-enregistrer"
+              id="boutonEnregistrer"
+            >
+              💾 Enregistrer le produit
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-annuler"
+              id="boutonAnnuler"
+            >
+              Annuler la modification
+            </button>
+
+          </div>
+
+
+          <div
+            id="messageFormulaire"
+            class="message"
+          ></div>
+
+        </form>
+
+      </div>
+
+
+      <!-- LISTE PRODUITS -->
+
+      <div class="bloc">
+
+        <div class="barre-produits">
+
+          <h2>🛍️ Mes produits</h2>
+
+          <button
+            class="btn btn-modifier"
+            id="boutonActualiser"
+          >
+            🔄 Actualiser
+          </button>
+
+        </div>
+
+        <div
+          id="messageProduits"
+          class="message-produits"
+        >
+          Chargement des produits...
+        </div>
+
+        <div
+          id="listeProduits"
+          class="produits-liste"
+        ></div>
+
+      </div>
+
+    </main>
+
+  </section>
+
 
   <script>
+
+    /* =========================
+       SUPABASE
+    ========================= */
 
     const URL_SUPABASE =
       "https://buputlhpgaenlwwbrwwf.supabase.co";
@@ -48,46 +800,819 @@
         URL_SUPABASE,
         CLE_SUPABASE
       );
-    client.auth.getSession().then(({ data, error }) => {
-  console.log("SESSION :", data.session);
-  console.log("ERREUR SESSION :", error);
-});
+
+
+    /* =========================
+       VARIABLES
+    ========================= */
+
+    let produitEnModification = null;
+
+
+    /* =========================
+       ELEMENTS
+    ========================= */
+
+    const pageConnexion =
+      document.getElementById("pageConnexion");
+
+    const pageAdmin =
+      document.getElementById("pageAdmin");
+
+    const resultatConnexion =
+      document.getElementById("resultatConnexion");
+
+    const formulaire =
+      document.getElementById("formProduit");
+
+    const listeProduits =
+      document.getElementById("listeProduits");
+
+    const messageProduits =
+      document.getElementById("messageProduits");
+
+
+    /* =========================
+       CONNEXION
+    ========================= */
 
     document
-      .getElementById("connexion")
-      .addEventListener("click", async function() {
+      .getElementById("boutonConnexion")
+      .addEventListener(
+        "click",
+        connexion
+      );
 
-        const email =
-          document.getElementById("email").value;
 
-        const password =
-          document.getElementById("password").value;
+    async function connexion() {
 
-        const resultat =
-          document.getElementById("resultat");
+      const email =
+        document.getElementById("email").value.trim();
 
-        resultat.textContent =
-          "⏳ Connexion en cours...";
+      const password =
+        document.getElementById("password").value;
 
-        const { data, error } =
-          await client.auth.signInWithPassword({
-            email,
-            password
+      if (!email || !password) {
+
+        resultatConnexion.textContent =
+          "❌ Merci de remplir les deux champs.";
+
+        return;
+      }
+
+      resultatConnexion.textContent =
+        "⏳ Connexion en cours...";
+
+      const { data, error } =
+        await client.auth.signInWithPassword({
+          email,
+          password
+        });
+
+      if (error) {
+
+        resultatConnexion.textContent =
+          "❌ " + error.message;
+
+        return;
+      }
+
+      if (!data.session) {
+
+        resultatConnexion.textContent =
+          "❌ Impossible de créer la session.";
+
+        return;
+      }
+
+      resultatConnexion.textContent =
+        "";
+
+      afficherAdmin();
+
+    }
+
+
+    /* =========================
+       AFFICHER ADMIN
+    ========================= */
+
+    async function afficherAdmin() {
+
+      pageConnexion.style.display =
+        "none";
+
+      pageAdmin.style.display =
+        "block";
+
+      await chargerCategories();
+
+      await chargerProduits();
+
+    }
+
+
+    /* =========================
+       VERIFIER SESSION
+    ========================= */
+
+    async function verifierSession() {
+
+      const { data, error } =
+        await client.auth.getSession();
+
+      if (
+        !error &&
+        data.session
+      ) {
+
+        afficherAdmin();
+
+      }
+
+    }
+
+
+    /* =========================
+       DECONNEXION
+    ========================= */
+
+    document
+      .getElementById("boutonDeconnexion")
+      .addEventListener(
+        "click",
+        async function() {
+
+          await client.auth.signOut();
+
+          pageAdmin.style.display =
+            "none";
+
+          pageConnexion.style.display =
+            "flex";
+
+          document.getElementById("password").value =
+            "";
+
+        }
+      );
+
+
+    /* =========================
+       CATEGORIES
+    ========================= */
+
+    async function chargerCategories() {
+
+      const select =
+        document.getElementById("categorie");
+
+      const { data, error } =
+        await client
+          .from("categories")
+          .select("id, Nom, Emoji, Ordre")
+          .order("Ordre", {
+            ascending: true
           });
 
-        if (error) {
+      if (error) {
 
-          resultat.textContent =
-            "❌ " + error.message;
+        console.error(
+          "Erreur catégories :",
+          error
+        );
+
+        return;
+      }
+
+      select.innerHTML =
+        '<option value="">Choisir une catégorie</option>';
+
+      data.forEach(function(categorie) {
+
+        const option =
+          document.createElement("option");
+
+        option.value =
+          categorie.id;
+
+        option.textContent =
+          (categorie.Emoji || "") +
+          " " +
+          categorie.Nom;
+
+        select.appendChild(option);
+
+      });
+
+    }
+
+
+    /* =========================
+       CHARGER PRODUITS
+    ========================= */
+
+    async function chargerProduits() {
+
+      messageProduits.textContent =
+        "Chargement des produits...";
+
+      listeProduits.innerHTML =
+        "";
+
+      const { data, error } =
+        await client
+          .from("products")
+          .select(`
+            id,
+            nom,
+            description,
+            prix,
+            categorie_id,
+            statut,
+            image_url,
+            visible,
+            created_at,
+            ordre,
+            categories (
+              Nom,
+              Emoji
+            )
+          `)
+          .order("ordre", {
+            ascending: true
+          })
+          .order("created_at", {
+            ascending: false
+          });
+
+      if (error) {
+
+        console.error(
+          "Erreur produits :",
+          error
+        );
+
+        messageProduits.textContent =
+          "❌ Impossible de charger les produits : " +
+          error.message;
+
+        return;
+      }
+
+      mettreAJourStatistiques(data);
+
+      if (!data || data.length === 0) {
+
+        messageProduits.textContent =
+          "Aucun produit pour le moment. Ajoute ton premier produit ci-dessus 💕";
+
+        return;
+      }
+
+      messageProduits.textContent =
+        data.length +
+        " produit(s) enregistré(s).";
+
+      data.forEach(function(produit) {
+
+        afficherProduit(produit);
+
+      });
+
+    }
+
+
+    /* =========================
+       STATISTIQUES
+    ========================= */
+
+    function mettreAJourStatistiques(produits) {
+
+      document.getElementById(
+        "nombreProduits"
+      ).textContent =
+        produits.length;
+
+      document.getElementById(
+        "nombreVisibles"
+      ).textContent =
+        produits.filter(function(p) {
+          return p.visible === true;
+        }).length;
+
+      document.getElementById(
+        "nombrePrecommandes"
+      ).textContent =
+        produits.filter(function(p) {
+          return p.statut === "precommande";
+        }).length;
+
+    }
+
+
+    /* =========================
+       AFFICHER PRODUIT
+    ========================= */
+
+    function afficherProduit(produit) {
+
+      const element =
+        document.createElement("div");
+
+      element.className =
+        "produit";
+
+      let statutClasse =
+        "statut-indisponible";
+
+      let statutTexte =
+        "⚫ Indisponible";
+
+      if (produit.statut === "stock") {
+
+        statutClasse =
+          "statut-stock";
+
+        statutTexte =
+          "🟢 En stock";
+
+      } else if (
+        produit.statut === "precommande"
+      ) {
+
+        statutClasse =
+          "statut-precommande";
+
+        statutTexte =
+          "🟠 Pré-commande";
+
+      }
+
+      const categorie =
+        produit.categories
+          ? (
+              (produit.categories.Emoji || "") +
+              " " +
+              produit.categories.Nom
+            )
+          : "Sans catégorie";
+
+      const prix =
+        produit.prix !== null &&
+        produit.prix !== undefined
+          ? Number(produit.prix).toFixed(2) + " €"
+          : "Prix non défini";
+
+      const visibilite =
+        produit.visible
+          ? '<span class="visible">👁️ Visible</span>'
+          : '<span class="cache">🙈 Masqué</span>';
+
+      element.innerHTML = `
+
+        <div class="produit-info">
+
+          <h3>
+            ${echapperHTML(produit.nom)}
+          </h3>
+
+          <p>
+            ${categorie}
+          </p>
+
+          <p>
+            💰 ${prix}
+          </p>
+
+          <p>
+            <span class="statut ${statutClasse}">
+              ${statutTexte}
+            </span>
+            &nbsp;
+            ${visibilite}
+          </p>
+
+          ${
+            produit.description
+              ? `<p>${echapperHTML(produit.description)}</p>`
+              : ""
+          }
+
+        </div>
+
+
+        <div class="produit-actions">
+
+          <button
+            class="btn btn-modifier"
+            onclick="modifierProduit('${produit.id}')"
+          >
+            ✏️ Modifier
+          </button>
+
+          <button
+            class="btn btn-supprimer"
+            onclick="supprimerProduit('${produit.id}')"
+          >
+            🗑️ Supprimer
+          </button>
+
+        </div>
+
+      `;
+
+      listeProduits.appendChild(element);
+
+    }
+
+
+    /* =========================
+       AJOUT / MODIFICATION
+    ========================= */
+
+    formulaire.addEventListener(
+      "submit",
+      async function(event) {
+
+        event.preventDefault();
+
+        const nom =
+          document.getElementById("nom").value.trim();
+
+        const description =
+          document.getElementById("description").value.trim();
+
+        const prixValeur =
+          document.getElementById("prix").value;
+
+        const prix =
+          prixValeur === ""
+            ? null
+            : Number(prixValeur);
+
+        const categorie_id =
+          document.getElementById("categorie").value;
+
+        const statut =
+          document.getElementById("statut").value;
+
+        const image_url =
+          document.getElementById("image_url").value.trim();
+
+        const visible =
+          document.getElementById("visible").checked;
+
+        if (!nom) {
+
+          afficherMessageFormulaire(
+            "❌ Le nom du produit est obligatoire.",
+            true
+          );
+
+          return;
+        }
+
+        if (!categorie_id) {
+
+          afficherMessageFormulaire(
+            "❌ Choisis une catégorie.",
+            true
+          );
+
+          return;
+        }
+
+        const bouton =
+          document.getElementById("boutonEnregistrer");
+
+        bouton.disabled =
+          true;
+
+        bouton.textContent =
+          "⏳ Enregistrement...";
+
+
+        const produit = {
+
+          nom,
+          description,
+          prix,
+          categorie_id,
+          statut,
+          image_url: image_url || null,
+          visible
+
+        };
+
+
+        let erreur = null;
+
+
+        if (produitEnModification) {
+
+          const resultat =
+            await client
+              .from("products")
+              .update(produit)
+              .eq(
+                "id",
+                produitEnModification
+              );
+
+          erreur =
+            resultat.error;
 
         } else {
 
-          resultat.textContent =
-            "✅ Connexion réussie !";
+          const resultat =
+            await client
+              .from("products")
+              .insert([
+                produit
+              ]);
+
+          erreur =
+            resultat.error;
 
         }
 
-      });
+
+        bouton.disabled =
+          false;
+
+        bouton.textContent =
+          "💾 Enregistrer le produit";
+
+
+        if (erreur) {
+
+          console.error(erreur);
+
+          afficherMessageFormulaire(
+            "❌ " + erreur.message,
+            true
+          );
+
+          return;
+        }
+
+
+        afficherMessageFormulaire(
+          produitEnModification
+            ? "✅ Produit modifié !"
+            : "✅ Produit ajouté !",
+          false
+        );
+
+
+        reinitialiserFormulaire();
+
+        await chargerProduits();
+
+      }
+    );
+
+
+    /* =========================
+       MODIFIER
+    ========================= */
+
+    window.modifierProduit =
+      async function(id) {
+
+        const { data, error } =
+          await client
+            .from("products")
+            .select("*")
+            .eq("id", id)
+            .single();
+
+        if (error) {
+
+          alert(
+            "Impossible de récupérer le produit : " +
+            error.message
+          );
+
+          return;
+        }
+
+        produitEnModification =
+          id;
+
+        document.getElementById("nom").value =
+          data.nom || "";
+
+        document.getElementById("description").value =
+          data.description || "";
+
+        document.getElementById("prix").value =
+          data.prix ?? "";
+
+        document.getElementById("categorie").value =
+          data.categorie_id || "";
+
+        document.getElementById("statut").value =
+          data.statut || "precommande";
+
+        document.getElementById("image_url").value =
+          data.image_url || "";
+
+        document.getElementById("visible").checked =
+          data.visible !== false;
+
+
+        document.getElementById(
+          "titreFormulaire"
+        ).textContent =
+          "✏️ Modifier le produit";
+
+
+        document.getElementById(
+          "boutonEnregistrer"
+        ).textContent =
+          "💾 Enregistrer les modifications";
+
+
+        document.getElementById(
+          "boutonAnnuler"
+        ).style.display =
+          "inline-block";
+
+
+        document
+          .getElementById("formProduit")
+          .scrollIntoView({
+            behavior: "smooth"
+          });
+
+      };
+
+
+    /* =========================
+       SUPPRIMER
+    ========================= */
+
+    window.supprimerProduit =
+      async function(id) {
+
+        const confirmation =
+          confirm(
+            "⚠️ Es-tu sûre de vouloir supprimer ce produit ?"
+          );
+
+        if (!confirmation) {
+          return;
+        }
+
+
+        const { error } =
+          await client
+            .from("products")
+            .delete()
+            .eq("id", id);
+
+
+        if (error) {
+
+          alert(
+            "❌ Impossible de supprimer le produit : " +
+            error.message
+          );
+
+          return;
+        }
+
+
+        await chargerProduits();
+
+      };
+
+
+    /* =========================
+       ANNULER MODIFICATION
+    ========================= */
+
+    document
+      .getElementById("boutonAnnuler")
+      .addEventListener(
+        "click",
+        function() {
+
+          reinitialiserFormulaire();
+
+        }
+      );
+
+
+    function reinitialiserFormulaire() {
+
+      produitEnModification =
+        null;
+
+      formulaire.reset();
+
+      document.getElementById(
+        "statut"
+      ).value =
+        "precommande";
+
+      document.getElementById(
+        "visible"
+      ).checked =
+        true;
+
+      document.getElementById(
+        "titreFormulaire"
+      ).textContent =
+        "➕ Ajouter un produit";
+
+      document.getElementById(
+        "boutonEnregistrer"
+      ).textContent =
+        "💾 Enregistrer le produit";
+
+      document.getElementById(
+        "boutonAnnuler"
+      ).style.display =
+        "none";
+
+    }
+
+
+    /* =========================
+       MESSAGE FORMULAIRE
+    ========================= */
+
+    function afficherMessageFormulaire(
+      texte,
+      erreur
+    ) {
+
+      const element =
+        document.getElementById(
+          "messageFormulaire"
+        );
+
+      element.textContent =
+        texte;
+
+      element.className =
+        erreur
+          ? "message message-erreur"
+          : "message message-succes";
+
+      element.style.display =
+        "block";
+
+      setTimeout(function() {
+
+        element.style.display =
+          "none";
+
+      }, 4000);
+
+    }
+
+
+    /* =========================
+       ACTUALISER
+    ========================= */
+
+    document
+      .getElementById("boutonActualiser")
+      .addEventListener(
+        "click",
+        chargerProduits
+      );
+
+
+    /* =========================
+       PROTECTION HTML
+    ========================= */
+
+    function echapperHTML(texte) {
+
+      if (!texte) {
+        return "";
+      }
+
+      return String(texte)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    }
+
+
+    /* =========================
+       DEMARRAGE
+    ========================= */
+
+    verifierSession();
 
   </script>
 
