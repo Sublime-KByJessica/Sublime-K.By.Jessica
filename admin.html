@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -462,25 +463,7 @@
       background: var(--danger);
       color: var(--danger-texte);
     }
-<!-- =========================
-   INFORMATIONS LÉGALES
-========================= -->
-<div class="bloc">
-  <h2>⚖️ Informations légales</h2>
 
-  <div class="livraison-intro">
-    <p>
-      Gère ici les pages légales qui seront affichées sur le site.
-    </p>
-    <p>
-      Tu pourras modifier leur contenu directement depuis ton administration.
-    </p>
-  </div>
-
-  <div id="listePagesLegales">
-    <p>Chargement des pages légales...</p>
-  </div>
-</div>
     /* =========================
        LIVRAISON
     ========================= */
@@ -569,6 +552,42 @@
     .article-commande {
       padding: 7px 0;
       border-bottom: 1px solid #F0EAEA;
+    }
+
+    /* =========================
+       INFORMATIONS LÉGALES
+    ========================= */
+
+    .legal-page {
+      border: 1px solid var(--bordure);
+      border-radius: 16px;
+      padding: 18px;
+      margin-top: 12px;
+    }
+
+    .legal-page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .legal-page-titre {
+      color: var(--rose-fonce);
+      font-weight: bold;
+      font-size: 17px;
+    }
+
+    .legal-page-contenu {
+      margin-top: 15px;
+      padding: 15px;
+      background: var(--fond);
+      border-radius: 12px;
+      white-space: pre-wrap;
+      color: #766B6D;
+      font-size: 14px;
+      line-height: 1.5;
     }
 
     /* =========================
@@ -756,6 +775,10 @@
 
 <body>
 
+<!-- =====================================================
+     CONNEXION
+===================================================== -->
+
 <section id="pageConnexion">
 
   <div class="connexion-card">
@@ -790,6 +813,11 @@
 
 </section>
 
+
+<!-- =====================================================
+     ADMINISTRATION
+===================================================== -->
+
 <section id="pageAdmin">
 
   <header class="admin-header">
@@ -807,6 +835,7 @@
 
   </header>
 
+
   <main class="admin-container">
 
     <div class="bienvenue">
@@ -818,6 +847,11 @@
       </p>
 
     </div>
+
+
+    <!-- =================================================
+         STATISTIQUES
+    ================================================= -->
 
     <div class="stats">
 
@@ -842,6 +876,11 @@
       </div>
 
     </div>
+
+
+    <!-- =================================================
+         PRODUIT
+    ================================================= -->
 
     <div class="bloc">
 
@@ -868,6 +907,7 @@
 
           </div>
 
+
           <div class="champ">
 
             <label for="prix">
@@ -883,6 +923,7 @@
             >
 
           </div>
+
 
           <div class="champ">
 
@@ -902,6 +943,7 @@
             </select>
 
           </div>
+
 
           <div class="champ">
 
@@ -930,6 +972,7 @@
 
           </div>
 
+
           <div class="champ full">
 
             <label for="description">
@@ -942,6 +985,7 @@
             ></textarea>
 
           </div>
+
 
           <div class="champ full">
 
@@ -958,6 +1002,9 @@
           </div>
 
         </div>
+
+
+        <!-- STOCK -->
 
         <div
           class="stock-box"
@@ -1005,6 +1052,9 @@
           ></div>
 
         </div>
+
+
+        <!-- PRÉCOMMANDE -->
 
         <div
           class="precommande-box"
@@ -1056,6 +1106,7 @@
 
         </div>
 
+
         <div class="checkbox-ligne">
 
           <input
@@ -1070,6 +1121,7 @@
 
         </div>
 
+
         <div class="checkbox-ligne">
 
           <input
@@ -1083,6 +1135,9 @@
 
         </div>
 
+
+        <!-- PERSONNALISATION -->
+
         <div class="personnalisation-admin">
 
           <h3>
@@ -1092,6 +1147,7 @@
           <p class="personnalisation-aide">
             Active uniquement les options nécessaires à ce produit.
           </p>
+
 
           <div class="checkbox-ligne">
 
@@ -1106,6 +1162,7 @@
 
           </div>
 
+
           <div class="checkbox-ligne">
 
             <input
@@ -1118,6 +1175,7 @@
             </label>
 
           </div>
+
 
           <div class="checkbox-ligne">
 
@@ -1132,6 +1190,7 @@
 
           </div>
 
+
           <div class="checkbox-ligne">
 
             <input
@@ -1144,6 +1203,7 @@
             </label>
 
           </div>
+
 
           <div class="checkbox-ligne">
 
@@ -1159,6 +1219,7 @@
           </div>
 
         </div>
+
 
         <div class="actions-formulaire">
 
@@ -1180,6 +1241,7 @@
 
         </div>
 
+
         <div
           id="messageFormulaire"
           class="message"
@@ -1188,6 +1250,11 @@
       </form>
 
     </div>
+
+
+    <!-- =================================================
+         LISTE PRODUITS
+    ================================================= -->
 
     <div class="bloc">
 
@@ -1214,6 +1281,11 @@
 
     </div>
 
+
+    <!-- =================================================
+         LIVRAISON
+    ================================================= -->
+
     <div class="bloc">
 
       <h2>
@@ -1234,6 +1306,7 @@
 
       </div>
 
+
       <div class="checkbox-ligne">
 
         <input
@@ -1246,6 +1319,7 @@
         </label>
 
       </div>
+
 
       <div class="checkbox-ligne">
 
@@ -1260,9 +1334,11 @@
 
       </div>
 
+
       <h3>
         ➕ Ajouter un mode de livraison
       </h3>
+
 
       <div class="form-grid">
 
@@ -1280,6 +1356,7 @@
 
         </div>
 
+
         <div class="champ">
 
           <label for="livraisonPrix">
@@ -1296,6 +1373,7 @@
 
         </div>
 
+
         <div class="champ">
 
           <label for="livraisonDelaiMin">
@@ -1310,6 +1388,7 @@
           >
 
         </div>
+
 
         <div class="champ">
 
@@ -1326,6 +1405,7 @@
 
         </div>
 
+
         <div class="champ full">
 
           <label for="livraisonDescription">
@@ -1339,6 +1419,7 @@
           >
 
         </div>
+
 
         <div class="champ">
 
@@ -1358,6 +1439,7 @@
 
       </div>
 
+
       <div class="actions-formulaire">
 
         <button
@@ -1370,10 +1452,12 @@
 
       </div>
 
+
       <div
         id="messageLivraison"
         class="message"
       ></div>
+
 
       <h3>
         📋 Modes existants
@@ -1383,6 +1467,11 @@
 
     </div>
 
+
+    <!-- =================================================
+         COMMANDES
+    ================================================= -->
+
     <div class="bloc">
 
       <div class="barre-produits">
@@ -1390,15 +1479,8 @@
         <h2>
           📦 Commandes
         </h2>
-<div style="margin-bottom:20px;">
-  <label for="filtrePaiement"><strong>💳 Filtrer les paiements :</strong></label>
-  <select id="filtrePaiement">
-    <option value="tous">Tous</option>
-    <option value="en_attente">⏳ En attente</option>
-    <option value="paye">✅ Payé</option>
-    <option value="rembourse">↩️ Remboursé</option>
-  </select>
-</div>
+
+
         <button
           class="btn btn-modifier"
           id="boutonActualiserCommandes"
@@ -1408,6 +1490,36 @@
         </button>
 
       </div>
+
+
+      <div style="margin-bottom:20px;">
+
+        <label for="filtrePaiement">
+          <strong>💳 Filtrer les paiements :</strong>
+        </label>
+
+        <select id="filtrePaiement">
+
+          <option value="tous">
+            Tous
+          </option>
+
+          <option value="en_attente">
+            ⏳ En attente
+          </option>
+
+          <option value="paye">
+            ✅ Payé
+          </option>
+
+          <option value="rembourse">
+            ↩️ Remboursé
+          </option>
+
+        </select>
+
+      </div>
+
 
       <div id="listeCommandes">
 
@@ -1419,11 +1531,53 @@
 
     </div>
 
+
+    <!-- =================================================
+         INFORMATIONS LÉGALES
+    ================================================= -->
+
+    <div class="bloc">
+
+      <h2>
+        ⚖️ Informations légales
+      </h2>
+
+      <div class="livraison-intro">
+
+        <p>
+          Gère ici les pages légales qui seront affichées
+          sur le site.
+        </p>
+
+        <p>
+          Tu peux modifier leur contenu directement depuis
+          ton administration.
+        </p>
+
+      </div>
+
+
+      <div id="listePagesLegales">
+
+        <p>
+          Chargement des pages légales...
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <!-- =================================================
+         BIBLIOTHÈQUE
+    ================================================= -->
+
     <div class="bloc">
 
       <h2>
         🖼️ Bibliothèque de designs
       </h2>
+
 
       <div class="bibliotheque-intro">
 
@@ -1443,11 +1597,13 @@
 
       </div>
 
+
       <div class="bibliotheque-etape">
 
         <h3>
           📁 1. Catégories de designs
         </h3>
+
 
         <div class="form-grid">
 
@@ -1465,6 +1621,7 @@
 
           </div>
 
+
           <div class="champ">
 
             <label for="emojiCategorieBibliotheque">
@@ -1481,6 +1638,7 @@
 
         </div>
 
+
         <div class="bibliotheque-actions">
 
           <button
@@ -1493,6 +1651,7 @@
 
         </div>
 
+
         <div
           class="liste-bibliotheque"
           id="listeCategoriesBibliotheque"
@@ -1500,11 +1659,13 @@
 
       </div>
 
+
       <div class="bibliotheque-etape">
 
         <h3>
           📂 2. Sous-catégories
         </h3>
+
 
         <div class="champ">
 
@@ -1521,6 +1682,7 @@
           </select>
 
         </div>
+
 
         <div class="form-grid">
 
@@ -1540,6 +1702,7 @@
 
         </div>
 
+
         <div class="bibliotheque-actions">
 
           <button
@@ -1552,6 +1715,7 @@
 
         </div>
 
+
         <div
           class="liste-bibliotheque"
           id="listeSousCategoriesBibliotheque"
@@ -1559,11 +1723,13 @@
 
       </div>
 
+
       <div class="bibliotheque-etape">
 
         <h3>
           🎨 3. Designs
         </h3>
+
 
         <div class="champ">
 
@@ -1583,6 +1749,7 @@
 
         </div>
 
+
         <div class="champ">
 
           <label for="fichiersBibliotheque">
@@ -1598,6 +1765,7 @@
 
         </div>
 
+
         <div class="bibliotheque-actions">
 
           <button
@@ -1610,12 +1778,14 @@
 
         </div>
 
+
         <div
           class="designs-grille"
           id="listeDesignsBibliotheque"
         ></div>
 
       </div>
+
 
       <div
         id="messageBibliotheque"
@@ -1628,6 +1798,7 @@
 
 </section>
 
+
 <script>
 
 /* =====================================================
@@ -1639,7 +1810,6 @@ const URL_SUPABASE =
 
 const CLE_SUPABASE =
   "sb_publishable_mjzAOL92PWfc3v59ZxdSUw_69xCaInq";
-
 
 const client =
   window.supabase.createClient(
@@ -1655,10 +1825,8 @@ const client =
     }
   );
 
-
 const ADMIN_ID =
   "90d83d43-9288-446f-ae88-7b2a893e13c8";
-
 
 let produitEnModification = null;
 
@@ -1674,7 +1842,6 @@ async function verifierSession() {
     error
   } = await client.auth.getSession();
 
-
   if (error) {
 
     console.error(error);
@@ -1684,7 +1851,6 @@ async function verifierSession() {
     return;
 
   }
-
 
   if (
     data &&
@@ -1738,6 +1904,8 @@ async function afficherAdmin() {
 
   await chargerCommandes();
 
+  await chargerPagesLegales();
+
 }
 
 
@@ -1762,12 +1930,10 @@ document
           .getElementById("password")
           .value;
 
-
       const resultat =
         document.getElementById(
           "resultatConnexion"
         );
-
 
       resultat.textContent =
         "Connexion en cours...";
@@ -1808,10 +1974,8 @@ document
       resultat.textContent =
         "✅ Connexion réussie";
 
-
       await afficherAdmin();
-      
-await chargerPagesLegales();
+
     }
   );
 
@@ -1820,77 +1984,6 @@ await chargerPagesLegales();
    DÉCONNEXION
 ===================================================== */
 
-  async function modifierPageLegale(id) {
-
-  const {
-    data,
-    error
-  } = await client
-    .from("legal_pages")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-  if (error) {
-
-    console.error(error);
-
-    alert(
-      "❌ Impossible de charger cette page légale : " +
-      error.message
-    );
-
-    return;
-  }
-
-  const nouveauTitre =
-    prompt(
-      "Titre de la page :",
-      data.titre
-    );
-
-  if (nouveauTitre === null) {
-    return;
-  }
-
-  const nouveauContenu =
-    prompt(
-      "Contenu de la page :",
-      data.contenu || ""
-    );
-
-  if (nouveauContenu === null) {
-    return;
-  }
-
-  const {
-    error: erreurModification
-  } = await client
-    .from("legal_pages")
-    .update({
-      titre: nouveauTitre,
-      contenu: nouveauContenu,
-      updated_at: new Date().toISOString()
-    })
-    .eq("id", id);
-
-  if (erreurModification) {
-
-    console.error(erreurModification);
-
-    alert(
-      "❌ Impossible d'enregistrer : " +
-      erreurModification.message
-    );
-
-    return;
-  }
-
-  alert("✅ Page légale enregistrée !");
-
-  await chargerPagesLegales();
-}
-  
 document
   .getElementById("boutonDeconnexion")
   .addEventListener(
@@ -2124,11 +2217,6 @@ document
         stock_quantite:
           stock,
 
-        /*
-         * CORRECTION :
-         * La colonne Supabase est stock_suivi
-         * et non stock_gere.
-         */
         stock_suivi:
           statut === "stock",
 
@@ -2245,7 +2333,7 @@ document
 
 
 /* =====================================================
-   STATUT → AFFICHAGE STOCK / PRÉCOMMANDE
+   STATUT → STOCK / PRÉCOMMANDE
 ===================================================== */
 
 document
@@ -3649,92 +3737,314 @@ function afficherMessageLivraison(
 
 
 /* =====================================================
-   COMMANDES
+   INFORMATIONS LÉGALES
 ===================================================== */
+
 async function chargerPagesLegales() {
 
   const conteneur =
-    document.getElementById("listePagesLegales");
+    document.getElementById(
+      "listePagesLegales"
+    );
+
 
   if (!conteneur) {
+
     return;
+
   }
+
 
   conteneur.innerHTML =
     "<p>Chargement des pages légales...</p>";
 
+
   const {
     data,
     error
-  } = await client
-    .from("legal_pages")
-    .select("*")
-    .order("ordre", {
-      ascending: true
-    });
+  } =
+    await client
+      .from("legal_pages")
+      .select("*")
+      .order(
+        "ordre",
+        {
+          ascending: true
+        }
+      );
+
 
   if (error) {
 
     console.error(error);
 
     conteneur.innerHTML =
-      "<p class='message-erreur' style='display:block;'>" +
+      "<div class='message message-erreur' style='display:block;'>" +
       "❌ Impossible de charger les pages légales : " +
-      error.message +
-      "</p>";
+      echapperHTML(error.message) +
+      "</div>";
 
     return;
+
   }
 
-  if (!data || data.length === 0) {
+
+  if (
+    !data ||
+    data.length === 0
+  ) {
 
     conteneur.innerHTML =
       "<p>Aucune page légale n'est disponible.</p>";
 
     return;
+
   }
 
-  conteneur.innerHTML =
-    data.map(function(page) {
 
-      return `
-        <div class="ligne-bibliotheque">
-          <div class="ligne-bibliotheque-info">
-            ⚖️ ${page.titre}
-          </div>
+  conteneur.innerHTML = "";
 
-          <div class="ligne-bibliotheque-actions">
-            <button
-              class="btn btn-modifier"
-              type="button"
-              onclick="modifierPageLegale('${page.id}')"
-            >
-              ✏️ Modifier
-            </button>
-          </div>
-        </div>
-      `;
 
-    }).join("");
+  data.forEach(
+    afficherPageLegale
+  );
+
 }
+
+
+/* =====================================================
+   AFFICHER PAGE LÉGALE
+===================================================== */
+
+function afficherPageLegale(
+  page
+) {
+
+  const element =
+    document.createElement(
+      "div"
+    );
+
+
+  element.className =
+    "legal-page";
+
+
+  element.innerHTML = `
+
+    <div class="legal-page-header">
+
+      <div class="legal-page-titre">
+
+        ⚖️
+        ${echapperHTML(
+          page.titre
+        )}
+
+      </div>
+
+
+      <button
+        class="btn btn-modifier"
+        type="button"
+        onclick="modifierPageLegale('${page.id}')"
+      >
+        ✏️ Modifier
+      </button>
+
+    </div>
+
+
+    ${
+      page.contenu
+        ? `
+          <div class="legal-page-contenu">
+            ${echapperHTML(
+              page.contenu
+            )}
+          </div>
+        `
+        : `
+          <div class="legal-page-contenu">
+            Aucun contenu renseigné.
+          </div>
+        `
+    }
+
+  `;
+
+
+  document
+    .getElementById(
+      "listePagesLegales"
+    )
+    .appendChild(
+      element
+    );
+
+}
+
+
+/* =====================================================
+   MODIFIER PAGE LÉGALE
+===================================================== */
+
+window.modifierPageLegale =
+  async function(id) {
+
+    if (
+      !(await verifierAdmin())
+    ) {
+
+      return;
+
+    }
+
+
+    const {
+      data,
+      error
+    } =
+      await client
+        .from("legal_pages")
+        .select("*")
+        .eq(
+          "id",
+          id
+        )
+        .single();
+
+
+    if (error) {
+
+      console.error(error);
+
+      alert(
+        "❌ Impossible de charger cette page : " +
+        error.message
+      );
+
+      return;
+
+    }
+
+
+    const nouveauTitre =
+      prompt(
+        "Titre de la page :",
+        data.titre || ""
+      );
+
+
+    if (
+      nouveauTitre === null
+    ) {
+
+      return;
+
+    }
+
+
+    const nouveauContenu =
+      prompt(
+        "Contenu de la page :",
+        data.contenu || ""
+      );
+
+
+    if (
+      nouveauContenu === null
+    ) {
+
+      return;
+
+    }
+
+
+    const {
+      error: erreurModification
+    } =
+      await client
+        .from("legal_pages")
+        .update({
+
+          titre:
+            nouveauTitre.trim(),
+
+          contenu:
+            nouveauContenu.trim()
+
+        })
+        .eq(
+          "id",
+          id
+        );
+
+
+    if (erreurModification) {
+
+      console.error(
+        erreurModification
+      );
+
+      alert(
+        "❌ Impossible de modifier la page : " +
+        erreurModification.message
+      );
+
+      return;
+
+    }
+
+
+    alert(
+      "✅ Page légale modifiée !"
+    );
+
+
+    await chargerPagesLegales();
+
+  };
+
+
+/* =====================================================
+   COMMANDES
+===================================================== */
+
 async function chargerCommandes() {
 
   const filtrePaiement =
-    document.getElementById("filtrePaiement")?.value || "tous";
+    document.getElementById(
+      "filtrePaiement"
+    )?.value ||
+    "tous";
 
-  let requete = client
-    .from("orders")
-    .select("*");
 
-  if (filtrePaiement !== "tous") {
-    requete = requete.eq("payment_status", filtrePaiement);
+  let requete =
+    client
+      .from("orders")
+      .select("*");
+
+
+  if (
+    filtrePaiement !== "tous"
+  ) {
+
+    requete =
+      requete.eq(
+        "payment_status",
+        filtrePaiement
+      );
+
   }
+
 
   const {
     data,
     error
-  } = await requete
-    .order(
+  } =
+    await requete
+      .order(
         "created_at",
         {
           ascending: false
@@ -3896,6 +4206,7 @@ async function afficherCommande(
 
       </div>
 
+
       <span class="statut-commande">
 
         ${echapperHTML(
@@ -3905,31 +4216,34 @@ async function afficherCommande(
 
       </span>
 
-<select
-  class="statut-paiement"
-  data-order-id="${commande.id}"
->
-  <option
-    value="en_attente"
-    ${commande.payment_status === "en_attente" ? "selected" : ""}
-  >
-    ⏳ En attente
-  </option>
 
-  <option
-    value="paye"
-    ${commande.payment_status === "paye" ? "selected" : ""}
-  >
-    ✅ Payé
-  </option>
+      <select
+        class="statut-paiement"
+        data-order-id="${commande.id}"
+      >
 
-  <option
-    value="rembourse"
-    ${commande.payment_status === "rembourse" ? "selected" : ""}
-  >
-    ↩️ Remboursé
-  </option>
-</select>
+        <option
+          value="en_attente"
+          ${commande.payment_status === "en_attente" ? "selected" : ""}
+        >
+          ⏳ En attente
+        </option>
+
+        <option
+          value="paye"
+          ${commande.payment_status === "paye" ? "selected" : ""}
+        >
+          ✅ Payé
+        </option>
+
+        <option
+          value="rembourse"
+          ${commande.payment_status === "rembourse" ? "selected" : ""}
+        >
+          ↩️ Remboursé
+        </option>
+
+      </select>
 
     </div>
 
@@ -3948,15 +4262,18 @@ async function afficherCommande(
         </strong>
       </p>
 
+
       <p>
         📅 ${date}
       </p>
+
 
       <p>
         📧 ${echapperHTML(
           commande.client_email
         )}
       </p>
+
 
       <p>
         📞 ${echapperHTML(
@@ -3965,12 +4282,14 @@ async function afficherCommande(
         )}
       </p>
 
+
       <p>
         🚚 ${echapperHTML(
           commande.livraison_nom ||
           "Non renseignée"
         )}
       </p>
+
 
       <p>
         💶 Livraison :
@@ -3979,6 +4298,7 @@ async function afficherCommande(
         ).toFixed(2)} €
       </p>
 
+
       <p>
         🧾 Sous-total :
         ${Number(
@@ -3986,14 +4306,17 @@ async function afficherCommande(
         ).toFixed(2)} €
       </p>
 
+
       <p>
-        💰 <strong>
+        💰
+        <strong>
           Total :
           ${Number(
             commande.total || 0
           ).toFixed(2)} €
         </strong>
       </p>
+
 
       ${
         commande.numero_suivi
@@ -4082,14 +4405,22 @@ document
     "click",
     chargerCommandes
   );
+
+
 document
-  .getElementById("filtrePaiement")
+  .getElementById(
+    "filtrePaiement"
+  )
   .addEventListener(
     "change",
     chargerCommandes
   );
+
+
 document
-  .getElementById("listeCommandes")
+  .getElementById(
+    "listeCommandes"
+  )
   .addEventListener(
     "change",
     async function(event) {
@@ -4099,22 +4430,43 @@ document
           "statut-paiement"
         )
       ) {
+
         return;
+
       }
+
 
       const orderId =
         event.target.dataset.orderId;
 
+
       const nouveauStatut =
         event.target.value;
 
-      const { error } =
+
+      if (
+        !(await verifierAdmin())
+      ) {
+
+        return;
+
+      }
+
+
+      const {
+        error
+      } =
         await client
           .from("orders")
           .update({
-            payment_status: nouveauStatut
+            payment_status:
+              nouveauStatut
           })
-          .eq("id", orderId);
+          .eq(
+            "id",
+            orderId
+          );
+
 
       if (error) {
 
@@ -4126,12 +4478,16 @@ document
         );
 
         return;
+
       }
+
 
       await chargerCommandes();
 
     }
   );
+
+
 /* =====================================================
    BIBLIOTHÈQUE
 ===================================================== */
@@ -4249,6 +4605,7 @@ async function chargerCategoriesBibliotheque() {
           )}
 
         </div>
+
 
         <div class="ligne-bibliotheque-actions">
 
@@ -4560,6 +4917,7 @@ async function chargerSousCategoriesBibliotheque() {
 
         </div>
 
+
         <div class="ligne-bibliotheque-actions">
 
           <button
@@ -4847,6 +5205,7 @@ async function chargerDesignsBibliotheque() {
           )}"
         >
 
+
         <div class="design-card-info">
 
           <strong>
@@ -4854,6 +5213,7 @@ async function chargerDesignsBibliotheque() {
               design.nom
             )}
           </strong>
+
 
           <div class="design-card-actions">
 
@@ -4863,6 +5223,7 @@ async function chargerDesignsBibliotheque() {
             >
               ✏️
             </button>
+
 
             <button
               class="design-supprimer"
@@ -5361,3 +5722,4 @@ verifierSession();
 
 </body>
 </html>
+```
