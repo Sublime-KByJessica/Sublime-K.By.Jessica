@@ -532,6 +532,116 @@ footer {
 .section-title {
   color: #8F5967;
 } 
+  /* =========================
+   MENU BOUTIQUE
+   ========================= */
+
+.boutique-menu {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 15px;
+  margin: 30px auto;
+  flex-wrap: wrap;
+}
+
+.boutique-menu-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 170px;
+  padding: 13px 22px;
+  border-radius: 12px;
+  border: 2px solid #B9828F;
+  background: #B9828F;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.boutique-menu-button:hover {
+  background: #8F5967;
+  border-color: #8F5967;
+}
+
+
+/* MENU CATEGORIES */
+
+.boutique-categories {
+  position: relative;
+}
+
+.boutique-categories summary {
+  list-style: none;
+}
+
+.boutique-categories summary::-webkit-details-marker {
+  display: none;
+}
+
+.boutique-categories[open] summary {
+  background: #8F9B78;
+  border-color: #8F9B78;
+}
+
+
+/* LISTE DES CATEGORIES */
+
+.categories-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  background: #FFFFFF;
+  border: 1px solid #D8B6BC;
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: 0 10px 30px rgba(74, 65, 67, 0.15);
+  z-index: 20;
+}
+
+.category-link {
+  display: block;
+  padding: 11px 13px;
+  border-radius: 10px;
+  color: #4A4143;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.category-link:hover {
+  background: #F1E5E5;
+  color: #8F5967;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+  .boutique-menu {
+    flex-direction: column;
+    align-items: stretch;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .boutique-menu-button {
+    width: 100%;
+  }
+
+  .categories-dropdown {
+    position: static;
+    transform: none;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+}
 </style>
 </head>
 
@@ -631,72 +741,82 @@ footer {
     </div>
 
 
-    <!-- CATEGORIES -->
+    <!-- =========================
+     MENU BOUTIQUE
+========================= -->
 
-    <div class="categories">
+<div class="boutique-menu">
 
-      <a href="#cuisine" class="category-card">
-        <div class="category-icon">🍳</div>
-        <h3>Cuisine & Maison</h3>
+  <!-- VOIR TOUT -->
+
+  <a href="#boutique-produits" class="boutique-menu-button">
+    ✨ Voir tout
+  </a>
+
+
+  <!-- CATEGORIES -->
+
+  <details class="boutique-categories">
+
+    <summary class="boutique-menu-button">
+      🗂️ Catégories
+    </summary>
+
+    <div class="categories-dropdown">
+
+      <a href="#cuisine" class="category-link">
+        🍳 Cuisine & Maison
       </a>
 
-      <a href="#bebe" class="category-card">
-        <div class="category-icon">👶</div>
-        <h3>Bébé & Enfants</h3>
+      <a href="#bebe" class="category-link">
+        👶 Bébé & Enfants
       </a>
 
-      <a href="#jeux" class="category-card">
-        <div class="category-icon">🎲</div>
-        <h3>Jeux</h3>
+      <a href="#jeux" class="category-link">
+        🎲 Jeux
       </a>
 
-      <a href="#bureau" class="category-card">
-        <div class="category-icon">📚</div>
-        <h3>Bureau & Études</h3>
+      <a href="#bureau" class="category-link">
+        📚 Bureau & Études
       </a>
 
-      <a href="#animaux" class="category-card">
-        <div class="category-icon">🐾</div>
-        <h3>Animaux</h3>
+      <a href="#animaux" class="category-link">
+        🐾 Animaux
       </a>
 
-      <a href="#beaute" class="category-card">
-        <div class="category-icon">💆</div>
-        <h3>Beauté & Bien-être</h3>
+      <a href="#beaute" class="category-link">
+        💆 Beauté & Bien-être
       </a>
 
-      <a href="#bijoux" class="category-card">
-        <div class="category-icon">💎</div>
-        <h3>Bijoux</h3>
+      <a href="#bijoux" class="category-link">
+        💎 Bijoux
       </a>
 
-      <a href="#accessoires" class="category-card">
-        <div class="category-icon">🔑</div>
-        <h3>Porte-clés & Accessoires</h3>
+      <a href="#accessoires" class="category-link">
+        🔑 Porte-clés & Accessoires
       </a>
 
-      <a href="#voiture" class="category-card">
-        <div class="category-icon">🚗</div>
-        <h3>Voiture</h3>
+      <a href="#voiture" class="category-link">
+        🚗 Voiture
       </a>
 
-      <a href="#coffrets" class="category-card">
-        <div class="category-icon">🎁</div>
-        <h3>Les Coffrets</h3>
+      <a href="#coffrets" class="category-link">
+        🎁 Les Coffrets
       </a>
 
-      <a href="#evenements" class="category-card">
-        <div class="category-icon">🎉</div>
-        <h3>Événements</h3>
+      <a href="#evenements" class="category-link">
+        🎉 Événements
       </a>
 
-      <a href="#autres" class="category-card">
-        <div class="category-icon">✨</div>
-        <h3>Autres</h3>
+      <a href="#autres" class="category-link">
+        ✨ Autres
       </a>
 
     </div>
 
+  </details>
+
+</div>
 
     <!-- =========================
          PRODUITS
@@ -706,7 +826,9 @@ footer {
 
     <!-- CUISINE & MAISON -->
 
-    <div class="category-section" id="cuisine">
+    <div id="boutique-produits"></div>
+
+<div class="category-section" id="cuisine">
 
       <div class="category-heading">
         <span>🍳</span>
