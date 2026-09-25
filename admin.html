@@ -1,14 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
 
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Sublime'K — Administration</title>
 
@@ -58,118 +53,69 @@
     ========================= */
 
     #pageConnexion {
-
       min-height: 100vh;
-
       display: flex;
-
       justify-content: center;
-
       align-items: center;
-
       padding: 20px;
-
     }
 
     .connexion-card {
-
       width: 100%;
-
       max-width: 430px;
-
-      background: var(--blanc);
-
+      background: white;
       border: 1px solid var(--bordure);
-
       border-radius: 24px;
-
       padding: 35px;
-
-      box-shadow:
-        0 10px 35px rgba(74, 65, 67, 0.08);
-
+      box-shadow: 0 10px 35px rgba(74,65,67,0.08);
       text-align: center;
-
     }
 
     .connexion-card h1 {
-
       color: var(--rose-fonce);
-
       margin-bottom: 8px;
-
     }
 
     .connexion-card p {
-
-      margin-top: 0;
-
       color: #766B6D;
-
     }
 
     .connexion-card input {
-
       width: 100%;
-
       padding: 14px;
-
       margin-top: 12px;
-
       border: 1px solid var(--bordure);
-
       border-radius: 12px;
-
       outline: none;
-
     }
 
     .connexion-card input:focus {
-
       border-color: var(--rose);
-
     }
 
     .btn {
-
       border: none;
-
       border-radius: 12px;
-
       padding: 13px 18px;
-
       font-weight: bold;
-
       transition: 0.2s;
-
     }
 
     .btn-principal {
-
       width: 100%;
-
       margin-top: 18px;
-
       background: var(--rose);
-
       color: white;
-
     }
 
     .btn-principal:hover {
-
       background: var(--rose-fonce);
-
     }
 
     #resultatConnexion {
-
       margin-top: 15px;
-
       min-height: 20px;
-
       font-weight: bold;
-
     }
 
     /* =========================
@@ -177,144 +123,80 @@
     ========================= */
 
     #pageAdmin {
-
       display: none;
-
       min-height: 100vh;
-
     }
 
     .admin-header {
-
       background: white;
-
       border-bottom: 1px solid var(--rose-poudre);
-
       padding: 16px 22px;
-
       display: flex;
-
       align-items: center;
-
       justify-content: space-between;
-
-      gap: 15px;
-
       position: sticky;
-
       top: 0;
-
-      z-index: 100;
-
+      z-index: 50;
     }
 
     .logo-admin {
-
       color: var(--rose-fonce);
-
       font-size: 25px;
-
       font-weight: bold;
-
     }
 
     .logo-admin span {
-
       color: var(--sauge-fonce);
-
     }
 
     .btn-deconnexion {
-
       background: var(--gris-clair);
-
       color: var(--texte);
-
-    }
-
-    .btn-deconnexion:hover {
-
-      background: var(--rose-poudre);
-
     }
 
     .admin-container {
-
       max-width: 1200px;
-
       margin: auto;
-
-      padding: 25px 18px 50px;
-
-    }
-
-    .bienvenue {
-
-      margin-bottom: 25px;
-
+      padding: 25px 18px 60px;
     }
 
     .bienvenue h1 {
-
       color: var(--rose-fonce);
-
       margin-bottom: 5px;
-
     }
 
     .bienvenue p {
-
       margin-top: 0;
-
       color: #766B6D;
-
     }
 
     /* =========================
-       STATISTIQUES
+       STATS
     ========================= */
 
     .stats {
-
       display: grid;
-
-      grid-template-columns:
-        repeat(3, 1fr);
-
+      grid-template-columns: repeat(3, 1fr);
       gap: 15px;
-
-      margin-bottom: 25px;
-
+      margin: 25px 0;
     }
 
     .stat-card {
-
       background: white;
-
       border: 1px solid var(--bordure);
-
       border-radius: 18px;
-
       padding: 20px;
-
     }
 
     .stat-card .nombre {
-
       font-size: 32px;
-
       font-weight: bold;
-
       color: var(--rose-fonce);
-
     }
 
     .stat-card .label {
-
       color: #766B6D;
-
       margin-top: 5px;
-
     }
 
     /* =========================
@@ -322,39 +204,16 @@
     ========================= */
 
     .bloc {
-
       background: white;
-
       border: 1px solid var(--bordure);
-
       border-radius: 20px;
-
       padding: 22px;
-
       margin-bottom: 25px;
-
     }
 
     .bloc h2 {
-
       margin-top: 0;
-
       color: var(--sauge-fonce);
-
-    }
-
-    .bloc h3 {
-
-      color: var(--rose-fonce);
-
-    }
-
-    .aide {
-
-      color: #766B6D;
-
-      font-size: 14px;
-
     }
 
     /* =========================
@@ -362,130 +221,71 @@
     ========================= */
 
     .form-grid {
-
       display: grid;
-
-      grid-template-columns:
-        1fr 1fr;
-
+      grid-template-columns: 1fr 1fr;
       gap: 15px;
-
     }
 
     .champ {
-
       display: flex;
-
       flex-direction: column;
-
       gap: 7px;
-
     }
 
     .champ.full {
-
       grid-column: 1 / -1;
-
     }
 
     .champ label {
-
       font-weight: bold;
-
       font-size: 14px;
-
     }
 
     .champ input,
     .champ select,
     .champ textarea {
-
       width: 100%;
-
       border: 1px solid var(--bordure);
-
       border-radius: 10px;
-
       padding: 12px;
-
       background: white;
-
       color: var(--texte);
-
       outline: none;
-
-    }
-
-    .champ input:focus,
-    .champ select:focus,
-    .champ textarea:focus {
-
-      border-color: var(--rose);
-
     }
 
     .champ textarea {
-
       min-height: 90px;
-
       resize: vertical;
-
     }
 
     .checkbox-ligne {
-
       display: flex;
-
       align-items: center;
-
       gap: 8px;
-
       margin-top: 15px;
-
     }
 
     .checkbox-ligne input {
-
       width: 18px;
-
       height: 18px;
-
     }
 
     .actions-formulaire {
-
       display: flex;
-
       gap: 10px;
-
       margin-top: 20px;
-
       flex-wrap: wrap;
-
     }
 
     .btn-enregistrer {
-
       background: var(--rose);
-
       color: white;
-
-    }
-
-    .btn-enregistrer:hover {
-
-      background: var(--rose-fonce);
-
     }
 
     .btn-annuler {
-
       background: var(--gris-clair);
-
       color: var(--texte);
-
       display: none;
-
     }
 
     /* =========================
@@ -493,23 +293,21 @@
     ========================= */
 
     .personnalisation-admin {
-
       margin-top: 25px;
-
       padding: 18px;
-
-      background: #FAF7F5;
-
+      background: var(--fond);
       border: 1px solid var(--bordure);
-
       border-radius: 16px;
-
     }
 
     .personnalisation-admin h3 {
-
       margin-top: 0;
+      color: var(--rose-fonce);
+    }
 
+    .personnalisation-aide {
+      color: #766B6D;
+      font-size: 14px;
     }
 
     /* =========================
@@ -517,334 +315,196 @@
     ========================= */
 
     .barre-produits {
-
       display: flex;
-
       justify-content: space-between;
-
       align-items: center;
-
       gap: 15px;
-
       flex-wrap: wrap;
-
       margin-bottom: 15px;
-
-    }
-
-    .barre-produits h2 {
-
-      margin: 0;
-
-    }
-
-    .message-produits {
-
-      color: #766B6D;
-
-      margin-bottom: 15px;
-
     }
 
     .produits-liste {
-
       display: grid;
-
       gap: 12px;
-
     }
 
     .produit {
-
       border: 1px solid var(--bordure);
-
       border-radius: 16px;
-
       padding: 16px;
-
       display: grid;
-
-      grid-template-columns:
-        1fr auto;
-
+      grid-template-columns: 1fr auto;
       gap: 15px;
-
       align-items: center;
-
     }
 
     .produit-info h3 {
-
       margin: 0 0 7px;
-
       color: var(--rose-fonce);
-
     }
 
     .produit-info p {
-
       margin: 4px 0;
-
       color: #766B6D;
-
       font-size: 14px;
-
     }
 
     .produit-actions {
-
       display: flex;
-
       gap: 8px;
-
       flex-wrap: wrap;
-
-      justify-content: flex-end;
-
     }
 
     .btn-modifier {
-
       background: var(--vert-clair);
-
       color: var(--sauge-fonce);
-
-    }
-
-    .btn-modifier:hover {
-
-      background: #D4E0C9;
-
     }
 
     .btn-supprimer {
-
       background: #F3E0E0;
-
       color: #8B4F4F;
-
-    }
-
-    .btn-supprimer:hover {
-
-      background: #EBCFCF;
-
     }
 
     .statut {
-
       display: inline-block;
-
       padding: 5px 9px;
-
       border-radius: 20px;
-
       font-size: 12px;
-
       font-weight: bold;
-
     }
 
     .statut-stock {
-
       background: var(--vert-clair);
-
       color: var(--sauge-fonce);
-
     }
 
     .statut-precommande {
-
       background: var(--orange-clair);
-
       color: var(--rose-fonce);
-
     }
 
     .statut-indisponible {
-
       background: var(--gris-clair);
-
       color: #6B6264;
-
-    }
-
-    .visible {
-
-      color: var(--sauge-fonce);
-
-    }
-
-    .cache {
-
-      color: #8B777A;
-
     }
 
     /* =========================
-       BIBLIOTHÈQUE
+       BIBLIOTHÈQUE INDÉPENDANTE
     ========================= */
 
-    .bibliotheque-grid {
-
-      display: grid;
-
-      grid-template-columns:
-        1fr 1fr;
-
-      gap: 20px;
-
-    }
-
-    .bibliotheque-bloc {
-
-      background: #FAF7F5;
-
-      border: 1px solid var(--bordure);
-
+    .bibliotheque-intro {
+      background: #F8F4F2;
+      border: 1px solid var(--rose-poudre);
       border-radius: 16px;
-
-      padding: 18px;
-
+      padding: 16px;
+      margin-bottom: 20px;
     }
 
-    .bibliotheque-bloc h3 {
+    .bibliotheque-intro p {
+      margin: 5px 0;
+      color: #766B6D;
+    }
 
+    .bibliotheque-etape {
+      border: 1px solid var(--bordure);
+      border-radius: 16px;
+      padding: 18px;
+      margin-top: 18px;
+    }
+
+    .bibliotheque-etape h3 {
       margin-top: 0;
+      color: var(--rose-fonce);
+    }
 
+    .bibliotheque-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
     }
 
     .liste-bibliotheque {
-
       display: grid;
-
-      gap: 8px;
-
-      margin-top: 15px;
-
-    }
-
-    .element-bibliotheque {
-
-      background: white;
-
-      border: 1px solid var(--bordure);
-
-      border-radius: 12px;
-
-      padding: 10px;
-
-      display: flex;
-
-      justify-content: space-between;
-
-      align-items: center;
-
       gap: 10px;
-
+      margin-top: 15px;
     }
 
-    .element-bibliotheque-info {
-
-      min-width: 0;
-
+    .ligne-bibliotheque {
+      border: 1px solid var(--bordure);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: white;
     }
 
-    .element-bibliotheque-info strong {
-
-      display: block;
-
-      color: var(--texte);
-
+    .ligne-bibliotheque-info {
+      font-weight: bold;
     }
 
-    .element-bibliotheque-info small {
-
-      color: #766B6D;
-
+    .ligne-bibliotheque-actions {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
     }
 
     .designs-grille {
-
       display: grid;
-
-      grid-template-columns:
-        repeat(4, 1fr);
-
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
       gap: 12px;
-
-      margin-top: 20px;
-
+      margin-top: 18px;
     }
 
     .design-card {
-
       border: 1px solid var(--bordure);
-
-      border-radius: 12px;
-
+      border-radius: 14px;
       overflow: hidden;
-
       background: white;
-
     }
 
     .design-card img {
-
       width: 100%;
-
-      aspect-ratio: 1 / 1;
-
+      height: 130px;
       object-fit: cover;
-
       display: block;
-
       background: #F1E5E5;
-
     }
 
     .design-card-info {
-
-      padding: 8px;
-
+      padding: 10px;
     }
 
     .design-card-info strong {
-
       display: block;
-
-      font-size: 13px;
-
-      margin-bottom: 7px;
-
-    }
-
-    .design-card-info button {
-
-      width: 100%;
-
-      padding: 8px;
-
-      border: none;
-
-      border-radius: 8px;
-
-      background: #F3E0E0;
-
-      color: #8B4F4F;
-
-      font-weight: bold;
-
-    }
-
-    .vide {
-
-      color: #766B6D;
-
       font-size: 14px;
+      margin-bottom: 8px;
+    }
 
-      padding: 10px 0;
+    .design-card-actions {
+      display: flex;
+      gap: 5px;
+    }
 
+    .design-card-actions button {
+      flex: 1;
+      border: none;
+      border-radius: 8px;
+      padding: 7px;
+      font-size: 12px;
+    }
+
+    .design-modifier {
+      background: var(--vert-clair);
+      color: var(--sauge-fonce);
+    }
+
+    .design-supprimer {
+      background: #F3E0E0;
+      color: #8B4F4F;
     }
 
     /* =========================
@@ -852,103 +512,50 @@
     ========================= */
 
     .message {
-
       padding: 12px;
-
       border-radius: 10px;
-
       margin-top: 15px;
-
       display: none;
-
     }
 
     .message-succes {
-
       background: var(--vert-clair);
-
       color: var(--sauge-fonce);
-
     }
 
     .message-erreur {
-
       background: #F3E0E0;
-
       color: #8B4F4F;
-
     }
 
     /* =========================
        MOBILE
     ========================= */
 
-    @media (max-width: 800px) {
+    @media (max-width: 700px) {
 
       .stats {
-
         grid-template-columns: 1fr;
-
       }
 
       .form-grid {
-
         grid-template-columns: 1fr;
-
       }
 
       .champ.full {
-
         grid-column: auto;
-
-      }
-
-      .bibliotheque-grid {
-
-        grid-template-columns: 1fr;
-
-      }
-
-      .designs-grille {
-
-        grid-template-columns:
-          repeat(2, 1fr);
-
-      }
-
-    }
-
-    @media (max-width: 600px) {
-
-      .admin-header {
-
-        padding: 14px;
-
-      }
-
-      .admin-container {
-
-        padding:
-          20px 12px 40px;
-
       }
 
       .produit {
-
         grid-template-columns: 1fr;
-
       }
 
-      .produit-actions {
-
-        justify-content: flex-start;
-
+      .admin-container {
+        padding: 20px 12px 40px;
       }
 
-      .connexion-card {
-
-        padding: 25px 20px;
-
+      .designs-grille {
+        grid-template-columns: repeat(2, 1fr);
       }
 
     }
@@ -957,283 +564,319 @@
 
 </head>
 
-
 <body>
 
 
-  <!-- =========================
-       CONNEXION
-  ========================= -->
+<!-- =====================================================
+     CONNEXION
+===================================================== -->
 
-  <section id="pageConnexion">
+<section id="pageConnexion">
 
-    <div class="connexion-card">
+  <div class="connexion-card">
 
-      <h1>Sublime'K</h1>
+    <h1>Sublime'K</h1>
+
+    <p>Administration de la boutique</p>
+
+    <input
+      type="email"
+      id="email"
+      value="Sublime-k.by.jessica@proton.me"
+      placeholder="Adresse e-mail"
+    >
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Mot de passe"
+    >
+
+    <button
+      class="btn btn-principal"
+      id="boutonConnexion"
+    >
+      Se connecter
+    </button>
+
+    <div id="resultatConnexion"></div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     ADMIN
+===================================================== -->
+
+<section id="pageAdmin">
+
+  <header class="admin-header">
+
+    <div class="logo-admin">
+      Sublime'<span>K</span>
+    </div>
+
+    <button
+      class="btn btn-deconnexion"
+      id="boutonDeconnexion"
+    >
+      🚪 Déconnexion
+    </button>
+
+  </header>
+
+
+  <main class="admin-container">
+
+    <div class="bienvenue">
+
+      <h1>Tableau de bord</h1>
 
       <p>
-        Administration de la boutique
+        Bienvenue dans ton espace administrateur 💕
       </p>
-
-      <input
-        type="email"
-        id="email"
-        value="Sublime-k.by.jessica@proton.me"
-        placeholder="Adresse e-mail"
-      >
-
-      <input
-        type="password"
-        id="password"
-        placeholder="Mot de passe"
-      >
-
-      <button
-        class="btn btn-principal"
-        id="boutonConnexion"
-      >
-        Se connecter
-      </button>
-
-      <div id="resultatConnexion"></div>
 
     </div>
 
-  </section>
 
+    <!-- =================================================
+         STATISTIQUES
+    ================================================= -->
 
-  <!-- =========================
-       ADMIN
-  ========================= -->
+    <div class="stats">
 
-  <section id="pageAdmin">
+      <div class="stat-card">
 
-    <header class="admin-header">
-
-      <div class="logo-admin">
-        Sublime'<span>K</span>
-      </div>
-
-      <button
-        class="btn btn-deconnexion"
-        id="boutonDeconnexion"
-      >
-        🚪 Déconnexion
-      </button>
-
-    </header>
-
-
-    <main class="admin-container">
-
-
-      <div class="bienvenue">
-
-        <h1>
-          Tableau de bord
-        </h1>
-
-        <p>
-          Bienvenue dans ton espace administrateur 💕
-        </p>
-
-      </div>
-
-
-      <!-- =========================
-           STATISTIQUES
-      ========================= -->
-
-      <div class="stats">
-
-        <div class="stat-card">
-
-          <div
-            class="nombre"
-            id="nombreProduits"
-          >
-            0
-          </div>
-
-          <div class="label">
-            Produits
-          </div>
-
+        <div
+          class="nombre"
+          id="nombreProduits"
+        >
+          0
         </div>
 
-
-        <div class="stat-card">
-
-          <div
-            class="nombre"
-            id="nombreVisibles"
-          >
-            0
-          </div>
-
-          <div class="label">
-            Produits visibles
-          </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-          <div
-            class="nombre"
-            id="nombrePrecommandes"
-          >
-            0
-          </div>
-
-          <div class="label">
-            Pré-commandes
-          </div>
-
+        <div class="label">
+          Produits
         </div>
 
       </div>
 
 
-      <!-- =========================
-           PRODUITS
-      ========================= -->
+      <div class="stat-card">
 
-      <div class="bloc">
+        <div
+          class="nombre"
+          id="nombreVisibles"
+        >
+          0
+        </div>
 
-        <h2 id="titreFormulaire">
-          ➕ Ajouter un produit
-        </h2>
+        <div class="label">
+          Produits visibles
+        </div>
 
-        <form id="formProduit">
-
-
-          <div class="form-grid">
-
-
-            <div class="champ">
-
-              <label for="nom">
-                Nom du produit *
-              </label>
-
-              <input
-                type="text"
-                id="nom"
-                required
-                placeholder="Ex : Mug personnalisé"
-              >
-
-            </div>
+      </div>
 
 
-            <div class="champ">
+      <div class="stat-card">
 
-              <label for="prix">
-                Prix (€)
-              </label>
+        <div
+          class="nombre"
+          id="nombrePrecommandes"
+        >
+          0
+        </div>
 
-              <input
-                type="number"
-                id="prix"
-                step="0.01"
-                min="0"
-                placeholder="Ex : 12.90"
-              >
+        <div class="label">
+          Pré-commandes
+        </div>
 
-            </div>
+      </div>
 
-
-            <div class="champ">
-
-              <label for="categorie">
-                Catégorie *
-              </label>
-
-              <select
-                id="categorie"
-                required
-              >
-
-                <option value="">
-                  Choisir une catégorie
-                </option>
-
-              </select>
-
-            </div>
+    </div>
 
 
-            <div class="champ">
+    <!-- =================================================
+         PRODUIT
+    ================================================= -->
 
-              <label for="statut">
-                Statut
-              </label>
+    <div class="bloc">
 
-              <select id="statut">
+      <h2 id="titreFormulaire">
+        ➕ Ajouter un produit
+      </h2>
 
-                <option value="stock">
-                  🟢 En stock
-                </option>
+      <form id="formProduit">
 
-                <option
-                  value="precommande"
-                  selected
-                >
-                  🟠 Pré-commande
-                </option>
-
-                <option value="indisponible">
-                  ⚫ Indisponible
-                </option>
-
-              </select>
-
-            </div>
+        <div class="form-grid">
 
 
-            <div class="champ full">
+          <div class="champ">
 
-              <label for="description">
-                Description
-              </label>
+            <label for="nom">
+              Nom du produit *
+            </label>
 
-              <textarea
-                id="description"
-                placeholder="Décris ton produit..."
-              ></textarea>
-
-            </div>
-
-
-            <div class="champ full">
-
-              <label for="image_url">
-                URL de l'image
-              </label>
-
-              <input
-                type="url"
-                id="image_url"
-                placeholder="https://..."
-              >
-
-            </div>
+            <input
+              type="text"
+              id="nom"
+              required
+              placeholder="Ex : Mug personnalisé"
+            >
 
           </div>
+
+
+          <div class="champ">
+
+            <label for="prix">
+              Prix (€)
+            </label>
+
+            <input
+              type="number"
+              id="prix"
+              step="0.01"
+              min="0"
+              placeholder="Ex : 12.90"
+            >
+
+          </div>
+
+
+          <div class="champ">
+
+            <label for="categorie">
+              Catégorie *
+            </label>
+
+            <select
+              id="categorie"
+              required
+            >
+
+              <option value="">
+                Choisir une catégorie
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="champ">
+
+            <label for="statut">
+              Statut
+            </label>
+
+            <select id="statut">
+
+              <option value="stock">
+                🟢 En stock
+              </option>
+
+              <option
+                value="precommande"
+                selected
+              >
+                🟠 Pré-commande
+              </option>
+
+              <option value="indisponible">
+                ⚫ Indisponible
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="champ full">
+
+            <label for="description">
+              Description
+            </label>
+
+            <textarea
+              id="description"
+              placeholder="Décris ton produit..."
+            ></textarea>
+
+          </div>
+
+
+          <div class="champ full">
+
+            <label for="image_url">
+              URL de l'image
+            </label>
+
+            <input
+              type="url"
+              id="image_url"
+              placeholder="https://..."
+            >
+
+          </div>
+
+        </div>
+
+
+        <div class="checkbox-ligne">
+
+          <input
+            type="checkbox"
+            id="visible"
+            checked
+          >
+
+          <label for="visible">
+            Produit visible sur la boutique
+          </label>
+
+        </div>
+
+
+        <div class="checkbox-ligne">
+
+          <input
+            type="checkbox"
+            id="nouveaute"
+          >
+
+          <label for="nouveaute">
+            ⭐ Afficher dans les nouveautés
+          </label>
+
+        </div>
+
+
+        <!-- =================================================
+             PERSONNALISATION
+        ================================================= -->
+
+        <div class="personnalisation-admin">
+
+          <h3>
+            ✨ Personnalisation du produit
+          </h3>
+
+          <p class="personnalisation-aide">
+            Active uniquement les options nécessaires à ce produit.
+          </p>
 
 
           <div class="checkbox-ligne">
 
             <input
               type="checkbox"
-              id="visible"
-              checked
+              id="personnalisation_active"
             >
 
-            <label for="visible">
-              Produit visible sur la boutique
+            <label for="personnalisation_active">
+              ✨ Produit personnalisable
             </label>
 
           </div>
@@ -1243,3077 +886,2301 @@
 
             <input
               type="checkbox"
-              id="nouveaute"
+              id="choix_image_active"
             >
 
-            <label for="nouveaute">
-              ⭐ Afficher dans les nouveautés
+            <label for="choix_image_active">
+              🖼️ Le client peut choisir une image
             </label>
 
           </div>
 
 
-          <!-- PERSONNALISATION -->
+          <div class="checkbox-ligne">
 
-          <div class="personnalisation-admin">
+            <input
+              type="checkbox"
+              id="photo_client_active"
+            >
 
-            <h3>
-              ✨ Personnalisation du produit
-            </h3>
-
-            <p class="aide">
-              Active uniquement les options dont ce produit a besoin.
-            </p>
-
-
-            <div class="checkbox-ligne">
-
-              <input
-                type="checkbox"
-                id="personnalisation_active"
-              >
-
-              <label for="personnalisation_active">
-                ✨ Produit personnalisable
-              </label>
-
-            </div>
-
-
-            <div class="checkbox-ligne">
-
-              <input
-                type="checkbox"
-                id="choix_image_active"
-              >
-
-              <label for="choix_image_active">
-                🖼️ Le client peut choisir une image
-              </label>
-
-            </div>
-
-
-            <div class="checkbox-ligne">
-
-              <input
-                type="checkbox"
-                id="photo_client_active"
-              >
-
-              <label for="photo_client_active">
-                📸 Le client peut envoyer sa propre photo
-              </label>
-
-            </div>
-
-
-            <div class="checkbox-ligne">
-
-              <input
-                type="checkbox"
-                id="prenom_active"
-              >
-
-              <label for="prenom_active">
-                ✏️ Le client peut ajouter un prénom
-              </label>
-
-            </div>
-
-
-            <div class="checkbox-ligne">
-
-              <input
-                type="checkbox"
-                id="message_active"
-              >
-
-              <label for="message_active">
-                💬 Le client peut ajouter un message
-              </label>
-
-            </div>
+            <label for="photo_client_active">
+              📸 Le client peut envoyer sa propre photo
+            </label>
 
           </div>
 
 
-          <div class="actions-formulaire">
+          <div class="checkbox-ligne">
 
-            <button
-              type="submit"
-              class="btn btn-enregistrer"
-              id="boutonEnregistrer"
+            <input
+              type="checkbox"
+              id="prenom_active"
             >
-              💾 Enregistrer le produit
-            </button>
 
-            <button
-              type="button"
-              class="btn btn-annuler"
-              id="boutonAnnuler"
-            >
-              Annuler la modification
-            </button>
+            <label for="prenom_active">
+              ✏️ Le client peut ajouter un prénom
+            </label>
 
           </div>
 
 
-          <div
-            id="messageFormulaire"
-            class="message"
-          ></div>
+          <div class="checkbox-ligne">
+
+            <input
+              type="checkbox"
+              id="message_active"
+            >
+
+            <label for="message_active">
+              💬 Le client peut ajouter un message
+            </label>
+
+          </div>
+
+        </div>
 
 
-        </form>
-
-      </div>
-
-
-      <!-- =========================
-           LISTE PRODUITS
-      ========================= -->
-
-      <div class="bloc">
-
-        <div class="barre-produits">
-
-          <h2>
-            🛍️ Mes produits
-          </h2>
+        <div class="actions-formulaire">
 
           <button
-            class="btn btn-modifier"
-            id="boutonActualiser"
+            type="submit"
+            class="btn btn-enregistrer"
+            id="boutonEnregistrer"
           >
-            🔄 Actualiser
+            💾 Enregistrer le produit
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-annuler"
+            id="boutonAnnuler"
+          >
+            Annuler la modification
           </button>
 
         </div>
 
 
         <div
-          id="messageProduits"
-          class="message-produits"
-        >
-          Chargement des produits...
+          id="messageFormulaire"
+          class="message"
+        ></div>
+
+      </form>
+
+    </div>
+
+
+    <!-- =================================================
+         BIBLIOTHÈQUE INDÉPENDANTE
+    ================================================= -->
+
+    <div class="bloc">
+
+      <h2>
+        🖼️ Bibliothèque de designs
+      </h2>
+
+
+      <div class="bibliotheque-intro">
+
+        <strong>
+          Ta bibliothèque est indépendante des produits.
+        </strong>
+
+        <p>
+          Tu peux créer tes catégories, tes sous-catégories
+          et ajouter tes designs ici.
+        </p>
+
+        <p>
+          Ensuite, un produit pourra simplement autoriser
+          le client à choisir une image.
+        </p>
+
+      </div>
+
+
+      <!-- =================================================
+           CATÉGORIES
+      ================================================= -->
+
+      <div class="bibliotheque-etape">
+
+        <h3>
+          📁 1. Catégories de designs
+        </h3>
+
+
+        <div class="form-grid">
+
+          <div class="champ">
+
+            <label for="nouvelleCategorieBibliotheque">
+              Nom de la catégorie
+            </label>
+
+            <input
+              type="text"
+              id="nouvelleCategorieBibliotheque"
+              placeholder="Ex : Animaux"
+            >
+
+          </div>
+
+
+          <div class="champ">
+
+            <label for="emojiCategorieBibliotheque">
+              Emoji
+            </label>
+
+            <input
+              type="text"
+              id="emojiCategorieBibliotheque"
+              placeholder="Ex : 🐶"
+            >
+
+          </div>
+
+        </div>
+
+
+        <div class="bibliotheque-actions">
+
+          <button
+            type="button"
+            class="btn btn-enregistrer"
+            id="boutonAjouterCategorieBibliotheque"
+          >
+            ➕ Ajouter la catégorie
+          </button>
+
         </div>
 
 
         <div
-          id="listeProduits"
-          class="produits-liste"
+          id="listeCategoriesBibliotheque"
+          class="liste-bibliotheque"
         ></div>
 
       </div>
 
 
-      <!-- =========================
-           BIBLIOTHÈQUE INDÉPENDANTE
-      ========================= -->
+      <!-- =================================================
+           SOUS-CATÉGORIES
+      ================================================= -->
 
-      <div class="bloc">
+      <div class="bibliotheque-etape">
 
-        <h2>
-          🎨 Bibliothèque d'images
-        </h2>
-
-        <p class="aide">
-          Gère ici tes designs indépendamment de tes produits.
-          Tu pourras ensuite permettre aux clients de choisir parmi ces designs.
-        </p>
+        <h3>
+          📂 2. Sous-catégories
+        </h3>
 
 
-        <div class="bibliotheque-grid">
+        <div class="champ">
 
+          <label for="selectionCategorieBibliotheque">
+            Catégorie
+          </label>
 
-          <!-- CATÉGORIES -->
+          <select id="selectionCategorieBibliotheque">
 
-          <div class="bibliotheque-bloc">
+            <option value="">
+              Choisir une catégorie
+            </option>
 
-            <h3>
-              📁 Catégories
-            </h3>
-
-            <div class="champ">
-
-              <label for="nouvelleCategorieBibliotheque">
-                Nouvelle catégorie
-              </label>
-
-              <input
-                type="text"
-                id="nouvelleCategorieBibliotheque"
-                placeholder="Ex : Animaux"
-              >
-
-            </div>
-
-
-            <div class="champ"
-                 style="margin-top:10px;">
-
-              <label for="emojiCategorieBibliotheque">
-                Emoji
-              </label>
-
-              <input
-                type="text"
-                id="emojiCategorieBibliotheque"
-                placeholder="🐶"
-                maxlength="4"
-              >
-
-            </div>
-
-
-            <button
-              type="button"
-              class="btn btn-enregistrer"
-              id="boutonCreerCategorieBibliotheque"
-              style="margin-top:12px;"
-            >
-              ➕ Créer la catégorie
-            </button>
-
-
-            <div
-              id="listeCategoriesBibliotheque"
-              class="liste-bibliotheque"
-            ></div>
-
-          </div>
-
-
-          <!-- SOUS-CATÉGORIES -->
-
-          <div class="bibliotheque-bloc">
-
-            <h3>
-              📂 Sous-catégories
-            </h3>
-
-
-            <div class="champ">
-
-              <label for="bibliothequeCategorieAdmin">
-                Catégorie
-              </label>
-
-              <select
-                id="bibliothequeCategorieAdmin"
-              >
-
-                <option value="">
-                  Choisir une catégorie
-                </option>
-
-              </select>
-
-            </div>
-
-
-            <div class="champ"
-                 style="margin-top:12px;">
-
-              <label for="nouvelleSousCategorieBibliotheque">
-                Nouvelle sous-catégorie
-              </label>
-
-              <input
-                type="text"
-                id="nouvelleSousCategorieBibliotheque"
-                placeholder="Ex : Chiens"
-              >
-
-            </div>
-
-
-            <button
-              type="button"
-              class="btn btn-enregistrer"
-              id="boutonCreerSousCategorieBibliotheque"
-              style="margin-top:12px;"
-            >
-              ➕ Créer la sous-catégorie
-            </button>
-
-
-            <div
-              id="listeSousCategoriesBibliotheque"
-              class="liste-bibliotheque"
-            ></div>
-
-          </div>
-
+          </select>
 
         </div>
 
 
-        <!-- AJOUT DESIGNS -->
-
         <div
-          class="bibliotheque-bloc"
-          style="margin-top:20px;"
+          class="champ"
+          style="margin-top:15px;"
         >
 
-          <h3>
-            🖼️ Ajouter des designs
-          </h3>
+          <label for="nouvelleSousCategorieBibliotheque">
+            Nom de la sous-catégorie
+          </label>
+
+          <input
+            type="text"
+            id="nouvelleSousCategorieBibliotheque"
+            placeholder="Ex : Chiens"
+          >
+
+        </div>
 
 
-          <div class="form-grid">
+        <div class="bibliotheque-actions">
+
+          <button
+            type="button"
+            class="btn btn-enregistrer"
+            id="boutonAjouterSousCategorie"
+          >
+            ➕ Ajouter la sous-catégorie
+          </button>
+
+        </div>
 
 
-            <div class="champ">
+        <div
+          id="listeSousCategoriesBibliotheque"
+          class="liste-bibliotheque"
+        ></div>
 
-              <label for="categorieDesign">
-                Catégorie
-              </label>
-
-              <select id="categorieDesign">
-
-                <option value="">
-                  Choisir une catégorie
-                </option>
-
-              </select>
-
-            </div>
+      </div>
 
 
-            <div class="champ">
+      <!-- =================================================
+           DESIGNS
+      ================================================= -->
 
-              <label for="sousCategorieDesign">
-                Sous-catégorie
-              </label>
+      <div class="bibliotheque-etape">
 
-              <select
-                id="sousCategorieDesign"
-                disabled
-              >
-
-                <option value="">
-                  Choisir une sous-catégorie
-                </option>
-
-              </select>
-
-            </div>
+        <h3>
+          🎨 3. Ajouter des designs
+        </h3>
 
 
-            <div class="champ full">
+        <div class="champ">
 
-              <label for="fichiersDesign">
-                Designs
-              </label>
+          <label for="selectionSousCategorieBibliotheque">
+            Sous-catégorie
+          </label>
 
-              <input
-                type="file"
-                id="fichiersDesign"
-                accept="image/jpeg,image/png,image/webp,image/gif"
-                multiple
-              >
+          <select
+            id="selectionSousCategorieBibliotheque"
+          >
 
-              <small class="aide">
-                Tu peux sélectionner plusieurs images à la fois.
-              </small>
+            <option value="">
+              Choisir une sous-catégorie
+            </option>
 
-            </div>
+          </select>
 
-          </div>
+        </div>
 
+
+        <div
+          class="champ"
+          style="margin-top:15px;"
+        >
+
+          <label for="fichiersBibliotheque">
+            Images des designs
+          </label>
+
+          <input
+            type="file"
+            id="fichiersBibliotheque"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            multiple
+          >
+
+        </div>
+
+
+        <div class="bibliotheque-actions">
 
           <button
             type="button"
             class="btn btn-enregistrer"
             id="boutonAjouterDesigns"
-            style="margin-top:15px;"
           >
             🖼️ Ajouter les designs
           </button>
 
-
-          <div
-            id="messageBibliotheque"
-            class="message"
-          ></div>
-
-
         </div>
 
-
-        <!-- AFFICHAGE DES DESIGNS -->
 
         <div
-          class="bibliotheque-bloc"
-          style="margin-top:20px;"
+          id="messageBibliotheque"
+          class="message"
+        ></div>
+
+
+        <div
+          id="listeDesignsBibliotheque"
+          class="designs-grille"
+        ></div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =================================================
+         PRODUITS
+    ================================================= -->
+
+    <div class="bloc">
+
+      <div class="barre-produits">
+
+        <h2>
+          🛍️ Mes produits
+        </h2>
+
+        <button
+          class="btn btn-modifier"
+          id="boutonActualiser"
         >
-
-          <h3>
-            🖼️ Designs enregistrés
-          </h3>
-
-
-          <div class="form-grid">
-
-
-            <div class="champ">
-
-              <label for="categorieAffichageDesign">
-                Catégorie
-              </label>
-
-              <select id="categorieAffichageDesign">
-
-                <option value="">
-                  Choisir une catégorie
-                </option>
-
-              </select>
-
-            </div>
-
-
-            <div class="champ">
-
-              <label for="sousCategorieAffichageDesign">
-                Sous-catégorie
-              </label>
-
-              <select
-                id="sousCategorieAffichageDesign"
-                disabled
-              >
-
-                <option value="">
-                  Choisir une sous-catégorie
-                </option>
-
-              </select>
-
-            </div>
-
-
-          </div>
-
-
-          <div
-            id="listeDesigns"
-            class="designs-grille"
-          ></div>
-
-        </div>
-
+          🔄 Actualiser
+        </button>
 
       </div>
 
 
-    </main>
-
-  </section>
-
-
-  <script>
-
-
-    /* =========================
-       SUPABASE
-    ========================= */
-
-    const URL_SUPABASE =
-      "https://buputlhpgaenlwwbrwwf.supabase.co";
-
-    const CLE_SUPABASE =
-      "sb_publishable_mjzAOL92PWfc3v59ZxdSUw_69xCaInq";
-
-    const client =
-      window.supabase.createClient(
-        URL_SUPABASE,
-        CLE_SUPABASE
-      );
+      <div
+        id="messageProduits"
+        class="message-produits"
+      >
+        Chargement des produits...
+      </div>
 
 
-    /* =========================
-       VARIABLES
-    ========================= */
+      <div
+        id="listeProduits"
+        class="produits-liste"
+      ></div>
 
-    let produitEnModification = null;
+    </div>
 
+  </main>
 
-    /* =========================
-       ELEMENTS
-    ========================= */
-
-    const pageConnexion =
-      document.getElementById(
-        "pageConnexion"
-      );
-
-    const pageAdmin =
-      document.getElementById(
-        "pageAdmin"
-      );
-
-    const resultatConnexion =
-      document.getElementById(
-        "resultatConnexion"
-      );
-
-    const formulaire =
-      document.getElementById(
-        "formProduit"
-      );
-
-    const listeProduits =
-      document.getElementById(
-        "listeProduits"
-      );
-
-    const messageProduits =
-      document.getElementById(
-        "messageProduits"
-      );
+</section>
 
 
-    /* =========================
-       CONNEXION
-    ========================= */
+<script>
 
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const URL_SUPABASE =
+  "https://buputlhpgaenlwwbrwwf.supabase.co";
+
+const CLE_SUPABASE =
+  "sb_publishable_mjzAOL92PWfc3v59ZxdSUw_69xCaInq";
+
+const client =
+  window.supabase.createClient(
+    URL_SUPABASE,
+    CLE_SUPABASE,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    }
+  );
+
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let produitEnModification = null;
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const pageConnexion =
+  document.getElementById("pageConnexion");
+
+const pageAdmin =
+  document.getElementById("pageAdmin");
+
+const resultatConnexion =
+  document.getElementById("resultatConnexion");
+
+const formulaire =
+  document.getElementById("formProduit");
+
+const listeProduits =
+  document.getElementById("listeProduits");
+
+const messageProduits =
+  document.getElementById("messageProduits");
+
+
+/* =====================================================
+   CONNEXION
+===================================================== */
+
+document
+  .getElementById("boutonConnexion")
+  .addEventListener(
+    "click",
+    connexion
+  );
+
+
+async function connexion() {
+
+  const email =
     document
-      .getElementById(
-        "boutonConnexion"
-      )
-      .addEventListener(
-        "click",
-        connexion
-      );
+      .getElementById("email")
+      .value
+      .trim();
 
+  const password =
+    document.getElementById("password").value;
 
-    async function connexion() {
+  if (!email || !password) {
 
-      const email =
-        document
-          .getElementById("email")
-          .value
-          .trim();
+    resultatConnexion.textContent =
+      "❌ Merci de remplir les deux champs.";
 
-      const password =
-        document.getElementById(
-          "password"
-        ).value;
+    return;
+  }
 
-      if (!email || !password) {
+  resultatConnexion.textContent =
+    "⏳ Connexion en cours...";
 
-        resultatConnexion.textContent =
-          "❌ Merci de remplir les deux champs.";
+  try {
 
-        return;
+    const { data, error } =
+      await client.auth.signInWithPassword({
+        email,
+        password
+      });
 
-      }
-
+    if (error) {
 
       resultatConnexion.textContent =
-        "⏳ Connexion en cours...";
+        "❌ " + error.message;
 
+      return;
+    }
 
-      const { data, error } =
-        await client.auth.signInWithPassword({
-          email,
-          password
-        });
-
-
-      if (error) {
-
-        resultatConnexion.textContent =
-          "❌ " + error.message;
-
-        return;
-
-      }
-
-
-      if (!data.session) {
-
-        resultatConnexion.textContent =
-          "❌ Impossible de créer la session.";
-
-        return;
-
-      }
-
+    if (!data.session) {
 
       resultatConnexion.textContent =
-        "";
+        "❌ Impossible de créer la session.";
 
-      afficherAdmin();
+      return;
+    }
+
+    resultatConnexion.textContent = "";
+
+    await afficherAdmin();
+
+  } catch (erreur) {
+
+    console.error(erreur);
+
+    resultatConnexion.textContent =
+      "❌ Une erreur est survenue.";
+
+  }
+
+}
+
+
+/* =====================================================
+   AFFICHER ADMIN
+===================================================== */
+
+async function afficherAdmin() {
+
+  pageConnexion.style.display =
+    "none";
+
+  pageAdmin.style.display =
+    "block";
+
+  await chargerCategories();
+
+  await chargerProduits();
+
+  await chargerBibliotheque();
+
+}
+
+
+/* =====================================================
+   VERIFIER SESSION
+===================================================== */
+
+async function verifierSession() {
+
+  try {
+
+    const { data, error } =
+      await client.auth.getSession();
+
+    if (
+      !error &&
+      data.session
+    ) {
+
+      await afficherAdmin();
+
+    } else {
+
+      pageConnexion.style.display =
+        "flex";
+
+      pageAdmin.style.display =
+        "none";
 
     }
 
+  } catch (erreur) {
 
-    /* =========================
-       AFFICHER ADMIN
-    ========================= */
+    console.error(
+      "Erreur session :",
+      erreur
+    );
 
-    async function afficherAdmin() {
+  }
 
-      pageConnexion.style.display =
-        "none";
+}
+
+
+/* =====================================================
+   DECONNEXION
+===================================================== */
+
+document
+  .getElementById("boutonDeconnexion")
+  .addEventListener(
+    "click",
+    async function() {
+
+      await client.auth.signOut();
 
       pageAdmin.style.display =
-        "block";
+        "none";
+
+      pageConnexion.style.display =
+        "flex";
+
+      document.getElementById("password").value =
+        "";
+
+    }
+  );
 
 
-      await chargerCategories();
+/* =====================================================
+   CATEGORIES PRODUITS
+===================================================== */
+
+async function chargerCategories() {
+
+  const select =
+    document.getElementById("categorie");
+
+  const { data, error } =
+    await client
+      .from("categories")
+      .select("id, Nom, Emoji, Ordre")
+      .order("Ordre", {
+        ascending: true
+      });
+
+  if (error) {
+
+    console.error(error);
+
+    return;
+  }
+
+  select.innerHTML =
+    '<option value="">Choisir une catégorie</option>';
+
+  data.forEach(function(categorie) {
+
+    const option =
+      document.createElement("option");
+
+    option.value =
+      categorie.id;
+
+    option.textContent =
+      (categorie.Emoji || "") +
+      " " +
+      categorie.Nom;
+
+    select.appendChild(option);
+
+  });
+
+}
+
+
+/* =====================================================
+   AJOUT / MODIFICATION PRODUIT
+===================================================== */
+
+formulaire.addEventListener(
+  "submit",
+  async function(event) {
+
+    event.preventDefault();
+
+    const nom =
+      document
+        .getElementById("nom")
+        .value
+        .trim();
+
+    const description =
+      document
+        .getElementById("description")
+        .value
+        .trim();
+
+    const prixValeur =
+      document.getElementById("prix").value;
+
+    const prix =
+      prixValeur === ""
+        ? null
+        : Number(prixValeur);
+
+    const categorie_id =
+      document.getElementById("categorie").value;
+
+    const statut =
+      document.getElementById("statut").value;
+
+    const image_url =
+      document
+        .getElementById("image_url")
+        .value
+        .trim();
+
+    const visible =
+      document.getElementById("visible").checked;
+
+    const nouveaute =
+      document.getElementById("nouveaute").checked;
+
+    const personnalisation_active =
+      document
+        .getElementById("personnalisation_active")
+        .checked;
+
+    const choix_image_active =
+      document
+        .getElementById("choix_image_active")
+        .checked;
+
+    const photo_client_active =
+      document
+        .getElementById("photo_client_active")
+        .checked;
+
+    const prenom_active =
+      document
+        .getElementById("prenom_active")
+        .checked;
+
+    const message_active =
+      document
+        .getElementById("message_active")
+        .checked;
+
+
+    if (!nom) {
+
+      afficherMessageFormulaire(
+        "❌ Le nom du produit est obligatoire.",
+        true
+      );
+
+      return;
+    }
+
+
+    if (!categorie_id) {
+
+      afficherMessageFormulaire(
+        "❌ Choisis une catégorie.",
+        true
+      );
+
+      return;
+    }
+
+
+    const bouton =
+      document.getElementById(
+        "boutonEnregistrer"
+      );
+
+    bouton.disabled =
+      true;
+
+    bouton.textContent =
+      "⏳ Enregistrement...";
+
+
+    const produit = {
+
+      nom,
+      description,
+      prix,
+      categorie_id,
+      statut,
+      image_url: image_url || null,
+      visible,
+      nouveaute,
+      personnalisation_active,
+      choix_image_active,
+      photo_client_active,
+      prenom_active,
+      message_active
+
+    };
+
+
+    try {
+
+      let resultat;
+
+      if (produitEnModification) {
+
+        resultat =
+          await client
+            .from("products")
+            .update(produit)
+            .eq(
+              "id",
+              produitEnModification
+            );
+
+      } else {
+
+        resultat =
+          await client
+            .from("products")
+            .insert([
+              produit
+            ]);
+
+      }
+
+
+      if (resultat.error) {
+
+        console.error(
+          resultat.error
+        );
+
+        afficherMessageFormulaire(
+          "❌ " +
+          resultat.error.message,
+          true
+        );
+
+        return;
+      }
+
+
+      afficherMessageFormulaire(
+        produitEnModification
+          ? "✅ Produit modifié !"
+          : "✅ Produit ajouté !",
+        false
+      );
+
+
+      reinitialiserFormulaire();
 
       await chargerProduits();
 
-      await chargerBibliotheque();
+
+    } catch (erreur) {
+
+      console.error(erreur);
+
+      afficherMessageFormulaire(
+        "❌ Erreur lors de l'enregistrement.",
+        true
+      );
+
+    } finally {
+
+      bouton.disabled =
+        false;
+
+      bouton.textContent =
+        "💾 Enregistrer le produit";
 
     }
 
-
-    /* =========================
-       SESSION
-    ========================= */
-
-    async function verifierSession() {
-
-      const { data, error } =
-        await client.auth.getSession();
+  }
+);
 
 
-      if (
-        !error &&
-        data.session
-      ) {
+/* =====================================================
+   MODIFIER PRODUIT
+===================================================== */
 
-        afficherAdmin();
+window.modifierProduit =
+  async function(id) {
 
-      }
+    const { data, error } =
+      await client
+        .from("products")
+        .select("*")
+        .eq("id", id)
+        .single();
 
+    if (error) {
+
+      alert(
+        "Impossible de récupérer le produit : " +
+        error.message
+      );
+
+      return;
     }
 
 
-    /* =========================
-       DECONNEXION
-    ========================= */
+    produitEnModification =
+      id;
+
+
+    document.getElementById("nom").value =
+      data.nom || "";
+
+    document.getElementById("description").value =
+      data.description || "";
+
+    document.getElementById("prix").value =
+      data.prix ?? "";
+
+    document.getElementById("categorie").value =
+      data.categorie_id || "";
+
+    document.getElementById("statut").value =
+      data.statut || "precommande";
+
+    document.getElementById("image_url").value =
+      data.image_url || "";
+
+    document.getElementById("visible").checked =
+      data.visible !== false;
+
+    document.getElementById("nouveaute").checked =
+      data.nouveaute === true;
+
+    document.getElementById(
+      "personnalisation_active"
+    ).checked =
+      data.personnalisation_active === true;
+
+    document.getElementById(
+      "choix_image_active"
+    ).checked =
+      data.choix_image_active === true;
+
+    document.getElementById(
+      "photo_client_active"
+    ).checked =
+      data.photo_client_active === true;
+
+    document.getElementById(
+      "prenom_active"
+    ).checked =
+      data.prenom_active === true;
+
+    document.getElementById(
+      "message_active"
+    ).checked =
+      data.message_active === true;
+
+
+    document.getElementById(
+      "titreFormulaire"
+    ).textContent =
+      "✏️ Modifier le produit";
+
+
+    document.getElementById(
+      "boutonEnregistrer"
+    ).textContent =
+      "💾 Enregistrer les modifications";
+
+
+    document.getElementById(
+      "boutonAnnuler"
+    ).style.display =
+      "inline-block";
+
 
     document
-      .getElementById(
-        "boutonDeconnexion"
+      .getElementById("formProduit")
+      .scrollIntoView({
+        behavior: "smooth"
+      });
+
+  };
+
+
+/* =====================================================
+   SUPPRIMER PRODUIT
+===================================================== */
+
+window.supprimerProduit =
+  async function(id) {
+
+    if (
+      !confirm(
+        "⚠️ Es-tu sûre de vouloir supprimer ce produit ?"
       )
-      .addEventListener(
-        "click",
-        async function() {
-
-          await client.auth.signOut();
-
-          pageAdmin.style.display =
-            "none";
-
-          pageConnexion.style.display =
-            "flex";
-
-          document.getElementById(
-            "password"
-          ).value = "";
-
-        }
-      );
-
-
-    /* =========================
-       CATEGORIES PRODUITS
-    ========================= */
-
-    async function chargerCategories() {
-
-      const select =
-        document.getElementById(
-          "categorie"
-        );
-
-
-      const { data, error } =
-        await client
-          .from("categories")
-          .select(
-            "id, Nom, Emoji, Ordre"
-          )
-          .order(
-            "Ordre",
-            {
-              ascending: true
-            }
-          );
-
-
-      if (error) {
-
-        console.error(
-          "Erreur catégories :",
-          error
-        );
-
-        return;
-
-      }
-
-
-      select.innerHTML =
-        '<option value="">Choisir une catégorie</option>';
-
-
-      data.forEach(
-        function(categorie) {
-
-          const option =
-            document.createElement(
-              "option"
-            );
-
-          option.value =
-            categorie.id;
-
-          option.textContent =
-            (categorie.Emoji || "") +
-            " " +
-            categorie.Nom;
-
-          select.appendChild(
-            option
-          );
-
-        }
-      );
-
-    }
-
-
-    /* =========================
-       CHARGER PRODUITS
-    ========================= */
-
-    async function chargerProduits() {
-
-      messageProduits.textContent =
-        "Chargement des produits...";
-
-
-      listeProduits.innerHTML =
-        "";
-
-
-      const { data, error } =
-        await client
-          .from("products")
-          .select(`
-            id,
-            nom,
-            description,
-            prix,
-            categorie_id,
-            statut,
-            image_url,
-            visible,
-            nouveaute,
-            personnalisation_active,
-            choix_image_active,
-            photo_client_active,
-            prenom_active,
-            message_active,
-            created_at,
-            ordre,
-            categories (
-              Nom,
-              Emoji
-            )
-          `)
-          .order(
-            "ordre",
-            {
-              ascending: true
-            }
-          )
-          .order(
-            "created_at",
-            {
-              ascending: false
-            }
-          );
-
-
-      if (error) {
-
-        console.error(
-          "Erreur produits :",
-          error
-        );
-
-        messageProduits.textContent =
-          "❌ Impossible de charger les produits : " +
-          error.message;
-
-        return;
-
-      }
-
-
-      mettreAJourStatistiques(
-        data || []
-      );
-
-
-      if (
-        !data ||
-        data.length === 0
-      ) {
-
-        messageProduits.textContent =
-          "Aucun produit pour le moment. Ajoute ton premier produit ci-dessus 💕";
-
-        return;
-
-      }
-
-
-      messageProduits.textContent =
-        data.length +
-        " produit(s) enregistré(s).";
-
-
-      data.forEach(
-        function(produit) {
-
-          afficherProduit(
-            produit
-          );
-
-        }
-      );
-
-    }
-
-
-    /* =========================
-       STATISTIQUES
-    ========================= */
-
-    function mettreAJourStatistiques(
-      produits
     ) {
-
-      document.getElementById(
-        "nombreProduits"
-      ).textContent =
-        produits.length;
-
-
-      document.getElementById(
-        "nombreVisibles"
-      ).textContent =
-        produits.filter(
-          function(p) {
-
-            return p.visible === true;
-
-          }
-        ).length;
-
-
-      document.getElementById(
-        "nombrePrecommandes"
-      ).textContent =
-        produits.filter(
-          function(p) {
-
-            return p.statut ===
-              "precommande";
-
-          }
-        ).length;
-
+      return;
     }
 
 
-    /* =========================
-       AFFICHER PRODUIT
-    ========================= */
-
-    function afficherProduit(
-      produit
-    ) {
-
-      const element =
-        document.createElement(
-          "div"
-        );
+    const { error } =
+      await client
+        .from("products")
+        .delete()
+        .eq("id", id);
 
 
-      element.className =
-        "produit";
+    if (error) {
 
-
-      let statutClasse =
-        "statut-indisponible";
-
-
-      let statutTexte =
-        "⚫ Indisponible";
-
-
-      if (
-        produit.statut ===
-        "stock"
-      ) {
-
-        statutClasse =
-          "statut-stock";
-
-        statutTexte =
-          "🟢 En stock";
-
-      } else if (
-        produit.statut ===
-        "precommande"
-      ) {
-
-        statutClasse =
-          "statut-precommande";
-
-        statutTexte =
-          "🟠 Pré-commande";
-
-      }
-
-
-      const categorie =
-        produit.categories
-          ? (
-              (produit.categories.Emoji || "") +
-              " " +
-              produit.categories.Nom
-            )
-          : "Sans catégorie";
-
-
-      const prix =
-        produit.prix !== null &&
-        produit.prix !== undefined
-          ? Number(
-              produit.prix
-            ).toFixed(2) +
-            " €"
-          : "Prix non défini";
-
-
-      const visibilite =
-        produit.visible
-          ? '<span class="visible">👁️ Visible</span>'
-          : '<span class="cache">🙈 Masqué</span>';
-
-
-      element.innerHTML = `
-
-        <div class="produit-info">
-
-          <h3>
-            ${echapperHTML(
-              produit.nom
-            )}
-          </h3>
-
-          <p>
-            ${echapperHTML(
-              categorie
-            )}
-          </p>
-
-          <p>
-            💰 ${prix}
-          </p>
-
-          <p>
-
-            <span
-              class="statut ${statutClasse}"
-            >
-              ${statutTexte}
-            </span>
-
-            &nbsp;
-
-            ${visibilite}
-
-          </p>
-
-          ${
-            produit.description
-              ? `<p>${echapperHTML(
-                  produit.description
-                )}</p>`
-              : ""
-          }
-
-        </div>
-
-
-        <div class="produit-actions">
-
-          <button
-            class="btn btn-modifier"
-            onclick="modifierProduit('${produit.id}')"
-          >
-            ✏️ Modifier
-          </button>
-
-
-          <button
-            class="btn btn-supprimer"
-            onclick="supprimerProduit('${produit.id}')"
-          >
-            🗑️ Supprimer
-          </button>
-
-        </div>
-
-      `;
-
-
-      listeProduits.appendChild(
-        element
+      alert(
+        "❌ Impossible de supprimer le produit : " +
+        error.message
       );
 
+      return;
     }
 
 
-    /* =========================
-       AJOUT / MODIFICATION PRODUIT
-    ========================= */
+    await chargerProduits();
 
-    formulaire.addEventListener(
-      "submit",
-      async function(event) {
+  };
 
-        event.preventDefault();
 
+/* =====================================================
+   CHARGER PRODUITS
+===================================================== */
 
-        const nom =
-          document
-            .getElementById("nom")
-            .value
-            .trim();
+async function chargerProduits() {
 
+  messageProduits.textContent =
+    "Chargement des produits...";
 
-        const description =
-          document
-            .getElementById(
-              "description"
-            )
-            .value
-            .trim();
+  listeProduits.innerHTML =
+    "";
 
 
-        const prixValeur =
-          document.getElementById(
-            "prix"
-          ).value;
+  const { data, error } =
+    await client
+      .from("products")
+      .select(`
+        id,
+        nom,
+        description,
+        prix,
+        categorie_id,
+        statut,
+        image_url,
+        visible,
+        nouveaute,
+        personnalisation_active,
+        choix_image_active,
+        photo_client_active,
+        prenom_active,
+        message_active,
+        created_at,
+        ordre,
+        categories (
+          Nom,
+          Emoji
+        )
+      `)
+      .order("ordre", {
+        ascending: true
+      })
+      .order("created_at", {
+        ascending: false
+      });
 
 
-        const prix =
-          prixValeur === ""
-            ? null
-            : Number(
-                prixValeur
-              );
+  if (error) {
 
+    console.error(error);
 
-        const categorie_id =
-          document.getElementById(
-            "categorie"
-          ).value;
+    messageProduits.textContent =
+      "❌ Impossible de charger les produits : " +
+      error.message;
 
+    return;
+  }
 
-        const statut =
-          document.getElementById(
-            "statut"
-          ).value;
 
+  mettreAJourStatistiques(data);
 
-        const image_url =
-          document
-            .getElementById(
-              "image_url"
-            )
-            .value
-            .trim();
 
+  if (!data || data.length === 0) {
 
-        const visible =
-          document.getElementById(
-            "visible"
-          ).checked;
+    messageProduits.textContent =
+      "Aucun produit pour le moment.";
 
+    return;
+  }
 
-        const nouveaute =
-          document.getElementById(
-            "nouveaute"
-          ).checked;
 
+  messageProduits.textContent =
+    data.length +
+    " produit(s) enregistré(s).";
 
-        const personnalisation_active =
-          document.getElementById(
-            "personnalisation_active"
-          ).checked;
 
+  data.forEach(function(produit) {
 
-        const choix_image_active =
-          document.getElementById(
-            "choix_image_active"
-          ).checked;
+    afficherProduit(produit);
 
+  });
 
-        const photo_client_active =
-          document.getElementById(
-            "photo_client_active"
-          ).checked;
+}
 
 
-        const prenom_active =
-          document.getElementById(
-            "prenom_active"
-          ).checked;
+/* =====================================================
+   STATISTIQUES
+===================================================== */
 
+function mettreAJourStatistiques(produits) {
 
-        const message_active =
-          document.getElementById(
-            "message_active"
-          ).checked;
+  document.getElementById(
+    "nombreProduits"
+  ).textContent =
+    produits.length;
 
 
-        if (!nom) {
+  document.getElementById(
+    "nombreVisibles"
+  ).textContent =
+    produits.filter(function(p) {
 
-          afficherMessageFormulaire(
-            "❌ Le nom du produit est obligatoire.",
-            true
-          );
+      return p.visible === true;
 
-          return;
+    }).length;
 
-        }
 
+  document.getElementById(
+    "nombrePrecommandes"
+  ).textContent =
+    produits.filter(function(p) {
 
-        if (!categorie_id) {
+      return p.statut === "precommande";
 
-          afficherMessageFormulaire(
-            "❌ Choisis une catégorie.",
-            true
-          );
+    }).length;
 
-          return;
+}
 
-        }
 
+/* =====================================================
+   AFFICHER PRODUIT
+===================================================== */
 
-        const bouton =
-          document.getElementById(
-            "boutonEnregistrer"
-          );
+function afficherProduit(produit) {
 
+  const element =
+    document.createElement("div");
 
-        bouton.disabled =
-          true;
+  element.className =
+    "produit";
 
 
-        bouton.textContent =
-          "⏳ Enregistrement...";
+  let statutClasse =
+    "statut-indisponible";
 
+  let statutTexte =
+    "⚫ Indisponible";
 
-        const produit = {
 
-          nom,
+  if (produit.statut === "stock") {
 
-          description,
+    statutClasse =
+      "statut-stock";
 
-          prix,
+    statutTexte =
+      "🟢 En stock";
 
-          categorie_id,
+  } else if (
+    produit.statut === "precommande"
+  ) {
 
-          statut,
+    statutClasse =
+      "statut-precommande";
 
-          image_url:
-            image_url || null,
+    statutTexte =
+      "🟠 Pré-commande";
 
-          visible,
+  }
 
-          nouveaute,
 
-          personnalisation_active,
+  const categorie =
+    produit.categories
+      ? (
+          (produit.categories.Emoji || "") +
+          " " +
+          produit.categories.Nom
+        )
+      : "Sans catégorie";
 
-          choix_image_active,
 
-          photo_client_active,
+  const prix =
+    produit.prix !== null &&
+    produit.prix !== undefined
+      ? Number(produit.prix).toFixed(2) +
+        " €"
+      : "Prix non défini";
 
-          prenom_active,
 
-          message_active
+  const visibilite =
+    produit.visible
+      ? '<span class="visible">👁️ Visible</span>'
+      : '<span class="cache">🙈 Masqué</span>';
 
-        };
 
+  element.innerHTML = `
 
-        let erreur = null;
+    <div class="produit-info">
 
+      <h3>
+        ${echapperHTML(produit.nom)}
+      </h3>
 
-        if (
-          produitEnModification
-        ) {
+      <p>
+        ${categorie}
+      </p>
 
-          const resultat =
-            await client
-              .from("products")
-              .update(
-                produit
-              )
-              .eq(
-                "id",
-                produitEnModification
-              );
+      <p>
+        💰 ${prix}
+      </p>
 
+      <p>
 
-          erreur =
-            resultat.error;
+        <span class="statut ${statutClasse}">
+          ${statutTexte}
+        </span>
 
-        } else {
+        &nbsp;
 
-          const resultat =
-            await client
-              .from("products")
-              .insert([
-                produit
-              ]);
+        ${visibilite}
 
+      </p>
 
-          erreur =
-            resultat.error;
-
-        }
-
-
-        bouton.disabled =
-          false;
-
-
-        bouton.textContent =
-          "💾 Enregistrer le produit";
-
-
-        if (erreur) {
-
-          console.error(
-            erreur
-          );
-
-          afficherMessageFormulaire(
-            "❌ " +
-            erreur.message,
-            true
-          );
-
-          return;
-
-        }
-
-
-        afficherMessageFormulaire(
-          produitEnModification
-            ? "✅ Produit modifié !"
-            : "✅ Produit ajouté !",
-          false
-        );
-
-
-        reinitialiserFormulaire();
-
-
-        await chargerProduits();
-
+      ${
+        produit.personnalisation_active
+          ? "<p>✨ Personnalisable</p>"
+          : ""
       }
+
+      ${
+        produit.choix_image_active
+          ? "<p>🖼️ Choix d'image activé</p>"
+          : ""
+      }
+
+    </div>
+
+
+    <div class="produit-actions">
+
+      <button
+        class="btn btn-modifier"
+        onclick="modifierProduit('${produit.id}')"
+      >
+        ✏️ Modifier
+      </button>
+
+      <button
+        class="btn btn-supprimer"
+        onclick="supprimerProduit('${produit.id}')"
+      >
+        🗑️ Supprimer
+      </button>
+
+    </div>
+
+  `;
+
+
+  listeProduits.appendChild(element);
+
+}
+
+
+/* =====================================================
+   REINITIALISER PRODUIT
+===================================================== */
+
+document
+  .getElementById("boutonAnnuler")
+  .addEventListener(
+    "click",
+    reinitialiserFormulaire
+  );
+
+
+function reinitialiserFormulaire() {
+
+  produitEnModification =
+    null;
+
+  formulaire.reset();
+
+
+  document.getElementById(
+    "statut"
+  ).value =
+    "precommande";
+
+
+  document.getElementById(
+    "visible"
+  ).checked =
+    true;
+
+
+  document.getElementById(
+    "titreFormulaire"
+  ).textContent =
+    "➕ Ajouter un produit";
+
+
+  document.getElementById(
+    "boutonEnregistrer"
+  ).textContent =
+    "💾 Enregistrer le produit";
+
+
+  document.getElementById(
+    "boutonAnnuler"
+  ).style.display =
+    "none";
+
+}
+
+
+/* =====================================================
+   MESSAGE PRODUIT
+===================================================== */
+
+function afficherMessageFormulaire(
+  texte,
+  erreur
+) {
+
+  const element =
+    document.getElementById(
+      "messageFormulaire"
     );
 
 
-    /* =========================
-       MODIFIER PRODUIT
-    ========================= */
-
-    window.modifierProduit =
-      async function(id) {
-
-        const { data, error } =
-          await client
-            .from("products")
-            .select("*")
-            .eq(
-              "id",
-              id
-            )
-            .single();
+  element.textContent =
+    texte;
 
 
-        if (error) {
-
-          alert(
-            "Impossible de récupérer le produit : " +
-            error.message
-          );
-
-          return;
-
-        }
+  element.className =
+    erreur
+      ? "message message-erreur"
+      : "message message-succes";
 
 
-        produitEnModification =
-          id;
+  element.style.display =
+    "block";
 
 
-        document.getElementById(
-          "nom"
-        ).value =
-          data.nom || "";
+  setTimeout(function() {
+
+    element.style.display =
+      "none";
+
+  }, 4000);
+
+}
 
 
-        document.getElementById(
-          "description"
-        ).value =
-          data.description || "";
+/* =====================================================
+   BIBLIOTHÈQUE
+   CHARGEMENT COMPLET
+===================================================== */
+
+async function chargerBibliotheque() {
+
+  await chargerCategoriesBibliotheque();
+
+  await chargerSousCategoriesBibliotheque();
+
+  await chargerDesignsBibliotheque();
+
+}
 
 
-        document.getElementById(
-          "prix"
-        ).value =
-          data.prix ?? "";
+/* =====================================================
+   CATÉGORIES BIBLIOTHÈQUE
+===================================================== */
+
+async function chargerCategoriesBibliotheque() {
+
+  const { data, error } =
+    await client
+      .from("library_categories")
+      .select("*")
+      .order("ordre", {
+        ascending: true
+      });
 
 
-        document.getElementById(
-          "categorie"
-        ).value =
-          data.categorie_id || "";
+  if (error) {
+
+    console.error(
+      "Erreur catégories bibliothèque :",
+      error
+    );
+
+    return;
+  }
 
 
-        document.getElementById(
-          "statut"
-        ).value =
-          data.statut ||
-          "precommande";
+  const select =
+    document.getElementById(
+      "selectionCategorieBibliotheque"
+    );
 
 
-        document.getElementById(
-          "image_url"
-        ).value =
-          data.image_url || "";
+  select.innerHTML =
+    '<option value="">Choisir une catégorie</option>';
 
 
-        document.getElementById(
-          "visible"
-        ).checked =
-          data.visible !== false;
+  data.forEach(function(categorie) {
+
+    const option =
+      document.createElement("option");
+
+    option.value =
+      categorie.id;
+
+    option.textContent =
+      (categorie.emoji || "📁") +
+      " " +
+      categorie.nom;
+
+    select.appendChild(option);
+
+  });
 
 
-        document.getElementById(
-          "nouveaute"
-        ).checked =
-          data.nouveaute === true;
+  const liste =
+    document.getElementById(
+      "listeCategoriesBibliotheque"
+    );
 
 
-        document.getElementById(
-          "personnalisation_active"
-        ).checked =
-          data.personnalisation_active === true;
+  liste.innerHTML = "";
 
 
-        document.getElementById(
-          "choix_image_active"
-        ).checked =
-          data.choix_image_active === true;
+  data.forEach(function(categorie) {
+
+    const ligne =
+      document.createElement("div");
+
+    ligne.className =
+      "ligne-bibliotheque";
 
 
-        document.getElementById(
-          "photo_client_active"
-        ).checked =
-          data.photo_client_active === true;
+    ligne.innerHTML = `
+
+      <div class="ligne-bibliotheque-info">
+
+        ${echapperHTML(
+          (categorie.emoji || "📁") +
+          " " +
+          categorie.nom
+        )}
+
+      </div>
+
+      <div class="ligne-bibliotheque-actions">
+
+        <button
+          class="btn btn-supprimer"
+          onclick="supprimerCategorieBibliotheque('${categorie.id}')"
+        >
+          🗑️
+        </button>
+
+      </div>
+
+    `;
 
 
-        document.getElementById(
-          "prenom_active"
-        ).checked =
-          data.prenom_active === true;
+    liste.appendChild(ligne);
+
+  });
+
+}
 
 
-        document.getElementById(
-          "message_active"
-        ).checked =
-          data.message_active === true;
+/* =====================================================
+   AJOUTER CATÉGORIE
+===================================================== */
 
+document
+  .getElementById(
+    "boutonAjouterCategorieBibliotheque"
+  )
+  .addEventListener(
+    "click",
+    async function() {
 
-        document.getElementById(
-          "titreFormulaire"
-        ).textContent =
-          "✏️ Modifier le produit";
-
-
-        document.getElementById(
-          "boutonEnregistrer"
-        ).textContent =
-          "💾 Enregistrer les modifications";
-
-
-        document.getElementById(
-          "boutonAnnuler"
-        ).style.display =
-          "inline-block";
-
-
+      const nom =
         document
           .getElementById(
-            "formProduit"
+            "nouvelleCategorieBibliotheque"
           )
-          .scrollIntoView({
-            behavior:
-              "smooth"
-          });
-
-      };
+          .value
+          .trim();
 
 
-    /* =========================
-       SUPPRIMER PRODUIT
-    ========================= */
-
-    window.supprimerProduit =
-      async function(id) {
-
-        const confirmation =
-          confirm(
-            "⚠️ Es-tu sûre de vouloir supprimer ce produit ?"
-          );
+      const emoji =
+        document
+          .getElementById(
+            "emojiCategorieBibliotheque"
+          )
+          .value
+          .trim();
 
 
-        if (!confirmation) {
+      if (!nom) {
 
-          return;
-
-        }
-
-
-        const { error } =
-          await client
-            .from("products")
-            .delete()
-            .eq(
-              "id",
-              id
-            );
-
-
-        if (error) {
-
-          alert(
-            "❌ Impossible de supprimer le produit : " +
-            error.message
-          );
-
-          return;
-
-        }
-
-
-        await chargerProduits();
-
-      };
-
-
-    /* =========================
-       ANNULER
-    ========================= */
-
-    document
-      .getElementById(
-        "boutonAnnuler"
-      )
-      .addEventListener(
-        "click",
-        function() {
-
-          reinitialiserFormulaire();
-
-        }
-      );
-
-
-    function reinitialiserFormulaire() {
-
-      produitEnModification =
-        null;
-
-
-      formulaire.reset();
-
-
-      document.getElementById(
-        "statut"
-      ).value =
-        "precommande";
-
-
-      document.getElementById(
-        "visible"
-      ).checked =
-        true;
-
-
-      document.getElementById(
-        "titreFormulaire"
-      ).textContent =
-        "➕ Ajouter un produit";
-
-
-      document.getElementById(
-        "boutonEnregistrer"
-      ).textContent =
-        "💾 Enregistrer le produit";
-
-
-      document.getElementById(
-        "boutonAnnuler"
-      ).style.display =
-        "none";
-
-    }
-
-
-    /* =========================
-       MESSAGE PRODUIT
-    ========================= */
-
-    function afficherMessageFormulaire(
-      texte,
-      erreur
-    ) {
-
-      const element =
-        document.getElementById(
-          "messageFormulaire"
+        afficherMessageBibliotheque(
+          "❌ Donne un nom à la catégorie.",
+          true
         );
 
-
-      element.textContent =
-        texte;
-
-
-      element.className =
-        erreur
-          ? "message message-erreur"
-          : "message message-succes";
+        return;
+      }
 
 
-      element.style.display =
-        "block";
+      const { error } =
+        await client
+          .from("library_categories")
+          .insert([{
+            nom,
+            emoji: emoji || "📁"
+          }]);
 
 
-      setTimeout(
-        function() {
+      if (error) {
 
-          element.style.display =
-            "none";
+        console.error(error);
 
-        },
-        4000
-      );
+        afficherMessageBibliotheque(
+          "❌ " + error.message,
+          true
+        );
 
-    }
-
-
-    /* =====================================================
-       BIBLIOTHÈQUE
-    ===================================================== */
+        return;
+      }
 
 
-    let categoriesBibliotheque =
-      [];
+      document.getElementById(
+        "nouvelleCategorieBibliotheque"
+      ).value = "";
 
 
-    let sousCategoriesBibliotheque =
-      [];
+      document.getElementById(
+        "emojiCategorieBibliotheque"
+      ).value = "";
 
-
-    /* =========================
-       CHARGER BIBLIOTHÈQUE
-    ========================= */
-
-    async function chargerBibliotheque() {
 
       await chargerCategoriesBibliotheque();
 
-    }
 
-
-    /* =========================
-       CATÉGORIES BIBLIOTHÈQUE
-    ========================= */
-
-    async function chargerCategoriesBibliotheque() {
-
-      const { data, error } =
-        await client
-          .from(
-            "library_categories"
-          )
-          .select(
-            "id, nom, emoji, ordre, visible"
-          )
-          .order(
-            "ordre",
-            {
-              ascending:
-                true
-            }
-          );
-
-
-      if (error) {
-
-        console.error(
-          "Erreur catégories bibliothèque :",
-          error
-        );
-
-        return;
-
-      }
-
-
-      categoriesBibliotheque =
-        data || [];
-
-
-      remplirSelectCategoriesBibliotheque();
-
-
-      afficherListeCategoriesBibliotheque();
-
-    }
-
-
-    /* =========================
-       REMPLIR SELECTS
-    ========================= */
-
-    function remplirSelectCategoriesBibliotheque() {
-
-      const selects = [
-
-        document.getElementById(
-          "bibliothequeCategorieAdmin"
-        ),
-
-        document.getElementById(
-          "categorieDesign"
-        ),
-
-        document.getElementById(
-          "categorieAffichageDesign"
-        )
-
-      ];
-
-
-      selects.forEach(
-        function(select) {
-
-          if (!select) {
-
-            return;
-
-          }
-
-
-          select.innerHTML =
-            '<option value="">Choisir une catégorie</option>';
-
-
-          categoriesBibliotheque.forEach(
-            function(categorie) {
-
-              const option =
-                document.createElement(
-                  "option"
-                );
-
-
-              option.value =
-                categorie.id;
-
-
-              option.textContent =
-                (
-                  categorie.emoji ||
-                  "📁"
-                ) +
-                " " +
-                categorie.nom;
-
-
-              select.appendChild(
-                option
-              );
-
-            }
-          );
-
-        }
+      afficherMessageBibliotheque(
+        "✅ Catégorie ajoutée !",
+        false
       );
 
     }
+  );
 
 
-    /* =========================
-       AFFICHER CATÉGORIES
-    ========================= */
+/* =====================================================
+   SUPPRIMER CATÉGORIE
+===================================================== */
 
-    function afficherListeCategoriesBibliotheque() {
+window.supprimerCategorieBibliotheque =
+  async function(id) {
 
-      const liste =
-        document.getElementById(
-          "listeCategoriesBibliotheque"
-        );
-
-
-      liste.innerHTML =
-        "";
-
-
-      if (
-        categoriesBibliotheque.length ===
-        0
-      ) {
-
-        liste.innerHTML =
-          '<div class="vide">Aucune catégorie créée.</div>';
-
-        return;
-
-      }
-
-
-      categoriesBibliotheque.forEach(
-        function(categorie) {
-
-          const element =
-            document.createElement(
-              "div"
-            );
-
-
-          element.className =
-            "element-bibliotheque";
-
-
-          element.innerHTML = `
-
-            <div class="element-bibliotheque-info">
-
-              <strong>
-                ${
-                  categorie.emoji ||
-                  "📁"
-                }
-                ${
-                  echapperHTML(
-                    categorie.nom
-                  )
-                }
-              </strong>
-
-              <small>
-                ${
-                  categorie.visible
-                    ? "Visible"
-                    : "Masquée"
-                }
-              </small>
-
-            </div>
-
-            <button
-              class="btn btn-supprimer"
-              type="button"
-              onclick="supprimerCategorieBibliotheque('${categorie.id}')"
-            >
-              🗑️
-            </button>
-
-          `;
-
-
-          liste.appendChild(
-            element
-          );
-
-        }
-      );
-
-    }
-
-
-    /* =========================
-       CRÉER CATÉGORIE
-    ========================= */
-
-    document
-      .getElementById(
-        "boutonCreerCategorieBibliotheque"
+    if (
+      !confirm(
+        "⚠️ Supprimer cette catégorie et ses sous-catégories ?"
       )
-      .addEventListener(
-        "click",
-        async function() {
-
-          const nom =
-            document
-              .getElementById(
-                "nouvelleCategorieBibliotheque"
-              )
-              .value
-              .trim();
-
-
-          const emoji =
-            document
-              .getElementById(
-                "emojiCategorieBibliotheque"
-              )
-              .value
-              .trim();
-
-
-          if (!nom) {
-
-            afficherMessageBibliotheque(
-              "❌ Indique le nom de la catégorie.",
-              true
-            );
-
-            return;
-
-          }
-
-
-          const ordre =
-            categoriesBibliotheque.length;
-
-
-          const { error } =
-            await client
-              .from(
-                "library_categories"
-              )
-              .insert([
-                {
-                  nom,
-                  emoji:
-                    emoji || "📁",
-                  ordre,
-                  visible:
-                    true
-                }
-              ]);
-
-
-          if (error) {
-
-            afficherMessageBibliotheque(
-              "❌ " +
-              error.message,
-              true
-            );
-
-            return;
-
-          }
-
-
-          document.getElementById(
-            "nouvelleCategorieBibliotheque"
-          ).value =
-            "";
-
-
-          document.getElementById(
-            "emojiCategorieBibliotheque"
-          ).value =
-            "";
-
-
-          await chargerCategoriesBibliotheque();
-
-
-          afficherMessageBibliotheque(
-            "✅ Catégorie créée !",
-            false
-          );
-
-        }
-      );
-
-
-    /* =========================
-       SUPPRIMER CATÉGORIE
-    ========================= */
-
-    window.supprimerCategorieBibliotheque =
-      async function(id) {
-
-        const confirmation =
-          confirm(
-            "⚠️ Supprimer cette catégorie et toutes ses sous-catégories ?"
-          );
-
-
-        if (!confirmation) {
-
-          return;
-
-        }
-
-
-        const { error } =
-          await client
-            .from(
-              "library_categories"
-            )
-            .delete()
-            .eq(
-              "id",
-              id
-            );
-
-
-        if (error) {
-
-          afficherMessageBibliotheque(
-            "❌ " +
-            error.message,
-            true
-          );
-
-          return;
-
-        }
-
-
-        await chargerCategoriesBibliotheque();
-
-        afficherMessageBibliotheque(
-          "✅ Catégorie supprimée.",
-          false
-        );
-
-      };
-
-
-    /* =========================
-       CHANGEMENT CATÉGORIE
-    ========================= */
-
-    document
-      .getElementById(
-        "bibliothequeCategorieAdmin"
-      )
-      .addEventListener(
-        "change",
-        async function() {
-
-          const categoryId =
-            this.value;
-
-
-          await chargerSousCategories(
-            categoryId,
-            "listeSousCategoriesBibliotheque"
-          );
-
-        }
-      );
-
-
-    document
-      .getElementById(
-        "categorieDesign"
-      )
-      .addEventListener(
-        "change",
-        async function() {
-
-          await remplirSousCategoriesSelect(
-            this.value,
-            "sousCategorieDesign"
-          );
-
-        }
-      );
-
-
-    document
-      .getElementById(
-        "categorieAffichageDesign"
-      )
-      .addEventListener(
-        "change",
-        async function() {
-
-          await remplirSousCategoriesSelect(
-            this.value,
-            "sousCategorieAffichageDesign"
-          );
-
-
-          document.getElementById(
-            "listeDesigns"
-          ).innerHTML =
-            "";
-
-        }
-      );
-
-
-    /* =========================
-       CHARGER SOUS-CATÉGORIES
-    ========================= */
-
-    async function chargerSousCategories(
-      categoryId,
-      elementId
     ) {
+      return;
+    }
 
-      const element =
+
+    const { error } =
+      await client
+        .from("library_categories")
+        .delete()
+        .eq("id", id);
+
+
+    if (error) {
+
+      alert(
+        "❌ " + error.message
+      );
+
+      return;
+    }
+
+
+    await chargerBibliotheque();
+
+  };
+
+
+/* =====================================================
+   SOUS-CATÉGORIES
+===================================================== */
+
+document
+  .getElementById(
+    "selectionCategorieBibliotheque"
+  )
+  .addEventListener(
+    "change",
+    async function() {
+
+      await chargerSousCategoriesBibliotheque();
+
+    }
+  );
+
+
+async function chargerSousCategoriesBibliotheque() {
+
+  const categoryId =
+    document.getElementById(
+      "selectionCategorieBibliotheque"
+    ).value;
+
+
+  const select =
+    document.getElementById(
+      "selectionSousCategorieBibliotheque"
+    );
+
+
+  select.innerHTML =
+    '<option value="">Choisir une sous-catégorie</option>';
+
+
+  const liste =
+    document.getElementById(
+      "listeSousCategoriesBibliotheque"
+    );
+
+
+  liste.innerHTML = "";
+
+
+  if (!categoryId) {
+
+    return;
+  }
+
+
+  const { data, error } =
+    await client
+      .from("library_subcategories")
+      .select("*")
+      .eq(
+        "category_id",
+        categoryId
+      )
+      .order("ordre", {
+        ascending: true
+      });
+
+
+  if (error) {
+
+    console.error(error);
+
+    return;
+  }
+
+
+  data.forEach(function(sousCategorie) {
+
+    const option =
+      document.createElement("option");
+
+    option.value =
+      sousCategorie.id;
+
+    option.textContent =
+      "📂 " +
+      sousCategorie.nom;
+
+    select.appendChild(option);
+
+
+    const ligne =
+      document.createElement("div");
+
+    ligne.className =
+      "ligne-bibliotheque";
+
+
+    ligne.innerHTML = `
+
+      <div class="ligne-bibliotheque-info">
+
+        📂
+        ${echapperHTML(
+          sousCategorie.nom
+        )}
+
+      </div>
+
+      <div class="ligne-bibliotheque-actions">
+
+        <button
+          class="btn btn-supprimer"
+          onclick="supprimerSousCategorieBibliotheque('${sousCategorie.id}')"
+        >
+          🗑️
+        </button>
+
+      </div>
+
+    `;
+
+
+    liste.appendChild(ligne);
+
+  });
+
+
+  await chargerDesignsBibliotheque();
+
+}
+
+
+/* =====================================================
+   AJOUTER SOUS-CATÉGORIE
+===================================================== */
+
+document
+  .getElementById(
+    "boutonAjouterSousCategorie"
+  )
+  .addEventListener(
+    "click",
+    async function() {
+
+      const categoryId =
         document.getElementById(
-          elementId
-        );
+          "selectionCategorieBibliotheque"
+        ).value;
 
 
-      if (!element) {
-
-        return;
-
-      }
+      const nom =
+        document
+          .getElementById(
+            "nouvelleSousCategorieBibliotheque"
+          )
+          .value
+          .trim();
 
 
       if (!categoryId) {
 
-        element.innerHTML =
-          '<div class="vide">Choisis une catégorie.</div>';
+        afficherMessageBibliotheque(
+          "❌ Choisis d'abord une catégorie.",
+          true
+        );
 
         return;
-
       }
 
 
-      const { data, error } =
+      if (!nom) {
+
+        afficherMessageBibliotheque(
+          "❌ Donne un nom à la sous-catégorie.",
+          true
+        );
+
+        return;
+      }
+
+
+      const { error } =
         await client
-          .from(
-            "library_subcategories"
-          )
-          .select(
-            "id, nom, ordre, visible"
-          )
-          .eq(
-            "category_id",
-            categoryId
-          )
-          .order(
-            "ordre",
-            {
-              ascending:
-                true
-            }
-          );
+          .from("library_subcategories")
+          .insert([{
+            category_id: categoryId,
+            nom
+          }]);
 
 
       if (error) {
 
-        console.error(
-          error
+        console.error(error);
+
+        afficherMessageBibliotheque(
+          "❌ " + error.message,
+          true
         );
 
         return;
-
       }
 
 
-      sousCategoriesBibliotheque =
-        data || [];
+      document.getElementById(
+        "nouvelleSousCategorieBibliotheque"
+      ).value = "";
 
 
-      element.innerHTML =
-        "";
+      await chargerSousCategoriesBibliotheque();
 
 
-      if (
-        sousCategoriesBibliotheque.length ===
-        0
-      ) {
-
-        element.innerHTML =
-          '<div class="vide">Aucune sous-catégorie.</div>';
-
-        return;
-
-      }
-
-
-      sousCategoriesBibliotheque.forEach(
-        function(sousCategorie) {
-
-          const div =
-            document.createElement(
-              "div"
-            );
-
-
-          div.className =
-            "element-bibliotheque";
-
-
-          div.innerHTML = `
-
-            <div class="element-bibliotheque-info">
-
-              <strong>
-                📂
-                ${
-                  echapperHTML(
-                    sousCategorie.nom
-                  )
-                }
-              </strong>
-
-              <small>
-                ${
-                  sousCategorie.visible
-                    ? "Visible"
-                    : "Masquée"
-                }
-              </small>
-
-            </div>
-
-            <button
-              class="btn btn-supprimer"
-              type="button"
-              onclick="supprimerSousCategorieBibliotheque('${sousCategorie.id}')"
-            >
-              🗑️
-            </button>
-
-          `;
-
-
-          element.appendChild(
-            div
-          );
-
-        }
+      afficherMessageBibliotheque(
+        "✅ Sous-catégorie ajoutée !",
+        false
       );
 
     }
+  );
 
 
-    /* =========================
-       REMPLIR SELECT
-    ========================= */
+/* =====================================================
+   SUPPRIMER SOUS-CATÉGORIE
+===================================================== */
 
-    async function remplirSousCategoriesSelect(
-      categoryId,
-      selectId
+window.supprimerSousCategorieBibliotheque =
+  async function(id) {
+
+    if (
+      !confirm(
+        "⚠️ Supprimer cette sous-catégorie et ses designs ?"
+      )
     ) {
+      return;
+    }
 
-      const select =
+
+    const { error } =
+      await client
+        .from("library_subcategories")
+        .delete()
+        .eq("id", id);
+
+
+    if (error) {
+
+      alert(
+        "❌ " + error.message
+      );
+
+      return;
+    }
+
+
+    await chargerSousCategoriesBibliotheque();
+
+  };
+
+
+/* =====================================================
+   DESIGNS
+===================================================== */
+
+document
+  .getElementById(
+    "selectionSousCategorieBibliotheque"
+  )
+  .addEventListener(
+    "change",
+    async function() {
+
+      await chargerDesignsBibliotheque();
+
+    }
+  );
+
+
+async function chargerDesignsBibliotheque() {
+
+  const subcategoryId =
+    document.getElementById(
+      "selectionSousCategorieBibliotheque"
+    ).value;
+
+
+  const liste =
+    document.getElementById(
+      "listeDesignsBibliotheque"
+    );
+
+
+  liste.innerHTML = "";
+
+
+  if (!subcategoryId) {
+
+    return;
+  }
+
+
+  const { data, error } =
+    await client
+      .from("library_designs")
+      .select("*")
+      .eq(
+        "subcategory_id",
+        subcategoryId
+      )
+      .order("ordre", {
+        ascending: true
+      });
+
+
+  if (error) {
+
+    console.error(error);
+
+    return;
+  }
+
+
+  data.forEach(function(design) {
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "design-card";
+
+
+    card.innerHTML = `
+
+      <img
+        src="${echapperHTML(design.image_url)}"
+        alt="${echapperHTML(design.nom)}"
+      >
+
+      <div class="design-card-info">
+
+        <strong>
+          ${echapperHTML(design.nom)}
+        </strong>
+
+        <div class="design-card-actions">
+
+          <button
+            class="design-modifier"
+            onclick="renommerDesignBibliotheque('${design.id}', '${echapperJS(design.nom)}')"
+          >
+            ✏️
+          </button>
+
+          <button
+            class="design-supprimer"
+            onclick="supprimerDesignBibliotheque('${design.id}')"
+          >
+            🗑️
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+
+    liste.appendChild(card);
+
+  });
+
+}
+
+
+/* =====================================================
+   AJOUTER DES DESIGNS
+===================================================== */
+
+document
+  .getElementById(
+    "boutonAjouterDesigns"
+  )
+  .addEventListener(
+    "click",
+    async function() {
+
+      const subcategoryId =
         document.getElementById(
-          selectId
+          "selectionSousCategorieBibliotheque"
+        ).value;
+
+
+      const fichiers =
+        document.getElementById(
+          "fichiersBibliotheque"
+        ).files;
+
+
+      if (!subcategoryId) {
+
+        afficherMessageBibliotheque(
+          "❌ Choisis une sous-catégorie.",
+          true
         );
 
-
-      if (!select) {
-
         return;
-
       }
 
 
-      select.innerHTML =
-        '<option value="">Choisir une sous-catégorie</option>';
+      if (!fichiers.length) {
+
+        afficherMessageBibliotheque(
+          "❌ Choisis au moins une image.",
+          true
+        );
+
+        return;
+      }
 
 
-      select.disabled =
+      const bouton =
+        document.getElementById(
+          "boutonAjouterDesigns"
+        );
+
+
+      bouton.disabled =
         true;
 
-
-      if (!categoryId) {
-
-        return;
-
-      }
+      bouton.textContent =
+        "⏳ Ajout en cours...";
 
 
-      const { data, error } =
-        await client
-          .from(
-            "library_subcategories"
-          )
-          .select(
-            "id, nom, ordre"
-          )
-          .eq(
-            "category_id",
-            categoryId
-          )
-          .order(
-            "ordre",
-            {
-              ascending:
-                true
-            }
-          );
+      try {
+
+        for (
+          let i = 0;
+          i < fichiers.length;
+          i++
+        ) {
+
+          const fichier =
+            fichiers[i];
 
 
-      if (error) {
-
-        console.error(
-          error
-        );
-
-        return;
-
-      }
-
-
-      (data || []).forEach(
-        function(sousCategorie) {
-
-          const option =
-            document.createElement(
-              "option"
-            );
+          const nomFichier =
+            Date.now() +
+            "_" +
+            Math.random()
+              .toString(36)
+              .substring(2) +
+            "_" +
+            fichier.name;
 
 
-          option.value =
-            sousCategorie.id;
+          const chemin =
+            "designs/" +
+            nomFichier;
 
 
-          option.textContent =
-            "📂 " +
-            sousCategorie.nom;
-
-
-          select.appendChild(
-            option
-          );
-
-        }
-      );
-
-
-      if (
-        data &&
-        data.length > 0
-      ) {
-
-        select.disabled =
-          false;
-
-      }
-
-    }
-
-
-    /* =========================
-       CRÉER SOUS-CATÉGORIE
-    ========================= */
-
-    document
-      .getElementById(
-        "boutonCreerSousCategorieBibliotheque"
-      )
-      .addEventListener(
-        "click",
-        async function() {
-
-          const categoryId =
-            document
-              .getElementById(
-                "bibliothequeCategorieAdmin"
-              )
-              .value;
-
-
-          const nom =
-            document
-              .getElementById(
-                "nouvelleSousCategorieBibliotheque"
-              )
-              .value
-              .trim();
-
-
-          if (!categoryId) {
-
-            afficherMessageBibliotheque(
-              "❌ Choisis une catégorie.",
-              true
-            );
-
-            return;
-
-          }
-
-
-          if (!nom) {
-
-            afficherMessageBibliotheque(
-              "❌ Indique le nom de la sous-catégorie.",
-              true
-            );
-
-            return;
-
-          }
-
-
-          const { data: existantes } =
-            await client
-              .from(
-                "library_subcategories"
-              )
-              .select(
-                "id"
-              )
-              .eq(
-                "category_id",
-                categoryId
-              );
-
-
-          const ordre =
-            existantes
-              ? existantes.length
-              : 0;
-
-
-          const { error } =
-            await client
-              .from(
-                "library_subcategories"
-              )
-              .insert([
+          const resultatUpload =
+            await client.storage
+              .from("product-library")
+              .upload(
+                chemin,
+                fichier,
                 {
-                  category_id:
-                    categoryId,
-
-                  nom,
-
-                  ordre,
-
-                  visible:
-                    true
+                  cacheControl: "3600",
+                  upsert: false
                 }
-              ]);
-
-
-          if (error) {
-
-            afficherMessageBibliotheque(
-              "❌ " +
-              error.message,
-              true
-            );
-
-            return;
-
-          }
-
-
-          document.getElementById(
-            "nouvelleSousCategorieBibliotheque"
-          ).value =
-            "";
-
-
-          await chargerSousCategories(
-            categoryId,
-            "listeSousCategoriesBibliotheque"
-          );
-
-
-          await remplirSousCategoriesSelect(
-            categoryId,
-            "sousCategorieDesign"
-          );
-
-
-          await remplirSousCategoriesSelect(
-            categoryId,
-            "sousCategorieAffichageDesign"
-          );
-
-
-          afficherMessageBibliotheque(
-            "✅ Sous-catégorie créée !",
-            false
-          );
-
-        }
-      );
-
-
-    /* =========================
-       SUPPRIMER SOUS-CATÉGORIE
-    ========================= */
-
-    window.supprimerSousCategorieBibliotheque =
-      async function(id) {
-
-        const confirmation =
-          confirm(
-            "⚠️ Supprimer cette sous-catégorie et ses designs ?"
-          );
-
-
-        if (!confirmation) {
-
-          return;
-
-        }
-
-
-        const { error } =
-          await client
-            .from(
-              "library_subcategories"
-            )
-            .delete()
-            .eq(
-              "id",
-              id
-            );
-
-
-        if (error) {
-
-          afficherMessageBibliotheque(
-            "❌ " +
-            error.message,
-            true
-          );
-
-          return;
-
-        }
-
-
-        const categoryId =
-          document.getElementById(
-            "bibliothequeCategorieAdmin"
-          ).value;
-
-
-        await chargerSousCategories(
-          categoryId,
-          "listeSousCategoriesBibliotheque"
-        );
-
-
-        afficherMessageBibliotheque(
-          "✅ Sous-catégorie supprimée.",
-          false
-        );
-
-      };
-
-
-    /* =========================
-       AJOUTER DESIGNS
-    ========================= */
-
-    document
-      .getElementById(
-        "boutonAjouterDesigns"
-      )
-      .addEventListener(
-        "click",
-        async function() {
-
-          const sousCategorieId =
-            document
-              .getElementById(
-                "sousCategorieDesign"
-              )
-              .value;
-
-
-          const fichiers =
-            document.getElementById(
-              "fichiersDesign"
-            ).files;
-
-
-          if (!sousCategorieId) {
-
-            afficherMessageBibliotheque(
-              "❌ Choisis une sous-catégorie.",
-              true
-            );
-
-            return;
-
-          }
+              );
 
 
           if (
-            !fichiers ||
-            fichiers.length === 0
+            resultatUpload.error
           ) {
 
-            afficherMessageBibliotheque(
-              "❌ Choisis au moins une image.",
-              true
-            );
-
-            return;
+            throw resultatUpload.error;
 
           }
 
 
-          const bouton =
-            document.getElementById(
-              "boutonAjouterDesigns"
-            );
+          const resultatURL =
+            client.storage
+              .from("product-library")
+              .getPublicUrl(
+                chemin
+              );
 
 
-          bouton.disabled =
-            true;
+          const image_url =
+            resultatURL.data.publicUrl;
 
 
-          bouton.textContent =
-            "⏳ Ajout des designs...";
+          const nom =
+            fichier.name
+              .replace(/\.[^/.]+$/, "");
 
 
-          try {
-
-            for (
-              let i = 0;
-              i < fichiers.length;
-              i++
-            ) {
-
-              const fichier =
-                fichiers[i];
-
-
-              const extension =
-                fichier.name
-                  .split(".")
-                  .pop()
-                  .toLowerCase();
+          const resultatInsert =
+            await client
+              .from("library_designs")
+              .insert([{
+                subcategory_id:
+                  subcategoryId,
+                nom,
+                image_url
+              }]);
 
 
-              const nomFichier =
-                crypto.randomUUID() +
-                "." +
-                extension;
+          if (
+            resultatInsert.error
+          ) {
 
-
-              const chemin =
-                "designs/" +
-                nomFichier;
-
-
-              const upload =
-                await client.storage
-                  .from(
-                    "product-library"
-                  )
-                  .upload(
-                    chemin,
-                    fichier,
-                    {
-                      upsert:
-                        false,
-
-                      contentType:
-                        fichier.type
-                    }
-                  );
-
-
-              if (
-                upload.error
-              ) {
-
-                throw upload.error;
-
-              }
-
-
-              const urlResultat =
-                client.storage
-                  .from(
-                    "product-library"
-                  )
-                  .getPublicUrl(
-                    chemin
-                  );
-
-
-              const imageUrl =
-                urlResultat
-                  .data
-                  .publicUrl;
-
-
-              const { data:
-                designsExistants
-              } =
-                await client
-                  .from(
-                    "library_designs"
-                  )
-                  .select(
-                    "id"
-                  )
-                  .eq(
-                    "subcategory_id",
-                    sousCategorieId
-                  );
-
-
-              const ordre =
-                designsExistants
-                  ? designsExistants.length
-                  : 0;
-
-
-              const { error:
-                insertionError
-              } =
-                await client
-                  .from(
-                    "library_designs"
-                  )
-                  .insert([
-                    {
-                      subcategory_id:
-                        sousCategorieId,
-
-                      nom:
-                        fichier.name
-                          .replace(
-                            /\.[^/.]+$/,
-                            ""
-                          ),
-
-                      image_url:
-                        imageUrl,
-
-                      ordre,
-
-                      visible:
-                        true
-                    }
-                  ]);
-
-
-              if (
-                insertionError
-              ) {
-
-                throw insertionError;
-
-              }
-
-            }
-
-
-            document.getElementById(
-              "fichiersDesign"
-            ).value =
-              "";
-
-
-            afficherMessageBibliotheque(
-              "✅ Les designs ont été ajoutés !",
-              false
-            );
-
-
-            await afficherDesigns();
-
-
-          } catch (error) {
-
-            console.error(
-              error
-            );
-
-
-            afficherMessageBibliotheque(
-              "❌ " +
-              error.message,
-              true
-            );
+            throw resultatInsert.error;
 
           }
 
-
-          bouton.disabled =
-            false;
-
-
-          bouton.textContent =
-            "🖼️ Ajouter les designs";
-
         }
-      );
 
 
-    /* =========================
-       AFFICHER DESIGNS
-    ========================= */
-
-    document
-      .getElementById(
-        "sousCategorieAffichageDesign"
-      )
-      .addEventListener(
-        "change",
-        afficherDesigns
-      );
-
-
-    async function afficherDesigns() {
-
-      const sousCategorieId =
-        document
-          .getElementById(
-            "sousCategorieAffichageDesign"
-          )
-          .value;
-
-
-      const liste =
         document.getElementById(
-          "listeDesigns"
+          "fichiersBibliotheque"
+        ).value = "";
+
+
+        await chargerDesignsBibliotheque();
+
+
+        afficherMessageBibliotheque(
+          "✅ Designs ajoutés !",
+          false
         );
 
 
-      liste.innerHTML =
-        "";
+      } catch (erreur) {
 
+        console.error(erreur);
 
-      if (!sousCategorieId) {
-
-        return;
-
-      }
-
-
-      const { data, error } =
-        await client
-          .from(
-            "library_designs"
-          )
-          .select(
-            "id, nom, image_url, ordre, visible"
-          )
-          .eq(
-            "subcategory_id",
-            sousCategorieId
-          )
-          .order(
-            "ordre",
-            {
-              ascending:
-                true
-            }
-          );
-
-
-      if (error) {
-
-        liste.innerHTML =
-          '<div class="vide">❌ Impossible de charger les designs.</div>';
-
-        console.error(
-          error
+        afficherMessageBibliotheque(
+          "❌ " + erreur.message,
+          true
         );
 
-        return;
+      } finally {
+
+        bouton.disabled =
+          false;
+
+        bouton.textContent =
+          "🖼️ Ajouter les designs";
 
       }
-
-
-      if (
-        !data ||
-        data.length === 0
-      ) {
-
-        liste.innerHTML =
-          '<div class="vide">Aucun design dans cette sous-catégorie.</div>';
-
-        return;
-
-      }
-
-
-      data.forEach(
-        function(design) {
-
-          const card =
-            document.createElement(
-              "div"
-            );
-
-
-          card.className =
-            "design-card";
-
-
-          card.innerHTML = `
-
-            <img
-              src="${echapperHTML(
-                design.image_url
-              )}"
-              alt="${echapperHTML(
-                design.nom
-              )}"
-            >
-
-            <div class="design-card-info">
-
-              <strong>
-                ${echapperHTML(
-                  design.nom
-                )}
-              </strong>
-
-              <button
-                type="button"
-                onclick="supprimerDesign('${design.id}')"
-              >
-                🗑️ Supprimer
-              </button>
-
-            </div>
-
-          `;
-
-
-          liste.appendChild(
-            card
-          );
-
-        }
-      );
 
     }
+  );
 
 
-    /* =========================
-       SUPPRIMER DESIGN
-    ========================= */
+/* =====================================================
+   RENOMMER DESIGN
+===================================================== */
 
-    window.supprimerDesign =
-      async function(id) {
+window.renommerDesignBibliotheque =
+  async function(id, ancienNom) {
 
-        const confirmation =
-          confirm(
-            "⚠️ Supprimer définitivement ce design ?"
-          );
-
-
-        if (!confirmation) {
-
-          return;
-
-        }
+    const nouveauNom =
+      prompt(
+        "Nouveau nom du design :",
+        ancienNom
+      );
 
 
-        const { data, error } =
-          await client
-            .from(
-              "library_designs"
-            )
-            .select(
-              "image_url"
-            )
-            .eq(
-              "id",
-              id
-            )
-            .single();
-
-
-        if (error) {
-
-          alert(
-            "❌ Impossible de récupérer le design : " +
-            error.message
-          );
-
-          return;
-
-        }
-
-
-        const { error:
-          suppressionErreur
-        } =
-          await client
-            .from(
-              "library_designs"
-            )
-            .delete()
-            .eq(
-              "id",
-              id
-            );
-
-
-        if (
-          suppressionErreur
-        ) {
-
-          alert(
-            "❌ Impossible de supprimer le design : " +
-            suppressionErreur.message
-          );
-
-          return;
-
-        }
-
-
-        await afficherDesigns();
-
-      };
-
-
-    /* =========================
-       MESSAGE BIBLIOTHÈQUE
-    ========================= */
-
-    function afficherMessageBibliotheque(
-      texte,
-      erreur
+    if (
+      !nouveauNom ||
+      !nouveauNom.trim()
     ) {
 
-      const element =
-        document.getElementById(
-          "messageBibliotheque"
-        );
-
-
-      element.textContent =
-        texte;
-
-
-      element.className =
-        erreur
-          ? "message message-erreur"
-          : "message message-succes";
-
-
-      element.style.display =
-        "block";
-
-
-      setTimeout(
-        function() {
-
-          element.style.display =
-            "none";
-
-        },
-        4000
-      );
-
+      return;
     }
 
 
-    /* =========================
-       ACTUALISER PRODUITS
-    ========================= */
+    const { error } =
+      await client
+        .from("library_designs")
+        .update({
+          nom: nouveauNom.trim()
+        })
+        .eq("id", id);
 
-    document
-      .getElementById(
-        "boutonActualiser"
-      )
-      .addEventListener(
-        "click",
-        chargerProduits
+
+    if (error) {
+
+      alert(
+        "❌ " + error.message
       );
 
+      return;
+    }
 
-    /* =========================
-       PROTECTION HTML
-    ========================= */
 
-    function echapperHTML(
-      texte
+    await chargerDesignsBibliotheque();
+
+  };
+
+
+/* =====================================================
+   SUPPRIMER DESIGN
+===================================================== */
+
+window.supprimerDesignBibliotheque =
+  async function(id) {
+
+    if (
+      !confirm(
+        "⚠️ Supprimer ce design de la bibliothèque ?"
+      )
     ) {
 
-      if (!texte) {
-
-        return "";
-
-      }
-
-
-      return String(
-        texte
-      )
-        .replace(
-          /&/g,
-          "&amp;"
-        )
-        .replace(
-          /</g,
-          "&lt;"
-        )
-        .replace(
-          />/g,
-          "&gt;"
-        )
-        .replace(
-          /"/g,
-          "&quot;"
-        )
-        .replace(
-          /'/g,
-          "&#039;"
-        );
-
+      return;
     }
 
 
-    /* =========================
-       DEMARRAGE
-    ========================= */
+    const { error } =
+      await client
+        .from("library_designs")
+        .delete()
+        .eq("id", id);
 
-    verifierSession();
 
-  </script>
+    if (error) {
+
+      alert(
+        "❌ " + error.message
+      );
+
+      return;
+    }
+
+
+    await chargerDesignsBibliotheque();
+
+  };
+
+
+/* =====================================================
+   MESSAGE BIBLIOTHÈQUE
+===================================================== */
+
+function afficherMessageBibliotheque(
+  texte,
+  erreur
+) {
+
+  const element =
+    document.getElementById(
+      "messageBibliotheque"
+    );
+
+
+  element.textContent =
+    texte;
+
+
+  element.className =
+    erreur
+      ? "message message-erreur"
+      : "message message-succes";
+
+
+  element.style.display =
+    "block";
+
+
+  setTimeout(function() {
+
+    element.style.display =
+      "none";
+
+  }, 4000);
+
+}
+
+
+/* =====================================================
+   ACTUALISER
+===================================================== */
+
+document
+  .getElementById("boutonActualiser")
+  .addEventListener(
+    "click",
+    chargerProduits
+  );
+
+
+/* =====================================================
+   PROTECTION HTML
+===================================================== */
+
+function echapperHTML(texte) {
+
+  if (!texte) {
+    return "";
+  }
+
+  return String(texte)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+function echapperJS(texte) {
+
+  return String(texte || "")
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'");
+
+}
+
+
+/* =====================================================
+   DEMARRAGE
+===================================================== */
+
+verifierSession();
+
+</script>
 
 </body>
-
 </html>
