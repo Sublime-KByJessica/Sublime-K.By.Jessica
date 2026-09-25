@@ -24,6 +24,8 @@
       --vert-clair: #E1E9D8;
       --orange-clair: #F1DDE1;
       --gris-clair: #EEE9E8;
+      --danger: #F3E0E0;
+      --danger-texte: #8B4F4F;
     }
 
     * {
@@ -89,14 +91,10 @@
       outline: none;
     }
 
-    .connexion-card input:focus {
-      border-color: var(--rose);
-    }
-
     .btn {
       border: none;
       border-radius: 12px;
-      padding: 13px 18px;
+      padding: 12px 16px;
       font-weight: bold;
       transition: 0.2s;
     }
@@ -176,7 +174,7 @@
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 15px;
       margin: 25px 0;
     }
@@ -189,7 +187,7 @@
     }
 
     .stat-card .nombre {
-      font-size: 32px;
+      font-size: 30px;
       font-weight: bold;
       color: var(--rose-fonce);
     }
@@ -214,6 +212,10 @@
     .bloc h2 {
       margin-top: 0;
       color: var(--sauge-fonce);
+    }
+
+    .bloc h3 {
+      color: var(--rose-fonce);
     }
 
     /* =========================
@@ -289,6 +291,75 @@
     }
 
     /* =========================
+       STOCK
+    ========================= */
+
+    .stock-box {
+      margin-top: 20px;
+      padding: 18px;
+      border: 1px solid var(--bordure);
+      border-radius: 16px;
+      background: #FAF7F5;
+    }
+
+    .stock-info {
+      color: #766B6D;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    .stock-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .stock-actions button {
+      min-width: 42px;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+
+    .stock-moins {
+      background: var(--danger);
+      color: var(--danger-texte);
+    }
+
+    .stock-plus {
+      background: var(--vert-clair);
+      color: var(--sauge-fonce);
+    }
+
+    .stock-actions input {
+      width: 100px;
+      text-align: center;
+      padding: 10px;
+      border: 1px solid var(--bordure);
+      border-radius: 10px;
+    }
+
+    .stock-rupture {
+      color: var(--danger-texte);
+      font-weight: bold;
+    }
+
+    /* =========================
+       PRÉCOMMANDE
+    ========================= */
+
+    .precommande-box {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 16px;
+      background: var(--orange-clair);
+      border: 1px solid var(--rose-poudre);
+    }
+
+    /* =========================
        PERSONNALISATION
     ========================= */
 
@@ -302,7 +373,6 @@
 
     .personnalisation-admin h3 {
       margin-top: 0;
-      color: var(--rose-fonce);
     }
 
     .personnalisation-aide {
@@ -344,7 +414,7 @@
     }
 
     .produit-info p {
-      margin: 4px 0;
+      margin: 5px 0;
       color: #766B6D;
       font-size: 14px;
     }
@@ -361,8 +431,8 @@
     }
 
     .btn-supprimer {
-      background: #F3E0E0;
-      color: #8B4F4F;
+      background: var(--danger);
+      color: var(--danger-texte);
     }
 
     .statut {
@@ -388,8 +458,103 @@
       color: #6B6264;
     }
 
+    .rupture {
+      background: var(--danger);
+      color: var(--danger-texte);
+    }
+
     /* =========================
-       BIBLIOTHÈQUE INDÉPENDANTE
+       LIVRAISON
+    ========================= */
+
+    .livraison-intro {
+      padding: 15px;
+      background: #F8F4F2;
+      border: 1px solid var(--rose-poudre);
+      border-radius: 15px;
+      margin-bottom: 20px;
+    }
+
+    .methode-livraison {
+      border: 1px solid var(--bordure);
+      border-radius: 15px;
+      padding: 16px;
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .methode-livraison strong {
+      color: var(--rose-fonce);
+    }
+
+    .methode-actions {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    /* =========================
+       COMMANDES
+    ========================= */
+
+    .commande {
+      border: 1px solid var(--bordure);
+      border-radius: 16px;
+      padding: 18px;
+      margin-top: 12px;
+    }
+
+    .commande-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .commande-numero {
+      color: var(--rose-fonce);
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .commande-details {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 20px;
+    }
+
+    .commande-details p {
+      margin: 4px 0;
+    }
+
+    .statut-commande {
+      padding: 6px 10px;
+      border-radius: 20px;
+      background: var(--vert-clair);
+      color: var(--sauge-fonce);
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .commande-articles {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid var(--bordure);
+    }
+
+    .article-commande {
+      padding: 7px 0;
+      border-bottom: 1px solid #F0EAEA;
+    }
+
+    /* =========================
+       BIBLIOTHÈQUE
     ========================= */
 
     .bibliotheque-intro {
@@ -410,11 +575,6 @@
       border-radius: 16px;
       padding: 18px;
       margin-top: 18px;
-    }
-
-    .bibliotheque-etape h3 {
-      margin-top: 0;
-      color: var(--rose-fonce);
     }
 
     .bibliotheque-actions {
@@ -503,8 +663,8 @@
     }
 
     .design-supprimer {
-      background: #F3E0E0;
-      color: #8B4F4F;
+      background: var(--danger);
+      color: var(--danger-texte);
     }
 
     /* =========================
@@ -524,18 +684,18 @@
     }
 
     .message-erreur {
-      background: #F3E0E0;
-      color: #8B4F4F;
+      background: var(--danger);
+      color: var(--danger-texte);
     }
 
     /* =========================
        MOBILE
     ========================= */
 
-    @media (max-width: 700px) {
+    @media (max-width: 800px) {
 
       .stats {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
       }
 
       .form-grid {
@@ -547,6 +707,18 @@
       }
 
       .produit {
+        grid-template-columns: 1fr;
+      }
+
+      .commande-details {
+        grid-template-columns: 1fr;
+      }
+
+    }
+
+    @media (max-width: 550px) {
+
+      .stats {
         grid-template-columns: 1fr;
       }
 
@@ -648,50 +820,23 @@
     <div class="stats">
 
       <div class="stat-card">
-
-        <div
-          class="nombre"
-          id="nombreProduits"
-        >
-          0
-        </div>
-
-        <div class="label">
-          Produits
-        </div>
-
+        <div class="nombre" id="nombreProduits">0</div>
+        <div class="label">Produits</div>
       </div>
 
-
       <div class="stat-card">
-
-        <div
-          class="nombre"
-          id="nombreVisibles"
-        >
-          0
-        </div>
-
-        <div class="label">
-          Produits visibles
-        </div>
-
+        <div class="nombre" id="nombreVisibles">0</div>
+        <div class="label">Produits visibles</div>
       </div>
 
+      <div class="stat-card">
+        <div class="nombre" id="nombrePrecommandes">0</div>
+        <div class="label">Pré-commandes</div>
+      </div>
 
       <div class="stat-card">
-
-        <div
-          class="nombre"
-          id="nombrePrecommandes"
-        >
-          0
-        </div>
-
-        <div class="label">
-          Pré-commandes
-        </div>
-
+        <div class="nombre" id="nombreCommandes">0</div>
+        <div class="label">Commandes</div>
       </div>
 
     </div>
@@ -710,7 +855,6 @@
       <form id="formProduit">
 
         <div class="form-grid">
-
 
           <div class="champ">
 
@@ -824,6 +968,111 @@
         </div>
 
 
+        <!-- STOCK -->
+
+        <div
+          class="stock-box"
+          id="blocStock"
+        >
+
+          <h3>📦 Gestion du stock</h3>
+
+          <div class="stock-info">
+            Cette quantité est utilisée uniquement pour les produits
+            marqués « En stock ».
+          </div>
+
+          <div class="stock-actions">
+
+            <button
+              type="button"
+              class="stock-moins"
+              id="stockMoins"
+            >
+              −
+            </button>
+
+            <input
+              type="number"
+              id="stockQuantite"
+              min="0"
+              step="1"
+              value="0"
+            >
+
+            <button
+              type="button"
+              class="stock-plus"
+              id="stockPlus"
+            >
+              +
+            </button>
+
+          </div>
+
+          <div
+            id="stockMessage"
+            class="stock-info"
+          ></div>
+
+        </div>
+
+
+        <!-- PRÉCOMMANDE -->
+
+        <div
+          class="precommande-box"
+          id="blocPrecommande"
+        >
+
+          <h3>🟠 Délai de pré-commande</h3>
+
+          <p>
+            Par défaut, le délai annoncé sera de
+            <strong>2 à 5 semaines</strong>.
+          </p>
+
+          <div class="form-grid">
+
+            <div class="champ">
+
+              <label for="delaiMin">
+                Minimum (semaines)
+              </label>
+
+              <input
+                type="number"
+                id="delaiMin"
+                min="1"
+                step="1"
+                value="2"
+              >
+
+            </div>
+
+            <div class="champ">
+
+              <label for="delaiMax">
+                Maximum (semaines)
+              </label>
+
+              <input
+                type="number"
+                id="delaiMax"
+                min="1"
+                step="1"
+                value="5"
+              >
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- VISIBILITÉ -->
+
         <div class="checkbox-ligne">
 
           <input
@@ -853,9 +1102,7 @@
         </div>
 
 
-        <!-- =================================================
-             PERSONNALISATION
-        ================================================= -->
+        <!-- PERSONNALISATION -->
 
         <div class="personnalisation-admin">
 
@@ -972,6 +1219,255 @@
 
 
     <!-- =================================================
+         PRODUITS
+    ================================================= -->
+
+    <div class="bloc">
+
+      <div class="barre-produits">
+
+        <h2>
+          🛍️ Mes produits
+        </h2>
+
+        <button
+          class="btn btn-modifier"
+          id="boutonActualiser"
+          type="button"
+        >
+          🔄 Actualiser
+        </button>
+
+      </div>
+
+      <div
+        class="produits-liste"
+        id="listeProduits"
+      ></div>
+
+    </div>
+
+
+    <!-- =================================================
+         LIVRAISON
+    ================================================= -->
+
+    <div class="bloc">
+
+      <h2>
+        🚚 Livraison
+      </h2>
+
+      <div class="livraison-intro">
+
+        <strong>
+          Configure ici les modes de livraison disponibles
+          pour tes clients.
+        </strong>
+
+        <p>
+          Tu pourras ajouter plusieurs solutions,
+          leurs prix et leurs délais.
+        </p>
+
+      </div>
+
+
+      <div class="checkbox-ligne">
+
+        <input
+          type="checkbox"
+          id="livraisonActive"
+        >
+
+        <label for="livraisonActive">
+          🚚 Activer la livraison
+        </label>
+
+      </div>
+
+
+      <div class="checkbox-ligne">
+
+        <input
+          type="checkbox"
+          id="remiseMainPropre"
+        >
+
+        <label for="remiseMainPropre">
+          🤝 Autoriser la remise en main propre
+        </label>
+
+      </div>
+
+
+      <h3>
+        ➕ Ajouter un mode de livraison
+      </h3>
+
+      <div class="form-grid">
+
+        <div class="champ">
+
+          <label for="livraisonNom">
+            Nom
+          </label>
+
+          <input
+            type="text"
+            id="livraisonNom"
+            placeholder="Ex : Colissimo"
+          >
+
+        </div>
+
+
+        <div class="champ">
+
+          <label for="livraisonPrix">
+            Prix (€)
+          </label>
+
+          <input
+            type="number"
+            id="livraisonPrix"
+            step="0.01"
+            min="0"
+            value="0"
+          >
+
+        </div>
+
+
+        <div class="champ">
+
+          <label for="livraisonDelaiMin">
+            Délai minimum (jours)
+          </label>
+
+          <input
+            type="number"
+            id="livraisonDelaiMin"
+            min="0"
+            value="2"
+          >
+
+        </div>
+
+
+        <div class="champ">
+
+          <label for="livraisonDelaiMax">
+            Délai maximum (jours)
+          </label>
+
+          <input
+            type="number"
+            id="livraisonDelaiMax"
+            min="0"
+            value="5"
+          >
+
+        </div>
+
+
+        <div class="champ full">
+
+          <label for="livraisonDescription">
+            Description
+          </label>
+
+          <input
+            type="text"
+            id="livraisonDescription"
+            placeholder="Ex : Livraison à domicile avec suivi"
+          >
+
+        </div>
+
+
+        <div class="champ">
+
+          <label for="livraisonGratuite">
+            Livraison gratuite à partir de (€)
+          </label>
+
+          <input
+            type="number"
+            id="livraisonGratuite"
+            step="0.01"
+            min="0"
+            placeholder="Laisser vide si non utilisée"
+          >
+
+        </div>
+
+      </div>
+
+
+      <div class="actions-formulaire">
+
+        <button
+          class="btn btn-enregistrer"
+          id="boutonAjouterLivraison"
+          type="button"
+        >
+          ➕ Ajouter le mode de livraison
+        </button>
+
+      </div>
+
+
+      <div
+        id="messageLivraison"
+        class="message"
+      ></div>
+
+
+      <h3>
+        📋 Modes existants
+      </h3>
+
+      <div id="listeLivraisons"></div>
+
+    </div>
+
+
+    <!-- =================================================
+         COMMANDES
+    ================================================= -->
+
+    <div class="bloc">
+
+      <div class="barre-produits">
+
+        <h2>
+          📦 Commandes
+        </h2>
+
+        <button
+          class="btn btn-modifier"
+          id="boutonActualiserCommandes"
+          type="button"
+        >
+          🔄 Actualiser
+        </button>
+
+      </div>
+
+
+      <div id="listeCommandes">
+
+        <p>
+          Aucune commande chargée.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <!-- =================================================
          BIBLIOTHÈQUE INDÉPENDANTE
     ================================================= -->
 
@@ -994,16 +1490,14 @@
         </p>
 
         <p>
-          Ensuite, un produit pourra simplement autoriser
+          Un produit peut ensuite simplement autoriser
           le client à choisir une image.
         </p>
 
       </div>
 
 
-      <!-- =================================================
-           CATÉGORIES
-      ================================================= -->
+      <!-- CATÉGORIES -->
 
       <div class="bibliotheque-etape">
 
@@ -1038,7 +1532,7 @@
             <input
               type="text"
               id="emojiCategorieBibliotheque"
-              placeholder="Ex : 🐶"
+              placeholder="🐾"
             >
 
           </div>
@@ -1049,27 +1543,25 @@
         <div class="bibliotheque-actions">
 
           <button
-            type="button"
             class="btn btn-enregistrer"
             id="boutonAjouterCategorieBibliotheque"
+            type="button"
           >
-            ➕ Ajouter la catégorie
+            ➕ Ajouter
           </button>
 
         </div>
 
 
         <div
-          id="listeCategoriesBibliotheque"
           class="liste-bibliotheque"
+          id="listeCategoriesBibliotheque"
         ></div>
 
       </div>
 
 
-      <!-- =================================================
-           SOUS-CATÉGORIES
-      ================================================= -->
+      <!-- SOUS-CATÉGORIES -->
 
       <div class="bibliotheque-etape">
 
@@ -1095,20 +1587,21 @@
         </div>
 
 
-        <div
-          class="champ"
-          style="margin-top:15px;"
-        >
+        <div class="form-grid">
 
-          <label for="nouvelleSousCategorieBibliotheque">
-            Nom de la sous-catégorie
-          </label>
+          <div class="champ">
 
-          <input
-            type="text"
-            id="nouvelleSousCategorieBibliotheque"
-            placeholder="Ex : Chiens"
-          >
+            <label for="nouvelleSousCategorieBibliotheque">
+              Nom de la sous-catégorie
+            </label>
+
+            <input
+              type="text"
+              id="nouvelleSousCategorieBibliotheque"
+              placeholder="Ex : Chats"
+            >
+
+          </div>
 
         </div>
 
@@ -1116,32 +1609,30 @@
         <div class="bibliotheque-actions">
 
           <button
-            type="button"
             class="btn btn-enregistrer"
             id="boutonAjouterSousCategorie"
+            type="button"
           >
-            ➕ Ajouter la sous-catégorie
+            ➕ Ajouter
           </button>
 
         </div>
 
 
         <div
-          id="listeSousCategoriesBibliotheque"
           class="liste-bibliotheque"
+          id="listeSousCategoriesBibliotheque"
         ></div>
 
       </div>
 
 
-      <!-- =================================================
-           DESIGNS
-      ================================================= -->
+      <!-- DESIGNS -->
 
       <div class="bibliotheque-etape">
 
         <h3>
-          🎨 3. Ajouter des designs
+          🎨 3. Designs
         </h3>
 
 
@@ -1164,13 +1655,10 @@
         </div>
 
 
-        <div
-          class="champ"
-          style="margin-top:15px;"
-        >
+        <div class="champ">
 
           <label for="fichiersBibliotheque">
-            Images des designs
+            Images
           </label>
 
           <input
@@ -1186,9 +1674,9 @@
         <div class="bibliotheque-actions">
 
           <button
-            type="button"
             class="btn btn-enregistrer"
             id="boutonAjouterDesigns"
+            type="button"
           >
             🖼️ Ajouter les designs
           </button>
@@ -1197,57 +1685,20 @@
 
 
         <div
-          id="messageBibliotheque"
-          class="message"
-        ></div>
-
-
-        <div
-          id="listeDesignsBibliotheque"
           class="designs-grille"
+          id="listeDesignsBibliotheque"
         ></div>
 
       </div>
 
-    </div>
-
-
-    <!-- =================================================
-         PRODUITS
-    ================================================= -->
-
-    <div class="bloc">
-
-      <div class="barre-produits">
-
-        <h2>
-          🛍️ Mes produits
-        </h2>
-
-        <button
-          class="btn btn-modifier"
-          id="boutonActualiser"
-        >
-          🔄 Actualiser
-        </button>
-
-      </div>
-
 
       <div
-        id="messageProduits"
-        class="message-produits"
-      >
-        Chargement des produits...
-      </div>
-
-
-      <div
-        id="listeProduits"
-        class="produits-liste"
+        id="messageBibliotheque"
+        class="message"
       ></div>
 
     </div>
+
 
   </main>
 
@@ -1266,6 +1717,7 @@ const URL_SUPABASE =
 const CLE_SUPABASE =
   "sb_publishable_mjzAOL92PWfc3v59ZxdSUw_69xCaInq";
 
+
 const client =
   window.supabase.createClient(
     URL_SUPABASE,
@@ -1274,40 +1726,96 @@ const client =
       auth: {
         persistSession: true,
         autoRefreshToken: true,
-        detectSessionInUrl: true
+        detectSessionInUrl: true,
+        storageKey: "sublimek-admin-auth"
       }
     }
   );
 
 
-/* =====================================================
-   VARIABLES
-===================================================== */
+const ADMIN_ID =
+  "90d83d43-9288-446f-ae88-7b2a893e13c8";
+
 
 let produitEnModification = null;
 
 
 /* =====================================================
-   ELEMENTS
+   SESSION
 ===================================================== */
 
-const pageConnexion =
-  document.getElementById("pageConnexion");
+async function verifierSession() {
 
-const pageAdmin =
-  document.getElementById("pageAdmin");
+  const {
+    data,
+    error
+  } = await client.auth.getSession();
 
-const resultatConnexion =
-  document.getElementById("resultatConnexion");
 
-const formulaire =
-  document.getElementById("formProduit");
+  if (error) {
 
-const listeProduits =
-  document.getElementById("listeProduits");
+    console.error(error);
 
-const messageProduits =
-  document.getElementById("messageProduits");
+    afficherConnexion();
+
+    return;
+
+  }
+
+
+  if (
+    data &&
+    data.session
+  ) {
+
+    await afficherAdmin();
+
+  } else {
+
+    afficherConnexion();
+
+  }
+
+}
+
+
+function afficherConnexion() {
+
+  document
+    .getElementById("pageConnexion")
+    .style.display = "flex";
+
+  document
+    .getElementById("pageAdmin")
+    .style.display = "none";
+
+}
+
+
+async function afficherAdmin() {
+
+  document
+    .getElementById("pageConnexion")
+    .style.display = "none";
+
+  document
+    .getElementById("pageAdmin")
+    .style.display = "block";
+
+
+  await chargerCategories();
+
+  await chargerProduits();
+
+  await chargerBibliotheque();
+
+  await chargerReglagesLivraison();
+
+  await chargerLivraisons();
+
+  await chargerCommandes();
+
+}
 
 
 /* =====================================================
@@ -1318,135 +1826,74 @@ document
   .getElementById("boutonConnexion")
   .addEventListener(
     "click",
-    connexion
-  );
+    async function() {
+
+      const email =
+        document
+          .getElementById("email")
+          .value
+          .trim();
+
+      const password =
+        document
+          .getElementById("password")
+          .value;
 
 
-async function connexion() {
-
-  const email =
-    document
-      .getElementById("email")
-      .value
-      .trim();
-
-  const password =
-    document.getElementById("password").value;
-
-  if (!email || !password) {
-
-    resultatConnexion.textContent =
-      "❌ Merci de remplir les deux champs.";
-
-    return;
-  }
-
-  resultatConnexion.textContent =
-    "⏳ Connexion en cours...";
-
-  try {
-
-    const { data, error } =
-      await client.auth.signInWithPassword({
-        email,
-        password
-      });
-
-    if (error) {
-
-      resultatConnexion.textContent =
-        "❌ " + error.message;
-
-      return;
-    }
-
-    if (!data.session) {
-
-      resultatConnexion.textContent =
-        "❌ Impossible de créer la session.";
-
-      return;
-    }
-
-    resultatConnexion.textContent = "";
-
-    await afficherAdmin();
-
-  } catch (erreur) {
-
-    console.error(erreur);
-
-    resultatConnexion.textContent =
-      "❌ Une erreur est survenue.";
-
-  }
-
-}
+      const resultat =
+        document.getElementById(
+          "resultatConnexion"
+        );
 
 
-/* =====================================================
-   AFFICHER ADMIN
-===================================================== */
-
-async function afficherAdmin() {
-
-  pageConnexion.style.display =
-    "none";
-
-  pageAdmin.style.display =
-    "block";
-
-  await chargerCategories();
-
-  await chargerProduits();
-
-  await chargerBibliotheque();
-
-}
+      resultat.textContent =
+        "Connexion en cours...";
 
 
-/* =====================================================
-   VERIFIER SESSION
-===================================================== */
+      const {
+        data,
+        error
+      } =
+        await client.auth.signInWithPassword({
+          email,
+          password
+        });
 
-async function verifierSession() {
 
-  try {
+      if (error) {
 
-    const { data, error } =
-      await client.auth.getSession();
+        console.error(error);
 
-    if (
-      !error &&
-      data.session
-    ) {
+        resultat.textContent =
+          "❌ " + error.message;
+
+        return;
+
+      }
+
+
+      if (!data.session) {
+
+        resultat.textContent =
+          "❌ Session non créée.";
+
+        return;
+
+      }
+
+
+      resultat.textContent =
+        "✅ Connexion réussie";
+
 
       await afficherAdmin();
 
-    } else {
-
-      pageConnexion.style.display =
-        "flex";
-
-      pageAdmin.style.display =
-        "none";
-
     }
-
-  } catch (erreur) {
-
-    console.error(
-      "Erreur session :",
-      erreur
-    );
-
-  }
-
-}
+  );
 
 
 /* =====================================================
-   DECONNEXION
+   DÉCONNEXION
 ===================================================== */
 
 document
@@ -1457,56 +1904,114 @@ document
 
       await client.auth.signOut();
 
-      pageAdmin.style.display =
-        "none";
-
-      pageConnexion.style.display =
-        "flex";
-
-      document.getElementById("password").value =
-        "";
+      afficherConnexion();
 
     }
   );
 
 
 /* =====================================================
-   CATEGORIES PRODUITS
+   VÉRIFIER ADMIN AVANT ÉCRITURE
+===================================================== */
+
+async function verifierAdmin() {
+
+  const {
+    data,
+    error
+  } = await client.auth.getSession();
+
+
+  if (
+    error ||
+    !data ||
+    !data.session
+  ) {
+
+    alert(
+      "⚠️ Ta session administrateur a expiré. Reconnecte-toi."
+    );
+
+    afficherConnexion();
+
+    return false;
+
+  }
+
+
+  if (
+    data.session.user.id !== ADMIN_ID
+  ) {
+
+    alert(
+      "❌ Accès administrateur refusé."
+    );
+
+    return false;
+
+  }
+
+
+  return true;
+
+}
+
+
+/* =====================================================
+   CATÉGORIES PRODUITS
 ===================================================== */
 
 async function chargerCategories() {
 
-  const select =
-    document.getElementById("categorie");
-
-  const { data, error } =
+  const {
+    data,
+    error
+  } =
     await client
       .from("categories")
-      .select("id, Nom, Emoji, Ordre")
-      .order("Ordre", {
-        ascending: true
-      });
+      .select("*")
+      .order(
+        "Ordre",
+        {
+          ascending: true
+        }
+      );
+
 
   if (error) {
 
     console.error(error);
 
     return;
+
   }
+
+
+  const select =
+    document.getElementById(
+      "categorie"
+    );
+
 
   select.innerHTML =
     '<option value="">Choisir une catégorie</option>';
 
+
   data.forEach(function(categorie) {
 
     const option =
-      document.createElement("option");
+      document.createElement(
+        "option"
+      );
 
     option.value =
       categorie.id;
 
     option.textContent =
-      (categorie.Emoji || "") +
+      (
+        categorie.Emoji ||
+        "📁"
+      ) +
       " " +
       categorie.Nom;
 
@@ -1518,354 +2023,362 @@ async function chargerCategories() {
 
 
 /* =====================================================
-   AJOUT / MODIFICATION PRODUIT
+   FORMULAIRE PRODUIT
 ===================================================== */
 
-formulaire.addEventListener(
-  "submit",
-  async function(event) {
+document
+  .getElementById("formProduit")
+  .addEventListener(
+    "submit",
+    async function(event) {
 
-    event.preventDefault();
-
-    const nom =
-      document
-        .getElementById("nom")
-        .value
-        .trim();
-
-    const description =
-      document
-        .getElementById("description")
-        .value
-        .trim();
-
-    const prixValeur =
-      document.getElementById("prix").value;
-
-    const prix =
-      prixValeur === ""
-        ? null
-        : Number(prixValeur);
-
-    const categorie_id =
-      document.getElementById("categorie").value;
-
-    const statut =
-      document.getElementById("statut").value;
-
-    const image_url =
-      document
-        .getElementById("image_url")
-        .value
-        .trim();
-
-    const visible =
-      document.getElementById("visible").checked;
-
-    const nouveaute =
-      document.getElementById("nouveaute").checked;
-
-    const personnalisation_active =
-      document
-        .getElementById("personnalisation_active")
-        .checked;
-
-    const choix_image_active =
-      document
-        .getElementById("choix_image_active")
-        .checked;
-
-    const photo_client_active =
-      document
-        .getElementById("photo_client_active")
-        .checked;
-
-    const prenom_active =
-      document
-        .getElementById("prenom_active")
-        .checked;
-
-    const message_active =
-      document
-        .getElementById("message_active")
-        .checked;
+      event.preventDefault();
 
 
-    if (!nom) {
+      if (
+        !(await verifierAdmin())
+      ) {
 
-      afficherMessageFormulaire(
-        "❌ Le nom du produit est obligatoire.",
-        true
-      );
-
-      return;
-    }
-
-
-    if (!categorie_id) {
-
-      afficherMessageFormulaire(
-        "❌ Choisis une catégorie.",
-        true
-      );
-
-      return;
-    }
-
-
-    const bouton =
-      document.getElementById(
-        "boutonEnregistrer"
-      );
-
-    bouton.disabled =
-      true;
-
-    bouton.textContent =
-      "⏳ Enregistrement...";
-
-
-    const produit = {
-
-      nom,
-      description,
-      prix,
-      categorie_id,
-      statut,
-      image_url: image_url || null,
-      visible,
-      nouveaute,
-      personnalisation_active,
-      choix_image_active,
-      photo_client_active,
-      prenom_active,
-      message_active
-
-    };
-
-
-    try {
-
-      let resultat;
-
-      if (produitEnModification) {
-
-        resultat =
-          await client
-            .from("products")
-            .update(produit)
-            .eq(
-              "id",
-              produitEnModification
-            );
-
-      } else {
-
-        resultat =
-          await client
-            .from("products")
-            .insert([
-              produit
-            ]);
+        return;
 
       }
 
 
-      if (resultat.error) {
+      const statut =
+        document.getElementById(
+          "statut"
+        ).value;
 
-        console.error(
-          resultat.error
+
+      const stock =
+        Math.max(
+          0,
+          parseInt(
+            document.getElementById(
+              "stockQuantite"
+            ).value
+          ) || 0
         );
 
+
+      const delaiMin =
+        Math.max(
+          1,
+          parseInt(
+            document.getElementById(
+              "delaiMin"
+            ).value
+          ) || 2
+        );
+
+
+      const delaiMax =
+        Math.max(
+          delaiMin,
+          parseInt(
+            document.getElementById(
+              "delaiMax"
+            ).value
+          ) || 5
+        );
+
+
+      const produit = {
+
+        nom:
+          document.getElementById(
+            "nom"
+          ).value.trim(),
+
+        description:
+          document.getElementById(
+            "description"
+          ).value.trim() ||
+          null,
+
+        prix:
+          parseFloat(
+            document.getElementById(
+              "prix"
+            ).value
+          ) || null,
+
+        categorie_id:
+          document.getElementById(
+            "categorie"
+          ).value,
+
+        statut,
+
+        image_url:
+          document.getElementById(
+            "image_url"
+          ).value.trim() ||
+          null,
+
+        visible:
+          document.getElementById(
+            "visible"
+          ).checked,
+
+        nouveaute:
+          document.getElementById(
+            "nouveaute"
+          ).checked,
+
+        stock_quantite:
+          stock,
+
+        stock_gere:
+          statut === "stock",
+
+        delai_precommande_min:
+          delaiMin,
+
+        delai_precommande_max:
+          delaiMax,
+
+        personnalisation_active:
+          document.getElementById(
+            "personnalisation_active"
+          ).checked,
+
+        choix_image_active:
+          document.getElementById(
+            "choix_image_active"
+          ).checked,
+
+        photo_client_active:
+          document.getElementById(
+            "photo_client_active"
+          ).checked,
+
+        prenom_active:
+          document.getElementById(
+            "prenom_active"
+          ).checked,
+
+        message_active:
+          document.getElementById(
+            "message_active"
+          ).checked
+
+      };
+
+
+      if (
+        !produit.categorie_id
+      ) {
+
         afficherMessageFormulaire(
-          "❌ " +
-          resultat.error.message,
+          "❌ Choisis une catégorie.",
           true
         );
 
         return;
+
       }
 
 
-      afficherMessageFormulaire(
-        produitEnModification
-          ? "✅ Produit modifié !"
-          : "✅ Produit ajouté !",
-        false
-      );
+      try {
+
+        let resultat;
 
 
-      reinitialiserFormulaire();
+        if (
+          produitEnModification
+        ) {
 
-      await chargerProduits();
+          resultat =
+            await client
+              .from("products")
+              .update(produit)
+              .eq(
+                "id",
+                produitEnModification
+              );
+
+        } else {
+
+          resultat =
+            await client
+              .from("products")
+              .insert([
+                produit
+              ]);
+
+        }
 
 
-    } catch (erreur) {
+        if (resultat.error) {
 
-      console.error(erreur);
+          throw resultat.error;
 
-      afficherMessageFormulaire(
-        "❌ Erreur lors de l'enregistrement.",
-        true
-      );
+        }
 
-    } finally {
 
-      bouton.disabled =
-        false;
+        afficherMessageFormulaire(
+          produitEnModification
+            ? "✅ Produit modifié !"
+            : "✅ Produit ajouté !",
+          false
+        );
 
-      bouton.textContent =
-        "💾 Enregistrer le produit";
+
+        reinitialiserFormulaire();
+
+        await chargerProduits();
+
+      } catch (erreur) {
+
+        console.error(erreur);
+
+        afficherMessageFormulaire(
+          "❌ " + erreur.message,
+          true
+        );
+
+      }
 
     }
+  );
+
+
+/* =====================================================
+   STATUT → AFFICHAGE STOCK / PRÉCOMMANDE
+===================================================== */
+
+document
+  .getElementById("statut")
+  .addEventListener(
+    "change",
+    actualiserBlocStock
+  );
+
+
+function actualiserBlocStock() {
+
+  const statut =
+    document.getElementById(
+      "statut"
+    ).value;
+
+
+  document.getElementById(
+    "blocStock"
+  ).style.display =
+    statut === "stock"
+      ? "block"
+      : "none";
+
+
+  document.getElementById(
+    "blocPrecommande"
+  ).style.display =
+    statut === "precommande"
+      ? "block"
+      : "none";
+
+
+  afficherEtatStock();
+
+}
+
+
+function afficherEtatStock() {
+
+  const stock =
+    parseInt(
+      document.getElementById(
+        "stockQuantite"
+      ).value
+    ) || 0;
+
+
+  const message =
+    document.getElementById(
+      "stockMessage"
+    );
+
+
+  if (stock <= 0) {
+
+    message.innerHTML =
+      '<span class="stock-rupture">🔴 Rupture de stock</span>';
+
+  } else {
+
+    message.textContent =
+      "🟢 " +
+      stock +
+      " article(s) disponible(s)";
 
   }
-);
+
+}
+
+
+document
+  .getElementById("stockQuantite")
+  .addEventListener(
+    "input",
+    afficherEtatStock
+  );
 
 
 /* =====================================================
-   MODIFIER PRODUIT
+   + / - STOCK
 ===================================================== */
 
-window.modifierProduit =
-  async function(id) {
+document
+  .getElementById("stockPlus")
+  .addEventListener(
+    "click",
+    function() {
 
-    const { data, error } =
-      await client
-        .from("products")
-        .select("*")
-        .eq("id", id)
-        .single();
+      const input =
+        document.getElementById(
+          "stockQuantite"
+        );
 
-    if (error) {
+      input.value =
+        (
+          parseInt(
+            input.value
+          ) || 0
+        ) + 1;
 
-      alert(
-        "Impossible de récupérer le produit : " +
-        error.message
-      );
+      afficherEtatStock();
 
-      return;
     }
+  );
 
 
-    produitEnModification =
-      id;
+document
+  .getElementById("stockMoins")
+  .addEventListener(
+    "click",
+    function() {
 
+      const input =
+        document.getElementById(
+          "stockQuantite"
+        );
 
-    document.getElementById("nom").value =
-      data.nom || "";
+      input.value =
+        Math.max(
+          0,
+          (
+            parseInt(
+              input.value
+            ) || 0
+          ) - 1
+        );
 
-    document.getElementById("description").value =
-      data.description || "";
+      afficherEtatStock();
 
-    document.getElementById("prix").value =
-      data.prix ?? "";
-
-    document.getElementById("categorie").value =
-      data.categorie_id || "";
-
-    document.getElementById("statut").value =
-      data.statut || "precommande";
-
-    document.getElementById("image_url").value =
-      data.image_url || "";
-
-    document.getElementById("visible").checked =
-      data.visible !== false;
-
-    document.getElementById("nouveaute").checked =
-      data.nouveaute === true;
-
-    document.getElementById(
-      "personnalisation_active"
-    ).checked =
-      data.personnalisation_active === true;
-
-    document.getElementById(
-      "choix_image_active"
-    ).checked =
-      data.choix_image_active === true;
-
-    document.getElementById(
-      "photo_client_active"
-    ).checked =
-      data.photo_client_active === true;
-
-    document.getElementById(
-      "prenom_active"
-    ).checked =
-      data.prenom_active === true;
-
-    document.getElementById(
-      "message_active"
-    ).checked =
-      data.message_active === true;
-
-
-    document.getElementById(
-      "titreFormulaire"
-    ).textContent =
-      "✏️ Modifier le produit";
-
-
-    document.getElementById(
-      "boutonEnregistrer"
-    ).textContent =
-      "💾 Enregistrer les modifications";
-
-
-    document.getElementById(
-      "boutonAnnuler"
-    ).style.display =
-      "inline-block";
-
-
-    document
-      .getElementById("formProduit")
-      .scrollIntoView({
-        behavior: "smooth"
-      });
-
-  };
-
-
-/* =====================================================
-   SUPPRIMER PRODUIT
-===================================================== */
-
-window.supprimerProduit =
-  async function(id) {
-
-    if (
-      !confirm(
-        "⚠️ Es-tu sûre de vouloir supprimer ce produit ?"
-      )
-    ) {
-      return;
     }
-
-
-    const { error } =
-      await client
-        .from("products")
-        .delete()
-        .eq("id", id);
-
-
-    if (error) {
-
-      alert(
-        "❌ Impossible de supprimer le produit : " +
-        error.message
-      );
-
-      return;
-    }
-
-
-    await chargerProduits();
-
-  };
+  );
 
 
 /* =====================================================
@@ -1874,114 +2387,82 @@ window.supprimerProduit =
 
 async function chargerProduits() {
 
-  messageProduits.textContent =
-    "Chargement des produits...";
-
-  listeProduits.innerHTML =
-    "";
-
-
-  const { data, error } =
+  const {
+    data,
+    error
+  } =
     await client
       .from("products")
       .select(`
-        id,
-        nom,
-        description,
-        prix,
-        categorie_id,
-        statut,
-        image_url,
-        visible,
-        nouveaute,
-        personnalisation_active,
-        choix_image_active,
-        photo_client_active,
-        prenom_active,
-        message_active,
-        created_at,
-        ordre,
+        *,
         categories (
           Nom,
           Emoji
         )
       `)
-      .order("ordre", {
-        ascending: true
-      })
-      .order("created_at", {
-        ascending: false
-      });
+      .order(
+        "ordre",
+        {
+          ascending: true
+        }
+      );
 
 
   if (error) {
 
     console.error(error);
 
-    messageProduits.textContent =
-      "❌ Impossible de charger les produits : " +
-      error.message;
-
     return;
+
   }
 
 
-  mettreAJourStatistiques(data);
+  const liste =
+    document.getElementById(
+      "listeProduits"
+    );
 
 
-  if (!data || data.length === 0) {
+  liste.innerHTML = "";
 
-    messageProduits.textContent =
-      "Aucun produit pour le moment.";
-
-    return;
-  }
-
-
-  messageProduits.textContent =
-    data.length +
-    " produit(s) enregistré(s).";
-
-
-  data.forEach(function(produit) {
-
-    afficherProduit(produit);
-
-  });
-
-}
-
-
-/* =====================================================
-   STATISTIQUES
-===================================================== */
-
-function mettreAJourStatistiques(produits) {
 
   document.getElementById(
     "nombreProduits"
   ).textContent =
-    produits.length;
+    data.length;
 
 
   document.getElementById(
     "nombreVisibles"
   ).textContent =
-    produits.filter(function(p) {
-
-      return p.visible === true;
-
-    }).length;
+    data.filter(
+      p => p.visible
+    ).length;
 
 
   document.getElementById(
     "nombrePrecommandes"
   ).textContent =
-    produits.filter(function(p) {
+    data.filter(
+      p =>
+        p.statut ===
+        "precommande"
+    ).length;
 
-      return p.statut === "precommande";
 
-    }).length;
+  if (!data.length) {
+
+    liste.innerHTML =
+      "<p>Aucun produit pour le moment.</p>";
+
+    return;
+
+  }
+
+
+  data.forEach(
+    afficherProduit
+  );
 
 }
 
@@ -1990,39 +2471,67 @@ function mettreAJourStatistiques(produits) {
    AFFICHER PRODUIT
 ===================================================== */
 
-function afficherProduit(produit) {
+function afficherProduit(
+  produit
+) {
 
   const element =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
+
 
   element.className =
     "produit";
 
 
-  let statutClasse =
-    "statut-indisponible";
-
   let statutTexte =
     "⚫ Indisponible";
 
+  let statutClasse =
+    "statut-indisponible";
 
-  if (produit.statut === "stock") {
 
-    statutClasse =
-      "statut-stock";
-
-    statutTexte =
-      "🟢 En stock";
-
-  } else if (
-    produit.statut === "precommande"
+  if (
+    produit.statut ===
+    "stock"
   ) {
 
-    statutClasse =
-      "statut-precommande";
+    if (
+      Number(
+        produit.stock_quantite
+      ) <= 0
+    ) {
+
+      statutTexte =
+        "🔴 Rupture de stock";
+
+      statutClasse =
+        "rupture";
+
+    } else {
+
+      statutTexte =
+        "🟢 En stock";
+
+      statutClasse =
+        "statut-stock";
+
+    }
+
+  }
+
+
+  if (
+    produit.statut ===
+    "precommande"
+  ) {
 
     statutTexte =
       "🟠 Pré-commande";
+
+    statutClasse =
+      "statut-precommande";
 
   }
 
@@ -2030,9 +2539,13 @@ function afficherProduit(produit) {
   const categorie =
     produit.categories
       ? (
-          (produit.categories.Emoji || "") +
-          " " +
-          produit.categories.Nom
+          produit.categories.Emoji ||
+          "📁"
+        ) +
+        " " +
+        (
+          produit.categories.Nom ||
+          ""
         )
       : "Sans catégorie";
 
@@ -2040,15 +2553,68 @@ function afficherProduit(produit) {
   const prix =
     produit.prix !== null &&
     produit.prix !== undefined
-      ? Number(produit.prix).toFixed(2) +
+      ? Number(
+          produit.prix
+        ).toFixed(2) +
         " €"
       : "Prix non défini";
 
 
+  let stockTexte = "";
+
+
+  if (
+    produit.statut ===
+    "stock"
+  ) {
+
+    stockTexte =
+      `
+        <p>
+          📦 Stock :
+          <strong>
+            ${Number(
+              produit.stock_quantite
+            )}
+          </strong>
+        </p>
+      `;
+
+  }
+
+
+  let delaiTexte = "";
+
+
+  if (
+    produit.statut ===
+    "precommande"
+  ) {
+
+    delaiTexte =
+      `
+        <p>
+          ⏱️ Délai :
+          <strong>
+            ${Number(
+              produit.delai_precommande_min || 2
+            )}
+            à
+            ${Number(
+              produit.delai_precommande_max || 5
+            )}
+            semaines
+          </strong>
+        </p>
+      `;
+
+  }
+
+
   const visibilite =
     produit.visible
-      ? '<span class="visible">👁️ Visible</span>'
-      : '<span class="cache">🙈 Masqué</span>';
+      ? "👁️ Visible"
+      : "🙈 Masqué";
 
 
   element.innerHTML = `
@@ -2056,11 +2622,15 @@ function afficherProduit(produit) {
     <div class="produit-info">
 
       <h3>
-        ${echapperHTML(produit.nom)}
+        ${echapperHTML(
+          produit.nom
+        )}
       </h3>
 
       <p>
-        ${categorie}
+        ${echapperHTML(
+          categorie
+        )}
       </p>
 
       <p>
@@ -2068,15 +2638,17 @@ function afficherProduit(produit) {
       </p>
 
       <p>
-
         <span class="statut ${statutClasse}">
           ${statutTexte}
         </span>
+      </p>
 
-        &nbsp;
+      ${stockTexte}
 
+      ${delaiTexte}
+
+      <p>
         ${visibilite}
-
       </p>
 
       ${
@@ -2115,17 +2687,251 @@ function afficherProduit(produit) {
   `;
 
 
-  listeProduits.appendChild(element);
+  document
+    .getElementById(
+      "listeProduits"
+    )
+    .appendChild(
+      element
+    );
 
 }
 
 
 /* =====================================================
-   REINITIALISER PRODUIT
+   MODIFIER PRODUIT
+===================================================== */
+
+window.modifierProduit =
+  async function(id) {
+
+    const {
+      data,
+      error
+    } =
+      await client
+        .from("products")
+        .select("*")
+        .eq(
+          "id",
+          id
+        )
+        .single();
+
+
+    if (error) {
+
+      alert(
+        "❌ " +
+        error.message
+      );
+
+      return;
+
+    }
+
+
+    produitEnModification =
+      id;
+
+
+    document.getElementById(
+      "nom"
+    ).value =
+      data.nom || "";
+
+
+    document.getElementById(
+      "description"
+    ).value =
+      data.description || "";
+
+
+    document.getElementById(
+      "prix"
+    ).value =
+      data.prix ?? "";
+
+
+    document.getElementById(
+      "categorie"
+    ).value =
+      data.categorie_id || "";
+
+
+    document.getElementById(
+      "statut"
+    ).value =
+      data.statut || "precommande";
+
+
+    document.getElementById(
+      "image_url"
+    ).value =
+      data.image_url || "";
+
+
+    document.getElementById(
+      "visible"
+    ).checked =
+      data.visible !== false;
+
+
+    document.getElementById(
+      "nouveaute"
+    ).checked =
+      data.nouveaute === true;
+
+
+    document.getElementById(
+      "stockQuantite"
+    ).value =
+      Number(
+        data.stock_quantite || 0
+      );
+
+
+    document.getElementById(
+      "delaiMin"
+    ).value =
+      Number(
+        data.delai_precommande_min || 2
+      );
+
+
+    document.getElementById(
+      "delaiMax"
+    ).value =
+      Number(
+        data.delai_precommande_max || 5
+      );
+
+
+    document.getElementById(
+      "personnalisation_active"
+    ).checked =
+      data.personnalisation_active === true;
+
+
+    document.getElementById(
+      "choix_image_active"
+    ).checked =
+      data.choix_image_active === true;
+
+
+    document.getElementById(
+      "photo_client_active"
+    ).checked =
+      data.photo_client_active === true;
+
+
+    document.getElementById(
+      "prenom_active"
+    ).checked =
+      data.prenom_active === true;
+
+
+    document.getElementById(
+      "message_active"
+    ).checked =
+      data.message_active === true;
+
+
+    document.getElementById(
+      "titreFormulaire"
+    ).textContent =
+      "✏️ Modifier le produit";
+
+
+    document.getElementById(
+      "boutonEnregistrer"
+    ).textContent =
+      "💾 Enregistrer les modifications";
+
+
+    document.getElementById(
+      "boutonAnnuler"
+    ).style.display =
+      "inline-block";
+
+
+    actualiserBlocStock();
+
+    afficherEtatStock();
+
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+  };
+
+
+/* =====================================================
+   SUPPRIMER PRODUIT
+===================================================== */
+
+window.supprimerProduit =
+  async function(id) {
+
+    if (
+      !confirm(
+        "⚠️ Supprimer définitivement ce produit ?"
+      )
+    ) {
+
+      return;
+
+    }
+
+
+    if (
+      !(await verifierAdmin())
+    ) {
+
+      return;
+
+    }
+
+
+    const {
+      error
+    } =
+      await client
+        .from("products")
+        .delete()
+        .eq(
+          "id",
+          id
+        );
+
+
+    if (error) {
+
+      alert(
+        "❌ " +
+        error.message
+      );
+
+      return;
+
+    }
+
+
+    await chargerProduits();
+
+  };
+
+
+/* =====================================================
+   RÉINITIALISER FORMULAIRE
 ===================================================== */
 
 document
-  .getElementById("boutonAnnuler")
+  .getElementById(
+    "boutonAnnuler"
+  )
   .addEventListener(
     "click",
     reinitialiserFormulaire
@@ -2137,7 +2943,12 @@ function reinitialiserFormulaire() {
   produitEnModification =
     null;
 
-  formulaire.reset();
+
+  document
+    .getElementById(
+      "formProduit"
+    )
+    .reset();
 
 
   document.getElementById(
@@ -2150,6 +2961,24 @@ function reinitialiserFormulaire() {
     "visible"
   ).checked =
     true;
+
+
+  document.getElementById(
+    "stockQuantite"
+  ).value =
+    0;
+
+
+  document.getElementById(
+    "delaiMin"
+  ).value =
+    2;
+
+
+  document.getElementById(
+    "delaiMax"
+  ).value =
+    5;
 
 
   document.getElementById(
@@ -2168,6 +2997,9 @@ function reinitialiserFormulaire() {
     "boutonAnnuler"
   ).style.display =
     "none";
+
+
+  actualiserBlocStock();
 
 }
 
@@ -2201,19 +3033,962 @@ function afficherMessageFormulaire(
     "block";
 
 
-  setTimeout(function() {
+  setTimeout(
+    function() {
 
-    element.style.display =
-      "none";
+      element.style.display =
+        "none";
 
-  }, 4000);
+    },
+    4000
+  );
 
 }
 
 
 /* =====================================================
+   LIVRAISON — RÉGLAGES
+===================================================== */
+
+async function chargerReglagesLivraison() {
+
+  const {
+    data,
+    error
+  } =
+    await client
+      .from("shipping_settings")
+      .select("*")
+      .limit(1)
+      .maybeSingle();
+
+
+  if (error) {
+
+    console.error(error);
+
+    return;
+
+  }
+
+
+  if (!data) {
+
+    return;
+
+  }
+
+
+  document.getElementById(
+    "livraisonActive"
+  ).checked =
+    data.livraison_active === true;
+
+
+  document.getElementById(
+    "remiseMainPropre"
+  ).checked =
+    data.remise_main_propre_active === true;
+
+}
+
+
+document
+  .getElementById(
+    "livraisonActive"
+  )
+  .addEventListener(
+    "change",
+    sauvegarderReglagesLivraison
+  );
+
+
+document
+  .getElementById(
+    "remiseMainPropre"
+  )
+  .addEventListener(
+    "change",
+    sauvegarderReglagesLivraison
+  );
+
+
+async function sauvegarderReglagesLivraison() {
+
+  if (
+    !(await verifierAdmin())
+  ) {
+
+    return;
+
+  }
+
+
+  const {
+    data
+  } =
+    await client
+      .from("shipping_settings")
+      .select("id")
+      .limit(1)
+      .maybeSingle();
+
+
+  if (!data) {
+
+    return;
+
+  }
+
+
+  const {
+    error
+  } =
+    await client
+      .from("shipping_settings")
+      .update({
+
+        livraison_active:
+          document.getElementById(
+            "livraisonActive"
+          ).checked,
+
+        remise_main_propre_active:
+          document.getElementById(
+            "remiseMainPropre"
+          ).checked
+
+      })
+      .eq(
+        "id",
+        data.id
+      );
+
+
+  if (error) {
+
+    alert(
+      "❌ " +
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   LIVRAISON — LISTE
+===================================================== */
+
+async function chargerLivraisons() {
+
+  const {
+    data,
+    error
+  } =
+    await client
+      .from("shipping_methods")
+      .select("*")
+      .order(
+        "ordre",
+        {
+          ascending: true
+        }
+      );
+
+
+  if (error) {
+
+    console.error(error);
+
+    return;
+
+  }
+
+
+  const liste =
+    document.getElementById(
+      "listeLivraisons"
+    );
+
+
+  liste.innerHTML = "";
+
+
+  if (!data.length) {
+
+    liste.innerHTML =
+      "<p>Aucun mode de livraison ajouté.</p>";
+
+    return;
+
+  }
+
+
+  data.forEach(
+    afficherLivraison
+  );
+
+}
+
+
+function afficherLivraison(
+  livraison
+) {
+
+  const element =
+    document.createElement(
+      "div"
+    );
+
+
+  element.className =
+    "methode-livraison";
+
+
+  const prix =
+    Number(
+      livraison.prix || 0
+    ).toFixed(2);
+
+
+  const gratuit =
+    livraison.gratuite_a_partir_de !== null &&
+    livraison.gratuite_a_partir_de !== undefined
+      ? `
+        <p>
+          🎁 Gratuit à partir de
+          ${Number(
+            livraison.gratuite_a_partir_de
+          ).toFixed(2)} €
+        </p>
+      `
+      : "";
+
+
+  element.innerHTML = `
+
+    <div>
+
+      <strong>
+        ${echapperHTML(
+          livraison.nom
+        )}
+      </strong>
+
+      <p>
+        💶 ${prix} €
+      </p>
+
+      <p>
+        ⏱️
+        ${livraison.delai_min ?? 0}
+        à
+        ${livraison.delai_max ?? 0}
+        jours
+      </p>
+
+      ${
+        livraison.description
+          ? `<p>${echapperHTML(
+              livraison.description
+            )}</p>`
+          : ""
+      }
+
+      ${gratuit}
+
+      <p>
+        ${
+          livraison.actif
+            ? "🟢 Actif"
+            : "⚫ Inactif"
+        }
+      </p>
+
+    </div>
+
+
+    <div class="methode-actions">
+
+      <button
+        class="btn btn-modifier"
+        onclick="basculerLivraison('${livraison.id}', ${livraison.actif})"
+      >
+        ${
+          livraison.actif
+            ? "⏸️ Désactiver"
+            : "▶️ Activer"
+        }
+      </button>
+
+      <button
+        class="btn btn-supprimer"
+        onclick="supprimerLivraison('${livraison.id}')"
+      >
+        🗑️ Supprimer
+      </button>
+
+    </div>
+
+  `;
+
+
+  document
+    .getElementById(
+      "listeLivraisons"
+    )
+    .appendChild(
+      element
+    );
+
+}
+
+
+/* =====================================================
+   AJOUTER LIVRAISON
+===================================================== */
+
+document
+  .getElementById(
+    "boutonAjouterLivraison"
+  )
+  .addEventListener(
+    "click",
+    async function() {
+
+      if (
+        !(await verifierAdmin())
+      ) {
+
+        return;
+
+      }
+
+
+      const nom =
+        document
+          .getElementById(
+            "livraisonNom"
+          )
+          .value
+          .trim();
+
+
+      if (!nom) {
+
+        afficherMessageLivraison(
+          "❌ Donne un nom au mode de livraison.",
+          true
+        );
+
+        return;
+
+      }
+
+
+      const prix =
+        parseFloat(
+          document.getElementById(
+            "livraisonPrix"
+          ).value
+        ) || 0;
+
+
+      const delaiMin =
+        parseInt(
+          document.getElementById(
+            "livraisonDelaiMin"
+          ).value
+        ) || 0;
+
+
+      const delaiMax =
+        Math.max(
+          delaiMin,
+          parseInt(
+            document.getElementById(
+              "livraisonDelaiMax"
+            ).value
+          ) || delaiMin
+        );
+
+
+      const gratuitValue =
+        document.getElementById(
+          "livraisonGratuite"
+        ).value;
+
+
+      const gratuite =
+        gratuitValue === ""
+          ? null
+          : parseFloat(
+              gratuitValue
+            );
+
+
+      const {
+        error
+      } =
+        await client
+          .from("shipping_methods")
+          .insert([{
+
+            nom,
+
+            description:
+              document.getElementById(
+                "livraisonDescription"
+              ).value.trim() ||
+              null,
+
+            prix,
+
+            gratuite_a_partir_de:
+              gratuite,
+
+            delai_min:
+              delaiMin,
+
+            delai_max:
+              delaiMax,
+
+            actif:
+              true
+
+          }]);
+
+
+      if (error) {
+
+        afficherMessageLivraison(
+          "❌ " +
+          error.message,
+          true
+        );
+
+        return;
+
+      }
+
+
+      document.getElementById(
+        "livraisonNom"
+      ).value = "";
+
+
+      document.getElementById(
+        "livraisonDescription"
+      ).value = "";
+
+
+      document.getElementById(
+        "livraisonPrix"
+      ).value = "0";
+
+
+      document.getElementById(
+        "livraisonGratuite"
+      ).value = "";
+
+
+      await chargerLivraisons();
+
+
+      afficherMessageLivraison(
+        "✅ Mode de livraison ajouté !",
+        false
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   ACTIVER / DÉSACTIVER LIVRAISON
+===================================================== */
+
+window.basculerLivraison =
+  async function(
+    id,
+    actif
+  ) {
+
+    if (
+      !(await verifierAdmin())
+    ) {
+
+      return;
+
+    }
+
+
+    const {
+      error
+    } =
+      await client
+        .from("shipping_methods")
+        .update({
+          actif: !actif
+        })
+        .eq(
+          "id",
+          id
+        );
+
+
+    if (error) {
+
+      alert(
+        "❌ " +
+        error.message
+      );
+
+      return;
+
+    }
+
+
+    await chargerLivraisons();
+
+  };
+
+
+/* =====================================================
+   SUPPRIMER LIVRAISON
+===================================================== */
+
+window.supprimerLivraison =
+  async function(id) {
+
+    if (
+      !confirm(
+        "⚠️ Supprimer ce mode de livraison ?"
+      )
+    ) {
+
+      return;
+
+    }
+
+
+    if (
+      !(await verifierAdmin())
+    ) {
+
+      return;
+
+    }
+
+
+    const {
+      error
+    } =
+      await client
+        .from("shipping_methods")
+        .delete()
+        .eq(
+          "id",
+          id
+        );
+
+
+    if (error) {
+
+      alert(
+        "❌ " +
+        error.message
+      );
+
+      return;
+
+    }
+
+
+    await chargerLivraisons();
+
+  };
+
+
+function afficherMessageLivraison(
+  texte,
+  erreur
+) {
+
+  const element =
+    document.getElementById(
+      "messageLivraison"
+    );
+
+
+  element.textContent =
+    texte;
+
+
+  element.className =
+    erreur
+      ? "message message-erreur"
+      : "message message-succes";
+
+
+  element.style.display =
+    "block";
+
+
+  setTimeout(
+    function() {
+
+      element.style.display =
+        "none";
+
+    },
+    4000
+  );
+
+}
+
+
+/* =====================================================
+   COMMANDES
+===================================================== */
+
+async function chargerCommandes() {
+
+  const {
+    data,
+    error
+  } =
+    await client
+      .from("orders")
+      .select("*")
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+  if (error) {
+
+    console.error(error);
+
+    return;
+
+  }
+
+
+  document.getElementById(
+    "nombreCommandes"
+  ).textContent =
+    data.length;
+
+
+  const liste =
+    document.getElementById(
+      "listeCommandes"
+    );
+
+
+  liste.innerHTML = "";
+
+
+  if (!data.length) {
+
+    liste.innerHTML =
+      "<p>Aucune commande pour le moment.</p>";
+
+    return;
+
+  }
+
+
+  for (
+    const commande of data
+  ) {
+
+    await afficherCommande(
+      commande
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   AFFICHER COMMANDE
+===================================================== */
+
+async function afficherCommande(
+  commande
+) {
+
+  const element =
+    document.createElement(
+      "div"
+    );
+
+
+  element.className =
+    "commande";
+
+
+  const {
+    data: articles
+  } =
+    await client
+      .from("order_items")
+      .select("*")
+      .eq(
+        "order_id",
+        commande.id
+      );
+
+
+  const date =
+    commande.created_at
+      ? new Date(
+          commande.created_at
+        ).toLocaleString(
+          "fr-FR"
+        )
+      : "";
+
+
+  let articlesHTML = "";
+
+
+  (
+    articles || []
+  ).forEach(
+    function(article) {
+
+      articlesHTML += `
+
+        <div class="article-commande">
+
+          <strong>
+            ${echapperHTML(
+              article.nom_produit
+            )}
+          </strong>
+
+          ×
+          ${Number(
+            article.quantite
+          )}
+
+          — 
+
+          ${Number(
+            article.total || 0
+          ).toFixed(2)}
+          €
+
+          ${
+            article.prenom
+              ? `<br>✏️ Prénom : ${echapperHTML(
+                  article.prenom
+                )}`
+              : ""
+          }
+
+          ${
+            article.message
+              ? `<br>💬 Message : ${echapperHTML(
+                  article.message
+                )}`
+              : ""
+          }
+
+        </div>
+
+      `;
+
+    }
+  );
+
+
+  element.innerHTML = `
+
+    <div class="commande-header">
+
+      <div class="commande-numero">
+
+        ${echapperHTML(
+          commande.numero_commande ||
+          commande.id
+        )}
+
+      </div>
+
+      <span class="statut-commande">
+
+        ${echapperHTML(
+          commande.statut ||
+          "nouvelle"
+        )}
+
+      </span>
+
+    </div>
+
+
+    <div class="commande-details">
+
+      <p>
+        👤
+        <strong>
+          ${echapperHTML(
+            commande.client_prenom
+          )}
+          ${echapperHTML(
+            commande.client_nom
+          )}
+        </strong>
+      </p>
+
+      <p>
+        📅 ${date}
+      </p>
+
+      <p>
+        📧 ${echapperHTML(
+          commande.client_email
+        )}
+      </p>
+
+      <p>
+        📞 ${echapperHTML(
+          commande.client_telephone ||
+          ""
+        )}
+      </p>
+
+      <p>
+        🚚 ${echapperHTML(
+          commande.livraison_nom ||
+          "Non renseignée"
+        )}
+      </p>
+
+      <p>
+        💶 Livraison :
+        ${Number(
+          commande.livraison_prix || 0
+        ).toFixed(2)} €
+      </p>
+
+      <p>
+        🧾 Sous-total :
+        ${Number(
+          commande.sous_total || 0
+        ).toFixed(2)} €
+      </p>
+
+      <p>
+        💰 <strong>
+          Total :
+          ${Number(
+            commande.total || 0
+          ).toFixed(2)} €
+        </strong>
+      </p>
+
+      ${
+        commande.numero_suivi
+          ? `
+            <p>
+              🔎 Suivi :
+              <strong>
+                ${echapperHTML(
+                  commande.numero_suivi
+                )}
+              </strong>
+            </p>
+          `
+          : ""
+      }
+
+    </div>
+
+
+    ${
+      commande.adresse ||
+      commande.code_postal ||
+      commande.ville
+        ? `
+          <p>
+            📍
+            ${echapperHTML(
+              commande.adresse || ""
+            )}
+            ${echapperHTML(
+              commande.complement_adresse || ""
+            )}
+            <br>
+            ${echapperHTML(
+              commande.code_postal || ""
+            )}
+            ${echapperHTML(
+              commande.ville || ""
+            )}
+            <br>
+            ${echapperHTML(
+              commande.pays || "France"
+            )}
+          </p>
+        `
+        : ""
+    }
+
+
+    <div class="commande-articles">
+
+      <strong>
+        🛍️ Articles
+      </strong>
+
+      ${
+        articlesHTML ||
+        "<p>Aucun article enregistré.</p>"
+      }
+
+    </div>
+
+  `;
+
+
+  document
+    .getElementById(
+      "listeCommandes"
+    )
+    .appendChild(
+      element
+    );
+
+}
+
+
+/* =====================================================
+   ACTUALISER COMMANDES
+===================================================== */
+
+document
+  .getElementById(
+    "boutonActualiserCommandes"
+  )
+  .addEventListener(
+    "click",
+    chargerCommandes
+  );
+
+
+/* =====================================================
    BIBLIOTHÈQUE
-   CHARGEMENT COMPLET
 ===================================================== */
 
 async function chargerBibliotheque() {
@@ -2233,23 +4008,27 @@ async function chargerBibliotheque() {
 
 async function chargerCategoriesBibliotheque() {
 
-  const { data, error } =
+  const {
+    data,
+    error
+  } =
     await client
       .from("library_categories")
       .select("*")
-      .order("ordre", {
-        ascending: true
-      });
+      .order(
+        "ordre",
+        {
+          ascending: true
+        }
+      );
 
 
   if (error) {
 
-    console.error(
-      "Erreur catégories bibliothèque :",
-      error
-    );
+    console.error(error);
 
     return;
+
   }
 
 
@@ -2263,22 +4042,31 @@ async function chargerCategoriesBibliotheque() {
     '<option value="">Choisir une catégorie</option>';
 
 
-  data.forEach(function(categorie) {
+  data.forEach(
+    function(categorie) {
 
-    const option =
-      document.createElement("option");
+      const option =
+        document.createElement(
+          "option"
+        );
 
-    option.value =
-      categorie.id;
+      option.value =
+        categorie.id;
 
-    option.textContent =
-      (categorie.emoji || "📁") +
-      " " +
-      categorie.nom;
+      option.textContent =
+        (
+          categorie.emoji ||
+          "📁"
+        ) +
+        " " +
+        categorie.nom;
 
-    select.appendChild(option);
+      select.appendChild(
+        option
+      );
 
-  });
+    }
+  );
 
 
   const liste =
@@ -2290,50 +4078,59 @@ async function chargerCategoriesBibliotheque() {
   liste.innerHTML = "";
 
 
-  data.forEach(function(categorie) {
+  data.forEach(
+    function(categorie) {
 
-    const ligne =
-      document.createElement("div");
+      const ligne =
+        document.createElement(
+          "div"
+        );
 
-    ligne.className =
-      "ligne-bibliotheque";
-
-
-    ligne.innerHTML = `
-
-      <div class="ligne-bibliotheque-info">
-
-        ${echapperHTML(
-          (categorie.emoji || "📁") +
-          " " +
-          categorie.nom
-        )}
-
-      </div>
-
-      <div class="ligne-bibliotheque-actions">
-
-        <button
-          class="btn btn-supprimer"
-          onclick="supprimerCategorieBibliotheque('${categorie.id}')"
-        >
-          🗑️
-        </button>
-
-      </div>
-
-    `;
+      ligne.className =
+        "ligne-bibliotheque";
 
 
-    liste.appendChild(ligne);
+      ligne.innerHTML = `
 
-  });
+        <div class="ligne-bibliotheque-info">
+
+          ${echapperHTML(
+            (
+              categorie.emoji ||
+              "📁"
+            ) +
+            " " +
+            categorie.nom
+          )}
+
+        </div>
+
+        <div class="ligne-bibliotheque-actions">
+
+          <button
+            class="btn btn-supprimer"
+            onclick="supprimerCategorieBibliotheque('${categorie.id}')"
+          >
+            🗑️
+          </button>
+
+        </div>
+
+      `;
+
+
+      liste.appendChild(
+        ligne
+      );
+
+    }
+  );
 
 }
 
 
 /* =====================================================
-   AJOUTER CATÉGORIE
+   AJOUTER CATÉGORIE BIBLIOTHÈQUE
 ===================================================== */
 
 document
@@ -2343,6 +4140,15 @@ document
   .addEventListener(
     "click",
     async function() {
+
+      if (
+        !(await verifierAdmin())
+      ) {
+
+        return;
+
+      }
+
 
       const nom =
         document
@@ -2370,28 +4176,38 @@ document
         );
 
         return;
+
       }
 
 
-      const { error } =
+      const {
+        error
+      } =
         await client
-          .from("library_categories")
+          .from(
+            "library_categories"
+          )
           .insert([{
+
             nom,
-            emoji: emoji || "📁"
+
+            emoji:
+              emoji ||
+              "📁"
+
           }]);
 
 
       if (error) {
 
-        console.error(error);
-
         afficherMessageBibliotheque(
-          "❌ " + error.message,
+          "❌ " +
+          error.message,
           true
         );
 
         return;
+
       }
 
 
@@ -2429,24 +4245,44 @@ window.supprimerCategorieBibliotheque =
         "⚠️ Supprimer cette catégorie et ses sous-catégories ?"
       )
     ) {
+
       return;
+
     }
 
 
-    const { error } =
+    if (
+      !(await verifierAdmin())
+    ) {
+
+      return;
+
+    }
+
+
+    const {
+      error
+    } =
       await client
-        .from("library_categories")
+        .from(
+          "library_categories"
+        )
         .delete()
-        .eq("id", id);
+        .eq(
+          "id",
+          id
+        );
 
 
     if (error) {
 
       alert(
-        "❌ " + error.message
+        "❌ " +
+        error.message
       );
 
       return;
+
     }
 
 
@@ -2503,20 +4339,29 @@ async function chargerSousCategoriesBibliotheque() {
   if (!categoryId) {
 
     return;
+
   }
 
 
-  const { data, error } =
+  const {
+    data,
+    error
+  } =
     await client
-      .from("library_subcategories")
+      .from(
+        "library_subcategories"
+      )
       .select("*")
       .eq(
         "category_id",
         categoryId
       )
-      .order("ordre", {
-        ascending: true
-      });
+      .order(
+        "ordre",
+        {
+          ascending: true
+        }
+      );
 
 
   if (error) {
@@ -2524,59 +4369,72 @@ async function chargerSousCategoriesBibliotheque() {
     console.error(error);
 
     return;
+
   }
 
 
-  data.forEach(function(sousCategorie) {
+  data.forEach(
+    function(
+      sousCategorie
+    ) {
 
-    const option =
-      document.createElement("option");
+      const option =
+        document.createElement(
+          "option"
+        );
 
-    option.value =
-      sousCategorie.id;
+      option.value =
+        sousCategorie.id;
 
-    option.textContent =
-      "📂 " +
-      sousCategorie.nom;
+      option.textContent =
+        "📂 " +
+        sousCategorie.nom;
 
-    select.appendChild(option);
-
-
-    const ligne =
-      document.createElement("div");
-
-    ligne.className =
-      "ligne-bibliotheque";
-
-
-    ligne.innerHTML = `
-
-      <div class="ligne-bibliotheque-info">
-
-        📂
-        ${echapperHTML(
-          sousCategorie.nom
-        )}
-
-      </div>
-
-      <div class="ligne-bibliotheque-actions">
-
-        <button
-          class="btn btn-supprimer"
-          onclick="supprimerSousCategorieBibliotheque('${sousCategorie.id}')"
-        >
-          🗑️
-        </button>
-
-      </div>
-
-    `;
+      select.appendChild(
+        option
+      );
 
 
-    liste.appendChild(ligne);
+      const ligne =
+        document.createElement(
+          "div"
+        );
 
-  });
+      ligne.className =
+        "ligne-bibliotheque";
+
+
+      ligne.innerHTML = `
+
+        <div class="ligne-bibliotheque-info">
+
+          📂
+          ${echapperHTML(
+            sousCategorie.nom
+          )}
+
+        </div>
+
+        <div class="ligne-bibliotheque-actions">
+
+          <button
+            class="btn btn-supprimer"
+            onclick="supprimerSousCategorieBibliotheque('${sousCategorie.id}')"
+          >
+            🗑️
+          </button>
+
+        </div>
+
+      `;
+
+
+      liste.appendChild(
+        ligne
+      );
+
+    }
+  );
 
 
   await chargerDesignsBibliotheque();
@@ -2595,6 +4453,15 @@ document
   .addEventListener(
     "click",
     async function() {
+
+      if (
+        !(await verifierAdmin())
+      ) {
+
+        return;
+
+      }
+
 
       const categoryId =
         document.getElementById(
@@ -2619,6 +4486,7 @@ document
         );
 
         return;
+
       }
 
 
@@ -2630,28 +4498,37 @@ document
         );
 
         return;
+
       }
 
 
-      const { error } =
+      const {
+        error
+      } =
         await client
-          .from("library_subcategories")
+          .from(
+            "library_subcategories"
+          )
           .insert([{
-            category_id: categoryId,
+
+            category_id:
+              categoryId,
+
             nom
+
           }]);
 
 
       if (error) {
 
-        console.error(error);
-
         afficherMessageBibliotheque(
-          "❌ " + error.message,
+          "❌ " +
+          error.message,
           true
         );
 
         return;
+
       }
 
 
@@ -2684,24 +4561,44 @@ window.supprimerSousCategorieBibliotheque =
         "⚠️ Supprimer cette sous-catégorie et ses designs ?"
       )
     ) {
+
       return;
+
     }
 
 
-    const { error } =
+    if (
+      !(await verifierAdmin())
+    ) {
+
+      return;
+
+    }
+
+
+    const {
+      error
+    } =
       await client
-        .from("library_subcategories")
+        .from(
+          "library_subcategories"
+        )
         .delete()
-        .eq("id", id);
+        .eq(
+          "id",
+          id
+        );
 
 
     if (error) {
 
       alert(
-        "❌ " + error.message
+        "❌ " +
+        error.message
       );
 
       return;
+
     }
 
 
@@ -2748,20 +4645,29 @@ async function chargerDesignsBibliotheque() {
   if (!subcategoryId) {
 
     return;
+
   }
 
 
-  const { data, error } =
+  const {
+    data,
+    error
+  } =
     await client
-      .from("library_designs")
+      .from(
+        "library_designs"
+      )
       .select("*")
       .eq(
         "subcategory_id",
         subcategoryId
       )
-      .order("ordre", {
-        ascending: true
-      });
+      .order(
+        "ordre",
+        {
+          ascending: true
+        }
+      );
 
 
   if (error) {
@@ -2769,57 +4675,70 @@ async function chargerDesignsBibliotheque() {
     console.error(error);
 
     return;
+
   }
 
 
-  data.forEach(function(design) {
+  data.forEach(
+    function(design) {
 
-    const card =
-      document.createElement("div");
+      const card =
+        document.createElement(
+          "div"
+        );
 
-    card.className =
-      "design-card";
+      card.className =
+        "design-card";
 
 
-    card.innerHTML = `
+      card.innerHTML = `
 
-      <img
-        src="${echapperHTML(design.image_url)}"
-        alt="${echapperHTML(design.nom)}"
-      >
+        <img
+          src="${echapperHTML(
+            design.image_url
+          )}"
+          alt="${echapperHTML(
+            design.nom
+          )}"
+        >
 
-      <div class="design-card-info">
+        <div class="design-card-info">
 
-        <strong>
-          ${echapperHTML(design.nom)}
-        </strong>
+          <strong>
+            ${echapperHTML(
+              design.nom
+            )}
+          </strong>
 
-        <div class="design-card-actions">
+          <div class="design-card-actions">
 
-          <button
-            class="design-modifier"
-            onclick="renommerDesignBibliotheque('${design.id}', '${echapperJS(design.nom)}')"
-          >
-            ✏️
-          </button>
+            <button
+              class="design-modifier"
+              onclick="renommerDesignBibliotheque('${design.id}', '${echapperJS(design.nom)}')"
+            >
+              ✏️
+            </button>
 
-          <button
-            class="design-supprimer"
-            onclick="supprimerDesignBibliotheque('${design.id}')"
-          >
-            🗑️
-          </button>
+            <button
+              class="design-supprimer"
+              onclick="supprimerDesignBibliotheque('${design.id}')"
+            >
+              🗑️
+            </button>
+
+          </div>
 
         </div>
 
-      </div>
-
-    `;
+      `;
 
 
-    liste.appendChild(card);
+      liste.appendChild(
+        card
+      );
 
-  });
+    }
+  );
 
 }
 
@@ -2835,6 +4754,15 @@ document
   .addEventListener(
     "click",
     async function() {
+
+      if (
+        !(await verifierAdmin())
+      ) {
+
+        return;
+
+      }
+
 
       const subcategoryId =
         document.getElementById(
@@ -2856,6 +4784,7 @@ document
         );
 
         return;
+
       }
 
 
@@ -2867,6 +4796,7 @@ document
         );
 
         return;
+
       }
 
 
@@ -2912,13 +4842,17 @@ document
 
           const resultatUpload =
             await client.storage
-              .from("product-library")
+              .from(
+                "product-library"
+              )
               .upload(
                 chemin,
                 fichier,
                 {
-                  cacheControl: "3600",
-                  upsert: false
+                  cacheControl:
+                    "3600",
+                  upsert:
+                    false
                 }
               );
 
@@ -2934,7 +4868,9 @@ document
 
           const resultatURL =
             client.storage
-              .from("product-library")
+              .from(
+                "product-library"
+              )
               .getPublicUrl(
                 chemin
               );
@@ -2946,17 +4882,26 @@ document
 
           const nom =
             fichier.name
-              .replace(/\.[^/.]+$/, "");
+              .replace(
+                /\.[^/.]+$/,
+                ""
+              );
 
 
           const resultatInsert =
             await client
-              .from("library_designs")
+              .from(
+                "library_designs"
+              )
               .insert([{
+
                 subcategory_id:
                   subcategoryId,
+
                 nom,
+
                 image_url
+
               }]);
 
 
@@ -2990,7 +4935,8 @@ document
         console.error(erreur);
 
         afficherMessageBibliotheque(
-          "❌ " + erreur.message,
+          "❌ " +
+          erreur.message,
           true
         );
 
@@ -3013,7 +4959,10 @@ document
 ===================================================== */
 
 window.renommerDesignBibliotheque =
-  async function(id, ancienNom) {
+  async function(
+    id,
+    ancienNom
+  ) {
 
     const nouveauNom =
       prompt(
@@ -3028,25 +4977,47 @@ window.renommerDesignBibliotheque =
     ) {
 
       return;
+
     }
 
 
-    const { error } =
+    if (
+      !(await verifierAdmin())
+    ) {
+
+      return;
+
+    }
+
+
+    const {
+      error
+    } =
       await client
-        .from("library_designs")
+        .from(
+          "library_designs"
+        )
         .update({
-          nom: nouveauNom.trim()
+
+          nom:
+            nouveauNom.trim()
+
         })
-        .eq("id", id);
+        .eq(
+          "id",
+          id
+        );
 
 
     if (error) {
 
       alert(
-        "❌ " + error.message
+        "❌ " +
+        error.message
       );
 
       return;
+
     }
 
 
@@ -3069,23 +5040,42 @@ window.supprimerDesignBibliotheque =
     ) {
 
       return;
+
     }
 
 
-    const { error } =
+    if (
+      !(await verifierAdmin())
+    ) {
+
+      return;
+
+    }
+
+
+    const {
+      error
+    } =
       await client
-        .from("library_designs")
+        .from(
+          "library_designs"
+        )
         .delete()
-        .eq("id", id);
+        .eq(
+          "id",
+          id
+        );
 
 
     if (error) {
 
       alert(
-        "❌ " + error.message
+        "❌ " +
+        error.message
       );
 
       return;
+
     }
 
 
@@ -3123,22 +5113,27 @@ function afficherMessageBibliotheque(
     "block";
 
 
-  setTimeout(function() {
+  setTimeout(
+    function() {
 
-    element.style.display =
-      "none";
+      element.style.display =
+        "none";
 
-  }, 4000);
+    },
+    4000
+  );
 
 }
 
 
 /* =====================================================
-   ACTUALISER
+   ACTUALISER PRODUITS
 ===================================================== */
 
 document
-  .getElementById("boutonActualiser")
+  .getElementById(
+    "boutonActualiser"
+  )
   .addEventListener(
     "click",
     chargerProduits
@@ -3149,34 +5144,71 @@ document
    PROTECTION HTML
 ===================================================== */
 
-function echapperHTML(texte) {
+function echapperHTML(
+  texte
+) {
 
-  if (!texte) {
+  if (
+    texte === null ||
+    texte === undefined
+  ) {
+
     return "";
+
   }
 
-  return String(texte)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+
+  return String(
+    texte
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
 
 }
 
 
-function echapperJS(texte) {
+function echapperJS(
+  texte
+) {
 
-  return String(texte || "")
-    .replace(/\\/g, "\\\\")
-    .replace(/'/g, "\\'");
+  return String(
+    texte || ""
+  )
+    .replace(
+      /\\/g,
+      "\\\\"
+    )
+    .replace(
+      /'/g,
+      "\\'"
+    );
 
 }
 
 
 /* =====================================================
-   DEMARRAGE
+   DÉMARRAGE
 ===================================================== */
+
+actualiserBlocStock();
 
 verifierSession();
 
