@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Sublime'K — Administration</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
+
     :root {
       --rose: #B9828F;
       --rose-fonce: #8F5967;
@@ -42,76 +49,127 @@
       font: inherit;
     }
 
+    button {
+      cursor: pointer;
+    }
+
     /* =========================
        CONNEXION
     ========================= */
 
     #pageConnexion {
+
       min-height: 100vh;
+
       display: flex;
+
       justify-content: center;
+
       align-items: center;
+
       padding: 20px;
+
     }
 
     .connexion-card {
+
       width: 100%;
+
       max-width: 430px;
+
       background: var(--blanc);
+
       border: 1px solid var(--bordure);
+
       border-radius: 24px;
+
       padding: 35px;
-      box-shadow: 0 10px 35px rgba(74, 65, 67, 0.08);
+
+      box-shadow:
+        0 10px 35px rgba(74, 65, 67, 0.08);
+
       text-align: center;
+
     }
 
     .connexion-card h1 {
+
       color: var(--rose-fonce);
+
       margin-bottom: 8px;
+
     }
 
     .connexion-card p {
+
       margin-top: 0;
+
       color: #766B6D;
+
     }
 
     .connexion-card input {
+
       width: 100%;
+
       padding: 14px;
+
       margin-top: 12px;
+
       border: 1px solid var(--bordure);
+
       border-radius: 12px;
+
       outline: none;
+
     }
 
     .connexion-card input:focus {
+
       border-color: var(--rose);
+
     }
 
     .btn {
+
       border: none;
+
       border-radius: 12px;
+
       padding: 13px 18px;
-      cursor: pointer;
+
       font-weight: bold;
+
       transition: 0.2s;
+
     }
 
     .btn-principal {
+
       width: 100%;
+
       margin-top: 18px;
+
       background: var(--rose);
+
       color: white;
+
     }
 
     .btn-principal:hover {
+
       background: var(--rose-fonce);
+
     }
 
     #resultatConnexion {
+
       margin-top: 15px;
+
       min-height: 20px;
+
       font-weight: bold;
+
     }
 
     /* =========================
@@ -119,60 +177,97 @@
     ========================= */
 
     #pageAdmin {
+
       display: none;
+
       min-height: 100vh;
+
     }
 
     .admin-header {
+
       background: white;
+
       border-bottom: 1px solid var(--rose-poudre);
+
       padding: 16px 22px;
+
       display: flex;
+
       align-items: center;
+
       justify-content: space-between;
+
       gap: 15px;
+
       position: sticky;
+
       top: 0;
-      z-index: 10;
+
+      z-index: 100;
+
     }
 
     .logo-admin {
+
       color: var(--rose-fonce);
+
       font-size: 25px;
+
       font-weight: bold;
+
     }
 
     .logo-admin span {
+
       color: var(--sauge-fonce);
+
     }
 
     .btn-deconnexion {
+
       background: var(--gris-clair);
+
       color: var(--texte);
+
     }
 
     .btn-deconnexion:hover {
+
       background: var(--rose-poudre);
+
     }
 
     .admin-container {
+
       max-width: 1200px;
+
       margin: auto;
+
       padding: 25px 18px 50px;
+
     }
 
     .bienvenue {
+
       margin-bottom: 25px;
+
     }
 
     .bienvenue h1 {
+
       color: var(--rose-fonce);
+
       margin-bottom: 5px;
+
     }
 
     .bienvenue p {
+
       margin-top: 0;
+
       color: #766B6D;
+
     }
 
     /* =========================
@@ -180,236 +275,217 @@
     ========================= */
 
     .stats {
+
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
       gap: 15px;
+
       margin-bottom: 25px;
+
     }
 
     .stat-card {
+
       background: white;
+
       border: 1px solid var(--bordure);
+
       border-radius: 18px;
+
       padding: 20px;
+
     }
 
     .stat-card .nombre {
+
       font-size: 32px;
+
       font-weight: bold;
+
       color: var(--rose-fonce);
+
     }
 
     .stat-card .label {
+
       color: #766B6D;
+
       margin-top: 5px;
+
     }
 
     /* =========================
-       FORMULAIRE
+       BLOCS
     ========================= */
 
     .bloc {
+
       background: white;
+
       border: 1px solid var(--bordure);
+
       border-radius: 20px;
+
       padding: 22px;
+
       margin-bottom: 25px;
+
     }
 
     .bloc h2 {
+
       margin-top: 0;
+
       color: var(--sauge-fonce);
+
     }
 
+    .bloc h3 {
+
+      color: var(--rose-fonce);
+
+    }
+
+    .aide {
+
+      color: #766B6D;
+
+      font-size: 14px;
+
+    }
+
+    /* =========================
+       FORMULAIRES
+    ========================= */
+
     .form-grid {
+
       display: grid;
-      grid-template-columns: 1fr 1fr;
+
+      grid-template-columns:
+        1fr 1fr;
+
       gap: 15px;
+
     }
 
     .champ {
+
       display: flex;
+
       flex-direction: column;
+
       gap: 7px;
+
     }
 
     .champ.full {
+
       grid-column: 1 / -1;
+
     }
 
     .champ label {
+
       font-weight: bold;
+
       font-size: 14px;
+
     }
 
     .champ input,
     .champ select,
     .champ textarea {
+
       width: 100%;
+
       border: 1px solid var(--bordure);
+
       border-radius: 10px;
+
       padding: 12px;
+
       background: white;
+
       color: var(--texte);
+
       outline: none;
+
     }
 
     .champ input:focus,
     .champ select:focus,
     .champ textarea:focus {
+
       border-color: var(--rose);
+
     }
 
     .champ textarea {
+
       min-height: 90px;
+
       resize: vertical;
+
     }
 
     .checkbox-ligne {
+
       display: flex;
+
       align-items: center;
+
       gap: 8px;
+
       margin-top: 15px;
+
     }
 
     .checkbox-ligne input {
+
       width: 18px;
+
       height: 18px;
+
     }
 
     .actions-formulaire {
+
       display: flex;
+
       gap: 10px;
+
       margin-top: 20px;
+
       flex-wrap: wrap;
+
     }
 
     .btn-enregistrer {
+
       background: var(--rose);
+
       color: white;
+
     }
 
     .btn-enregistrer:hover {
+
       background: var(--rose-fonce);
+
     }
 
     .btn-annuler {
+
       background: var(--gris-clair);
+
       color: var(--texte);
+
       display: none;
-    }
 
-    /* =========================
-       PRODUITS
-    ========================= */
-
-    .barre-produits {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-      flex-wrap: wrap;
-      margin-bottom: 15px;
-    }
-
-    .barre-produits h2 {
-      margin: 0;
-      color: var(--sauge-fonce);
-    }
-
-    .message-produits {
-      color: #766B6D;
-    }
-
-    .produits-liste {
-      display: grid;
-      gap: 12px;
-    }
-
-    .produit {
-      border: 1px solid var(--bordure);
-      border-radius: 16px;
-      padding: 16px;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 15px;
-      align-items: center;
-    }
-
-    .produit-info h3 {
-      margin: 0 0 7px;
-      color: var(--rose-fonce);
-    }
-
-    .produit-info p {
-      margin: 4px 0;
-      color: #766B6D;
-      font-size: 14px;
-    }
-
-    .produit-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .btn-modifier {
-      background: var(--vert-clair);
-      color: var(--sauge-fonce);
-    }
-
-    .btn-supprimer {
-      background: #F3E0E0;
-      color: #8B4F4F;
-    }
-
-    .statut {
-      display: inline-block;
-      padding: 5px 9px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .statut-stock {
-      background: var(--vert-clair);
-      color: var(--sauge-fonce);
-    }
-
-    .statut-precommande {
-      background: var(--orange-clair);
-      color: var(--rose-fonce);
-    }
-
-    .statut-indisponible {
-      background: var(--gris-clair);
-      color: #6B6264;
-    }
-
-    .visible {
-      color: var(--sauge-fonce);
-    }
-
-    .cache {
-      color: #8B777A;
-    }
-
-    .message {
-      padding: 12px;
-      border-radius: 10px;
-      margin-top: 15px;
-      display: none;
-    }
-
-    .message-succes {
-      background: var(--vert-clair);
-      color: var(--sauge-fonce);
-    }
-
-    .message-erreur {
-      background: #F3E0E0;
-      color: #8B4F4F;
     }
 
     /* =========================
@@ -417,90 +493,476 @@
     ========================= */
 
     .personnalisation-admin {
+
       margin-top: 25px;
+
       padding: 18px;
+
       background: #FAF7F5;
+
       border: 1px solid var(--bordure);
+
       border-radius: 16px;
+
     }
 
     .personnalisation-admin h3 {
+
       margin-top: 0;
-      color: var(--rose-fonce);
+
     }
 
-    .personnalisation-aide {
+    /* =========================
+       PRODUITS
+    ========================= */
+
+    .barre-produits {
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      gap: 15px;
+
+      flex-wrap: wrap;
+
+      margin-bottom: 15px;
+
+    }
+
+    .barre-produits h2 {
+
+      margin: 0;
+
+    }
+
+    .message-produits {
+
       color: #766B6D;
+
+      margin-bottom: 15px;
+
+    }
+
+    .produits-liste {
+
+      display: grid;
+
+      gap: 12px;
+
+    }
+
+    .produit {
+
+      border: 1px solid var(--bordure);
+
+      border-radius: 16px;
+
+      padding: 16px;
+
+      display: grid;
+
+      grid-template-columns:
+        1fr auto;
+
+      gap: 15px;
+
+      align-items: center;
+
+    }
+
+    .produit-info h3 {
+
+      margin: 0 0 7px;
+
+      color: var(--rose-fonce);
+
+    }
+
+    .produit-info p {
+
+      margin: 4px 0;
+
+      color: #766B6D;
+
       font-size: 14px;
+
+    }
+
+    .produit-actions {
+
+      display: flex;
+
+      gap: 8px;
+
+      flex-wrap: wrap;
+
+      justify-content: flex-end;
+
+    }
+
+    .btn-modifier {
+
+      background: var(--vert-clair);
+
+      color: var(--sauge-fonce);
+
+    }
+
+    .btn-modifier:hover {
+
+      background: #D4E0C9;
+
+    }
+
+    .btn-supprimer {
+
+      background: #F3E0E0;
+
+      color: #8B4F4F;
+
+    }
+
+    .btn-supprimer:hover {
+
+      background: #EBCFCF;
+
+    }
+
+    .statut {
+
+      display: inline-block;
+
+      padding: 5px 9px;
+
+      border-radius: 20px;
+
+      font-size: 12px;
+
+      font-weight: bold;
+
+    }
+
+    .statut-stock {
+
+      background: var(--vert-clair);
+
+      color: var(--sauge-fonce);
+
+    }
+
+    .statut-precommande {
+
+      background: var(--orange-clair);
+
+      color: var(--rose-fonce);
+
+    }
+
+    .statut-indisponible {
+
+      background: var(--gris-clair);
+
+      color: #6B6264;
+
+    }
+
+    .visible {
+
+      color: var(--sauge-fonce);
+
+    }
+
+    .cache {
+
+      color: #8B777A;
+
     }
 
     /* =========================
        BIBLIOTHÈQUE
     ========================= */
 
-    .bibliotheque-images {
-      margin-top: 25px;
-      padding: 20px;
+    .bibliotheque-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap: 20px;
+
+    }
+
+    .bibliotheque-bloc {
+
       background: #FAF7F5;
+
       border: 1px solid var(--bordure);
+
       border-radius: 16px;
+
+      padding: 18px;
+
     }
 
-    .bibliotheque-images h3 {
+    .bibliotheque-bloc h3 {
+
       margin-top: 0;
-      color: var(--sauge-fonce);
+
     }
 
-    .bibliotheque-images p {
+    .liste-bibliotheque {
+
+      display: grid;
+
+      gap: 8px;
+
+      margin-top: 15px;
+
+    }
+
+    .element-bibliotheque {
+
+      background: white;
+
+      border: 1px solid var(--bordure);
+
+      border-radius: 12px;
+
+      padding: 10px;
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      gap: 10px;
+
+    }
+
+    .element-bibliotheque-info {
+
+      min-width: 0;
+
+    }
+
+    .element-bibliotheque-info strong {
+
+      display: block;
+
+      color: var(--texte);
+
+    }
+
+    .element-bibliotheque-info small {
+
       color: #766B6D;
+
+    }
+
+    .designs-grille {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(4, 1fr);
+
+      gap: 12px;
+
+      margin-top: 20px;
+
+    }
+
+    .design-card {
+
+      border: 1px solid var(--bordure);
+
+      border-radius: 12px;
+
+      overflow: hidden;
+
+      background: white;
+
+    }
+
+    .design-card img {
+
+      width: 100%;
+
+      aspect-ratio: 1 / 1;
+
+      object-fit: cover;
+
+      display: block;
+
+      background: #F1E5E5;
+
+    }
+
+    .design-card-info {
+
+      padding: 8px;
+
+    }
+
+    .design-card-info strong {
+
+      display: block;
+
+      font-size: 13px;
+
+      margin-bottom: 7px;
+
+    }
+
+    .design-card-info button {
+
+      width: 100%;
+
+      padding: 8px;
+
+      border: none;
+
+      border-radius: 8px;
+
+      background: #F3E0E0;
+
+      color: #8B4F4F;
+
+      font-weight: bold;
+
+    }
+
+    .vide {
+
+      color: #766B6D;
+
       font-size: 14px;
+
+      padding: 10px 0;
+
+    }
+
+    /* =========================
+       MESSAGES
+    ========================= */
+
+    .message {
+
+      padding: 12px;
+
+      border-radius: 10px;
+
+      margin-top: 15px;
+
+      display: none;
+
+    }
+
+    .message-succes {
+
+      background: var(--vert-clair);
+
+      color: var(--sauge-fonce);
+
+    }
+
+    .message-erreur {
+
+      background: #F3E0E0;
+
+      color: #8B4F4F;
+
     }
 
     /* =========================
        MOBILE
     ========================= */
 
-    @media (max-width: 700px) {
-
-      .admin-header {
-        padding: 14px;
-      }
-
-      .admin-container {
-        padding: 20px 12px 40px;
-      }
+    @media (max-width: 800px) {
 
       .stats {
+
         grid-template-columns: 1fr;
+
       }
 
       .form-grid {
+
         grid-template-columns: 1fr;
+
       }
 
       .champ.full {
+
         grid-column: auto;
+
+      }
+
+      .bibliotheque-grid {
+
+        grid-template-columns: 1fr;
+
+      }
+
+      .designs-grille {
+
+        grid-template-columns:
+          repeat(2, 1fr);
+
+      }
+
+    }
+
+    @media (max-width: 600px) {
+
+      .admin-header {
+
+        padding: 14px;
+
+      }
+
+      .admin-container {
+
+        padding:
+          20px 12px 40px;
+
       }
 
       .produit {
+
         grid-template-columns: 1fr;
+
       }
 
       .produit-actions {
+
         justify-content: flex-start;
+
       }
 
       .connexion-card {
+
         padding: 25px 20px;
+
       }
+
     }
+
   </style>
+
 </head>
+
 
 <body>
 
+
   <!-- =========================
-       PAGE DE CONNEXION
+       CONNEXION
   ========================= -->
 
   <section id="pageConnexion">
@@ -509,7 +971,9 @@
 
       <h1>Sublime'K</h1>
 
-      <p>Administration de la boutique</p>
+      <p>
+        Administration de la boutique
+      </p>
 
       <input
         type="email"
@@ -539,7 +1003,7 @@
 
 
   <!-- =========================
-       ESPACE ADMIN
+       ADMIN
   ========================= -->
 
   <section id="pageAdmin">
@@ -562,9 +1026,12 @@
 
     <main class="admin-container">
 
+
       <div class="bienvenue">
 
-        <h1>Tableau de bord</h1>
+        <h1>
+          Tableau de bord
+        </h1>
 
         <p>
           Bienvenue dans ton espace administrateur 💕
@@ -630,7 +1097,7 @@
 
 
       <!-- =========================
-           AJOUT / MODIFICATION
+           PRODUITS
       ========================= -->
 
       <div class="bloc">
@@ -641,7 +1108,9 @@
 
         <form id="formProduit">
 
+
           <div class="form-grid">
+
 
             <div class="champ">
 
@@ -755,8 +1224,6 @@
           </div>
 
 
-          <!-- PRODUIT VISIBLE -->
-
           <div class="checkbox-ligne">
 
             <input
@@ -772,8 +1239,6 @@
           </div>
 
 
-          <!-- NOUVEAUTÉ -->
-
           <div class="checkbox-ligne">
 
             <input
@@ -788,9 +1253,7 @@
           </div>
 
 
-          <!-- =========================
-               PERSONNALISATION
-          ========================= -->
+          <!-- PERSONNALISATION -->
 
           <div class="personnalisation-admin">
 
@@ -798,7 +1261,7 @@
               ✨ Personnalisation du produit
             </h3>
 
-            <p class="personnalisation-aide">
+            <p class="aide">
               Active uniquement les options dont ce produit a besoin.
             </p>
 
@@ -875,11 +1338,6 @@
           </div>
 
 
-          
-
-
-          <!-- ACTIONS -->
-
           <div class="actions-formulaire">
 
             <button
@@ -905,6 +1363,7 @@
             id="messageFormulaire"
             class="message"
           ></div>
+
 
         </form>
 
@@ -948,12 +1407,315 @@
 
       </div>
 
+
+      <!-- =========================
+           BIBLIOTHÈQUE INDÉPENDANTE
+      ========================= -->
+
+      <div class="bloc">
+
+        <h2>
+          🎨 Bibliothèque d'images
+        </h2>
+
+        <p class="aide">
+          Gère ici tes designs indépendamment de tes produits.
+          Tu pourras ensuite permettre aux clients de choisir parmi ces designs.
+        </p>
+
+
+        <div class="bibliotheque-grid">
+
+
+          <!-- CATÉGORIES -->
+
+          <div class="bibliotheque-bloc">
+
+            <h3>
+              📁 Catégories
+            </h3>
+
+            <div class="champ">
+
+              <label for="nouvelleCategorieBibliotheque">
+                Nouvelle catégorie
+              </label>
+
+              <input
+                type="text"
+                id="nouvelleCategorieBibliotheque"
+                placeholder="Ex : Animaux"
+              >
+
+            </div>
+
+
+            <div class="champ"
+                 style="margin-top:10px;">
+
+              <label for="emojiCategorieBibliotheque">
+                Emoji
+              </label>
+
+              <input
+                type="text"
+                id="emojiCategorieBibliotheque"
+                placeholder="🐶"
+                maxlength="4"
+              >
+
+            </div>
+
+
+            <button
+              type="button"
+              class="btn btn-enregistrer"
+              id="boutonCreerCategorieBibliotheque"
+              style="margin-top:12px;"
+            >
+              ➕ Créer la catégorie
+            </button>
+
+
+            <div
+              id="listeCategoriesBibliotheque"
+              class="liste-bibliotheque"
+            ></div>
+
+          </div>
+
+
+          <!-- SOUS-CATÉGORIES -->
+
+          <div class="bibliotheque-bloc">
+
+            <h3>
+              📂 Sous-catégories
+            </h3>
+
+
+            <div class="champ">
+
+              <label for="bibliothequeCategorieAdmin">
+                Catégorie
+              </label>
+
+              <select
+                id="bibliothequeCategorieAdmin"
+              >
+
+                <option value="">
+                  Choisir une catégorie
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="champ"
+                 style="margin-top:12px;">
+
+              <label for="nouvelleSousCategorieBibliotheque">
+                Nouvelle sous-catégorie
+              </label>
+
+              <input
+                type="text"
+                id="nouvelleSousCategorieBibliotheque"
+                placeholder="Ex : Chiens"
+              >
+
+            </div>
+
+
+            <button
+              type="button"
+              class="btn btn-enregistrer"
+              id="boutonCreerSousCategorieBibliotheque"
+              style="margin-top:12px;"
+            >
+              ➕ Créer la sous-catégorie
+            </button>
+
+
+            <div
+              id="listeSousCategoriesBibliotheque"
+              class="liste-bibliotheque"
+            ></div>
+
+          </div>
+
+
+        </div>
+
+
+        <!-- AJOUT DESIGNS -->
+
+        <div
+          class="bibliotheque-bloc"
+          style="margin-top:20px;"
+        >
+
+          <h3>
+            🖼️ Ajouter des designs
+          </h3>
+
+
+          <div class="form-grid">
+
+
+            <div class="champ">
+
+              <label for="categorieDesign">
+                Catégorie
+              </label>
+
+              <select id="categorieDesign">
+
+                <option value="">
+                  Choisir une catégorie
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="champ">
+
+              <label for="sousCategorieDesign">
+                Sous-catégorie
+              </label>
+
+              <select
+                id="sousCategorieDesign"
+                disabled
+              >
+
+                <option value="">
+                  Choisir une sous-catégorie
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="champ full">
+
+              <label for="fichiersDesign">
+                Designs
+              </label>
+
+              <input
+                type="file"
+                id="fichiersDesign"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                multiple
+              >
+
+              <small class="aide">
+                Tu peux sélectionner plusieurs images à la fois.
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="btn btn-enregistrer"
+            id="boutonAjouterDesigns"
+            style="margin-top:15px;"
+          >
+            🖼️ Ajouter les designs
+          </button>
+
+
+          <div
+            id="messageBibliotheque"
+            class="message"
+          ></div>
+
+
+        </div>
+
+
+        <!-- AFFICHAGE DES DESIGNS -->
+
+        <div
+          class="bibliotheque-bloc"
+          style="margin-top:20px;"
+        >
+
+          <h3>
+            🖼️ Designs enregistrés
+          </h3>
+
+
+          <div class="form-grid">
+
+
+            <div class="champ">
+
+              <label for="categorieAffichageDesign">
+                Catégorie
+              </label>
+
+              <select id="categorieAffichageDesign">
+
+                <option value="">
+                  Choisir une catégorie
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="champ">
+
+              <label for="sousCategorieAffichageDesign">
+                Sous-catégorie
+              </label>
+
+              <select
+                id="sousCategorieAffichageDesign"
+                disabled
+              >
+
+                <option value="">
+                  Choisir une sous-catégorie
+                </option>
+
+              </select>
+
+            </div>
+
+
+          </div>
+
+
+          <div
+            id="listeDesigns"
+            class="designs-grille"
+          ></div>
+
+        </div>
+
+
+      </div>
+
+
     </main>
 
   </section>
 
 
   <script>
+
 
     /* =========================
        SUPABASE
@@ -984,22 +1746,34 @@
     ========================= */
 
     const pageConnexion =
-      document.getElementById("pageConnexion");
+      document.getElementById(
+        "pageConnexion"
+      );
 
     const pageAdmin =
-      document.getElementById("pageAdmin");
+      document.getElementById(
+        "pageAdmin"
+      );
 
     const resultatConnexion =
-      document.getElementById("resultatConnexion");
+      document.getElementById(
+        "resultatConnexion"
+      );
 
     const formulaire =
-      document.getElementById("formProduit");
+      document.getElementById(
+        "formProduit"
+      );
 
     const listeProduits =
-      document.getElementById("listeProduits");
+      document.getElementById(
+        "listeProduits"
+      );
 
     const messageProduits =
-      document.getElementById("messageProduits");
+      document.getElementById(
+        "messageProduits"
+      );
 
 
     /* =========================
@@ -1007,7 +1781,9 @@
     ========================= */
 
     document
-      .getElementById("boutonConnexion")
+      .getElementById(
+        "boutonConnexion"
+      )
       .addEventListener(
         "click",
         connexion
@@ -1023,7 +1799,9 @@
           .trim();
 
       const password =
-        document.getElementById("password").value;
+        document.getElementById(
+          "password"
+        ).value;
 
       if (!email || !password) {
 
@@ -1031,10 +1809,13 @@
           "❌ Merci de remplir les deux champs.";
 
         return;
+
       }
+
 
       resultatConnexion.textContent =
         "⏳ Connexion en cours...";
+
 
       const { data, error } =
         await client.auth.signInWithPassword({
@@ -1042,13 +1823,16 @@
           password
         });
 
+
       if (error) {
 
         resultatConnexion.textContent =
           "❌ " + error.message;
 
         return;
+
       }
+
 
       if (!data.session) {
 
@@ -1056,7 +1840,9 @@
           "❌ Impossible de créer la session.";
 
         return;
+
       }
+
 
       resultatConnexion.textContent =
         "";
@@ -1078,23 +1864,25 @@
       pageAdmin.style.display =
         "block";
 
+
       await chargerCategories();
 
-      await chargerCategoriesBibliotheque();
-
       await chargerProduits();
+
+      await chargerBibliotheque();
 
     }
 
 
     /* =========================
-       VERIFIER SESSION
+       SESSION
     ========================= */
 
     async function verifierSession() {
 
       const { data, error } =
         await client.auth.getSession();
+
 
       if (
         !error &&
@@ -1113,7 +1901,9 @@
     ========================= */
 
     document
-      .getElementById("boutonDeconnexion")
+      .getElementById(
+        "boutonDeconnexion"
+      )
       .addEventListener(
         "click",
         async function() {
@@ -1126,8 +1916,9 @@
           pageConnexion.style.display =
             "flex";
 
-          document.getElementById("password").value =
-            "";
+          document.getElementById(
+            "password"
+          ).value = "";
 
         }
       );
@@ -1140,15 +1931,24 @@
     async function chargerCategories() {
 
       const select =
-        document.getElementById("categorie");
+        document.getElementById(
+          "categorie"
+        );
+
 
       const { data, error } =
         await client
           .from("categories")
-          .select("id, Nom, Emoji, Ordre")
-          .order("Ordre", {
-            ascending: true
-          });
+          .select(
+            "id, Nom, Emoji, Ordre"
+          )
+          .order(
+            "Ordre",
+            {
+              ascending: true
+            }
+          );
+
 
       if (error) {
 
@@ -1158,162 +1958,39 @@
         );
 
         return;
+
       }
+
 
       select.innerHTML =
         '<option value="">Choisir une catégorie</option>';
 
-      data.forEach(function(categorie) {
 
-        const option =
-          document.createElement("option");
+      data.forEach(
+        function(categorie) {
 
-        option.value =
-          categorie.id;
-
-        option.textContent =
-          (categorie.Emoji || "") +
-          " " +
-          categorie.Nom;
-
-        select.appendChild(option);
-
-      });
-
-    }
-
-
-    /* =========================
-       CATÉGORIES BIBLIOTHÈQUE
-    ========================= */
-
-    async function chargerCategoriesBibliotheque() {
-
-      const select =
-        document.getElementById(
-          "bibliothequeCategorie"
-        );
-
-      if (!select) {
-        return;
-      }
-
-      const { data, error } =
-        await client
-          .from("library_categories")
-          .select("id, nom, emoji, ordre")
-          .order("ordre", {
-            ascending: true
-          });
-
-      if (error) {
-
-        console.error(
-          "Erreur catégories bibliothèque :",
-          error
-        );
-
-        return;
-      }
-
-      select.innerHTML =
-        '<option value="">Choisir une catégorie</option>';
-
-      data.forEach(function(categorie) {
-
-        const option =
-          document.createElement("option");
-
-        option.value =
-          categorie.id;
-
-        option.textContent =
-          (categorie.emoji || "📁") +
-          " " +
-          categorie.nom;
-
-        select.appendChild(option);
-
-      });
-
-    }
-    /* =========================
-       SOUS-CATÉGORIES BIBLIOTHÈQUE
-    ========================= */
-
-    document
-      .getElementById("bibliothequeCategorie")
-      .addEventListener(
-        "change",
-        async function() {
-
-          const categoryId =
-            this.value;
-
-          const selectSousCategorie =
-            document.getElementById(
-              "bibliothequeSousCategorie"
+          const option =
+            document.createElement(
+              "option"
             );
 
-          selectSousCategorie.innerHTML =
-            '<option value="">Choisir une sous-catégorie</option>';
+          option.value =
+            categorie.id;
 
-          selectSousCategorie.disabled =
-            true;
+          option.textContent =
+            (categorie.Emoji || "") +
+            " " +
+            categorie.Nom;
 
-          if (!categoryId) {
-            return;
-          }
-
-          const { data, error } =
-            await client
-              .from("library_subcategories")
-              .select("id, nom, ordre")
-              .eq(
-                "category_id",
-                categoryId
-              )
-              .order("ordre", {
-                ascending: true
-              });
-
-          if (error) {
-
-            console.error(
-              "Erreur sous-catégories bibliothèque :",
-              error
-            );
-
-            return;
-          }
-
-          data.forEach(function(sousCategorie) {
-
-            const option =
-              document.createElement("option");
-
-            option.value =
-              sousCategorie.id;
-
-            option.textContent =
-              "📂 " +
-              sousCategorie.nom;
-
-            selectSousCategorie.appendChild(
-              option
-            );
-
-          });
-
-          if (data.length > 0) {
-
-            selectSousCategorie.disabled =
-              false;
-
-          }
+          select.appendChild(
+            option
+          );
 
         }
       );
+
+    }
+
 
     /* =========================
        CHARGER PRODUITS
@@ -1324,8 +2001,10 @@
       messageProduits.textContent =
         "Chargement des produits...";
 
+
       listeProduits.innerHTML =
         "";
+
 
       const { data, error } =
         await client
@@ -1339,6 +2018,12 @@
             statut,
             image_url,
             visible,
+            nouveaute,
+            personnalisation_active,
+            choix_image_active,
+            photo_client_active,
+            prenom_active,
+            message_active,
             created_at,
             ordre,
             categories (
@@ -1346,12 +2031,19 @@
               Emoji
             )
           `)
-          .order("ordre", {
-            ascending: true
-          })
-          .order("created_at", {
-            ascending: false
-          });
+          .order(
+            "ordre",
+            {
+              ascending: true
+            }
+          )
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          );
+
 
       if (error) {
 
@@ -1365,27 +2057,42 @@
           error.message;
 
         return;
+
       }
 
-      mettreAJourStatistiques(data);
 
-      if (!data || data.length === 0) {
+      mettreAJourStatistiques(
+        data || []
+      );
+
+
+      if (
+        !data ||
+        data.length === 0
+      ) {
 
         messageProduits.textContent =
           "Aucun produit pour le moment. Ajoute ton premier produit ci-dessus 💕";
 
         return;
+
       }
+
 
       messageProduits.textContent =
         data.length +
         " produit(s) enregistré(s).";
 
-      data.forEach(function(produit) {
 
-        afficherProduit(produit);
+      data.forEach(
+        function(produit) {
 
-      });
+          afficherProduit(
+            produit
+          );
+
+        }
+      );
 
     }
 
@@ -1394,26 +2101,39 @@
        STATISTIQUES
     ========================= */
 
-    function mettreAJourStatistiques(produits) {
+    function mettreAJourStatistiques(
+      produits
+    ) {
 
       document.getElementById(
         "nombreProduits"
       ).textContent =
         produits.length;
 
+
       document.getElementById(
         "nombreVisibles"
       ).textContent =
-        produits.filter(function(p) {
-          return p.visible === true;
-        }).length;
+        produits.filter(
+          function(p) {
+
+            return p.visible === true;
+
+          }
+        ).length;
+
 
       document.getElementById(
         "nombrePrecommandes"
       ).textContent =
-        produits.filter(function(p) {
-          return p.statut === "precommande";
-        }).length;
+        produits.filter(
+          function(p) {
+
+            return p.statut ===
+              "precommande";
+
+          }
+        ).length;
 
     }
 
@@ -1422,21 +2142,32 @@
        AFFICHER PRODUIT
     ========================= */
 
-    function afficherProduit(produit) {
+    function afficherProduit(
+      produit
+    ) {
 
       const element =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       element.className =
         "produit";
 
+
       let statutClasse =
         "statut-indisponible";
+
 
       let statutTexte =
         "⚫ Indisponible";
 
-      if (produit.statut === "stock") {
+
+      if (
+        produit.statut ===
+        "stock"
+      ) {
 
         statutClasse =
           "statut-stock";
@@ -1445,7 +2176,8 @@
           "🟢 En stock";
 
       } else if (
-        produit.statut === "precommande"
+        produit.statut ===
+        "precommande"
       ) {
 
         statutClasse =
@@ -1456,6 +2188,7 @@
 
       }
 
+
       const categorie =
         produit.categories
           ? (
@@ -1465,27 +2198,37 @@
             )
           : "Sans catégorie";
 
+
       const prix =
         produit.prix !== null &&
         produit.prix !== undefined
-          ? Number(produit.prix).toFixed(2) + " €"
+          ? Number(
+              produit.prix
+            ).toFixed(2) +
+            " €"
           : "Prix non défini";
+
 
       const visibilite =
         produit.visible
           ? '<span class="visible">👁️ Visible</span>'
           : '<span class="cache">🙈 Masqué</span>';
 
+
       element.innerHTML = `
 
         <div class="produit-info">
 
           <h3>
-            ${echapperHTML(produit.nom)}
+            ${echapperHTML(
+              produit.nom
+            )}
           </h3>
 
           <p>
-            ${categorie}
+            ${echapperHTML(
+              categorie
+            )}
           </p>
 
           <p>
@@ -1493,16 +2236,24 @@
           </p>
 
           <p>
-            <span class="statut ${statutClasse}">
+
+            <span
+              class="statut ${statutClasse}"
+            >
               ${statutTexte}
             </span>
+
             &nbsp;
+
             ${visibilite}
+
           </p>
 
           ${
             produit.description
-              ? `<p>${echapperHTML(produit.description)}</p>`
+              ? `<p>${echapperHTML(
+                  produit.description
+                )}</p>`
               : ""
           }
 
@@ -1518,6 +2269,7 @@
             ✏️ Modifier
           </button>
 
+
           <button
             class="btn btn-supprimer"
             onclick="supprimerProduit('${produit.id}')"
@@ -1529,13 +2281,16 @@
 
       `;
 
-      listeProduits.appendChild(element);
+
+      listeProduits.appendChild(
+        element
+      );
 
     }
 
 
     /* =========================
-       AJOUT / MODIFICATION
+       AJOUT / MODIFICATION PRODUIT
     ========================= */
 
     formulaire.addEventListener(
@@ -1544,68 +2299,98 @@
 
         event.preventDefault();
 
+
         const nom =
           document
             .getElementById("nom")
             .value
             .trim();
 
+
         const description =
           document
-            .getElementById("description")
+            .getElementById(
+              "description"
+            )
             .value
             .trim();
 
+
         const prixValeur =
-          document.getElementById("prix").value;
+          document.getElementById(
+            "prix"
+          ).value;
+
 
         const prix =
           prixValeur === ""
             ? null
-            : Number(prixValeur);
+            : Number(
+                prixValeur
+              );
+
 
         const categorie_id =
-          document.getElementById("categorie").value;
+          document.getElementById(
+            "categorie"
+          ).value;
+
 
         const statut =
-          document.getElementById("statut").value;
+          document.getElementById(
+            "statut"
+          ).value;
+
 
         const image_url =
           document
-            .getElementById("image_url")
+            .getElementById(
+              "image_url"
+            )
             .value
             .trim();
 
+
         const visible =
-          document.getElementById("visible").checked;
+          document.getElementById(
+            "visible"
+          ).checked;
+
 
         const nouveaute =
-          document.getElementById("nouveaute").checked;
+          document.getElementById(
+            "nouveaute"
+          ).checked;
+
 
         const personnalisation_active =
-          document
-            .getElementById("personnalisation_active")
-            .checked;
+          document.getElementById(
+            "personnalisation_active"
+          ).checked;
+
 
         const choix_image_active =
-          document
-            .getElementById("choix_image_active")
-            .checked;
+          document.getElementById(
+            "choix_image_active"
+          ).checked;
+
 
         const photo_client_active =
-          document
-            .getElementById("photo_client_active")
-            .checked;
+          document.getElementById(
+            "photo_client_active"
+          ).checked;
+
 
         const prenom_active =
-          document
-            .getElementById("prenom_active")
-            .checked;
+          document.getElementById(
+            "prenom_active"
+          ).checked;
+
 
         const message_active =
-          document
-            .getElementById("message_active")
-            .checked;
+          document.getElementById(
+            "message_active"
+          ).checked;
 
 
         if (!nom) {
@@ -1616,6 +2401,7 @@
           );
 
           return;
+
         }
 
 
@@ -1627,6 +2413,7 @@
           );
 
           return;
+
         }
 
 
@@ -1635,8 +2422,10 @@
             "boutonEnregistrer"
           );
 
+
         bouton.disabled =
           true;
+
 
         bouton.textContent =
           "⏳ Enregistrement...";
@@ -1645,17 +2434,30 @@
         const produit = {
 
           nom,
+
           description,
+
           prix,
+
           categorie_id,
+
           statut,
-          image_url: image_url || null,
+
+          image_url:
+            image_url || null,
+
           visible,
+
           nouveaute,
+
           personnalisation_active,
+
           choix_image_active,
+
           photo_client_active,
+
           prenom_active,
+
           message_active
 
         };
@@ -1664,16 +2466,21 @@
         let erreur = null;
 
 
-        if (produitEnModification) {
+        if (
+          produitEnModification
+        ) {
 
           const resultat =
             await client
               .from("products")
-              .update(produit)
+              .update(
+                produit
+              )
               .eq(
                 "id",
                 produitEnModification
               );
+
 
           erreur =
             resultat.error;
@@ -1687,6 +2494,7 @@
                 produit
               ]);
 
+
           erreur =
             resultat.error;
 
@@ -1696,20 +2504,25 @@
         bouton.disabled =
           false;
 
+
         bouton.textContent =
           "💾 Enregistrer le produit";
 
 
         if (erreur) {
 
-          console.error(erreur);
+          console.error(
+            erreur
+          );
 
           afficherMessageFormulaire(
-            "❌ " + erreur.message,
+            "❌ " +
+            erreur.message,
             true
           );
 
           return;
+
         }
 
 
@@ -1723,6 +2536,7 @@
 
         reinitialiserFormulaire();
 
+
         await chargerProduits();
 
       }
@@ -1730,38 +2544,7 @@
 
 
     /* =========================
-       AFFICHER / MASQUER BIBLIOTHÈQUE
-    ========================= */
-
-    document
-      .getElementById("choix_image_active")
-      .addEventListener(
-        "change",
-        function() {
-
-          const bibliothequeImages =
-            document.getElementById(
-              "bibliothequeImages"
-            );
-
-          if (this.checked) {
-
-            bibliothequeImages.style.display =
-              "block";
-
-          } else {
-
-            bibliothequeImages.style.display =
-              "none";
-
-          }
-
-        }
-      );
-
-
-    /* =========================
-       MODIFIER
+       MODIFIER PRODUIT
     ========================= */
 
     window.modifierProduit =
@@ -1771,8 +2554,12 @@
           await client
             .from("products")
             .select("*")
-            .eq("id", id)
+            .eq(
+              "id",
+              id
+            )
             .single();
+
 
         if (error) {
 
@@ -1782,78 +2569,91 @@
           );
 
           return;
+
         }
+
 
         produitEnModification =
           id;
 
 
-        document.getElementById("nom").value =
+        document.getElementById(
+          "nom"
+        ).value =
           data.nom || "";
 
-        document.getElementById("description").value =
+
+        document.getElementById(
+          "description"
+        ).value =
           data.description || "";
 
-        document.getElementById("prix").value =
+
+        document.getElementById(
+          "prix"
+        ).value =
           data.prix ?? "";
 
-        document.getElementById("categorie").value =
+
+        document.getElementById(
+          "categorie"
+        ).value =
           data.categorie_id || "";
 
-        document.getElementById("statut").value =
-          data.statut || "precommande";
 
-        document.getElementById("image_url").value =
+        document.getElementById(
+          "statut"
+        ).value =
+          data.statut ||
+          "precommande";
+
+
+        document.getElementById(
+          "image_url"
+        ).value =
           data.image_url || "";
 
-        document.getElementById("visible").checked =
+
+        document.getElementById(
+          "visible"
+        ).checked =
           data.visible !== false;
 
-        document.getElementById("nouveaute").checked =
+
+        document.getElementById(
+          "nouveaute"
+        ).checked =
           data.nouveaute === true;
+
 
         document.getElementById(
           "personnalisation_active"
         ).checked =
           data.personnalisation_active === true;
 
+
         document.getElementById(
           "choix_image_active"
         ).checked =
           data.choix_image_active === true;
+
 
         document.getElementById(
           "photo_client_active"
         ).checked =
           data.photo_client_active === true;
 
+
         document.getElementById(
           "prenom_active"
         ).checked =
           data.prenom_active === true;
 
+
         document.getElementById(
           "message_active"
         ).checked =
           data.message_active === true;
-
-
-        const bibliothequeImages =
-          document.getElementById(
-            "bibliothequeImages"
-          );
-
-        if (data.choix_image_active === true) {
-
-          bibliothequeImages.style.display =
-            "block";
-
-        } else {
-
-          bibliothequeImages.style.display =
-            "none";
-
-        }
 
 
         document.getElementById(
@@ -1875,16 +2675,19 @@
 
 
         document
-          .getElementById("formProduit")
+          .getElementById(
+            "formProduit"
+          )
           .scrollIntoView({
-            behavior: "smooth"
+            behavior:
+              "smooth"
           });
 
       };
 
 
     /* =========================
-       SUPPRIMER
+       SUPPRIMER PRODUIT
     ========================= */
 
     window.supprimerProduit =
@@ -1895,8 +2698,11 @@
             "⚠️ Es-tu sûre de vouloir supprimer ce produit ?"
           );
 
+
         if (!confirmation) {
+
           return;
+
         }
 
 
@@ -1904,7 +2710,10 @@
           await client
             .from("products")
             .delete()
-            .eq("id", id);
+            .eq(
+              "id",
+              id
+            );
 
 
         if (error) {
@@ -1915,6 +2724,7 @@
           );
 
           return;
+
         }
 
 
@@ -1924,11 +2734,13 @@
 
 
     /* =========================
-       ANNULER MODIFICATION
+       ANNULER
     ========================= */
 
     document
-      .getElementById("boutonAnnuler")
+      .getElementById(
+        "boutonAnnuler"
+      )
       .addEventListener(
         "click",
         function() {
@@ -1944,6 +2756,7 @@
       produitEnModification =
         null;
 
+
       formulaire.reset();
 
 
@@ -1957,66 +2770,6 @@
         "visible"
       ).checked =
         true;
-
-
-      document.getElementById(
-        "personnalisation_active"
-      ).checked =
-        false;
-
-
-      document.getElementById(
-        "choix_image_active"
-      ).checked =
-        false;
-
-
-      document.getElementById(
-        "photo_client_active"
-      ).checked =
-        false;
-
-
-      document.getElementById(
-        "prenom_active"
-      ).checked =
-        false;
-
-
-      document.getElementById(
-        "message_active"
-      ).checked =
-        false;
-
-
-      document.getElementById(
-        "bibliothequeImages"
-      ).style.display =
-        "none";
-
-
-      document.getElementById(
-        "bibliothequeCategorie"
-      ).value =
-        "";
-
-
-      document.getElementById(
-        "bibliothequeSousCategorie"
-      ).innerHTML =
-        '<option value="">Choisir une sous-catégorie</option>';
-
-
-      document.getElementById(
-        "bibliothequeSousCategorie"
-      ).disabled =
-        true;
-
-
-      document.getElementById(
-        "fichiersBibliotheque"
-      ).value =
-        "";
 
 
       document.getElementById(
@@ -2040,7 +2793,7 @@
 
 
     /* =========================
-       MESSAGE FORMULAIRE
+       MESSAGE PRODUIT
     ========================= */
 
     function afficherMessageFormulaire(
@@ -2053,34 +2806,1458 @@
           "messageFormulaire"
         );
 
+
       element.textContent =
         texte;
+
 
       element.className =
         erreur
           ? "message message-erreur"
           : "message message-succes";
 
+
       element.style.display =
         "block";
 
 
-      setTimeout(function() {
+      setTimeout(
+        function() {
 
-        element.style.display =
-          "none";
+          element.style.display =
+            "none";
 
-      }, 4000);
+        },
+        4000
+      );
+
+    }
+
+
+    /* =====================================================
+       BIBLIOTHÈQUE
+    ===================================================== */
+
+
+    let categoriesBibliotheque =
+      [];
+
+
+    let sousCategoriesBibliotheque =
+      [];
+
+
+    /* =========================
+       CHARGER BIBLIOTHÈQUE
+    ========================= */
+
+    async function chargerBibliotheque() {
+
+      await chargerCategoriesBibliotheque();
 
     }
 
 
     /* =========================
-       ACTUALISER
+       CATÉGORIES BIBLIOTHÈQUE
+    ========================= */
+
+    async function chargerCategoriesBibliotheque() {
+
+      const { data, error } =
+        await client
+          .from(
+            "library_categories"
+          )
+          .select(
+            "id, nom, emoji, ordre, visible"
+          )
+          .order(
+            "ordre",
+            {
+              ascending:
+                true
+            }
+          );
+
+
+      if (error) {
+
+        console.error(
+          "Erreur catégories bibliothèque :",
+          error
+        );
+
+        return;
+
+      }
+
+
+      categoriesBibliotheque =
+        data || [];
+
+
+      remplirSelectCategoriesBibliotheque();
+
+
+      afficherListeCategoriesBibliotheque();
+
+    }
+
+
+    /* =========================
+       REMPLIR SELECTS
+    ========================= */
+
+    function remplirSelectCategoriesBibliotheque() {
+
+      const selects = [
+
+        document.getElementById(
+          "bibliothequeCategorieAdmin"
+        ),
+
+        document.getElementById(
+          "categorieDesign"
+        ),
+
+        document.getElementById(
+          "categorieAffichageDesign"
+        )
+
+      ];
+
+
+      selects.forEach(
+        function(select) {
+
+          if (!select) {
+
+            return;
+
+          }
+
+
+          select.innerHTML =
+            '<option value="">Choisir une catégorie</option>';
+
+
+          categoriesBibliotheque.forEach(
+            function(categorie) {
+
+              const option =
+                document.createElement(
+                  "option"
+                );
+
+
+              option.value =
+                categorie.id;
+
+
+              option.textContent =
+                (
+                  categorie.emoji ||
+                  "📁"
+                ) +
+                " " +
+                categorie.nom;
+
+
+              select.appendChild(
+                option
+              );
+
+            }
+          );
+
+        }
+      );
+
+    }
+
+
+    /* =========================
+       AFFICHER CATÉGORIES
+    ========================= */
+
+    function afficherListeCategoriesBibliotheque() {
+
+      const liste =
+        document.getElementById(
+          "listeCategoriesBibliotheque"
+        );
+
+
+      liste.innerHTML =
+        "";
+
+
+      if (
+        categoriesBibliotheque.length ===
+        0
+      ) {
+
+        liste.innerHTML =
+          '<div class="vide">Aucune catégorie créée.</div>';
+
+        return;
+
+      }
+
+
+      categoriesBibliotheque.forEach(
+        function(categorie) {
+
+          const element =
+            document.createElement(
+              "div"
+            );
+
+
+          element.className =
+            "element-bibliotheque";
+
+
+          element.innerHTML = `
+
+            <div class="element-bibliotheque-info">
+
+              <strong>
+                ${
+                  categorie.emoji ||
+                  "📁"
+                }
+                ${
+                  echapperHTML(
+                    categorie.nom
+                  )
+                }
+              </strong>
+
+              <small>
+                ${
+                  categorie.visible
+                    ? "Visible"
+                    : "Masquée"
+                }
+              </small>
+
+            </div>
+
+            <button
+              class="btn btn-supprimer"
+              type="button"
+              onclick="supprimerCategorieBibliotheque('${categorie.id}')"
+            >
+              🗑️
+            </button>
+
+          `;
+
+
+          liste.appendChild(
+            element
+          );
+
+        }
+      );
+
+    }
+
+
+    /* =========================
+       CRÉER CATÉGORIE
     ========================= */
 
     document
-      .getElementById("boutonActualiser")
+      .getElementById(
+        "boutonCreerCategorieBibliotheque"
+      )
+      .addEventListener(
+        "click",
+        async function() {
+
+          const nom =
+            document
+              .getElementById(
+                "nouvelleCategorieBibliotheque"
+              )
+              .value
+              .trim();
+
+
+          const emoji =
+            document
+              .getElementById(
+                "emojiCategorieBibliotheque"
+              )
+              .value
+              .trim();
+
+
+          if (!nom) {
+
+            afficherMessageBibliotheque(
+              "❌ Indique le nom de la catégorie.",
+              true
+            );
+
+            return;
+
+          }
+
+
+          const ordre =
+            categoriesBibliotheque.length;
+
+
+          const { error } =
+            await client
+              .from(
+                "library_categories"
+              )
+              .insert([
+                {
+                  nom,
+                  emoji:
+                    emoji || "📁",
+                  ordre,
+                  visible:
+                    true
+                }
+              ]);
+
+
+          if (error) {
+
+            afficherMessageBibliotheque(
+              "❌ " +
+              error.message,
+              true
+            );
+
+            return;
+
+          }
+
+
+          document.getElementById(
+            "nouvelleCategorieBibliotheque"
+          ).value =
+            "";
+
+
+          document.getElementById(
+            "emojiCategorieBibliotheque"
+          ).value =
+            "";
+
+
+          await chargerCategoriesBibliotheque();
+
+
+          afficherMessageBibliotheque(
+            "✅ Catégorie créée !",
+            false
+          );
+
+        }
+      );
+
+
+    /* =========================
+       SUPPRIMER CATÉGORIE
+    ========================= */
+
+    window.supprimerCategorieBibliotheque =
+      async function(id) {
+
+        const confirmation =
+          confirm(
+            "⚠️ Supprimer cette catégorie et toutes ses sous-catégories ?"
+          );
+
+
+        if (!confirmation) {
+
+          return;
+
+        }
+
+
+        const { error } =
+          await client
+            .from(
+              "library_categories"
+            )
+            .delete()
+            .eq(
+              "id",
+              id
+            );
+
+
+        if (error) {
+
+          afficherMessageBibliotheque(
+            "❌ " +
+            error.message,
+            true
+          );
+
+          return;
+
+        }
+
+
+        await chargerCategoriesBibliotheque();
+
+        afficherMessageBibliotheque(
+          "✅ Catégorie supprimée.",
+          false
+        );
+
+      };
+
+
+    /* =========================
+       CHANGEMENT CATÉGORIE
+    ========================= */
+
+    document
+      .getElementById(
+        "bibliothequeCategorieAdmin"
+      )
+      .addEventListener(
+        "change",
+        async function() {
+
+          const categoryId =
+            this.value;
+
+
+          await chargerSousCategories(
+            categoryId,
+            "listeSousCategoriesBibliotheque"
+          );
+
+        }
+      );
+
+
+    document
+      .getElementById(
+        "categorieDesign"
+      )
+      .addEventListener(
+        "change",
+        async function() {
+
+          await remplirSousCategoriesSelect(
+            this.value,
+            "sousCategorieDesign"
+          );
+
+        }
+      );
+
+
+    document
+      .getElementById(
+        "categorieAffichageDesign"
+      )
+      .addEventListener(
+        "change",
+        async function() {
+
+          await remplirSousCategoriesSelect(
+            this.value,
+            "sousCategorieAffichageDesign"
+          );
+
+
+          document.getElementById(
+            "listeDesigns"
+          ).innerHTML =
+            "";
+
+        }
+      );
+
+
+    /* =========================
+       CHARGER SOUS-CATÉGORIES
+    ========================= */
+
+    async function chargerSousCategories(
+      categoryId,
+      elementId
+    ) {
+
+      const element =
+        document.getElementById(
+          elementId
+        );
+
+
+      if (!element) {
+
+        return;
+
+      }
+
+
+      if (!categoryId) {
+
+        element.innerHTML =
+          '<div class="vide">Choisis une catégorie.</div>';
+
+        return;
+
+      }
+
+
+      const { data, error } =
+        await client
+          .from(
+            "library_subcategories"
+          )
+          .select(
+            "id, nom, ordre, visible"
+          )
+          .eq(
+            "category_id",
+            categoryId
+          )
+          .order(
+            "ordre",
+            {
+              ascending:
+                true
+            }
+          );
+
+
+      if (error) {
+
+        console.error(
+          error
+        );
+
+        return;
+
+      }
+
+
+      sousCategoriesBibliotheque =
+        data || [];
+
+
+      element.innerHTML =
+        "";
+
+
+      if (
+        sousCategoriesBibliotheque.length ===
+        0
+      ) {
+
+        element.innerHTML =
+          '<div class="vide">Aucune sous-catégorie.</div>';
+
+        return;
+
+      }
+
+
+      sousCategoriesBibliotheque.forEach(
+        function(sousCategorie) {
+
+          const div =
+            document.createElement(
+              "div"
+            );
+
+
+          div.className =
+            "element-bibliotheque";
+
+
+          div.innerHTML = `
+
+            <div class="element-bibliotheque-info">
+
+              <strong>
+                📂
+                ${
+                  echapperHTML(
+                    sousCategorie.nom
+                  )
+                }
+              </strong>
+
+              <small>
+                ${
+                  sousCategorie.visible
+                    ? "Visible"
+                    : "Masquée"
+                }
+              </small>
+
+            </div>
+
+            <button
+              class="btn btn-supprimer"
+              type="button"
+              onclick="supprimerSousCategorieBibliotheque('${sousCategorie.id}')"
+            >
+              🗑️
+            </button>
+
+          `;
+
+
+          element.appendChild(
+            div
+          );
+
+        }
+      );
+
+    }
+
+
+    /* =========================
+       REMPLIR SELECT
+    ========================= */
+
+    async function remplirSousCategoriesSelect(
+      categoryId,
+      selectId
+    ) {
+
+      const select =
+        document.getElementById(
+          selectId
+        );
+
+
+      if (!select) {
+
+        return;
+
+      }
+
+
+      select.innerHTML =
+        '<option value="">Choisir une sous-catégorie</option>';
+
+
+      select.disabled =
+        true;
+
+
+      if (!categoryId) {
+
+        return;
+
+      }
+
+
+      const { data, error } =
+        await client
+          .from(
+            "library_subcategories"
+          )
+          .select(
+            "id, nom, ordre"
+          )
+          .eq(
+            "category_id",
+            categoryId
+          )
+          .order(
+            "ordre",
+            {
+              ascending:
+                true
+            }
+          );
+
+
+      if (error) {
+
+        console.error(
+          error
+        );
+
+        return;
+
+      }
+
+
+      (data || []).forEach(
+        function(sousCategorie) {
+
+          const option =
+            document.createElement(
+              "option"
+            );
+
+
+          option.value =
+            sousCategorie.id;
+
+
+          option.textContent =
+            "📂 " +
+            sousCategorie.nom;
+
+
+          select.appendChild(
+            option
+          );
+
+        }
+      );
+
+
+      if (
+        data &&
+        data.length > 0
+      ) {
+
+        select.disabled =
+          false;
+
+      }
+
+    }
+
+
+    /* =========================
+       CRÉER SOUS-CATÉGORIE
+    ========================= */
+
+    document
+      .getElementById(
+        "boutonCreerSousCategorieBibliotheque"
+      )
+      .addEventListener(
+        "click",
+        async function() {
+
+          const categoryId =
+            document
+              .getElementById(
+                "bibliothequeCategorieAdmin"
+              )
+              .value;
+
+
+          const nom =
+            document
+              .getElementById(
+                "nouvelleSousCategorieBibliotheque"
+              )
+              .value
+              .trim();
+
+
+          if (!categoryId) {
+
+            afficherMessageBibliotheque(
+              "❌ Choisis une catégorie.",
+              true
+            );
+
+            return;
+
+          }
+
+
+          if (!nom) {
+
+            afficherMessageBibliotheque(
+              "❌ Indique le nom de la sous-catégorie.",
+              true
+            );
+
+            return;
+
+          }
+
+
+          const { data: existantes } =
+            await client
+              .from(
+                "library_subcategories"
+              )
+              .select(
+                "id"
+              )
+              .eq(
+                "category_id",
+                categoryId
+              );
+
+
+          const ordre =
+            existantes
+              ? existantes.length
+              : 0;
+
+
+          const { error } =
+            await client
+              .from(
+                "library_subcategories"
+              )
+              .insert([
+                {
+                  category_id:
+                    categoryId,
+
+                  nom,
+
+                  ordre,
+
+                  visible:
+                    true
+                }
+              ]);
+
+
+          if (error) {
+
+            afficherMessageBibliotheque(
+              "❌ " +
+              error.message,
+              true
+            );
+
+            return;
+
+          }
+
+
+          document.getElementById(
+            "nouvelleSousCategorieBibliotheque"
+          ).value =
+            "";
+
+
+          await chargerSousCategories(
+            categoryId,
+            "listeSousCategoriesBibliotheque"
+          );
+
+
+          await remplirSousCategoriesSelect(
+            categoryId,
+            "sousCategorieDesign"
+          );
+
+
+          await remplirSousCategoriesSelect(
+            categoryId,
+            "sousCategorieAffichageDesign"
+          );
+
+
+          afficherMessageBibliotheque(
+            "✅ Sous-catégorie créée !",
+            false
+          );
+
+        }
+      );
+
+
+    /* =========================
+       SUPPRIMER SOUS-CATÉGORIE
+    ========================= */
+
+    window.supprimerSousCategorieBibliotheque =
+      async function(id) {
+
+        const confirmation =
+          confirm(
+            "⚠️ Supprimer cette sous-catégorie et ses designs ?"
+          );
+
+
+        if (!confirmation) {
+
+          return;
+
+        }
+
+
+        const { error } =
+          await client
+            .from(
+              "library_subcategories"
+            )
+            .delete()
+            .eq(
+              "id",
+              id
+            );
+
+
+        if (error) {
+
+          afficherMessageBibliotheque(
+            "❌ " +
+            error.message,
+            true
+          );
+
+          return;
+
+        }
+
+
+        const categoryId =
+          document.getElementById(
+            "bibliothequeCategorieAdmin"
+          ).value;
+
+
+        await chargerSousCategories(
+          categoryId,
+          "listeSousCategoriesBibliotheque"
+        );
+
+
+        afficherMessageBibliotheque(
+          "✅ Sous-catégorie supprimée.",
+          false
+        );
+
+      };
+
+
+    /* =========================
+       AJOUTER DESIGNS
+    ========================= */
+
+    document
+      .getElementById(
+        "boutonAjouterDesigns"
+      )
+      .addEventListener(
+        "click",
+        async function() {
+
+          const sousCategorieId =
+            document
+              .getElementById(
+                "sousCategorieDesign"
+              )
+              .value;
+
+
+          const fichiers =
+            document.getElementById(
+              "fichiersDesign"
+            ).files;
+
+
+          if (!sousCategorieId) {
+
+            afficherMessageBibliotheque(
+              "❌ Choisis une sous-catégorie.",
+              true
+            );
+
+            return;
+
+          }
+
+
+          if (
+            !fichiers ||
+            fichiers.length === 0
+          ) {
+
+            afficherMessageBibliotheque(
+              "❌ Choisis au moins une image.",
+              true
+            );
+
+            return;
+
+          }
+
+
+          const bouton =
+            document.getElementById(
+              "boutonAjouterDesigns"
+            );
+
+
+          bouton.disabled =
+            true;
+
+
+          bouton.textContent =
+            "⏳ Ajout des designs...";
+
+
+          try {
+
+            for (
+              let i = 0;
+              i < fichiers.length;
+              i++
+            ) {
+
+              const fichier =
+                fichiers[i];
+
+
+              const extension =
+                fichier.name
+                  .split(".")
+                  .pop()
+                  .toLowerCase();
+
+
+              const nomFichier =
+                crypto.randomUUID() +
+                "." +
+                extension;
+
+
+              const chemin =
+                "designs/" +
+                nomFichier;
+
+
+              const upload =
+                await client.storage
+                  .from(
+                    "product-library"
+                  )
+                  .upload(
+                    chemin,
+                    fichier,
+                    {
+                      upsert:
+                        false,
+
+                      contentType:
+                        fichier.type
+                    }
+                  );
+
+
+              if (
+                upload.error
+              ) {
+
+                throw upload.error;
+
+              }
+
+
+              const urlResultat =
+                client.storage
+                  .from(
+                    "product-library"
+                  )
+                  .getPublicUrl(
+                    chemin
+                  );
+
+
+              const imageUrl =
+                urlResultat
+                  .data
+                  .publicUrl;
+
+
+              const { data:
+                designsExistants
+              } =
+                await client
+                  .from(
+                    "library_designs"
+                  )
+                  .select(
+                    "id"
+                  )
+                  .eq(
+                    "subcategory_id",
+                    sousCategorieId
+                  );
+
+
+              const ordre =
+                designsExistants
+                  ? designsExistants.length
+                  : 0;
+
+
+              const { error:
+                insertionError
+              } =
+                await client
+                  .from(
+                    "library_designs"
+                  )
+                  .insert([
+                    {
+                      subcategory_id:
+                        sousCategorieId,
+
+                      nom:
+                        fichier.name
+                          .replace(
+                            /\.[^/.]+$/,
+                            ""
+                          ),
+
+                      image_url:
+                        imageUrl,
+
+                      ordre,
+
+                      visible:
+                        true
+                    }
+                  ]);
+
+
+              if (
+                insertionError
+              ) {
+
+                throw insertionError;
+
+              }
+
+            }
+
+
+            document.getElementById(
+              "fichiersDesign"
+            ).value =
+              "";
+
+
+            afficherMessageBibliotheque(
+              "✅ Les designs ont été ajoutés !",
+              false
+            );
+
+
+            await afficherDesigns();
+
+
+          } catch (error) {
+
+            console.error(
+              error
+            );
+
+
+            afficherMessageBibliotheque(
+              "❌ " +
+              error.message,
+              true
+            );
+
+          }
+
+
+          bouton.disabled =
+            false;
+
+
+          bouton.textContent =
+            "🖼️ Ajouter les designs";
+
+        }
+      );
+
+
+    /* =========================
+       AFFICHER DESIGNS
+    ========================= */
+
+    document
+      .getElementById(
+        "sousCategorieAffichageDesign"
+      )
+      .addEventListener(
+        "change",
+        afficherDesigns
+      );
+
+
+    async function afficherDesigns() {
+
+      const sousCategorieId =
+        document
+          .getElementById(
+            "sousCategorieAffichageDesign"
+          )
+          .value;
+
+
+      const liste =
+        document.getElementById(
+          "listeDesigns"
+        );
+
+
+      liste.innerHTML =
+        "";
+
+
+      if (!sousCategorieId) {
+
+        return;
+
+      }
+
+
+      const { data, error } =
+        await client
+          .from(
+            "library_designs"
+          )
+          .select(
+            "id, nom, image_url, ordre, visible"
+          )
+          .eq(
+            "subcategory_id",
+            sousCategorieId
+          )
+          .order(
+            "ordre",
+            {
+              ascending:
+                true
+            }
+          );
+
+
+      if (error) {
+
+        liste.innerHTML =
+          '<div class="vide">❌ Impossible de charger les designs.</div>';
+
+        console.error(
+          error
+        );
+
+        return;
+
+      }
+
+
+      if (
+        !data ||
+        data.length === 0
+      ) {
+
+        liste.innerHTML =
+          '<div class="vide">Aucun design dans cette sous-catégorie.</div>';
+
+        return;
+
+      }
+
+
+      data.forEach(
+        function(design) {
+
+          const card =
+            document.createElement(
+              "div"
+            );
+
+
+          card.className =
+            "design-card";
+
+
+          card.innerHTML = `
+
+            <img
+              src="${echapperHTML(
+                design.image_url
+              )}"
+              alt="${echapperHTML(
+                design.nom
+              )}"
+            >
+
+            <div class="design-card-info">
+
+              <strong>
+                ${echapperHTML(
+                  design.nom
+                )}
+              </strong>
+
+              <button
+                type="button"
+                onclick="supprimerDesign('${design.id}')"
+              >
+                🗑️ Supprimer
+              </button>
+
+            </div>
+
+          `;
+
+
+          liste.appendChild(
+            card
+          );
+
+        }
+      );
+
+    }
+
+
+    /* =========================
+       SUPPRIMER DESIGN
+    ========================= */
+
+    window.supprimerDesign =
+      async function(id) {
+
+        const confirmation =
+          confirm(
+            "⚠️ Supprimer définitivement ce design ?"
+          );
+
+
+        if (!confirmation) {
+
+          return;
+
+        }
+
+
+        const { data, error } =
+          await client
+            .from(
+              "library_designs"
+            )
+            .select(
+              "image_url"
+            )
+            .eq(
+              "id",
+              id
+            )
+            .single();
+
+
+        if (error) {
+
+          alert(
+            "❌ Impossible de récupérer le design : " +
+            error.message
+          );
+
+          return;
+
+        }
+
+
+        const { error:
+          suppressionErreur
+        } =
+          await client
+            .from(
+              "library_designs"
+            )
+            .delete()
+            .eq(
+              "id",
+              id
+            );
+
+
+        if (
+          suppressionErreur
+        ) {
+
+          alert(
+            "❌ Impossible de supprimer le design : " +
+            suppressionErreur.message
+          );
+
+          return;
+
+        }
+
+
+        await afficherDesigns();
+
+      };
+
+
+    /* =========================
+       MESSAGE BIBLIOTHÈQUE
+    ========================= */
+
+    function afficherMessageBibliotheque(
+      texte,
+      erreur
+    ) {
+
+      const element =
+        document.getElementById(
+          "messageBibliotheque"
+        );
+
+
+      element.textContent =
+        texte;
+
+
+      element.className =
+        erreur
+          ? "message message-erreur"
+          : "message message-succes";
+
+
+      element.style.display =
+        "block";
+
+
+      setTimeout(
+        function() {
+
+          element.style.display =
+            "none";
+
+        },
+        4000
+      );
+
+    }
+
+
+    /* =========================
+       ACTUALISER PRODUITS
+    ========================= */
+
+    document
+      .getElementById(
+        "boutonActualiser"
+      )
       .addEventListener(
         "click",
         chargerProduits
@@ -2091,18 +4268,40 @@
        PROTECTION HTML
     ========================= */
 
-    function echapperHTML(texte) {
+    function echapperHTML(
+      texte
+    ) {
 
       if (!texte) {
+
         return "";
+
       }
 
-      return String(texte)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+
+      return String(
+        texte
+      )
+        .replace(
+          /&/g,
+          "&amp;"
+        )
+        .replace(
+          /</g,
+          "&lt;"
+        )
+        .replace(
+          />/g,
+          "&gt;"
+        )
+        .replace(
+          /"/g,
+          "&quot;"
+        )
+        .replace(
+          /'/g,
+          "&#039;"
+        );
 
     }
 
@@ -2116,4 +4315,5 @@
   </script>
 
 </body>
+
 </html>
