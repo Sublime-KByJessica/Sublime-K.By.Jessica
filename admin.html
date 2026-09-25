@@ -728,6 +728,126 @@
   </label>
 
 </div>
+          <div class="personnalisation-admin">
+
+  <h3>
+    ✨ Personnalisation du produit
+  </h3>
+
+  <p class="personnalisation-aide">
+    Active uniquement les options dont ce produit a besoin.
+  </p>
+
+
+  <div class="checkbox-ligne">
+
+    <input
+      type="checkbox"
+      id="personnalisation_active"
+    >
+
+    <label for="personnalisation_active">
+      ✨ Produit personnalisable
+    </label>
+
+  </div>
+
+
+  <div class="checkbox-ligne">
+
+    <input
+      type="checkbox"
+      id="choix_image_active"
+    >
+
+    <label for="choix_image_active">
+      🖼️ Le client peut choisir une image
+    </label>
+
+  </div>
+
+
+  <div class="checkbox-ligne">
+
+    <input
+      type="checkbox"
+      id="photo_client_active"
+    >
+
+    <label for="photo_client_active">
+      📸 Le client peut envoyer sa propre photo
+    </label>
+
+  </div>
+
+
+  <div class="checkbox-ligne">
+
+    <input
+      type="checkbox"
+      id="prenom_active"
+    >
+
+    <label for="prenom_active">
+      ✏️ Le client peut ajouter un prénom
+    </label>
+
+  </div>
+
+
+  <div class="checkbox-ligne">
+
+    <input
+      type="checkbox"
+      id="message_active"
+    >
+
+    <label for="message_active">
+      💬 Le client peut ajouter un message
+    </label>
+
+  </div>
+
+</div>
+          <!-- =========================
+     BIBLIOTHÈQUE D'IMAGES
+========================= -->
+
+<div
+  id="bibliothequeImages"
+  class="bibliotheque-images"
+  style="display:none;"
+>
+
+  <h3>
+    🖼️ Bibliothèque d'images
+  </h3>
+
+  <p>
+    Ajoute les images que tes clients pourront choisir pour ce produit.
+  </p>
+
+  <input
+    type="file"
+    id="fichiersBibliotheque"
+    accept="image/jpeg,image/png,image/webp,image/gif"
+    multiple
+  >
+
+  <button
+    type="button"
+    class="btn btn-modifier"
+    id="boutonAjouterImages"
+  >
+    ➕ Ajouter les images
+  </button>
+
+  <div
+    id="listeBibliothequeImages"
+    style="margin-top:15px;"
+  ></div>
+
+</div>
 
 
           <div class="actions-formulaire">
@@ -1279,7 +1399,24 @@
         
 const nouveaute =
   document.getElementById("nouveaute").checked;
+        
+          const personnalisation_active =
+  document.getElementById("personnalisation_active").checked;
+
+const choix_image_active =
+  document.getElementById("choix_image_active").checked;
+
+const photo_client_active =
+  document.getElementById("photo_client_active").checked;
+
+const prenom_active =
+  document.getElementById("prenom_active").checked;
+
+const message_active =
+  document.getElementById("message_active").checked;
         if (!nom) {
+
+          
 
           afficherMessageFormulaire(
             "❌ Le nom du produit est obligatoire.",
@@ -1318,7 +1455,12 @@ const nouveaute =
   statut,
   image_url: image_url || null,
   visible,
-  nouveaute
+  nouveaute,
+  personnalisation_active,
+  choix_image_active,
+  photo_client_active,
+  prenom_active,
+  message_active
 
 };
 
@@ -1441,6 +1583,21 @@ const nouveaute =
 
         document.getElementById("nouveaute").checked =
   data.nouveaute === true;
+        
+        document.getElementById("personnalisation_active").checked =
+  data.personnalisation_active === true;
+
+document.getElementById("choix_image_active").checked =
+  data.choix_image_active === true;
+
+document.getElementById("photo_client_active").checked =
+  data.photo_client_active === true;
+
+document.getElementById("prenom_active").checked =
+  data.prenom_active === true;
+
+document.getElementById("message_active").checked =
+  data.message_active === true;
 
 
         document.getElementById(
@@ -1542,6 +1699,25 @@ const nouveaute =
         "visible"
       ).checked =
         true;
+      document.getElementById(
+  "personnalisation_active"
+).checked = false;
+
+document.getElementById(
+  "choix_image_active"
+).checked = false;
+
+document.getElementById(
+  "photo_client_active"
+).checked = false;
+
+document.getElementById(
+  "prenom_active"
+).checked = false;
+
+document.getElementById(
+  "message_active"
+).checked = false;
 
       document.getElementById(
         "titreFormulaire"
