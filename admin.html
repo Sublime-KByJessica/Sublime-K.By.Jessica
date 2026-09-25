@@ -3750,6 +3750,31 @@ async function afficherCommande(
 
       </span>
 
+<select
+  class="statut-paiement"
+  data-order-id="${commande.id}"
+>
+  <option
+    value="en_attente"
+    ${commande.payment_status === "en_attente" ? "selected" : ""}
+  >
+    ⏳ En attente
+  </option>
+
+  <option
+    value="paye"
+    ${commande.payment_status === "paye" ? "selected" : ""}
+  >
+    ✅ Payé
+  </option>
+
+  <option
+    value="rembourse"
+    ${commande.payment_status === "rembourse" ? "selected" : ""}
+  >
+    ↩️ Remboursé
+  </option>
+</select>
     </div>
 
 
