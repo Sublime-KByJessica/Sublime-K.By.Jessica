@@ -5659,7 +5659,709 @@ function echapperJS(texte){
 actualiserBlocStock();
 
 verifierSession();
+/* =====================================================
+   💰 GESTION FINANCIÈRE
+===================================================== */
 
+
+/* -----------------------------------------------------
+   MESSAGE FINANCIER
+----------------------------------------------------- */
+
+function afficherMessageFinancier(message, type = "succes") {
+
+  const element = document.getElementById("messageFinancier");
+
+  if (!element) {
+    return;
+  }
+
+  element.textContent = message;
+
+  element.className = "message";
+
+  if (type === "erreur") {
+    element.classList.add("erreur");
+  } else {
+    element.classList.add("succes");
+  }
+
+}
+
+
+/* -----------------------------------------------------
+   FORMATAGE DES MONTANTS
+----------------------------------------------------- */
+
+function formaterMontantFinancier(montant) {
+
+  const nombre = Number(montant) || 0;
+
+  return nombre.toLocaleString("fr-FR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }) + " €";
+
+}
+
+
+/* -----------------------------------------------------
+   FORMATAGE DES DATES
+----------------------------------------------------- */
+
+function formaterDateFinanciere(date) {
+
+  if (!date) {
+    return "-";
+  }
+
+  const morceaux = String(date).split("-");
+
+  if (morceaux.length === 3) {
+
+    return (
+      morceaux[2] +
+      "/" +
+      morceaux[1] +
+      "/" +
+      morceaux[0]
+    );
+
+  }
+
+  return date;
+
+}
+
+
+/* -----------------------------------------------------
+   CHARGER LES STATISTIQUES FINANCIÈRES
+----------------------------------------------------- */
+
+async function chargerStatistiquesFinancieres() {
+
+  try {
+
+    /* ---------------------------------------------
+       Récupération des recettes
+    --------------------------------------------- */
+
+    const {
+      data: recettes,
+      error: erreurRecettes
+    } = await client
+      .from("recettes")
+      .select("*")
+      .order("date_encaissement", {
+        ascending: false
+      });
+
+
+    if (erreurRecettes) {
+
+      console.error(
+        "Erreur chargement recettes :",
+        erreurRecettes
+      );
+
+      throw erreurRecettes;
+
+    }
+
+
+    /* ---------------------------------------------
+       Récupération des factures
+    --------------------------------------------- */
+
+    const {
+      data: factures,
+      error: erreurFactures
+    } = await client
+      .from("factures")
+      .select("*")
+      .order("date_facture", {
+        ascending: false
+      });
+
+
+    if (erreurFactures) {
+
+      console.error(
+        "Erreur chargement factures :",
+        erreurFactures
+      );
+
+      throw erreurFactures;
+
+    }
+
+
+    const listeRecettes = recettes || [];
+    const listeFactures = factures || [];
+
+
+    /* ---------------------------------------------
+       Date actuelle
+    --------------------------------------------- */
+
+    const aujourdHui = new Date();
+
+    const moisActuel =
+      aujourdHui.getMonth() + 1;
+
+    const anneeActuelle =
+      aujourdHui.getFullYear();
+
+
+    /* ---------------------------------------------
+       Calcul CA du mois
+       IMPORTANT :
+       on utilise la date d'encaissement
+    --------------------------------------------- */
+
+    let caMois = 0;
+    let caAnnee = 0;
+
+
+    listeRecettes.forEach(function(recette) {
+
+      if (!recette.date_encaissement) {
+        return;
+      }
+
+
+      const dateRecette =
+        new Date(
+          recette.date_encaissement + "T00:00:00"
+        );
+
+
+      const mois =
+        dateRecette.getMonth() + 1;
+
+      const annee =
+        dateRecette.getFullYear();
+
+
+      const montant =
+        Number(recette.montant) || 0;
+
+
+      if (
+        mois === moisActuel &&
+        annee === anneeActuelle
+      ) {
+
+        caMois += montant;
+
+      }
+
+
+      if (
+        annee === anneeActuelle
+      ) {
+
+        caAnnee += montant;
+
+      }
+
+    });
+
+
+    /* ---------------------------------------------
+       Affichage des statistiques
+    --------------------------------------------- */
+
+    const elementCaMois =
+      document.getElementById(
+        "chiffreAffairesMois"
+      );
+
+
+    const elementCaAnnee =
+      document.getElementById(
+        "chiffreAffairesAnnee"
+      );
+
+
+    const elementNombreFactures =
+      document.getElementById(
+        "nombreFactures"
+      );
+
+
+    const elementNombreRecettes =
+      document.getElementById(
+        "nombreRecettes"
+      );
+
+
+    if (elementCaMois) {
+
+      elementCaMois.textContent =
+        formaterMontantFinancier(caMois);
+
+    }
+
+
+    if (elementCaAnnee) {
+
+      elementCaAnnee.textContent =
+        formaterMontantFinancier(caAnnee);
+
+    }
+
+
+    if (elementNombreFactures) {
+
+      elementNombreFactures.textContent =
+        listeFactures.length;
+
+    }
+
+
+    if (elementNombreRecettes) {
+
+      elementNombreRecettes.textContent =
+        listeRecettes.length;
+
+    }
+
+
+    /* ---------------------------------------------
+       Affichage des listes
+    --------------------------------------------- */
+
+    afficherListeFactures(listeFactures);
+
+    afficherListeRecettes(listeRecettes);
+
+
+  } catch (erreur) {
+
+    console.error(
+      "Erreur gestion financière :",
+      erreur
+    );
+
+
+    afficherMessageFinancier(
+      "Impossible de charger les données financières.",
+      "erreur"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   🧾 AFFICHER LES FACTURES
+===================================================== */
+
+function afficherListeFactures(factures) {
+
+  const conteneur =
+    document.getElementById("listeFactures");
+
+
+  if (!conteneur) {
+    return;
+  }
+
+
+  if (!factures || factures.length === 0) {
+
+    conteneur.innerHTML = `
+      <p>
+        Aucune facture enregistrée pour le moment.
+      </p>
+    `;
+
+    return;
+
+  }
+
+
+  let html = "";
+
+
+  factures.forEach(function(facture) {
+
+    const numero =
+      echapperHTML(
+        facture.numero || "Sans numéro"
+      );
+
+
+    const client =
+      echapperHTML(
+        facture.client_nom || "Client"
+      );
+
+
+    const date =
+      formaterDateFinanciere(
+        facture.date_facture
+      );
+
+
+    const total =
+      formaterMontantFinancier(
+        facture.total_ttc
+      );
+
+
+    const statut =
+      echapperHTML(
+        facture.statut || "brouillon"
+      );
+
+
+    html += `
+
+      <div
+        style="
+          padding:15px;
+          margin-bottom:12px;
+          border:1px solid var(--bordure);
+          border-radius:10px;
+          background:#fff;
+        "
+      >
+
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:15px;
+            flex-wrap:wrap;
+          "
+        >
+
+          <div>
+
+            <strong>
+              🧾 ${numero}
+            </strong>
+
+            <br>
+
+            <span>
+              👤 ${client}
+            </span>
+
+            <br>
+
+            <small>
+              📅 ${date}
+            </small>
+
+          </div>
+
+
+          <div
+            style="
+              text-align:right;
+            "
+          >
+
+            <strong>
+              ${total}
+            </strong>
+
+            <br>
+
+            <small>
+              Statut : ${statut}
+            </small>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+
+  conteneur.innerHTML = html;
+
+}
+
+
+/* =====================================================
+   📖 AFFICHER LE LIVRE DES RECETTES
+===================================================== */
+
+function afficherListeRecettes(recettes) {
+
+  const conteneur =
+    document.getElementById("listeRecettes");
+
+
+  if (!conteneur) {
+    return;
+  }
+
+
+  if (!recettes || recettes.length === 0) {
+
+    conteneur.innerHTML = `
+      <p>
+        Aucune recette enregistrée pour le moment.
+      </p>
+    `;
+
+    return;
+
+  }
+
+
+  let html = "";
+
+
+  recettes.forEach(function(recette) {
+
+    const date =
+      formaterDateFinanciere(
+        recette.date_encaissement
+      );
+
+
+    const client =
+      echapperHTML(
+        recette.client_nom || "Client"
+      );
+
+
+    const description =
+      echapperHTML(
+        recette.description || "Vente"
+      );
+
+
+    const modePaiement =
+      echapperHTML(
+        recette.mode_paiement || "-"
+      );
+
+
+    const montant =
+      formaterMontantFinancier(
+        recette.montant
+      );
+
+
+    html += `
+
+      <div
+        style="
+          padding:15px;
+          margin-bottom:12px;
+          border:1px solid var(--bordure);
+          border-radius:10px;
+          background:#fff;
+        "
+      >
+
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:15px;
+            flex-wrap:wrap;
+          "
+        >
+
+          <div>
+
+            <strong>
+              📅 ${date}
+            </strong>
+
+            <br>
+
+            <span>
+              👤 ${client}
+            </span>
+
+            <br>
+
+            <span>
+              📝 ${description}
+            </span>
+
+            <br>
+
+            <small>
+              💳 ${modePaiement}
+            </small>
+
+          </div>
+
+
+          <div
+            style="
+              text-align:right;
+            "
+          >
+
+            <strong>
+              ${montant}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+
+  conteneur.innerHTML = html;
+
+}
+
+
+/* =====================================================
+   🧾 BOUTON NOUVELLE FACTURE
+===================================================== */
+
+const boutonNouvelleFacture =
+  document.getElementById(
+    "boutonNouvelleFacture"
+  );
+
+
+if (boutonNouvelleFacture) {
+
+  boutonNouvelleFacture.addEventListener(
+    "click",
+    function() {
+
+      afficherMessageFinancier(
+        "La création de facture sera ajoutée à l'étape suivante."
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   📖 BOUTON LIVRE DES RECETTES
+===================================================== */
+
+const boutonLivreRecettes =
+  document.getElementById(
+    "boutonLivreRecettes"
+  );
+
+
+if (boutonLivreRecettes) {
+
+  boutonLivreRecettes.addEventListener(
+    "click",
+    function() {
+
+      const liste =
+        document.getElementById(
+          "listeRecettes"
+        );
+
+
+      if (liste) {
+
+        liste.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   📊 BOUTON STATISTIQUES
+===================================================== */
+
+const boutonStatistiquesFinancieres =
+  document.getElementById(
+    "boutonStatistiquesFinancieres"
+  );
+
+
+if (boutonStatistiquesFinancieres) {
+
+  boutonStatistiquesFinancieres.addEventListener(
+    "click",
+    function() {
+
+      const statistiques =
+        document.querySelector(
+          ".stats"
+        );
+
+
+      if (statistiques) {
+
+        statistiques.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   📤 EXPORT TIIME
+===================================================== */
+
+const boutonExportTiime =
+  document.getElementById(
+    "boutonExportTiime"
+  );
+
+
+if (boutonExportTiime) {
+
+  boutonExportTiime.addEventListener(
+    "click",
+    function() {
+
+      afficherMessageFinancier(
+        "L'export Tiime sera ajouté après la mise en place des factures et du livre des recettes."
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   🚀 CHARGEMENT INITIAL
+===================================================== */
+
+chargerStatistiquesFinancieres();
 </script>
 
 </body>
