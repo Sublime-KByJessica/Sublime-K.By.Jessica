@@ -1372,7 +1372,15 @@
         <h2>
           📦 Commandes
         </h2>
-
+<div style="margin-bottom:20px;">
+  <label for="filtrePaiement"><strong>💳 Filtrer les paiements :</strong></label>
+  <select id="filtrePaiement">
+    <option value="tous">Tous</option>
+    <option value="en_attente">⏳ En attente</option>
+    <option value="paye">✅ Payé</option>
+    <option value="rembourse">↩️ Remboursé</option>
+  </select>
+</div>
         <button
           class="btn btn-modifier"
           id="boutonActualiserCommandes"
