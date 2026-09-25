@@ -1,1 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mot de passe oublié — Sublime'K</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #dfe4cf;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .box {
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    h1 {
+      color: #596044;
+    }
+
+    p {
+      color: #555;
+      line-height: 1.5;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin: 15px 0;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #8b9568;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+
+  <h1>Sublime'K</h1>
+
+  <p>
+    Entre ton adresse e-mail pour recevoir
+    un lien permettant de créer un nouveau mot de passe.
+  </p>
+
+  <input
+    type="email"
+    id="email"
+    value="sublime-k.by.jessica@proton.me"
+  >
+
+  <button onclick="envoyerLien()">
+    Envoyer le lien
+  </button>
+
+  <div id="message"></div>
+
+</div>
+
+<script>
+
+const supabaseClient = window.supabase.createClient(
+  "https://buputlhpgaenlwwbrwwf.supabase.co",
+  "sb_publishable_mjzAOL92PWfc3v59ZxdSUw_69xCaInq"
+);
+
+async function envoyerLien() {
+
+  const email =
+    document.getElementById("email").value;
+
+  const message =
+    document.getElementById("message");
+
+  message.textContent =
+    "⏳ Envoi du lien...";
+
+  message.style.color = "#596044";
+
+  const { error } =
+    await supabaseClient.auth.resetPasswordForEmail(
+      email,
+      {
+        redirectTo:
+          "https://sublime-kbyjessica.github.io/Sublime-K.By.Jessica/nouveau-mot-de-passe.html"
+      }
+    );
+
+  if (error) {
+
+    message.textContent =
+      "❌ " + error.message;
+
+    message.style.color = "red";
+
+    return;
+  }
+
+  message.textContent =
+    "✅ Le lien de réinitialisation a été envoyé !";
+
+  message.style.color = "green";
+}
+
+</script>
+
+</body>
+</html>
