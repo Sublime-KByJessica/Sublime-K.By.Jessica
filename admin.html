@@ -1,776 +1,912 @@
-```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Sublime'K — Administration</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-
-    :root {
-      --rose: #B9828F;
-      --rose-fonce: #8F5967;
-      --rose-poudre: #D8B6BC;
-      --sauge: #8F9B78;
-      --sauge-fonce: #667052;
-      --fond: #FAF7F5;
-      --blanc: #FFFFFF;
-      --texte: #4A4143;
-      --bordure: #E5D8D8;
-      --vert-clair: #E1E9D8;
-      --orange-clair: #F1DDE1;
-      --gris-clair: #EEE9E8;
-      --danger: #F3E0E0;
-      --danger-texte: #8B4F4F;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: var(--fond);
-      color: var(--texte);
-    }
-
-    button,
-    input,
-    select,
-    textarea {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    /* =========================
-       CONNEXION
-    ========================= */
-
-    #pageConnexion {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-
-    .connexion-card {
-      width: 100%;
-      max-width: 430px;
-      background: white;
-      border: 1px solid var(--bordure);
-      border-radius: 24px;
-      padding: 35px;
-      box-shadow: 0 10px 35px rgba(74,65,67,0.08);
-      text-align: center;
-    }
-
-    .connexion-card h1 {
-      color: var(--rose-fonce);
-      margin-bottom: 8px;
-    }
-
-    .connexion-card p {
-      color: #766B6D;
-    }
-
-    .connexion-card input {
-      width: 100%;
-      padding: 14px;
-      margin-top: 12px;
-      border: 1px solid var(--bordure);
-      border-radius: 12px;
-      outline: none;
-    }
-
-    .btn {
-      border: none;
-      border-radius: 12px;
-      padding: 12px 16px;
-      font-weight: bold;
-      transition: 0.2s;
-    }
-
-    .btn-principal {
-      width: 100%;
-      margin-top: 18px;
-      background: var(--rose);
-      color: white;
-    }
-
-    .btn-principal:hover {
-      background: var(--rose-fonce);
-    }
-
-    #resultatConnexion {
-      margin-top: 15px;
-      min-height: 20px;
-      font-weight: bold;
-    }
-
-    /* =========================
-       ADMIN
-    ========================= */
-
-    #pageAdmin {
-      display: none;
-      min-height: 100vh;
-    }
-
-    .admin-header {
-      background: white;
-      border-bottom: 1px solid var(--rose-poudre);
-      padding: 16px 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-
-    .logo-admin {
-      color: var(--rose-fonce);
-      font-size: 25px;
-      font-weight: bold;
-    }
-
-    .logo-admin span {
-      color: var(--sauge-fonce);
-    }
-
-    .btn-deconnexion {
-      background: var(--gris-clair);
-      color: var(--texte);
-    }
-
-    .admin-container {
-      max-width: 1200px;
-      margin: auto;
-      padding: 25px 18px 60px;
-    }
-
-    .bienvenue h1 {
-      color: var(--rose-fonce);
-      margin-bottom: 5px;
-    }
-
-    .bienvenue p {
-      margin-top: 0;
-      color: #766B6D;
-    }
-
-    /* =========================
-       STATS
-    ========================= */
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
-      margin: 25px 0;
-    }
-
-    .stat-card {
-      background: white;
-      border: 1px solid var(--bordure);
-      border-radius: 18px;
-      padding: 20px;
-    }
-
-    .stat-card .nombre {
-      font-size: 30px;
-      font-weight: bold;
-      color: var(--rose-fonce);
-    }
-
-    .stat-card .label {
-      color: #766B6D;
-      margin-top: 5px;
-    }
-
-    /* =========================
-       BLOCS
-    ========================= */
-
-    .bloc {
-      background: white;
-      border: 1px solid var(--bordure);
-      border-radius: 20px;
-      padding: 22px;
-      margin-bottom: 25px;
-    }
-
-    .bloc h2 {
-      margin-top: 0;
-      color: var(--sauge-fonce);
-    }
-
-    .bloc h3 {
-      color: var(--rose-fonce);
-    }
-
-    /* =========================
-       FORMULAIRES
-    ========================= */
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-
-    .champ {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-
-    .champ.full {
-      grid-column: 1 / -1;
-    }
-
-    .champ label {
-      font-weight: bold;
-      font-size: 14px;
-    }
-
-    .champ input,
-    .champ select,
-    .champ textarea {
-      width: 100%;
-      border: 1px solid var(--bordure);
-      border-radius: 10px;
-      padding: 12px;
-      background: white;
-      color: var(--texte);
-      outline: none;
-    }
-
-    .champ textarea {
-      min-height: 90px;
-      resize: vertical;
-    }
-
-    .checkbox-ligne {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 15px;
-    }
-
-    .checkbox-ligne input {
-      width: 18px;
-      height: 18px;
-    }
-
-    .actions-formulaire {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-      flex-wrap: wrap;
-    }
-
-    .btn-enregistrer {
-      background: var(--rose);
-      color: white;
-    }
-
-    .btn-annuler {
-      background: var(--gris-clair);
-      color: var(--texte);
-      display: none;
-    }
-
-    /* =========================
-       STOCK
-    ========================= */
-
-    .stock-box {
-      margin-top: 20px;
-      padding: 18px;
-      border: 1px solid var(--bordure);
-      border-radius: 16px;
-      background: #FAF7F5;
-    }
-
-    .stock-info {
-      color: #766B6D;
-      font-size: 14px;
-      margin-top: 5px;
-    }
-
-    .stock-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 12px;
-      flex-wrap: wrap;
-    }
-
-    .stock-actions button {
-      min-width: 42px;
-      padding: 10px;
-      border: none;
-      border-radius: 10px;
-      font-weight: bold;
-    }
-
-    .stock-moins {
-      background: var(--danger);
-      color: var(--danger-texte);
-    }
-
-    .stock-plus {
-      background: var(--vert-clair);
-      color: var(--sauge-fonce);
-    }
-
-    .stock-actions input {
-      width: 100px;
-      text-align: center;
-      padding: 10px;
-      border: 1px solid var(--bordure);
-      border-radius: 10px;
-    }
-
-    .stock-rupture {
-      color: var(--danger-texte);
-      font-weight: bold;
-    }
-
-    /* =========================
-       PRÉCOMMANDE
-    ========================= */
-
-    .precommande-box {
-      margin-top: 18px;
-      padding: 18px;
-      border-radius: 16px;
-      background: var(--orange-clair);
-      border: 1px solid var(--rose-poudre);
-    }
-
-    /* =========================
-       PERSONNALISATION
-    ========================= */
-
-    .personnalisation-admin {
-      margin-top: 25px;
-      padding: 18px;
-      background: var(--fond);
-      border: 1px solid var(--bordure);
-      border-radius: 16px;
-    }
-
-    .personnalisation-admin h3 {
-      margin-top: 0;
-    }
-
-    .personnalisation-aide {
-      color: #766B6D;
-      font-size: 14px;
-    }
-
-    /* =========================
-       PRODUITS
-    ========================= */
-
-    .barre-produits {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-      flex-wrap: wrap;
-      margin-bottom: 15px;
-    }
-
-    .produits-liste {
-      display: grid;
-      gap: 12px;
-    }
-
-    .produit {
-      border: 1px solid var(--bordure);
-      border-radius: 16px;
-      padding: 16px;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 15px;
-      align-items: center;
-    }
-
-    .produit-info h3 {
-      margin: 0 0 7px;
-      color: var(--rose-fonce);
-    }
-
-    .produit-info p {
-      margin: 5px 0;
-      color: #766B6D;
-      font-size: 14px;
-    }
-
-    .produit-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .btn-modifier {
-      background: var(--vert-clair);
-      color: var(--sauge-fonce);
-    }
-
-    .btn-supprimer {
-      background: var(--danger);
-      color: var(--danger-texte);
-    }
-
-    .statut {
-      display: inline-block;
-      padding: 5px 9px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .statut-stock {
-      background: var(--vert-clair);
-      color: var(--sauge-fonce);
-    }
-
-    .statut-precommande {
-      background: var(--orange-clair);
-      color: var(--rose-fonce);
-    }
-
-    .statut-indisponible {
-      background: var(--gris-clair);
-      color: #6B6264;
-    }
-
-    .rupture {
-      background: var(--danger);
-      color: var(--danger-texte);
-    }
-
-    /* =========================
-       LIVRAISON
-    ========================= */
-
-    .livraison-intro {
-      padding: 15px;
-      background: #F8F4F2;
-      border: 1px solid var(--rose-poudre);
-      border-radius: 15px;
-      margin-bottom: 20px;
-    }
-
-    .methode-livraison {
-      border: 1px solid var(--bordure);
-      border-radius: 15px;
-      padding: 16px;
-      margin-top: 12px;
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .methode-livraison strong {
-      color: var(--rose-fonce);
-    }
-
-    .methode-actions {
-      display: flex;
-      gap: 7px;
-      flex-wrap: wrap;
-    }
-
-    /* =========================
-       COMMANDES
-    ========================= */
-
-    .commande {
-      border: 1px solid var(--bordure);
-      border-radius: 16px;
-      padding: 18px;
-      margin-top: 12px;
-    }
-
-    .commande-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .commande-numero {
-      color: var(--rose-fonce);
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    .commande-details {
-      margin-top: 12px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px 20px;
-    }
-
-    .commande-details p {
-      margin: 4px 0;
-    }
-
-    .statut-commande {
-      padding: 6px 10px;
-      border-radius: 20px;
-      background: var(--vert-clair);
-      color: var(--sauge-fonce);
-      font-weight: bold;
-      font-size: 12px;
-    }
-
-    .commande-articles {
-      margin-top: 15px;
-      padding-top: 15px;
-      border-top: 1px solid var(--bordure);
-    }
-
-    .article-commande {
-      padding: 7px 0;
-      border-bottom: 1px solid #F0EAEA;
-    }
-
-    /* =========================
-       INFORMATIONS LÉGALES
-    ========================= */
-
-    .legal-page {
-      border: 1px solid var(--bordure);
-      border-radius: 16px;
-      padding: 18px;
-      margin-top: 12px;
-    }
-
-    .legal-page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-
-    .legal-page-titre {
-      color: var(--rose-fonce);
-      font-weight: bold;
-      font-size: 17px;
-    }
-
-    .legal-page-contenu {
-      margin-top: 15px;
-      padding: 15px;
-      background: var(--fond);
-      border-radius: 12px;
-      white-space: pre-wrap;
-      color: #766B6D;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    /* =========================
-       BIBLIOTHÈQUE
-    ========================= */
-
-    .bibliotheque-intro {
-      background: #F8F4F2;
-      border: 1px solid var(--rose-poudre);
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 20px;
-    }
-
-    .bibliotheque-intro p {
-      margin: 5px 0;
-      color: #766B6D;
-    }
-
-    .bibliotheque-etape {
-      border: 1px solid var(--bordure);
-      border-radius: 16px;
-      padding: 18px;
-      margin-top: 18px;
-    }
-
-    .bibliotheque-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-
-    .liste-bibliotheque {
-      display: grid;
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    .ligne-bibliotheque {
-      border: 1px solid var(--bordure);
-      border-radius: 12px;
-      padding: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      background: white;
-    }
-
-    .ligne-bibliotheque-info {
-      font-weight: bold;
-    }
-
-    .ligne-bibliotheque-actions {
-      display: flex;
-      gap: 7px;
-      flex-wrap: wrap;
-    }
-
-    .designs-grille {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: 12px;
-      margin-top: 18px;
-    }
-
-    .design-card {
-      border: 1px solid var(--bordure);
-      border-radius: 14px;
-      overflow: hidden;
-      background: white;
-    }
-
-    .design-card img {
-      width: 100%;
-      height: 130px;
-      object-fit: cover;
-      display: block;
-      background: #F1E5E5;
-    }
-
-    .design-card-info {
-      padding: 10px;
-    }
-
-    .design-card-info strong {
-      display: block;
-      font-size: 14px;
-      margin-bottom: 8px;
-    }
-
-    .design-card-actions {
-      display: flex;
-      gap: 5px;
-    }
-
-    .design-card-actions button {
-      flex: 1;
-      border: none;
-      border-radius: 8px;
-      padding: 7px;
-      font-size: 12px;
-    }
-
-    .design-modifier {
-      background: var(--vert-clair);
-      color: var(--sauge-fonce);
-    }
-
-    .design-supprimer {
-      background: var(--danger);
-      color: var(--danger-texte);
-    }
-
-    /* =========================
-       MESSAGES
-    ========================= */
-
-    .message {
-      padding: 12px;
-      border-radius: 10px;
-      margin-top: 15px;
-      display: none;
-    }
-
-    .message-succes {
-      background: var(--vert-clair);
-      color: var(--sauge-fonce);
-    }
-
-    .message-erreur {
-      background: var(--danger);
-      color: var(--danger-texte);
-    }
-
-    /* =========================
-       MOBILE
-    ========================= */
-
-    @media (max-width: 800px) {
-
-      .stats {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .champ.full {
-        grid-column: auto;
-      }
-
-      .produit {
-        grid-template-columns: 1fr;
-      }
-
-      .commande-details {
-        grid-template-columns: 1fr;
-      }
-
-    }
-
-    @media (max-width: 550px) {
-
-      .stats {
-        grid-template-columns: 1fr;
-      }
-
-      .admin-container {
-        padding: 20px 12px 40px;
-      }
-
-      .designs-grille {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-    }
-
-  </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Sublime'K — Administration</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+:root{
+  --rose:#B9828F;
+  --rose-fonce:#8F5967;
+  --rose-poudre:#D8B6BC;
+  --sauge:#8F9B78;
+  --sauge-fonce:#667052;
+  --fond:#FAF7F5;
+  --blanc:#FFFFFF;
+  --texte:#4A4143;
+  --bordure:#E5D8D8;
+  --vert-clair:#E1E9D8;
+  --orange-clair:#F1DDE1;
+  --gris-clair:#EEE9E8;
+  --danger:#F3E0E0;
+  --danger-texte:#8B4F4F;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--fond);
+  color:var(--texte);
+}
+
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+
+/* =========================
+   CONNEXION
+========================= */
+
+#pageConnexion{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+.connexion-card{
+  width:100%;
+  max-width:430px;
+  background:white;
+  border:1px solid var(--bordure);
+  border-radius:24px;
+  padding:35px;
+  box-shadow:0 10px 35px rgba(74,65,67,.08);
+  text-align:center;
+}
+
+.connexion-card h1{
+  color:var(--rose-fonce);
+  margin-bottom:8px;
+}
+
+.connexion-card p{color:#766B6D}
+
+.connexion-card input{
+  width:100%;
+  padding:14px;
+  margin-top:12px;
+  border:1px solid var(--bordure);
+  border-radius:12px;
+  outline:none;
+}
+
+.btn{
+  border:none;
+  border-radius:12px;
+  padding:12px 16px;
+  font-weight:bold;
+  transition:.2s;
+}
+
+.btn-principal{
+  width:100%;
+  margin-top:18px;
+  background:var(--rose);
+  color:white;
+}
+
+.btn-principal:hover{background:var(--rose-fonce)}
+
+#resultatConnexion{
+  margin-top:15px;
+  min-height:20px;
+  font-weight:bold;
+}
+
+/* =========================
+   ADMIN
+========================= */
+
+#pageAdmin{
+  display:none;
+  min-height:100vh;
+}
+
+.admin-header{
+  background:white;
+  border-bottom:1px solid var(--rose-poudre);
+  padding:16px 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+
+.logo-admin{
+  color:var(--rose-fonce);
+  font-size:25px;
+  font-weight:bold;
+}
+
+.logo-admin span{color:var(--sauge-fonce)}
+
+.btn-deconnexion{
+  background:var(--gris-clair);
+  color:var(--texte);
+}
+
+.admin-layout{
+  display:flex;
+  min-height:calc(100vh - 70px);
+}
+
+/* =========================
+   MENU
+========================= */
+
+.menu-admin{
+  width:245px;
+  flex-shrink:0;
+  background:white;
+  border-right:1px solid var(--bordure);
+  padding:20px 14px;
+  position:sticky;
+  top:70px;
+  height:calc(100vh - 70px);
+  overflow-y:auto;
+}
+
+.menu-titre{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  color:#8A7C7F;
+  font-weight:bold;
+  padding:8px 12px;
+  margin-bottom:5px;
+}
+
+.menu-bouton{
+  width:100%;
+  border:none;
+  background:transparent;
+  color:var(--texte);
+  padding:12px 13px;
+  border-radius:12px;
+  text-align:left;
+  font-weight:bold;
+  margin-bottom:4px;
+}
+
+.menu-bouton:hover{
+  background:var(--fond);
+}
+
+.menu-bouton.actif{
+  background:var(--rose-poudre);
+  color:var(--rose-fonce);
+}
+
+.menu-sous-titre{
+  margin:15px 10px 5px;
+  color:#8A7C7F;
+  font-size:12px;
+  font-weight:bold;
+}
+
+.admin-contenu{
+  flex:1;
+  min-width:0;
+}
+
+.admin-container{
+  max-width:1200px;
+  margin:auto;
+  padding:25px 18px 60px;
+}
+
+.bienvenue h1{
+  color:var(--rose-fonce);
+  margin-bottom:5px;
+}
+
+.bienvenue p{
+  margin-top:0;
+  color:#766B6D;
+}
+
+/* =========================
+   SECTIONS MENU
+========================= */
+
+.section-admin{
+  display:none;
+}
+
+.section-admin.active{
+  display:block;
+}
+
+.section-titre{
+  margin-bottom:20px;
+}
+
+.section-titre h1{
+  color:var(--rose-fonce);
+  margin:0 0 5px;
+}
+
+.section-titre p{
+  color:#766B6D;
+  margin:0;
+}
+
+/* =========================
+   STATS
+========================= */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+  margin:25px 0;
+}
+
+.stat-card{
+  background:white;
+  border:1px solid var(--bordure);
+  border-radius:18px;
+  padding:20px;
+}
+
+.stat-card .nombre{
+  font-size:30px;
+  font-weight:bold;
+  color:var(--rose-fonce);
+}
+
+.stat-card .label{
+  color:#766B6D;
+  margin-top:5px;
+}
+
+/* =========================
+   BLOCS
+========================= */
+
+.bloc{
+  background:white;
+  border:1px solid var(--bordure);
+  border-radius:20px;
+  padding:22px;
+  margin-bottom:25px;
+}
+
+.bloc h2{
+  margin-top:0;
+  color:var(--sauge-fonce);
+}
+
+.bloc h3{color:var(--rose-fonce)}
+
+/* =========================
+   FORMULAIRES
+========================= */
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+
+.champ{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.champ.full{grid-column:1/-1}
+
+.champ label{
+  font-weight:bold;
+  font-size:14px;
+}
+
+.champ input,
+.champ select,
+.champ textarea{
+  width:100%;
+  border:1px solid var(--bordure);
+  border-radius:10px;
+  padding:12px;
+  background:white;
+  color:var(--texte);
+  outline:none;
+}
+
+.champ textarea{
+  min-height:90px;
+  resize:vertical;
+}
+
+.checkbox-ligne{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:15px;
+}
+
+.checkbox-ligne input{
+  width:18px;
+  height:18px;
+}
+
+.actions-formulaire{
+  display:flex;
+  gap:10px;
+  margin-top:20px;
+  flex-wrap:wrap;
+}
+
+.btn-enregistrer{
+  background:var(--rose);
+  color:white;
+}
+
+.btn-annuler{
+  background:var(--gris-clair);
+  color:var(--texte);
+  display:none;
+}
+
+/* =========================
+   STOCK
+========================= */
+
+.stock-box{
+  margin-top:20px;
+  padding:18px;
+  border:1px solid var(--bordure);
+  border-radius:16px;
+  background:#FAF7F5;
+}
+
+.stock-info{
+  color:#766B6D;
+  font-size:14px;
+  margin-top:5px;
+}
+
+.stock-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:12px;
+  flex-wrap:wrap;
+}
+
+.stock-actions button{
+  min-width:42px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
+}
+
+.stock-moins{
+  background:var(--danger);
+  color:var(--danger-texte);
+}
+
+.stock-plus{
+  background:var(--vert-clair);
+  color:var(--sauge-fonce);
+}
+
+.stock-actions input{
+  width:100px;
+  text-align:center;
+  padding:10px;
+  border:1px solid var(--bordure);
+  border-radius:10px;
+}
+
+.stock-rupture{
+  color:var(--danger-texte);
+  font-weight:bold;
+}
+
+/* =========================
+   PRECOMMANDE
+========================= */
+
+.precommande-box{
+  margin-top:18px;
+  padding:18px;
+  border-radius:16px;
+  background:var(--orange-clair);
+  border:1px solid var(--rose-poudre);
+}
+
+/* =========================
+   PERSONNALISATION
+========================= */
+
+.personnalisation-admin{
+  margin-top:25px;
+  padding:18px;
+  background:var(--fond);
+  border:1px solid var(--bordure);
+  border-radius:16px;
+}
+
+.personnalisation-admin h3{margin-top:0}
+
+.personnalisation-aide{
+  color:#766B6D;
+  font-size:14px;
+}
+
+/* =========================
+   PRODUITS
+========================= */
+
+.barre-produits{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
+  margin-bottom:15px;
+}
+
+.produits-liste{
+  display:grid;
+  gap:12px;
+}
+
+.produit{
+  border:1px solid var(--bordure);
+  border-radius:16px;
+  padding:16px;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:15px;
+  align-items:center;
+}
+
+.produit-info h3{
+  margin:0 0 7px;
+  color:var(--rose-fonce);
+}
+
+.produit-info p{
+  margin:5px 0;
+  color:#766B6D;
+  font-size:14px;
+}
+
+.produit-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.btn-modifier{
+  background:var(--vert-clair);
+  color:var(--sauge-fonce);
+}
+
+.btn-supprimer{
+  background:var(--danger);
+  color:var(--danger-texte);
+}
+
+.statut{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:bold;
+}
+
+.statut-stock{
+  background:var(--vert-clair);
+  color:var(--sauge-fonce);
+}
+
+.statut-precommande{
+  background:var(--orange-clair);
+  color:var(--rose-fonce);
+}
+
+.statut-indisponible{
+  background:var(--gris-clair);
+  color:#6B6264;
+}
+
+.rupture{
+  background:var(--danger);
+  color:var(--danger-texte);
+}
+
+/* =========================
+   LIVRAISON
+========================= */
+
+.livraison-intro{
+  padding:15px;
+  background:#F8F4F2;
+  border:1px solid var(--rose-poudre);
+  border-radius:15px;
+  margin-bottom:20px;
+}
+
+.methode-livraison{
+  border:1px solid var(--bordure);
+  border-radius:15px;
+  padding:16px;
+  margin-top:12px;
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.methode-livraison strong{color:var(--rose-fonce)}
+
+.methode-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+/* =========================
+   COMMANDES
+========================= */
+
+.commande{
+  border:1px solid var(--bordure);
+  border-radius:16px;
+  padding:18px;
+  margin-top:12px;
+}
+
+.commande-header{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+.commande-numero{
+  color:var(--rose-fonce);
+  font-size:18px;
+  font-weight:bold;
+}
+
+.commande-details{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px 20px;
+}
+
+.commande-details p{margin:4px 0}
+
+.statut-commande{
+  padding:6px 10px;
+  border-radius:20px;
+  background:var(--vert-clair);
+  color:var(--sauge-fonce);
+  font-weight:bold;
+  font-size:12px;
+}
+
+.commande-articles{
+  margin-top:15px;
+  padding-top:15px;
+  border-top:1px solid var(--bordure);
+}
+
+.article-commande{
+  padding:7px 0;
+  border-bottom:1px solid #F0EAEA;
+}
+
+/* =========================
+   LEGAL
+========================= */
+
+.legal-page{
+  border:1px solid var(--bordure);
+  border-radius:16px;
+  padding:18px;
+  margin-top:12px;
+}
+
+.legal-page-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
+}
+
+.legal-page-titre{
+  color:var(--rose-fonce);
+  font-weight:bold;
+  font-size:17px;
+}
+
+.legal-page-contenu{
+  margin-top:15px;
+  padding:15px;
+  background:var(--fond);
+  border-radius:12px;
+  white-space:pre-wrap;
+  color:#766B6D;
+  font-size:14px;
+  line-height:1.5;
+}
+
+/* =========================
+   BIBLIOTHEQUE
+========================= */
+
+.bibliotheque-intro{
+  background:#F8F4F2;
+  border:1px solid var(--rose-poudre);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:20px;
+}
+
+.bibliotheque-intro p{
+  margin:5px 0;
+  color:#766B6D;
+}
+
+.bibliotheque-etape{
+  border:1px solid var(--bordure);
+  border-radius:16px;
+  padding:18px;
+  margin-top:18px;
+}
+
+.bibliotheque-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.liste-bibliotheque{
+  display:grid;
+  gap:10px;
+  margin-top:15px;
+}
+
+.ligne-bibliotheque{
+  border:1px solid var(--bordure);
+  border-radius:12px;
+  padding:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  background:white;
+}
+
+.ligne-bibliotheque-info{font-weight:bold}
+
+.ligne-bibliotheque-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.designs-grille{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  gap:12px;
+  margin-top:18px;
+}
+
+.design-card{
+  border:1px solid var(--bordure);
+  border-radius:14px;
+  overflow:hidden;
+  background:white;
+}
+
+.design-card img{
+  width:100%;
+  height:130px;
+  object-fit:cover;
+  display:block;
+  background:#F1E5E5;
+}
+
+.design-card-info{padding:10px}
+
+.design-card-info strong{
+  display:block;
+  font-size:14px;
+  margin-bottom:8px;
+}
+
+.design-card-actions{
+  display:flex;
+  gap:5px;
+}
+
+.design-card-actions button{
+  flex:1;
+  border:none;
+  border-radius:8px;
+  padding:7px;
+  font-size:12px;
+}
+
+.design-modifier{
+  background:var(--vert-clair);
+  color:var(--sauge-fonce);
+}
+
+.design-supprimer{
+  background:var(--danger);
+  color:var(--danger-texte);
+}
+
+/* =========================
+   FINANCES
+========================= */
+
+.finance-intro{
+  background:#F8F4F2;
+  border:1px solid var(--rose-poudre);
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:20px;
+}
+
+.finance-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:20px;
+}
+
+.finance-liste{
+  margin-top:25px;
+  padding-top:20px;
+  border-top:1px solid var(--bordure);
+}
+
+.finance-placeholder{
+  padding:18px;
+  background:var(--fond);
+  border:1px dashed var(--bordure);
+  border-radius:14px;
+  color:#766B6D;
+}
+
+/* =========================
+   MESSAGES
+========================= */
+
+.message{
+  padding:12px;
+  border-radius:10px;
+  margin-top:15px;
+  display:none;
+}
+
+.message-succes{
+  background:var(--vert-clair);
+  color:var(--sauge-fonce);
+}
+
+.message-erreur{
+  background:var(--danger);
+  color:var(--danger-texte);
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:900px){
+
+  .admin-layout{
+    display:block;
+  }
+
+  .menu-admin{
+    width:100%;
+    height:auto;
+    position:sticky;
+    top:70px;
+    z-index:90;
+    border-right:none;
+    border-bottom:1px solid var(--bordure);
+    padding:10px;
+    display:flex;
+    gap:6px;
+    overflow-x:auto;
+  }
+
+  .menu-titre,
+  .menu-sous-titre{
+    display:none;
+  }
+
+  .menu-bouton{
+    width:auto;
+    white-space:nowrap;
+    margin:0;
+  }
+
+}
+
+@media(max-width:800px){
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+  .champ.full{
+    grid-column:auto;
+  }
+
+  .produit{
+    grid-template-columns:1fr;
+  }
+
+  .commande-details{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:550px){
+
+  .stats{
+    grid-template-columns:1fr;
+  }
+
+  .admin-container{
+    padding:20px 12px 40px;
+  }
+
+  .designs-grille{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .admin-header{
+    padding:14px;
+  }
+
+  .logo-admin{
+    font-size:21px;
+  }
+
+  .btn-deconnexion{
+    padding:9px 11px;
+  }
+
+}
+
+</style>
 </head>
 
 <body>
@@ -820,538 +956,252 @@
 
 <section id="pageAdmin">
 
-  <header class="admin-header">
+<header class="admin-header">
+
+  <div class="logo-admin">
+    Sublime'<span>K</span>
+  </div>
+
+  <button
+    class="btn btn-deconnexion"
+    id="boutonDeconnexion"
+  >
+    🚪 Déconnexion
+  </button>
 
-    <div class="logo-admin">
-      Sublime'<span>K</span>
-    </div>
+</header>
+
+
+<div class="admin-layout">
+
+<!-- =====================================================
+     MENU
+===================================================== -->
 
-    <button
-      class="btn btn-deconnexion"
-      id="boutonDeconnexion"
-    >
-      🚪 Déconnexion
-    </button>
+<nav class="menu-admin">
 
-  </header>
+  <div class="menu-titre">
+    Administration
+  </div>
 
+  <button
+    class="menu-bouton actif"
+    data-section="dashboard"
+  >
+    🏠 Tableau de bord
+  </button>
 
-  <main class="admin-container">
+  <div class="menu-sous-titre">
+    BOUTIQUE
+  </div>
 
-    <div class="bienvenue">
+  <button
+    class="menu-bouton"
+    data-section="boutique"
+  >
+    🛍️ Produits
+  </button>
 
-      <h1>Tableau de bord</h1>
+  <button
+    class="menu-bouton"
+    data-section="commandes"
+  >
+    📦 Commandes
+  </button>
 
-      <p>
-        Bienvenue dans ton espace administrateur 💕
-      </p>
+  <button
+    class="menu-bouton"
+    data-section="livraison"
+  >
+    🚚 Livraison
+  </button>
 
-    </div>
+  <div class="menu-sous-titre">
+    GESTION
+  </div>
 
+  <button
+    class="menu-bouton"
+    data-section="finance"
+  >
+    💰 Gestion financière
+  </button>
 
-    <!-- =================================================
-         STATISTIQUES
-    ================================================= -->
+  <button
+    class="menu-bouton"
+    data-section="bibliotheque"
+  >
+    🎨 Bibliothèque
+  </button>
 
-    <div class="stats">
+  <button
+    class="menu-bouton"
+    data-section="legal"
+  >
+    ⚖️ Pages légales
+  </button>
 
-      <div class="stat-card">
-        <div class="nombre" id="nombreProduits">0</div>
-        <div class="label">Produits</div>
-      </div>
+</nav>
 
-      <div class="stat-card">
-        <div class="nombre" id="nombreVisibles">0</div>
-        <div class="label">Produits visibles</div>
-      </div>
 
-      <div class="stat-card">
-        <div class="nombre" id="nombrePrecommandes">0</div>
-        <div class="label">Pré-commandes</div>
-      </div>
+<!-- =====================================================
+     CONTENU
+===================================================== -->
 
-      <div class="stat-card">
-        <div class="nombre" id="nombreCommandes">0</div>
-        <div class="label">Commandes</div>
-      </div>
+<div class="admin-contenu">
 
-    </div>
+<main class="admin-container">
 
 
-    <!-- =================================================
-         PRODUIT
-    ================================================= -->
+<!-- =====================================================
+     TABLEAU DE BORD
+===================================================== -->
 
-    <div class="bloc">
+<section
+  class="section-admin active"
+  id="section-dashboard"
+>
 
-      <h2 id="titreFormulaire">
-        ➕ Ajouter un produit
-      </h2>
+  <div class="section-titre">
 
-      <form id="formProduit">
+    <h1>
+      Tableau de bord
+    </h1>
 
-        <div class="form-grid">
+    <p>
+      Bienvenue dans ton espace administrateur 💕
+    </p>
 
-          <div class="champ">
+  </div>
 
-            <label for="nom">
-              Nom du produit *
-            </label>
 
-            <input
-              type="text"
-              id="nom"
-              required
-              placeholder="Ex : Mug personnalisé"
-            >
+  <div class="stats">
 
-          </div>
-
-
-          <div class="champ">
-
-            <label for="prix">
-              Prix (€)
-            </label>
-
-            <input
-              type="number"
-              id="prix"
-              step="0.01"
-              min="0"
-              placeholder="Ex : 12.90"
-            >
-
-          </div>
-
-
-          <div class="champ">
-
-            <label for="categorie">
-              Catégorie *
-            </label>
-
-            <select
-              id="categorie"
-              required
-            >
-
-              <option value="">
-                Choisir une catégorie
-              </option>
-
-            </select>
-
-          </div>
-
-
-          <div class="champ">
-
-            <label for="statut">
-              Statut
-            </label>
-
-            <select id="statut">
-
-              <option value="stock">
-                🟢 En stock
-              </option>
-
-              <option
-                value="precommande"
-                selected
-              >
-                🟠 Pré-commande
-              </option>
-
-              <option value="indisponible">
-                ⚫ Indisponible
-              </option>
-
-            </select>
-
-          </div>
-
-
-          <div class="champ full">
-
-            <label for="description">
-              Description
-            </label>
-
-            <textarea
-              id="description"
-              placeholder="Décris ton produit..."
-            ></textarea>
-
-          </div>
-
-
-          <div class="champ full">
-
-            <label for="image_url">
-              URL de l'image
-            </label>
-
-            <input
-              type="url"
-              id="image_url"
-              placeholder="https://..."
-            >
-
-          </div>
-
-        </div>
-
-
-        <!-- STOCK -->
-
-        <div
-          class="stock-box"
-          id="blocStock"
-        >
-
-          <h3>📦 Gestion du stock</h3>
-
-          <div class="stock-info">
-            Cette quantité est utilisée uniquement pour les produits
-            marqués « En stock ».
-          </div>
-
-          <div class="stock-actions">
-
-            <button
-              type="button"
-              class="stock-moins"
-              id="stockMoins"
-            >
-              −
-            </button>
-
-            <input
-              type="number"
-              id="stockQuantite"
-              min="0"
-              step="1"
-              value="0"
-            >
-
-            <button
-              type="button"
-              class="stock-plus"
-              id="stockPlus"
-            >
-              +
-            </button>
-
-          </div>
-
-          <div
-            id="stockMessage"
-            class="stock-info"
-          ></div>
-
-        </div>
-
-
-        <!-- PRÉCOMMANDE -->
-
-        <div
-          class="precommande-box"
-          id="blocPrecommande"
-        >
-
-          <h3>🟠 Délai de pré-commande</h3>
-
-          <p>
-            Par défaut, le délai annoncé sera de
-            <strong>2 à 5 semaines</strong>.
-          </p>
-
-          <div class="form-grid">
-
-            <div class="champ">
-
-              <label for="delaiMin">
-                Minimum (semaines)
-              </label>
-
-              <input
-                type="number"
-                id="delaiMin"
-                min="1"
-                step="1"
-                value="2"
-              >
-
-            </div>
-
-            <div class="champ">
-
-              <label for="delaiMax">
-                Maximum (semaines)
-              </label>
-
-              <input
-                type="number"
-                id="delaiMax"
-                min="1"
-                step="1"
-                value="5"
-              >
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="checkbox-ligne">
-
-          <input
-            type="checkbox"
-            id="visible"
-            checked
-          >
-
-          <label for="visible">
-            Produit visible sur la boutique
-          </label>
-
-        </div>
-
-
-        <div class="checkbox-ligne">
-
-          <input
-            type="checkbox"
-            id="nouveaute"
-          >
-
-          <label for="nouveaute">
-            ⭐ Afficher dans les nouveautés
-          </label>
-
-        </div>
-
-
-        <!-- PERSONNALISATION -->
-
-        <div class="personnalisation-admin">
-
-          <h3>
-            ✨ Personnalisation du produit
-          </h3>
-
-          <p class="personnalisation-aide">
-            Active uniquement les options nécessaires à ce produit.
-          </p>
-
-
-          <div class="checkbox-ligne">
-
-            <input
-              type="checkbox"
-              id="personnalisation_active"
-            >
-
-            <label for="personnalisation_active">
-              ✨ Produit personnalisable
-            </label>
-
-          </div>
-
-
-          <div class="checkbox-ligne">
-
-            <input
-              type="checkbox"
-              id="choix_image_active"
-            >
-
-            <label for="choix_image_active">
-              🖼️ Le client peut choisir une image
-            </label>
-
-          </div>
-
-
-          <div class="checkbox-ligne">
-
-            <input
-              type="checkbox"
-              id="photo_client_active"
-            >
-
-            <label for="photo_client_active">
-              📸 Le client peut envoyer sa propre photo
-            </label>
-
-          </div>
-
-
-          <div class="checkbox-ligne">
-
-            <input
-              type="checkbox"
-              id="prenom_active"
-            >
-
-            <label for="prenom_active">
-              ✏️ Le client peut ajouter un prénom
-            </label>
-
-          </div>
-
-
-          <div class="checkbox-ligne">
-
-            <input
-              type="checkbox"
-              id="message_active"
-            >
-
-            <label for="message_active">
-              💬 Le client peut ajouter un message
-            </label>
-
-          </div>
-
-        </div>
-
-
-        <div class="actions-formulaire">
-
-          <button
-            type="submit"
-            class="btn btn-enregistrer"
-            id="boutonEnregistrer"
-          >
-            💾 Enregistrer le produit
-          </button>
-
-          <button
-            type="button"
-            class="btn btn-annuler"
-            id="boutonAnnuler"
-          >
-            Annuler la modification
-          </button>
-
-        </div>
-
-
-        <div
-          id="messageFormulaire"
-          class="message"
-        ></div>
-
-      </form>
-
-    </div>
-
-
-    <!-- =================================================
-         LISTE PRODUITS
-    ================================================= -->
-
-    <div class="bloc">
-
-      <div class="barre-produits">
-
-        <h2>
-          🛍️ Mes produits
-        </h2>
-
-        <button
-          class="btn btn-modifier"
-          id="boutonActualiser"
-          type="button"
-        >
-          🔄 Actualiser
-        </button>
-
-      </div>
-
+    <div class="stat-card">
       <div
-        class="produits-liste"
-        id="listeProduits"
-      ></div>
+        class="nombre"
+        id="nombreProduits"
+      >
+        0
+      </div>
 
+      <div class="label">
+        Produits
+      </div>
     </div>
 
 
-    <!-- =================================================
-         LIVRAISON
-    ================================================= -->
-
-    <div class="bloc">
-
-      <h2>
-        🚚 Livraison
-      </h2>
-
-      <div class="livraison-intro">
-
-        <strong>
-          Configure ici les modes de livraison disponibles
-          pour tes clients.
-        </strong>
-
-        <p>
-          Tu pourras ajouter plusieurs solutions,
-          leurs prix et leurs délais.
-        </p>
-
+    <div class="stat-card">
+      <div
+        class="nombre"
+        id="nombreVisibles"
+      >
+        0
       </div>
 
+      <div class="label">
+        Produits visibles
+      </div>
+    </div>
 
-      <div class="checkbox-ligne">
 
-        <input
-          type="checkbox"
-          id="livraisonActive"
-        >
-
-        <label for="livraisonActive">
-          🚚 Activer la livraison
-        </label>
-
+    <div class="stat-card">
+      <div
+        class="nombre"
+        id="nombrePrecommandes"
+      >
+        0
       </div>
 
+      <div class="label">
+        Pré-commandes
+      </div>
+    </div>
 
-      <div class="checkbox-ligne">
 
-        <input
-          type="checkbox"
-          id="remiseMainPropre"
-        >
-
-        <label for="remiseMainPropre">
-          🤝 Autoriser la remise en main propre
-        </label>
-
+    <div class="stat-card">
+      <div
+        class="nombre"
+        id="nombreCommandes"
+      >
+        0
       </div>
 
+      <div class="label">
+        Commandes
+      </div>
+    </div>
 
-      <h3>
-        ➕ Ajouter un mode de livraison
-      </h3>
+  </div>
 
+
+  <div class="bloc">
+
+    <h2>
+      🌿 Bienvenue dans Sublime'K
+    </h2>
+
+    <p>
+      Utilise le menu pour gérer ta boutique,
+      tes commandes, tes livraisons, ta bibliothèque
+      et tes informations administratives.
+    </p>
+
+    <p>
+      Chaque rubrique est maintenant séparée afin
+      d'éviter d'avoir une page interminable.
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     BOUTIQUE
+===================================================== -->
+
+<section
+  class="section-admin"
+  id="section-boutique"
+>
+
+  <div class="section-titre">
+
+    <h1>
+      🛍️ Boutique
+    </h1>
+
+    <p>
+      Ajoute, modifie et gère tes produits.
+    </p>
+
+  </div>
+
+
+  <!-- PRODUIT -->
+
+  <div class="bloc">
+
+    <h2 id="titreFormulaire">
+      ➕ Ajouter un produit
+    </h2>
+
+    <form id="formProduit">
 
       <div class="form-grid">
 
         <div class="champ">
 
-          <label for="livraisonNom">
-            Nom
+          <label for="nom">
+            Nom du produit *
           </label>
 
           <input
             type="text"
-            id="livraisonNom"
-            placeholder="Ex : Colissimo"
+            id="nom"
+            required
+            placeholder="Ex : Mug personnalisé"
           >
 
         </div>
@@ -1359,16 +1209,16 @@
 
         <div class="champ">
 
-          <label for="livraisonPrix">
+          <label for="prix">
             Prix (€)
           </label>
 
           <input
             type="number"
-            id="livraisonPrix"
+            id="prix"
             step="0.01"
             min="0"
-            value="0"
+            placeholder="Ex : 12.90"
           >
 
         </div>
@@ -1376,495 +1226,14 @@
 
         <div class="champ">
 
-          <label for="livraisonDelaiMin">
-            Délai minimum (jours)
+          <label for="categorie">
+            Catégorie *
           </label>
 
-          <input
-            type="number"
-            id="livraisonDelaiMin"
-            min="0"
-            value="2"
+          <select
+            id="categorie"
+            required
           >
-
-        </div>
-
-
-        <div class="champ">
-
-          <label for="livraisonDelaiMax">
-            Délai maximum (jours)
-          </label>
-
-          <input
-            type="number"
-            id="livraisonDelaiMax"
-            min="0"
-            value="5"
-          >
-
-        </div>
-
-
-        <div class="champ full">
-
-          <label for="livraisonDescription">
-            Description
-          </label>
-
-          <input
-            type="text"
-            id="livraisonDescription"
-            placeholder="Ex : Livraison à domicile avec suivi"
-          >
-
-        </div>
-
-
-        <div class="champ">
-
-          <label for="livraisonGratuite">
-            Livraison gratuite à partir de (€)
-          </label>
-
-          <input
-            type="number"
-            id="livraisonGratuite"
-            step="0.01"
-            min="0"
-            placeholder="Laisser vide si non utilisée"
-          >
-
-        </div>
-
-      </div>
-
-
-      <div class="actions-formulaire">
-
-        <button
-          class="btn btn-enregistrer"
-          id="boutonAjouterLivraison"
-          type="button"
-        >
-          ➕ Ajouter le mode de livraison
-        </button>
-
-      </div>
-
-
-      <div
-        id="messageLivraison"
-        class="message"
-      ></div>
-
-
-      <h3>
-        📋 Modes existants
-      </h3>
-
-      <div id="listeLivraisons"></div>
-
-    </div>
-
-
-    <!-- =================================================
-         COMMANDES
-    ================================================= -->
-
-    <div class="bloc">
-
-      <div class="barre-produits">
-
-        <h2>
-          📦 Commandes
-        </h2>
-
-
-        <button
-          class="btn btn-modifier"
-          id="boutonActualiserCommandes"
-          type="button"
-        >
-          🔄 Actualiser
-        </button>
-
-      </div>
-
-
-      <div style="margin-bottom:20px;">
-
-        <label for="filtrePaiement">
-          <strong>💳 Filtrer les paiements :</strong>
-        </label>
-
-        <select id="filtrePaiement">
-
-          <option value="tous">
-            Tous
-          </option>
-
-          <option value="en_attente">
-            ⏳ En attente
-          </option>
-
-          <option value="paye">
-            ✅ Payé
-          </option>
-
-          <option value="rembourse">
-            ↩️ Remboursé
-          </option>
-
-        </select>
-
-      </div>
-
-
-      <div id="listeCommandes">
-
-        <p>
-          Aucune commande chargée.
-        </p>
-
-      </div>
-
-    </div>
-
-
-    <!-- =================================================
-         INFORMATIONS LÉGALES
-    ================================================= -->
-
-    <div class="bloc">
-
-      <h2>
-        ⚖️ Informations légales
-      </h2>
-
-      <div class="livraison-intro">
-
-        <p>
-          Gère ici les pages légales qui seront affichées
-          sur le site.
-        </p>
-
-        <p>
-          Tu peux modifier leur contenu directement depuis
-          ton administration.
-        </p>
-
-      </div>
-
-
-      <div id="listePagesLegales">
-
-        <p>
-          Chargement des pages légales...
-        </p>
-
-      </div>
-
-    </div>
-
-    <!-- =================================================
-         GESTION FINANCIÈRE
-    ================================================= -->
-
-    <div class="bloc">
-
-      <h2>
-        💰 Gestion financière
-      </h2>
-
-      <div class="livraison-intro">
-
-        <strong>
-          Gère ici tes factures, tes recettes et ton chiffre d'affaires.
-        </strong>
-
-        <p>
-          Les commandes, paiements, factures et recettes seront reliés
-          progressivement pour faciliter le suivi de ton activité.
-        </p>
-
-      </div>
-
-
-      <!-- STATISTIQUES FINANCIÈRES -->
-
-      <div class="stats">
-
-        <div class="stat-card">
-
-          <div
-            class="nombre"
-            id="chiffreAffairesMois"
-          >
-            0,00 €
-          </div>
-
-          <div class="label">
-            💶 CA du mois
-          </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-          <div
-            class="nombre"
-            id="chiffreAffairesAnnee"
-          >
-            0,00 €
-          </div>
-
-          <div class="label">
-            📊 CA de l'année
-          </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-          <div
-            class="nombre"
-            id="nombreFactures"
-          >
-            0
-          </div>
-
-          <div class="label">
-            🧾 Factures
-          </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-          <div
-            class="nombre"
-            id="nombreRecettes"
-          >
-            0
-          </div>
-
-          <div class="label">
-            📖 Recettes enregistrées
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- ACTIONS FINANCIÈRES -->
-
-      <div class="actions-formulaire">
-
-        <button
-          class="btn btn-enregistrer"
-          type="button"
-          id="boutonNouvelleFacture"
-        >
-          🧾 Nouvelle facture
-        </button>
-
-
-        <button
-          class="btn btn-modifier"
-          type="button"
-          id="boutonLivreRecettes"
-        >
-          📖 Livre des recettes
-        </button>
-
-
-        <button
-          class="btn btn-modifier"
-          type="button"
-          id="boutonStatistiquesFinancieres"
-        >
-          📊 Statistiques
-        </button>
-
-
-        <button
-          class="btn btn-modifier"
-          type="button"
-          id="boutonExportTiime"
-        >
-          📤 Export Tiime
-        </button>
-
-      </div>
-
-
-      <div
-        id="messageFinancier"
-        class="message"
-      ></div>
-
-
-      <!-- FACTURES -->
-
-      <div
-        style="
-          margin-top:25px;
-          padding-top:20px;
-          border-top:1px solid var(--bordure);
-        "
-      >
-
-        <h3>
-          🧾 Dernières factures
-        </h3>
-
-        <div id="listeFactures">
-
-          <p>
-            Les factures apparaîtront ici.
-          </p>
-
-        </div>
-
-      </div>
-
-
-      <!-- LIVRE DES RECETTES -->
-
-      <div
-        style="
-          margin-top:25px;
-          padding-top:20px;
-          border-top:1px solid var(--bordure);
-        "
-      >
-
-        <h3>
-          📖 Livre des recettes
-        </h3>
-
-        <div id="listeRecettes">
-
-          <p>
-            Les recettes encaissées apparaîtront ici.
-          </p>
-
-        </div>
-
-      </div>
-
-    </div>
-    <!-- =================================================
-         BIBLIOTHÈQUE
-    ================================================= -->
-
-    <div class="bloc">
-
-      <h2>
-        🖼️ Bibliothèque de designs
-      </h2>
-
-
-      <div class="bibliotheque-intro">
-
-        <strong>
-          Ta bibliothèque est indépendante des produits.
-        </strong>
-
-        <p>
-          Tu peux créer tes catégories, tes sous-catégories
-          et ajouter tes designs ici.
-        </p>
-
-        <p>
-          Un produit peut ensuite simplement autoriser
-          le client à choisir une image.
-        </p>
-
-      </div>
-
-
-      <div class="bibliotheque-etape">
-
-        <h3>
-          📁 1. Catégories de designs
-        </h3>
-
-
-        <div class="form-grid">
-
-          <div class="champ">
-
-            <label for="nouvelleCategorieBibliotheque">
-              Nom de la catégorie
-            </label>
-
-            <input
-              type="text"
-              id="nouvelleCategorieBibliotheque"
-              placeholder="Ex : Animaux"
-            >
-
-          </div>
-
-
-          <div class="champ">
-
-            <label for="emojiCategorieBibliotheque">
-              Emoji
-            </label>
-
-            <input
-              type="text"
-              id="emojiCategorieBibliotheque"
-              placeholder="🐾"
-            >
-
-          </div>
-
-        </div>
-
-
-        <div class="bibliotheque-actions">
-
-          <button
-            class="btn btn-enregistrer"
-            id="boutonAjouterCategorieBibliotheque"
-            type="button"
-          >
-            ➕ Ajouter
-          </button>
-
-        </div>
-
-
-        <div
-          class="liste-bibliotheque"
-          id="listeCategoriesBibliotheque"
-        ></div>
-
-      </div>
-
-
-      <div class="bibliotheque-etape">
-
-        <h3>
-          📂 2. Sous-catégories
-        </h3>
-
-
-        <div class="champ">
-
-          <label for="selectionCategorieBibliotheque">
-            Catégorie
-          </label>
-
-          <select id="selectionCategorieBibliotheque">
 
             <option value="">
               Choisir une catégorie
@@ -1875,65 +1244,27 @@
         </div>
 
 
-        <div class="form-grid">
-
-          <div class="champ">
-
-            <label for="nouvelleSousCategorieBibliotheque">
-              Nom de la sous-catégorie
-            </label>
-
-            <input
-              type="text"
-              id="nouvelleSousCategorieBibliotheque"
-              placeholder="Ex : Chats"
-            >
-
-          </div>
-
-        </div>
-
-
-        <div class="bibliotheque-actions">
-
-          <button
-            class="btn btn-enregistrer"
-            id="boutonAjouterSousCategorie"
-            type="button"
-          >
-            ➕ Ajouter
-          </button>
-
-        </div>
-
-
-        <div
-          class="liste-bibliotheque"
-          id="listeSousCategoriesBibliotheque"
-        ></div>
-
-      </div>
-
-
-      <div class="bibliotheque-etape">
-
-        <h3>
-          🎨 3. Designs
-        </h3>
-
-
         <div class="champ">
 
-          <label for="selectionSousCategorieBibliotheque">
-            Sous-catégorie
+          <label for="statut">
+            Statut
           </label>
 
-          <select
-            id="selectionSousCategorieBibliotheque"
-          >
+          <select id="statut">
 
-            <option value="">
-              Choisir une sous-catégorie
+            <option value="stock">
+              🟢 En stock
+            </option>
+
+            <option
+              value="precommande"
+              selected
+            >
+              🟠 Pré-commande
+            </option>
+
+            <option value="indisponible">
+              ⚫ Indisponible
             </option>
 
           </select>
@@ -1941,51 +1272,1076 @@
         </div>
 
 
-        <div class="champ">
+        <div class="champ full">
 
-          <label for="fichiersBibliotheque">
-            Images
+          <label for="description">
+            Description
           </label>
 
-          <input
-            type="file"
-            id="fichiersBibliotheque"
-            accept="image/jpeg,image/png,image/webp,image/gif"
-            multiple
-          >
+          <textarea
+            id="description"
+            placeholder="Décris ton produit..."
+          ></textarea>
 
         </div>
 
 
-        <div class="bibliotheque-actions">
+        <div class="champ full">
+
+          <label for="image_url">
+            URL de l'image
+          </label>
+
+          <input
+            type="url"
+            id="image_url"
+            placeholder="https://..."
+          >
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="stock-box"
+        id="blocStock"
+      >
+
+        <h3>📦 Gestion du stock</h3>
+
+        <div class="stock-info">
+          Cette quantité est utilisée uniquement
+          pour les produits marqués « En stock ».
+        </div>
+
+        <div class="stock-actions">
 
           <button
-            class="btn btn-enregistrer"
-            id="boutonAjouterDesigns"
             type="button"
+            class="stock-moins"
+            id="stockMoins"
           >
-            🖼️ Ajouter les designs
+            −
+          </button>
+
+          <input
+            type="number"
+            id="stockQuantite"
+            min="0"
+            step="1"
+            value="0"
+          >
+
+          <button
+            type="button"
+            class="stock-plus"
+            id="stockPlus"
+          >
+            +
           </button>
 
         </div>
 
-
         <div
-          class="designs-grille"
-          id="listeDesignsBibliotheque"
+          id="stockMessage"
+          class="stock-info"
         ></div>
 
       </div>
 
 
       <div
-        id="messageBibliotheque"
+        class="precommande-box"
+        id="blocPrecommande"
+      >
+
+        <h3>🟠 Délai de pré-commande</h3>
+
+        <p>
+          Par défaut, le délai annoncé sera de
+          <strong>2 à 5 semaines</strong>.
+        </p>
+
+        <div class="form-grid">
+
+          <div class="champ">
+
+            <label for="delaiMin">
+              Minimum (semaines)
+            </label>
+
+            <input
+              type="number"
+              id="delaiMin"
+              min="1"
+              step="1"
+              value="2"
+            >
+
+          </div>
+
+          <div class="champ">
+
+            <label for="delaiMax">
+              Maximum (semaines)
+            </label>
+
+            <input
+              type="number"
+              id="delaiMax"
+              min="1"
+              step="1"
+              value="5"
+            >
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="checkbox-ligne">
+
+        <input
+          type="checkbox"
+          id="visible"
+          checked
+        >
+
+        <label for="visible">
+          Produit visible sur la boutique
+        </label>
+
+      </div>
+
+
+      <div class="checkbox-ligne">
+
+        <input
+          type="checkbox"
+          id="nouveaute"
+        >
+
+        <label for="nouveaute">
+          ⭐ Afficher dans les nouveautés
+        </label>
+
+      </div>
+
+
+      <div class="personnalisation-admin">
+
+        <h3>
+          ✨ Personnalisation du produit
+        </h3>
+
+        <p class="personnalisation-aide">
+          Active uniquement les options nécessaires
+          à ce produit.
+        </p>
+
+
+        <div class="checkbox-ligne">
+          <input
+            type="checkbox"
+            id="personnalisation_active"
+          >
+
+          <label for="personnalisation_active">
+            ✨ Produit personnalisable
+          </label>
+        </div>
+
+
+        <div class="checkbox-ligne">
+          <input
+            type="checkbox"
+            id="choix_image_active"
+          >
+
+          <label for="choix_image_active">
+            🖼️ Le client peut choisir une image
+          </label>
+        </div>
+
+
+        <div class="checkbox-ligne">
+          <input
+            type="checkbox"
+            id="photo_client_active"
+          >
+
+          <label for="photo_client_active">
+            📸 Le client peut envoyer sa propre photo
+          </label>
+        </div>
+
+
+        <div class="checkbox-ligne">
+          <input
+            type="checkbox"
+            id="prenom_active"
+          >
+
+          <label for="prenom_active">
+            ✏️ Le client peut ajouter un prénom
+          </label>
+        </div>
+
+
+        <div class="checkbox-ligne">
+          <input
+            type="checkbox"
+            id="message_active"
+          >
+
+          <label for="message_active">
+            💬 Le client peut ajouter un message
+          </label>
+        </div>
+
+      </div>
+
+
+      <div class="actions-formulaire">
+
+        <button
+          type="submit"
+          class="btn btn-enregistrer"
+          id="boutonEnregistrer"
+        >
+          💾 Enregistrer le produit
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-annuler"
+          id="boutonAnnuler"
+        >
+          Annuler la modification
+        </button>
+
+      </div>
+
+
+      <div
+        id="messageFormulaire"
         class="message"
+      ></div>
+
+    </form>
+
+  </div>
+
+
+  <!-- LISTE PRODUITS -->
+
+  <div class="bloc">
+
+    <div class="barre-produits">
+
+      <h2>
+        🛍️ Mes produits
+      </h2>
+
+      <button
+        class="btn btn-modifier"
+        id="boutonActualiser"
+        type="button"
+      >
+        🔄 Actualiser
+      </button>
+
+    </div>
+
+    <div
+      class="produits-liste"
+      id="listeProduits"
+    ></div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     COMMANDES
+===================================================== -->
+
+<section
+  class="section-admin"
+  id="section-commandes"
+>
+
+  <div class="section-titre">
+
+    <h1>
+      📦 Commandes
+    </h1>
+
+    <p>
+      Consulte et gère les commandes de tes clients.
+    </p>
+
+  </div>
+
+
+  <div class="bloc">
+
+    <div class="barre-produits">
+
+      <h2>
+        📦 Commandes
+      </h2>
+
+      <button
+        class="btn btn-modifier"
+        id="boutonActualiserCommandes"
+        type="button"
+      >
+        🔄 Actualiser
+      </button>
+
+    </div>
+
+
+    <div style="margin-bottom:20px;">
+
+      <label for="filtrePaiement">
+        <strong>💳 Filtrer les paiements :</strong>
+      </label>
+
+      <select id="filtrePaiement">
+
+        <option value="tous">
+          Tous
+        </option>
+
+        <option value="en_attente">
+          ⏳ En attente
+        </option>
+
+        <option value="paye">
+          ✅ Payé
+        </option>
+
+        <option value="rembourse">
+          ↩️ Remboursé
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div id="listeCommandes">
+      <p>
+        Aucune commande chargée.
+      </p>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     LIVRAISON
+===================================================== -->
+
+<section
+  class="section-admin"
+  id="section-livraison"
+>
+
+  <div class="section-titre">
+
+    <h1>
+      🚚 Livraison
+    </h1>
+
+    <p>
+      Configure les modes de livraison disponibles.
+    </p>
+
+  </div>
+
+
+  <div class="bloc">
+
+    <div class="livraison-intro">
+
+      <strong>
+        Configure ici les modes de livraison
+        disponibles pour tes clients.
+      </strong>
+
+      <p>
+        Tu pourras ajouter plusieurs solutions,
+        leurs prix et leurs délais.
+      </p>
+
+    </div>
+
+
+    <div class="checkbox-ligne">
+
+      <input
+        type="checkbox"
+        id="livraisonActive"
+      >
+
+      <label for="livraisonActive">
+        🚚 Activer la livraison
+      </label>
+
+    </div>
+
+
+    <div class="checkbox-ligne">
+
+      <input
+        type="checkbox"
+        id="remiseMainPropre"
+      >
+
+      <label for="remiseMainPropre">
+        🤝 Autoriser la remise en main propre
+      </label>
+
+    </div>
+
+
+    <h3>
+      ➕ Ajouter un mode de livraison
+    </h3>
+
+
+    <div class="form-grid">
+
+      <div class="champ">
+
+        <label for="livraisonNom">
+          Nom
+        </label>
+
+        <input
+          type="text"
+          id="livraisonNom"
+          placeholder="Ex : Colissimo"
+        >
+
+      </div>
+
+
+      <div class="champ">
+
+        <label for="livraisonPrix">
+          Prix (€)
+        </label>
+
+        <input
+          type="number"
+          id="livraisonPrix"
+          step="0.01"
+          min="0"
+          value="0"
+        >
+
+      </div>
+
+
+      <div class="champ">
+
+        <label for="livraisonDelaiMin">
+          Délai minimum (jours)
+        </label>
+
+        <input
+          type="number"
+          id="livraisonDelaiMin"
+          min="0"
+          value="2"
+        >
+
+      </div>
+
+
+      <div class="champ">
+
+        <label for="livraisonDelaiMax">
+          Délai maximum (jours)
+        </label>
+
+        <input
+          type="number"
+          id="livraisonDelaiMax"
+          min="0"
+          value="5"
+        >
+
+      </div>
+
+
+      <div class="champ full">
+
+        <label for="livraisonDescription">
+          Description
+        </label>
+
+        <input
+          type="text"
+          id="livraisonDescription"
+          placeholder="Ex : Livraison à domicile avec suivi"
+        >
+
+      </div>
+
+
+      <div class="champ">
+
+        <label for="livraisonGratuite">
+          Livraison gratuite à partir de (€)
+        </label>
+
+        <input
+          type="number"
+          id="livraisonGratuite"
+          step="0.01"
+          min="0"
+          placeholder="Laisser vide si non utilisée"
+        >
+
+      </div>
+
+    </div>
+
+
+    <div class="actions-formulaire">
+
+      <button
+        class="btn btn-enregistrer"
+        id="boutonAjouterLivraison"
+        type="button"
+      >
+        ➕ Ajouter le mode de livraison
+      </button>
+
+    </div>
+
+
+    <div
+      id="messageLivraison"
+      class="message"
+    ></div>
+
+
+    <h3>
+      📋 Modes existants
+    </h3>
+
+    <div id="listeLivraisons"></div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     FINANCES
+===================================================== -->
+
+<section
+  class="section-admin"
+  id="section-finance"
+>
+
+  <div class="section-titre">
+
+    <h1>
+      💰 Gestion financière
+    </h1>
+
+    <p>
+      Factures, recettes et suivi du chiffre d'affaires.
+    </p>
+
+  </div>
+
+
+  <div class="bloc">
+
+    <div class="finance-intro">
+
+      <strong>
+        💕 Ton espace de gestion financière
+      </strong>
+
+      <p>
+        Cette partie sera reliée progressivement aux
+        commandes, aux factures et aux encaissements.
+      </p>
+
+      <p>
+        Le principe sera :
+        <strong>
+          Commande → Facture → Paiement → Recette → CA
+        </strong>
+      </p>
+
+    </div>
+
+
+    <div class="stats">
+
+      <div class="stat-card">
+
+        <div
+          class="nombre"
+          id="chiffreAffairesMois"
+        >
+          0,00 €
+        </div>
+
+        <div class="label">
+          💶 CA du mois
+        </div>
+
+      </div>
+
+
+      <div class="stat-card">
+
+        <div
+          class="nombre"
+          id="chiffreAffairesAnnee"
+        >
+          0,00 €
+        </div>
+
+        <div class="label">
+          📊 CA de l'année
+        </div>
+
+      </div>
+
+
+      <div class="stat-card">
+
+        <div
+          class="nombre"
+          id="nombreFactures"
+        >
+          0
+        </div>
+
+        <div class="label">
+          🧾 Factures
+        </div>
+
+      </div>
+
+
+      <div class="stat-card">
+
+        <div
+          class="nombre"
+          id="nombreRecettes"
+        >
+          0
+        </div>
+
+        <div class="label">
+          📖 Recettes enregistrées
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="finance-actions">
+
+      <button
+        class="btn btn-enregistrer"
+        type="button"
+        id="boutonNouvelleFacture"
+      >
+        🧾 Nouvelle facture
+      </button>
+
+
+      <button
+        class="btn btn-modifier"
+        type="button"
+        id="boutonLivreRecettes"
+      >
+        📖 Livre des recettes
+      </button>
+
+
+      <button
+        class="btn btn-modifier"
+        type="button"
+        id="boutonStatistiquesFinancieres"
+      >
+        📊 Statistiques
+      </button>
+
+
+      <button
+        class="btn btn-modifier"
+        type="button"
+        id="boutonExportTiime"
+      >
+        📤 Export Tiime
+      </button>
+
+    </div>
+
+
+    <div
+      id="messageFinancier"
+      class="message"
+    ></div>
+
+
+    <div class="finance-liste">
+
+      <h3>
+        🧾 Dernières factures
+      </h3>
+
+      <div
+        id="listeFactures"
+        class="finance-placeholder"
+      >
+        Les factures apparaîtront ici.
+      </div>
+
+    </div>
+
+
+    <div class="finance-liste">
+
+      <h3>
+        📖 Livre des recettes
+      </h3>
+
+      <div
+        id="listeRecettes"
+        class="finance-placeholder"
+      >
+        Les recettes encaissées apparaîtront ici.
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     BIBLIOTHÈQUE
+===================================================== -->
+
+<section
+  class="section-admin"
+  id="section-bibliotheque"
+>
+
+  <div class="section-titre">
+
+    <h1>
+      🎨 Bibliothèque de designs
+    </h1>
+
+    <p>
+      Organise tes catégories, sous-catégories et designs.
+    </p>
+
+  </div>
+
+
+  <div class="bloc">
+
+    <div class="bibliotheque-intro">
+
+      <strong>
+        Ta bibliothèque est indépendante des produits.
+      </strong>
+
+      <p>
+        Tu peux créer tes catégories, tes sous-catégories
+        et ajouter tes designs ici.
+      </p>
+
+      <p>
+        Un produit peut ensuite simplement autoriser
+        le client à choisir une image.
+      </p>
+
+    </div>
+
+
+    <div class="bibliotheque-etape">
+
+      <h3>
+        📁 1. Catégories de designs
+      </h3>
+
+
+      <div class="form-grid">
+
+        <div class="champ">
+
+          <label for="nouvelleCategorieBibliotheque">
+            Nom de la catégorie
+          </label>
+
+          <input
+            type="text"
+            id="nouvelleCategorieBibliotheque"
+            placeholder="Ex : Animaux"
+          >
+
+        </div>
+
+
+        <div class="champ">
+
+          <label for="emojiCategorieBibliotheque">
+            Emoji
+          </label>
+
+          <input
+            type="text"
+            id="emojiCategorieBibliotheque"
+            placeholder="🐾"
+          >
+
+        </div>
+
+      </div>
+
+
+      <div class="bibliotheque-actions">
+
+        <button
+          class="btn btn-enregistrer"
+          id="boutonAjouterCategorieBibliotheque"
+          type="button"
+        >
+          ➕ Ajouter
+        </button>
+
+      </div>
+
+
+      <div
+        class="liste-bibliotheque"
+        id="listeCategoriesBibliotheque"
       ></div>
 
     </div>
 
-  </main>
+
+    <div class="bibliotheque-etape">
+
+      <h3>
+        📂 2. Sous-catégories
+      </h3>
+
+
+      <div class="champ">
+
+        <label for="selectionCategorieBibliotheque">
+          Catégorie
+        </label>
+
+        <select id="selectionCategorieBibliotheque">
+
+          <option value="">
+            Choisir une catégorie
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="form-grid">
+
+        <div class="champ">
+
+          <label for="nouvelleSousCategorieBibliotheque">
+            Nom de la sous-catégorie
+          </label>
+
+          <input
+            type="text"
+            id="nouvelleSousCategorieBibliotheque"
+            placeholder="Ex : Chats"
+          >
+
+        </div>
+
+      </div>
+
+
+      <div class="bibliotheque-actions">
+
+        <button
+          class="btn btn-enregistrer"
+          id="boutonAjouterSousCategorie"
+          type="button"
+        >
+          ➕ Ajouter
+        </button>
+
+      </div>
+
+
+      <div
+        class="liste-bibliotheque"
+        id="listeSousCategoriesBibliotheque"
+      ></div>
+
+    </div>
+
+
+    <div class="bibliotheque-etape">
+
+      <h3>
+        🎨 3. Designs
+      </h3>
+
+
+      <div class="champ">
+
+        <label for="selectionSousCategorieBibliotheque">
+          Sous-catégorie
+        </label>
+
+        <select
+          id="selectionSousCategorieBibliotheque"
+        >
+
+          <option value="">
+            Choisir une sous-catégorie
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="champ">
+
+        <label for="fichiersBibliotheque">
+          Images
+        </label>
+
+        <input
+          type="file"
+          id="fichiersBibliotheque"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+          multiple
+        >
+
+      </div>
+
+
+      <div class="bibliotheque-actions">
+
+        <button
+          class="btn btn-enregistrer"
+          id="boutonAjouterDesigns"
+          type="button"
+        >
+          🖼️ Ajouter les designs
+        </button>
+
+      </div>
+
+
+      <div
+        class="designs-grille"
+        id="listeDesignsBibliotheque"
+      ></div>
+
+    </div>
+
+
+    <div
+      id="messageBibliotheque"
+      class="message"
+    ></div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     PAGES LÉGALES
+===================================================== -->
+
+<section
+  class="section-admin"
+  id="section-legal"
+>
+
+  <div class="section-titre">
+
+    <h1>
+      ⚖️ Informations légales
+    </h1>
+
+    <p>
+      Gère les pages légales affichées sur ton site.
+    </p>
+
+  </div>
+
+
+  <div class="bloc">
+
+    <div class="livraison-intro">
+
+      <p>
+        Gère ici les pages légales qui seront affichées
+        sur le site.
+      </p>
+
+      <p>
+        Tu peux modifier leur contenu directement depuis
+        ton administration.
+      </p>
+
+    </div>
+
+
+    <div id="listePagesLegales">
+
+      <p>
+        Chargement des pages légales...
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+</main>
+
+</div>
+</div>
 
 </section>
 
@@ -2007,11 +2363,11 @@ const client =
     URL_SUPABASE,
     CLE_SUPABASE,
     {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-        storageKey: "sublimek-admin-auth"
+      auth:{
+        persistSession:true,
+        autoRefreshToken:true,
+        detectSessionInUrl:true,
+        storageKey:"sublimek-admin-auth"
       }
     }
   );
@@ -2019,38 +2375,86 @@ const client =
 const ADMIN_ID =
   "90d83d43-9288-446f-ae88-7b2a893e13c8";
 
-let produitEnModification = null;
+let produitEnModification=null;
+
+
+/* =====================================================
+   NAVIGATION DU MENU
+===================================================== */
+
+document
+  .querySelectorAll(".menu-bouton")
+  .forEach(function(bouton){
+
+    bouton.addEventListener(
+      "click",
+      function(){
+
+        const section =
+          bouton.dataset.section;
+
+        document
+          .querySelectorAll(".menu-bouton")
+          .forEach(function(item){
+            item.classList.remove("actif");
+          });
+
+        bouton.classList.add("actif");
+
+        document
+          .querySelectorAll(".section-admin")
+          .forEach(function(item){
+            item.classList.remove("active");
+          });
+
+        const cible =
+          document.getElementById(
+            "section-" + section
+          );
+
+        if(cible){
+          cible.classList.add("active");
+        }
+
+        window.scrollTo({
+          top:0,
+          behavior:"smooth"
+        });
+
+      }
+    );
+
+  });
 
 
 /* =====================================================
    SESSION
 ===================================================== */
 
-async function verifierSession() {
+async function verifierSession(){
 
   const {
     data,
     error
-  } = await client.auth.getSession();
+  } =
+    await client.auth.getSession();
 
-  if (error) {
+  if(error){
 
     console.error(error);
-
     afficherConnexion();
-
     return;
 
   }
 
-  if (
+  if(
     data &&
     data.session
-  ) {
+  ){
 
     await afficherAdmin();
 
-  } else {
+  }else{
 
     afficherConnexion();
 
@@ -2059,42 +2463,36 @@ async function verifierSession() {
 }
 
 
-function afficherConnexion() {
+function afficherConnexion(){
 
   document
     .getElementById("pageConnexion")
-    .style.display = "flex";
+    .style.display="flex";
 
   document
     .getElementById("pageAdmin")
-    .style.display = "none";
+    .style.display="none";
 
 }
 
 
-async function afficherAdmin() {
+async function afficherAdmin(){
 
   document
     .getElementById("pageConnexion")
-    .style.display = "none";
+    .style.display="none";
 
   document
     .getElementById("pageAdmin")
-    .style.display = "block";
+    .style.display="block";
 
 
   await chargerCategories();
-
   await chargerProduits();
-
   await chargerBibliotheque();
-
   await chargerReglagesLivraison();
-
   await chargerLivraisons();
-
   await chargerCommandes();
-
   await chargerPagesLegales();
 
 }
@@ -2108,7 +2506,7 @@ document
   .getElementById("boutonConnexion")
   .addEventListener(
     "click",
-    async function() {
+    async function(){
 
       const email =
         document
@@ -2126,7 +2524,7 @@ document
           "resultatConnexion"
         );
 
-      resultat.textContent =
+      resultat.textContent=
         "Connexion en cours...";
 
 
@@ -2140,11 +2538,11 @@ document
         });
 
 
-      if (error) {
+      if(error){
 
         console.error(error);
 
-        resultat.textContent =
+        resultat.textContent=
           "❌ " + error.message;
 
         return;
@@ -2152,9 +2550,9 @@ document
       }
 
 
-      if (!data.session) {
+      if(!data.session){
 
-        resultat.textContent =
+        resultat.textContent=
           "❌ Session non créée.";
 
         return;
@@ -2162,7 +2560,7 @@ document
       }
 
 
-      resultat.textContent =
+      resultat.textContent=
         "✅ Connexion réussie";
 
       await afficherAdmin();
@@ -2179,7 +2577,7 @@ document
   .getElementById("boutonDeconnexion")
   .addEventListener(
     "click",
-    async function() {
+    async function(){
 
       await client.auth.signOut();
 
@@ -2190,22 +2588,23 @@ document
 
 
 /* =====================================================
-   VÉRIFIER ADMIN AVANT ÉCRITURE
+   VÉRIFIER ADMIN
 ===================================================== */
 
-async function verifierAdmin() {
+async function verifierAdmin(){
 
   const {
     data,
     error
-  } = await client.auth.getSession();
+  } =
+    await client.auth.getSession();
 
 
-  if (
+  if(
     error ||
     !data ||
     !data.session
-  ) {
+  ){
 
     alert(
       "⚠️ Ta session administrateur a expiré. Reconnecte-toi."
@@ -2218,9 +2617,9 @@ async function verifierAdmin() {
   }
 
 
-  if (
+  if(
     data.session.user.id !== ADMIN_ID
-  ) {
+  ){
 
     alert(
       "❌ Accès administrateur refusé."
@@ -2237,10 +2636,10 @@ async function verifierAdmin() {
 
 
 /* =====================================================
-   CATÉGORIES PRODUITS
+   CATÉGORIES
 ===================================================== */
 
-async function chargerCategories() {
+async function chargerCategories(){
 
   const {
     data,
@@ -2251,16 +2650,13 @@ async function chargerCategories() {
       .select("*")
       .order(
         "Ordre",
-        {
-          ascending: true
-        }
+        {ascending:true}
       );
 
 
-  if (error) {
+  if(error){
 
     console.error(error);
-
     return;
 
   }
@@ -2272,24 +2668,22 @@ async function chargerCategories() {
     );
 
 
-  select.innerHTML =
+  select.innerHTML=
     '<option value="">Choisir une catégorie</option>';
 
 
-  data.forEach(function(categorie) {
+  data.forEach(function(categorie){
 
     const option =
       document.createElement(
         "option"
       );
 
-    option.value =
-      categorie.id;
+    option.value=categorie.id;
 
-    option.textContent =
+    option.textContent=
       (
-        categorie.Emoji ||
-        "📁"
+        categorie.Emoji || "📁"
       ) +
       " " +
       categorie.Nom;
@@ -2309,17 +2703,13 @@ document
   .getElementById("formProduit")
   .addEventListener(
     "submit",
-    async function(event) {
+    async function(event){
 
       event.preventDefault();
 
 
-      if (
-        !(await verifierAdmin())
-      ) {
-
+      if(!(await verifierAdmin())){
         return;
-
       }
 
 
@@ -2362,7 +2752,7 @@ document
         );
 
 
-      const produit = {
+      const produit={
 
         nom:
           document.getElementById(
@@ -2372,8 +2762,7 @@ document
         description:
           document.getElementById(
             "description"
-          ).value.trim() ||
-          null,
+          ).value.trim() || null,
 
         prix:
           parseFloat(
@@ -2392,8 +2781,7 @@ document
         image_url:
           document.getElementById(
             "image_url"
-          ).value.trim() ||
-          null,
+          ).value.trim() || null,
 
         visible:
           document.getElementById(
@@ -2405,8 +2793,7 @@ document
             "nouveaute"
           ).checked,
 
-        stock_quantite:
-          stock,
+        stock_quantite:stock,
 
         stock_suivi:
           statut === "stock",
@@ -2445,9 +2832,7 @@ document
       };
 
 
-      if (
-        !produit.categorie_id
-      ) {
+      if(!produit.categorie_id){
 
         afficherMessageFormulaire(
           "❌ Choisis une catégorie.",
@@ -2459,16 +2844,14 @@ document
       }
 
 
-      try {
+      try{
 
         let resultat;
 
 
-        if (
-          produitEnModification
-        ) {
+        if(produitEnModification){
 
-          resultat =
+          resultat=
             await client
               .from("products")
               .update(produit)
@@ -2477,22 +2860,18 @@ document
                 produitEnModification
               );
 
-        } else {
+        }else{
 
-          resultat =
+          resultat=
             await client
               .from("products")
-              .insert([
-                produit
-              ]);
+              .insert([produit]);
 
         }
 
 
-        if (resultat.error) {
-
+        if(resultat.error){
           throw resultat.error;
-
         }
 
 
@@ -2508,7 +2887,7 @@ document
 
         await chargerProduits();
 
-      } catch (erreur) {
+      }catch(erreur){
 
         console.error(erreur);
 
@@ -2524,7 +2903,7 @@ document
 
 
 /* =====================================================
-   STATUT → STOCK / PRÉCOMMANDE
+   STATUT STOCK / PRÉCOMMANDE
 ===================================================== */
 
 document
@@ -2535,7 +2914,7 @@ document
   );
 
 
-function actualiserBlocStock() {
+function actualiserBlocStock(){
 
   const statut =
     document.getElementById(
@@ -2545,16 +2924,16 @@ function actualiserBlocStock() {
 
   document.getElementById(
     "blocStock"
-  ).style.display =
-    statut === "stock"
+  ).style.display=
+    statut==="stock"
       ? "block"
       : "none";
 
 
   document.getElementById(
     "blocPrecommande"
-  ).style.display =
-    statut === "precommande"
+  ).style.display=
+    statut==="precommande"
       ? "block"
       : "none";
 
@@ -2564,7 +2943,7 @@ function actualiserBlocStock() {
 }
 
 
-function afficherEtatStock() {
+function afficherEtatStock(){
 
   const stock =
     parseInt(
@@ -2580,14 +2959,14 @@ function afficherEtatStock() {
     );
 
 
-  if (stock <= 0) {
+  if(stock<=0){
 
-    message.innerHTML =
+    message.innerHTML=
       '<span class="stock-rupture">🔴 Rupture de stock</span>';
 
-  } else {
+  }else{
 
-    message.textContent =
+    message.textContent=
       "🟢 " +
       stock +
       " article(s) disponible(s)";
@@ -2605,27 +2984,21 @@ document
   );
 
 
-/* =====================================================
-   + / - STOCK
-===================================================== */
-
 document
   .getElementById("stockPlus")
   .addEventListener(
     "click",
-    function() {
+    function(){
 
       const input =
         document.getElementById(
           "stockQuantite"
         );
 
-      input.value =
+      input.value=
         (
-          parseInt(
-            input.value
-          ) || 0
-        ) + 1;
+          parseInt(input.value)||0
+        )+1;
 
       afficherEtatStock();
 
@@ -2637,21 +3010,17 @@ document
   .getElementById("stockMoins")
   .addEventListener(
     "click",
-    function() {
+    function(){
 
       const input =
         document.getElementById(
           "stockQuantite"
         );
 
-      input.value =
+      input.value=
         Math.max(
           0,
-          (
-            parseInt(
-              input.value
-            ) || 0
-          ) - 1
+          (parseInt(input.value)||0)-1
         );
 
       afficherEtatStock();
@@ -2661,10 +3030,10 @@ document
 
 
 /* =====================================================
-   CHARGER PRODUITS
+   PRODUITS
 ===================================================== */
 
-async function chargerProduits() {
+async function chargerProduits(){
 
   const {
     data,
@@ -2681,16 +3050,13 @@ async function chargerProduits() {
       `)
       .order(
         "ordre",
-        {
-          ascending: true
-        }
+        {ascending:true}
       );
 
 
-  if (error) {
+  if(error){
 
     console.error(error);
-
     return;
 
   }
@@ -2702,36 +3068,33 @@ async function chargerProduits() {
     );
 
 
-  liste.innerHTML = "";
+  liste.innerHTML="";
 
 
   document.getElementById(
     "nombreProduits"
-  ).textContent =
-    data.length;
+  ).textContent=data.length;
 
 
   document.getElementById(
     "nombreVisibles"
-  ).textContent =
+  ).textContent=
     data.filter(
-      p => p.visible
+      p=>p.visible
     ).length;
 
 
   document.getElementById(
     "nombrePrecommandes"
-  ).textContent =
+  ).textContent=
     data.filter(
-      p =>
-        p.statut ===
-        "precommande"
+      p=>p.statut==="precommande"
     ).length;
 
 
-  if (!data.length) {
+  if(!data.length){
 
-    liste.innerHTML =
+    liste.innerHTML=
       "<p>Aucun produit pour le moment.</p>";
 
     return;
@@ -2739,78 +3102,44 @@ async function chargerProduits() {
   }
 
 
-  data.forEach(
-    afficherProduit
-  );
+  data.forEach(afficherProduit);
 
 }
 
 
-/* =====================================================
-   AFFICHER PRODUIT
-===================================================== */
-
-function afficherProduit(
-  produit
-) {
+function afficherProduit(produit){
 
   const element =
-    document.createElement(
-      "div"
-    );
+    document.createElement("div");
+
+  element.className="produit";
 
 
-  element.className =
-    "produit";
+  let statutTexte="⚫ Indisponible";
+  let statutClasse="statut-indisponible";
 
 
-  let statutTexte =
-    "⚫ Indisponible";
+  if(produit.statut==="stock"){
 
-  let statutClasse =
-    "statut-indisponible";
+    if(Number(produit.stock_quantite)<=0){
 
+      statutTexte="🔴 Rupture de stock";
+      statutClasse="rupture";
 
-  if (
-    produit.statut ===
-    "stock"
-  ) {
+    }else{
 
-    if (
-      Number(
-        produit.stock_quantite
-      ) <= 0
-    ) {
-
-      statutTexte =
-        "🔴 Rupture de stock";
-
-      statutClasse =
-        "rupture";
-
-    } else {
-
-      statutTexte =
-        "🟢 En stock";
-
-      statutClasse =
-        "statut-stock";
+      statutTexte="🟢 En stock";
+      statutClasse="statut-stock";
 
     }
 
   }
 
 
-  if (
-    produit.statut ===
-    "precommande"
-  ) {
+  if(produit.statut==="precommande"){
 
-    statutTexte =
-      "🟠 Pré-commande";
-
-    statutClasse =
-      "statut-precommande";
+    statutTexte="🟠 Pré-commande";
+    statutClasse="statut-precommande";
 
   }
 
@@ -2818,74 +3147,55 @@ function afficherProduit(
   const categorie =
     produit.categories
       ? (
-          produit.categories.Emoji ||
-          "📁"
+          produit.categories.Emoji||"📁"
         ) +
         " " +
         (
-          produit.categories.Nom ||
-          ""
+          produit.categories.Nom||""
         )
       : "Sans catégorie";
 
 
   const prix =
-    produit.prix !== null &&
-    produit.prix !== undefined
-      ? Number(
-          produit.prix
-        ).toFixed(2) +
-        " €"
+    produit.prix!==null &&
+    produit.prix!==undefined
+      ? Number(produit.prix).toFixed(2)+" €"
       : "Prix non défini";
 
 
-  let stockTexte = "";
+  let stockTexte="";
 
 
-  if (
-    produit.statut ===
-    "stock"
-  ) {
+  if(produit.statut==="stock"){
 
-    stockTexte =
-      `
-        <p>
-          📦 Stock :
-          <strong>
-            ${Number(
-              produit.stock_quantite
-            )}
-          </strong>
-        </p>
-      `;
+    stockTexte=`
+      <p>
+        📦 Stock :
+        <strong>
+          ${Number(produit.stock_quantite)}
+        </strong>
+      </p>
+    `;
 
   }
 
 
-  let delaiTexte = "";
+  let delaiTexte="";
 
 
-  if (
-    produit.statut ===
-    "precommande"
-  ) {
+  if(produit.statut==="precommande"){
 
-    delaiTexte =
-      `
-        <p>
-          ⏱️ Délai :
-          <strong>
-            ${Number(
-              produit.delai_precommande_min || 2
-            )}
-            à
-            ${Number(
-              produit.delai_precommande_max || 5
-            )}
-            semaines
-          </strong>
-        </p>
-      `;
+    delaiTexte=`
+      <p>
+        ⏱️ Délai :
+        <strong>
+          ${Number(produit.delai_precommande_min||2)}
+          à
+          ${Number(produit.delai_precommande_max||5)}
+          semaines
+        </strong>
+      </p>
+    `;
 
   }
 
@@ -2896,20 +3206,16 @@ function afficherProduit(
       : "🙈 Masqué";
 
 
-  element.innerHTML = `
+  element.innerHTML=`
 
     <div class="produit-info">
 
       <h3>
-        ${echapperHTML(
-          produit.nom
-        )}
+        ${echapperHTML(produit.nom)}
       </h3>
 
       <p>
-        ${echapperHTML(
-          categorie
-        )}
+        ${echapperHTML(categorie)}
       </p>
 
       <p>
@@ -2966,12 +3272,8 @@ function afficherProduit(
 
 
   document
-    .getElementById(
-      "listeProduits"
-    )
-    .appendChild(
-      element
-    );
+    .getElementById("listeProduits")
+    .appendChild(element);
 
 }
 
@@ -2980,302 +3282,199 @@ function afficherProduit(
    MODIFIER PRODUIT
 ===================================================== */
 
-window.modifierProduit =
-  async function(id) {
+window.modifierProduit=
+async function(id){
 
-    const {
-      data,
-      error
-    } =
-      await client
-        .from("products")
-        .select("*")
-        .eq(
-          "id",
-          id
-        )
-        .single();
+  const {
+    data,
+    error
+  } =
+    await client
+      .from("products")
+      .select("*")
+      .eq("id",id)
+      .single();
 
 
-    if (error) {
+  if(error){
 
-      alert(
-        "❌ " +
-        error.message
-      );
+    alert("❌ "+error.message);
+    return;
 
-      return;
-
-    }
+  }
 
 
-    produitEnModification =
-      id;
+  produitEnModification=id;
 
 
-    document.getElementById(
-      "nom"
-    ).value =
-      data.nom || "";
+  document.getElementById("nom").value=
+    data.nom||"";
+
+  document.getElementById("description").value=
+    data.description||"";
+
+  document.getElementById("prix").value=
+    data.prix??"";
+
+  document.getElementById("categorie").value=
+    data.categorie_id||"";
+
+  document.getElementById("statut").value=
+    data.statut||"precommande";
+
+  document.getElementById("image_url").value=
+    data.image_url||"";
+
+  document.getElementById("visible").checked=
+    data.visible!==false;
+
+  document.getElementById("nouveaute").checked=
+    data.nouveaute===true;
+
+  document.getElementById("stockQuantite").value=
+    Number(data.stock_quantite||0);
+
+  document.getElementById("delaiMin").value=
+    Number(data.delai_precommande_min||2);
+
+  document.getElementById("delaiMax").value=
+    Number(data.delai_precommande_max||5);
+
+  document.getElementById("personnalisation_active").checked=
+    data.personnalisation_active===true;
+
+  document.getElementById("choix_image_active").checked=
+    data.choix_image_active===true;
+
+  document.getElementById("photo_client_active").checked=
+    data.photo_client_active===true;
+
+  document.getElementById("prenom_active").checked=
+    data.prenom_active===true;
+
+  document.getElementById("message_active").checked=
+    data.message_active===true;
 
 
-    document.getElementById(
-      "description"
-    ).value =
-      data.description || "";
+  document.getElementById(
+    "titreFormulaire"
+  ).textContent=
+    "✏️ Modifier le produit";
 
 
-    document.getElementById(
-      "prix"
-    ).value =
-      data.prix ?? "";
+  document.getElementById(
+    "boutonEnregistrer"
+  ).textContent=
+    "💾 Enregistrer les modifications";
 
 
-    document.getElementById(
-      "categorie"
-    ).value =
-      data.categorie_id || "";
+  document.getElementById(
+    "boutonAnnuler"
+  ).style.display=
+    "inline-block";
 
 
-    document.getElementById(
-      "statut"
-    ).value =
-      data.statut || "precommande";
+  actualiserBlocStock();
+  afficherEtatStock();
 
 
-    document.getElementById(
-      "image_url"
-    ).value =
-      data.image_url || "";
+  activerSection("boutique");
 
 
-    document.getElementById(
-      "visible"
-    ).checked =
-      data.visible !== false;
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
 
-
-    document.getElementById(
-      "nouveaute"
-    ).checked =
-      data.nouveaute === true;
-
-
-    document.getElementById(
-      "stockQuantite"
-    ).value =
-      Number(
-        data.stock_quantite || 0
-      );
-
-
-    document.getElementById(
-      "delaiMin"
-    ).value =
-      Number(
-        data.delai_precommande_min || 2
-      );
-
-
-    document.getElementById(
-      "delaiMax"
-    ).value =
-      Number(
-        data.delai_precommande_max || 5
-      );
-
-
-    document.getElementById(
-      "personnalisation_active"
-    ).checked =
-      data.personnalisation_active === true;
-
-
-    document.getElementById(
-      "choix_image_active"
-    ).checked =
-      data.choix_image_active === true;
-
-
-    document.getElementById(
-      "photo_client_active"
-    ).checked =
-      data.photo_client_active === true;
-
-
-    document.getElementById(
-      "prenom_active"
-    ).checked =
-      data.prenom_active === true;
-
-
-    document.getElementById(
-      "message_active"
-    ).checked =
-      data.message_active === true;
-
-
-    document.getElementById(
-      "titreFormulaire"
-    ).textContent =
-      "✏️ Modifier le produit";
-
-
-    document.getElementById(
-      "boutonEnregistrer"
-    ).textContent =
-      "💾 Enregistrer les modifications";
-
-
-    document.getElementById(
-      "boutonAnnuler"
-    ).style.display =
-      "inline-block";
-
-
-    actualiserBlocStock();
-
-    afficherEtatStock();
-
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-  };
+};
 
 
 /* =====================================================
    SUPPRIMER PRODUIT
 ===================================================== */
 
-window.supprimerProduit =
-  async function(id) {
+window.supprimerProduit=
+async function(id){
 
-    if (
-      !confirm(
-        "⚠️ Supprimer définitivement ce produit ?"
-      )
-    ) {
-
-      return;
-
-    }
+  if(!confirm(
+    "⚠️ Supprimer définitivement ce produit ?"
+  )){
+    return;
+  }
 
 
-    if (
-      !(await verifierAdmin())
-    ) {
-
-      return;
-
-    }
+  if(!(await verifierAdmin())){
+    return;
+  }
 
 
-    const {
-      error
-    } =
-      await client
-        .from("products")
-        .delete()
-        .eq(
-          "id",
-          id
-        );
+  const {
+    error
+  } =
+    await client
+      .from("products")
+      .delete()
+      .eq("id",id);
 
 
-    if (error) {
+  if(error){
 
-      alert(
-        "❌ " +
-        error.message
-      );
+    alert("❌ "+error.message);
+    return;
 
-      return;
-
-    }
+  }
 
 
-    await chargerProduits();
+  await chargerProduits();
 
-  };
+};
 
 
 /* =====================================================
-   RÉINITIALISER FORMULAIRE
+   RESET PRODUIT
 ===================================================== */
 
 document
-  .getElementById(
-    "boutonAnnuler"
-  )
+  .getElementById("boutonAnnuler")
   .addEventListener(
     "click",
     reinitialiserFormulaire
   );
 
 
-function reinitialiserFormulaire() {
+function reinitialiserFormulaire(){
 
-  produitEnModification =
-    null;
-
+  produitEnModification=null;
 
   document
-    .getElementById(
-      "formProduit"
-    )
+    .getElementById("formProduit")
     .reset();
 
-
-  document.getElementById(
-    "statut"
-  ).value =
+  document.getElementById("statut").value=
     "precommande";
 
+  document.getElementById("visible").checked=true;
 
-  document.getElementById(
-    "visible"
-  ).checked =
-    true;
+  document.getElementById("stockQuantite").value=0;
 
+  document.getElementById("delaiMin").value=2;
 
-  document.getElementById(
-    "stockQuantite"
-  ).value =
-    0;
-
-
-  document.getElementById(
-    "delaiMin"
-  ).value =
-    2;
-
-
-  document.getElementById(
-    "delaiMax"
-  ).value =
-    5;
-
+  document.getElementById("delaiMax").value=5;
 
   document.getElementById(
     "titreFormulaire"
-  ).textContent =
+  ).textContent=
     "➕ Ajouter un produit";
-
 
   document.getElementById(
     "boutonEnregistrer"
-  ).textContent =
+  ).textContent=
     "💾 Enregistrer le produit";
-
 
   document.getElementById(
     "boutonAnnuler"
-  ).style.display =
+  ).style.display=
     "none";
-
 
   actualiserBlocStock();
 
@@ -3289,34 +3488,25 @@ function reinitialiserFormulaire() {
 function afficherMessageFormulaire(
   texte,
   erreur
-) {
+){
 
   const element =
     document.getElementById(
       "messageFormulaire"
     );
 
+  element.textContent=texte;
 
-  element.textContent =
-    texte;
-
-
-  element.className =
+  element.className=
     erreur
       ? "message message-erreur"
       : "message message-succes";
 
-
-  element.style.display =
-    "block";
-
+  element.style.display="block";
 
   setTimeout(
-    function() {
-
-      element.style.display =
-        "none";
-
+    function(){
+      element.style.display="none";
     },
     4000
   );
@@ -3328,7 +3518,7 @@ function afficherMessageFormulaire(
    LIVRAISON — RÉGLAGES
 ===================================================== */
 
-async function chargerReglagesLivraison() {
+async function chargerReglagesLivraison(){
 
   const {
     data,
@@ -3341,40 +3531,32 @@ async function chargerReglagesLivraison() {
       .maybeSingle();
 
 
-  if (error) {
-
+  if(error){
     console.error(error);
-
     return;
-
   }
 
-
-  if (!data) {
-
+  if(!data){
     return;
-
   }
 
 
   document.getElementById(
     "livraisonActive"
-  ).checked =
-    data.livraison_active === true;
+  ).checked=
+    data.livraison_active===true;
 
 
   document.getElementById(
     "remiseMainPropre"
-  ).checked =
-    data.remise_main_propre_active === true;
+  ).checked=
+    data.remise_main_propre_active===true;
 
 }
 
 
 document
-  .getElementById(
-    "livraisonActive"
-  )
+  .getElementById("livraisonActive")
   .addEventListener(
     "change",
     sauvegarderReglagesLivraison
@@ -3382,23 +3564,17 @@ document
 
 
 document
-  .getElementById(
-    "remiseMainPropre"
-  )
+  .getElementById("remiseMainPropre")
   .addEventListener(
     "change",
     sauvegarderReglagesLivraison
   );
 
 
-async function sauvegarderReglagesLivraison() {
+async function sauvegarderReglagesLivraison(){
 
-  if (
-    !(await verifierAdmin())
-  ) {
-
+  if(!(await verifierAdmin())){
     return;
-
   }
 
 
@@ -3412,10 +3588,8 @@ async function sauvegarderReglagesLivraison() {
       .maybeSingle();
 
 
-  if (!data) {
-
+  if(!data){
     return;
-
   }
 
 
@@ -3437,29 +3611,21 @@ async function sauvegarderReglagesLivraison() {
           ).checked
 
       })
-      .eq(
-        "id",
-        data.id
-      );
+      .eq("id",data.id);
 
 
-  if (error) {
-
-    alert(
-      "❌ " +
-      error.message
-    );
-
+  if(error){
+    alert("❌ "+error.message);
   }
 
 }
 
 
 /* =====================================================
-   LIVRAISON — LISTE
+   LIVRAISONS
 ===================================================== */
 
-async function chargerLivraisons() {
+async function chargerLivraisons(){
 
   const {
     data,
@@ -3470,18 +3636,13 @@ async function chargerLivraisons() {
       .select("*")
       .order(
         "ordre",
-        {
-          ascending: true
-        }
+        {ascending:true}
       );
 
 
-  if (error) {
-
+  if(error){
     console.error(error);
-
     return;
-
   }
 
 
@@ -3490,13 +3651,12 @@ async function chargerLivraisons() {
       "listeLivraisons"
     );
 
+  liste.innerHTML="";
 
-  liste.innerHTML = "";
 
+  if(!data.length){
 
-  if (!data.length) {
-
-    liste.innerHTML =
+    liste.innerHTML=
       "<p>Aucun mode de livraison ajouté.</p>";
 
     return;
@@ -3504,36 +3664,26 @@ async function chargerLivraisons() {
   }
 
 
-  data.forEach(
-    afficherLivraison
-  );
+  data.forEach(afficherLivraison);
 
 }
 
 
-function afficherLivraison(
-  livraison
-) {
+function afficherLivraison(livraison){
 
   const element =
-    document.createElement(
-      "div"
-    );
+    document.createElement("div");
 
-
-  element.className =
-    "methode-livraison";
+  element.className="methode-livraison";
 
 
   const prix =
-    Number(
-      livraison.prix || 0
-    ).toFixed(2);
+    Number(livraison.prix||0).toFixed(2);
 
 
   const gratuit =
-    livraison.gratuite_a_partir_de !== null &&
-    livraison.gratuite_a_partir_de !== undefined
+    livraison.gratuite_a_partir_de!==null &&
+    livraison.gratuite_a_partir_de!==undefined
       ? `
         <p>
           🎁 Gratuit à partir de
@@ -3545,14 +3695,12 @@ function afficherLivraison(
       : "";
 
 
-  element.innerHTML = `
+  element.innerHTML=`
 
     <div>
 
       <strong>
-        ${echapperHTML(
-          livraison.nom
-        )}
+        ${echapperHTML(livraison.nom)}
       </strong>
 
       <p>
@@ -3561,9 +3709,9 @@ function afficherLivraison(
 
       <p>
         ⏱️
-        ${livraison.delai_min ?? 0}
+        ${livraison.delai_min??0}
         à
-        ${livraison.delai_max ?? 0}
+        ${livraison.delai_max??0}
         jours
       </p>
 
@@ -3587,11 +3735,12 @@ function afficherLivraison(
 
     </div>
 
+
     <div class="methode-actions">
 
       <button
         class="btn btn-modifier"
-        onclick="basculerLivraison('${livraison.id}', ${livraison.actif})"
+        onclick="basculerLivraison('${livraison.id}',${livraison.actif})"
       >
         ${
           livraison.actif
@@ -3613,12 +3762,8 @@ function afficherLivraison(
 
 
   document
-    .getElementById(
-      "listeLivraisons"
-    )
-    .appendChild(
-      element
-    );
+    .getElementById("listeLivraisons")
+    .appendChild(element);
 
 }
 
@@ -3628,32 +3773,24 @@ function afficherLivraison(
 ===================================================== */
 
 document
-  .getElementById(
-    "boutonAjouterLivraison"
-  )
+  .getElementById("boutonAjouterLivraison")
   .addEventListener(
     "click",
-    async function() {
+    async function(){
 
-      if (
-        !(await verifierAdmin())
-      ) {
-
+      if(!(await verifierAdmin())){
         return;
-
       }
 
 
       const nom =
         document
-          .getElementById(
-            "livraisonNom"
-          )
+          .getElementById("livraisonNom")
           .value
           .trim();
 
 
-      if (!nom) {
+      if(!nom){
 
         afficherMessageLivraison(
           "❌ Donne un nom au mode de livraison.",
@@ -3670,7 +3807,7 @@ document
           document.getElementById(
             "livraisonPrix"
           ).value
-        ) || 0;
+        )||0;
 
 
       const delaiMin =
@@ -3678,7 +3815,7 @@ document
           document.getElementById(
             "livraisonDelaiMin"
           ).value
-        ) || 0;
+        )||0;
 
 
       const delaiMax =
@@ -3688,7 +3825,7 @@ document
             document.getElementById(
               "livraisonDelaiMax"
             ).value
-          ) || delaiMin
+          )||delaiMin
         );
 
 
@@ -3699,11 +3836,9 @@ document
 
 
       const gratuite =
-        gratuitValue === ""
+        gratuitValue===""
           ? null
-          : parseFloat(
-              gratuitValue
-            );
+          : parseFloat(gratuitValue);
 
 
       const {
@@ -3718,31 +3853,26 @@ document
             description:
               document.getElementById(
                 "livraisonDescription"
-              ).value.trim() ||
-              null,
+              ).value.trim()||null,
 
             prix,
 
             gratuite_a_partir_de:
               gratuite,
 
-            delai_min:
-              delaiMin,
+            delai_min:delaiMin,
 
-            delai_max:
-              delaiMax,
+            delai_max:delaiMax,
 
-            actif:
-              true
+            actif:true
 
           }]);
 
 
-      if (error) {
+      if(error){
 
         afficherMessageLivraison(
-          "❌ " +
-          error.message,
+          "❌ "+error.message,
           true
         );
 
@@ -3753,22 +3883,19 @@ document
 
       document.getElementById(
         "livraisonNom"
-      ).value = "";
-
+      ).value="";
 
       document.getElementById(
         "livraisonDescription"
-      ).value = "";
-
+      ).value="";
 
       document.getElementById(
         "livraisonPrix"
-      ).value = "0";
-
+      ).value="0";
 
       document.getElementById(
         "livraisonGratuite"
-      ).value = "";
+      ).value="";
 
 
       await chargerLivraisons();
@@ -3783,143 +3910,97 @@ document
   );
 
 
-/* =====================================================
-   ACTIVER / DÉSACTIVER LIVRAISON
-===================================================== */
+window.basculerLivraison=
+async function(id,actif){
 
-window.basculerLivraison =
-  async function(
-    id,
-    actif
-  ) {
-
-    if (
-      !(await verifierAdmin())
-    ) {
-
-      return;
-
-    }
+  if(!(await verifierAdmin())){
+    return;
+  }
 
 
-    const {
-      error
-    } =
-      await client
-        .from("shipping_methods")
-        .update({
-          actif: !actif
-        })
-        .eq(
-          "id",
-          id
-        );
+  const {
+    error
+  } =
+    await client
+      .from("shipping_methods")
+      .update({
+        actif:!actif
+      })
+      .eq("id",id);
 
 
-    if (error) {
+  if(error){
 
-      alert(
-        "❌ " +
-        error.message
-      );
+    alert("❌ "+error.message);
+    return;
 
-      return;
-
-    }
+  }
 
 
-    await chargerLivraisons();
+  await chargerLivraisons();
 
-  };
-
-
-/* =====================================================
-   SUPPRIMER LIVRAISON
-===================================================== */
-
-window.supprimerLivraison =
-  async function(id) {
-
-    if (
-      !confirm(
-        "⚠️ Supprimer ce mode de livraison ?"
-      )
-    ) {
-
-      return;
-
-    }
+};
 
 
-    if (
-      !(await verifierAdmin())
-    ) {
+window.supprimerLivraison=
+async function(id){
 
-      return;
-
-    }
-
-
-    const {
-      error
-    } =
-      await client
-        .from("shipping_methods")
-        .delete()
-        .eq(
-          "id",
-          id
-        );
+  if(!confirm(
+    "⚠️ Supprimer ce mode de livraison ?"
+  )){
+    return;
+  }
 
 
-    if (error) {
-
-      alert(
-        "❌ " +
-        error.message
-      );
-
-      return;
-
-    }
+  if(!(await verifierAdmin())){
+    return;
+  }
 
 
-    await chargerLivraisons();
+  const {
+    error
+  } =
+    await client
+      .from("shipping_methods")
+      .delete()
+      .eq("id",id);
 
-  };
+
+  if(error){
+
+    alert("❌ "+error.message);
+    return;
+
+  }
+
+
+  await chargerLivraisons();
+
+};
 
 
 function afficherMessageLivraison(
   texte,
   erreur
-) {
+){
 
   const element =
     document.getElementById(
       "messageLivraison"
     );
 
+  element.textContent=texte;
 
-  element.textContent =
-    texte;
-
-
-  element.className =
+  element.className=
     erreur
       ? "message message-erreur"
       : "message message-succes";
 
-
-  element.style.display =
-    "block";
-
+  element.style.display="block";
 
   setTimeout(
-    function() {
-
-      element.style.display =
-        "none";
-
+    function(){
+      element.style.display="none";
     },
     4000
   );
@@ -3928,10 +4009,10 @@ function afficherMessageLivraison(
 
 
 /* =====================================================
-   INFORMATIONS LÉGALES
+   PAGES LÉGALES
 ===================================================== */
 
-async function chargerPagesLegales() {
+async function chargerPagesLegales(){
 
   const conteneur =
     document.getElementById(
@@ -3939,14 +4020,12 @@ async function chargerPagesLegales() {
     );
 
 
-  if (!conteneur) {
-
+  if(!conteneur){
     return;
-
   }
 
 
-  conteneur.innerHTML =
+  conteneur.innerHTML=
     "<p>Chargement des pages légales...</p>";
 
 
@@ -3959,17 +4038,15 @@ async function chargerPagesLegales() {
       .select("*")
       .order(
         "ordre",
-        {
-          ascending: true
-        }
+        {ascending:true}
       );
 
 
-  if (error) {
+  if(error){
 
     console.error(error);
 
-    conteneur.innerHTML =
+    conteneur.innerHTML=
       "<div class='message message-erreur' style='display:block;'>" +
       "❌ Impossible de charger les pages légales : " +
       echapperHTML(error.message) +
@@ -3980,12 +4057,9 @@ async function chargerPagesLegales() {
   }
 
 
-  if (
-    !data ||
-    data.length === 0
-  ) {
+  if(!data||data.length===0){
 
-    conteneur.innerHTML =
+    conteneur.innerHTML=
       "<p>Aucune page légale n'est disponible.</p>";
 
     return;
@@ -3993,44 +4067,29 @@ async function chargerPagesLegales() {
   }
 
 
-  conteneur.innerHTML = "";
+  conteneur.innerHTML="";
 
-
-  data.forEach(
-    afficherPageLegale
-  );
+  data.forEach(afficherPageLegale);
 
 }
 
 
-/* =====================================================
-   AFFICHER PAGE LÉGALE
-===================================================== */
-
-function afficherPageLegale(
-  page
-) {
+function afficherPageLegale(page){
 
   const element =
-    document.createElement(
-      "div"
-    );
+    document.createElement("div");
+
+  element.className="legal-page";
 
 
-  element.className =
-    "legal-page";
-
-
-  element.innerHTML = `
+  element.innerHTML=`
 
     <div class="legal-page-header">
 
       <div class="legal-page-titre">
 
         ⚖️
-        ${echapperHTML(
-          page.titre
-        )}
+        ${echapperHTML(page.titre)}
 
       </div>
 
@@ -4050,9 +4109,7 @@ function afficherPageLegale(
       page.contenu
         ? `
           <div class="legal-page-contenu">
-            ${echapperHTML(
-              page.contenu
-            )}
+            ${echapperHTML(page.contenu)}
           </div>
         `
         : `
@@ -4066,149 +4123,117 @@ function afficherPageLegale(
 
 
   document
-    .getElementById(
-      "listePagesLegales"
-    )
-    .appendChild(
-      element
-    );
+    .getElementById("listePagesLegales")
+    .appendChild(element);
 
 }
 
 
-/* =====================================================
-   MODIFIER PAGE LÉGALE
-===================================================== */
+window.modifierPageLegale=
+async function(id){
 
-window.modifierPageLegale =
-  async function(id) {
-
-    if (
-      !(await verifierAdmin())
-    ) {
-
-      return;
-
-    }
+  if(!(await verifierAdmin())){
+    return;
+  }
 
 
-    const {
-      data,
-      error
-    } =
-      await client
-        .from("legal_pages")
-        .select("*")
-        .eq(
-          "id",
-          id
-        )
-        .single();
+  const {
+    data,
+    error
+  } =
+    await client
+      .from("legal_pages")
+      .select("*")
+      .eq("id",id)
+      .single();
 
 
-    if (error) {
+  if(error){
 
-      console.error(error);
-
-      alert(
-        "❌ Impossible de charger cette page : " +
-        error.message
-      );
-
-      return;
-
-    }
-
-
-    const nouveauTitre =
-      prompt(
-        "Titre de la page :",
-        data.titre || ""
-      );
-
-
-    if (
-      nouveauTitre === null
-    ) {
-
-      return;
-
-    }
-
-
-    const nouveauContenu =
-      prompt(
-        "Contenu de la page :",
-        data.contenu || ""
-      );
-
-
-    if (
-      nouveauContenu === null
-    ) {
-
-      return;
-
-    }
-
-
-    const {
-      error: erreurModification
-    } =
-      await client
-        .from("legal_pages")
-        .update({
-
-          titre:
-            nouveauTitre.trim(),
-
-          contenu:
-            nouveauContenu.trim()
-
-        })
-        .eq(
-          "id",
-          id
-        );
-
-
-    if (erreurModification) {
-
-      console.error(
-        erreurModification
-      );
-
-      alert(
-        "❌ Impossible de modifier la page : " +
-        erreurModification.message
-      );
-
-      return;
-
-    }
-
+    console.error(error);
 
     alert(
-      "✅ Page légale modifiée !"
+      "❌ Impossible de charger cette page : "+
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  const nouveauTitre =
+    prompt(
+      "Titre de la page :",
+      data.titre||""
     );
 
 
-    await chargerPagesLegales();
+  if(nouveauTitre===null){
+    return;
+  }
 
-  };
+
+  const nouveauContenu =
+    prompt(
+      "Contenu de la page :",
+      data.contenu||""
+    );
+
+
+  if(nouveauContenu===null){
+    return;
+  }
+
+
+  const {
+    error:erreurModification
+  } =
+    await client
+      .from("legal_pages")
+      .update({
+
+        titre:
+          nouveauTitre.trim(),
+
+        contenu:
+          nouveauContenu.trim()
+
+      })
+      .eq("id",id);
+
+
+  if(erreurModification){
+
+    console.error(erreurModification);
+
+    alert(
+      "❌ Impossible de modifier la page : "+
+      erreurModification.message
+    );
+
+    return;
+
+  }
+
+
+  alert("✅ Page légale modifiée !");
+
+  await chargerPagesLegales();
+
+};
 
 
 /* =====================================================
    COMMANDES
 ===================================================== */
 
-async function chargerCommandes() {
+async function chargerCommandes(){
 
   const filtrePaiement =
     document.getElementById(
       "filtrePaiement"
-    )?.value ||
-    "tous";
+    )?.value||"tous";
 
 
   let requete =
@@ -4217,11 +4242,9 @@ async function chargerCommandes() {
       .select("*");
 
 
-  if (
-    filtrePaiement !== "tous"
-  ) {
+  if(filtrePaiement!=="tous"){
 
-    requete =
+    requete=
       requete.eq(
         "payment_status",
         filtrePaiement
@@ -4237,16 +4260,13 @@ async function chargerCommandes() {
     await requete
       .order(
         "created_at",
-        {
-          ascending: false
-        }
+        {ascending:false}
       );
 
 
-  if (error) {
+  if(error){
 
     console.error(error);
-
     return;
 
   }
@@ -4254,8 +4274,7 @@ async function chargerCommandes() {
 
   document.getElementById(
     "nombreCommandes"
-  ).textContent =
-    data.length;
+  ).textContent=data.length;
 
 
   const liste =
@@ -4263,13 +4282,12 @@ async function chargerCommandes() {
       "listeCommandes"
     );
 
+  liste.innerHTML="";
 
-  liste.innerHTML = "";
 
+  if(!data.length){
 
-  if (!data.length) {
-
-    liste.innerHTML =
+    liste.innerHTML=
       "<p>Aucune commande pour le moment.</p>";
 
     return;
@@ -4277,39 +4295,25 @@ async function chargerCommandes() {
   }
 
 
-  for (
-    const commande of data
-  ) {
+  for(const commande of data){
 
-    await afficherCommande(
-      commande
-    );
+    await afficherCommande(commande);
 
   }
 
 }
 
 
-/* =====================================================
-   AFFICHER COMMANDE
-===================================================== */
-
-async function afficherCommande(
-  commande
-) {
+async function afficherCommande(commande){
 
   const element =
-    document.createElement(
-      "div"
-    );
+    document.createElement("div");
 
-
-  element.className =
-    "commande";
+  element.className="commande";
 
 
   const {
-    data: articles
+    data:articles
   } =
     await client
       .from("order_items")
@@ -4324,21 +4328,17 @@ async function afficherCommande(
     commande.created_at
       ? new Date(
           commande.created_at
-        ).toLocaleString(
-          "fr-FR"
-        )
+        ).toLocaleString("fr-FR")
       : "";
 
 
-  let articlesHTML = "";
+  let articlesHTML="";
 
 
-  (
-    articles || []
-  ).forEach(
-    function(article) {
+  (articles||[]).forEach(
+    function(article){
 
-      articlesHTML += `
+      articlesHTML+=`
 
         <div class="article-commande">
 
@@ -4349,14 +4349,12 @@ async function afficherCommande(
           </strong>
 
           ×
-          ${Number(
-            article.quantite
-          )}
+          ${Number(article.quantite)}
 
           —
 
           ${Number(
-            article.total || 0
+            article.total||0
           ).toFixed(2)}
           €
 
@@ -4384,29 +4382,22 @@ async function afficherCommande(
   );
 
 
-  element.innerHTML = `
+  element.innerHTML=`
 
     <div class="commande-header">
 
       <div class="commande-numero">
-
         ${echapperHTML(
-          commande.numero_commande ||
+          commande.numero_commande||
           commande.id
         )}
-
       </div>
 
-
       <span class="statut-commande">
-
         ${echapperHTML(
-          commande.statut ||
-          "nouvelle"
+          commande.statut||"nouvelle"
         )}
-
       </span>
-
 
       <select
         class="statut-paiement"
@@ -4415,21 +4406,21 @@ async function afficherCommande(
 
         <option
           value="en_attente"
-          ${commande.payment_status === "en_attente" ? "selected" : ""}
+          ${commande.payment_status==="en_attente"?"selected":""}
         >
           ⏳ En attente
         </option>
 
         <option
           value="paye"
-          ${commande.payment_status === "paye" ? "selected" : ""}
+          ${commande.payment_status==="paye"?"selected":""}
         >
           ✅ Payé
         </option>
 
         <option
           value="rembourse"
-          ${commande.payment_status === "rembourse" ? "selected" : ""}
+          ${commande.payment_status==="rembourse"?"selected":""}
         >
           ↩️ Remboursé
         </option>
@@ -4453,11 +4444,9 @@ async function afficherCommande(
         </strong>
       </p>
 
-
       <p>
         📅 ${date}
       </p>
-
 
       <p>
         📧 ${echapperHTML(
@@ -4465,49 +4454,42 @@ async function afficherCommande(
         )}
       </p>
 
-
       <p>
         📞 ${echapperHTML(
-          commande.client_telephone ||
-          ""
+          commande.client_telephone||""
         )}
       </p>
 
-
       <p>
         🚚 ${echapperHTML(
-          commande.livraison_nom ||
+          commande.livraison_nom||
           "Non renseignée"
         )}
       </p>
 
-
       <p>
         💶 Livraison :
         ${Number(
-          commande.livraison_prix || 0
+          commande.livraison_prix||0
         ).toFixed(2)} €
       </p>
-
 
       <p>
         🧾 Sous-total :
         ${Number(
-          commande.sous_total || 0
+          commande.sous_total||0
         ).toFixed(2)} €
       </p>
-
 
       <p>
         💰
         <strong>
           Total :
           ${Number(
-            commande.total || 0
+            commande.total||0
           ).toFixed(2)} €
         </strong>
       </p>
-
 
       ${
         commande.numero_suivi
@@ -4528,28 +4510,28 @@ async function afficherCommande(
 
 
     ${
-      commande.adresse ||
-      commande.code_postal ||
+      commande.adresse||
+      commande.code_postal||
       commande.ville
         ? `
           <p>
             📍
             ${echapperHTML(
-              commande.adresse || ""
+              commande.adresse||""
             )}
             ${echapperHTML(
-              commande.complement_adresse || ""
-            )}
-            <br>
-            ${echapperHTML(
-              commande.code_postal || ""
-            )}
-            ${echapperHTML(
-              commande.ville || ""
+              commande.complement_adresse||""
             )}
             <br>
             ${echapperHTML(
-              commande.pays || "France"
+              commande.code_postal||""
+            )}
+            ${echapperHTML(
+              commande.ville||""
+            )}
+            <br>
+            ${echapperHTML(
+              commande.pays||"France"
             )}
           </p>
         `
@@ -4564,7 +4546,7 @@ async function afficherCommande(
       </strong>
 
       ${
-        articlesHTML ||
+        articlesHTML||
         "<p>Aucun article enregistré.</p>"
       }
 
@@ -4574,19 +4556,11 @@ async function afficherCommande(
 
 
   document
-    .getElementById(
-      "listeCommandes"
-    )
-    .appendChild(
-      element
-    );
+    .getElementById("listeCommandes")
+    .appendChild(element);
 
 }
 
-
-/* =====================================================
-   ACTUALISER COMMANDES
-===================================================== */
 
 document
   .getElementById(
@@ -4614,16 +4588,14 @@ document
   )
   .addEventListener(
     "change",
-    async function(event) {
+    async function(event){
 
-      if (
+      if(
         !event.target.classList.contains(
           "statut-paiement"
         )
-      ) {
-
+      ){
         return;
-
       }
 
 
@@ -4635,12 +4607,8 @@ document
         event.target.value;
 
 
-      if (
-        !(await verifierAdmin())
-      ) {
-
+      if(!(await verifierAdmin())){
         return;
-
       }
 
 
@@ -4653,18 +4621,15 @@ document
             payment_status:
               nouveauStatut
           })
-          .eq(
-            "id",
-            orderId
-          );
+          .eq("id",orderId);
 
 
-      if (error) {
+      if(error){
 
         console.error(error);
 
         alert(
-          "❌ Impossible de modifier le paiement : " +
+          "❌ Impossible de modifier le paiement : "+
           error.message
         );
 
@@ -4683,7 +4648,7 @@ document
    BIBLIOTHÈQUE
 ===================================================== */
 
-async function chargerBibliotheque() {
+async function chargerBibliotheque(){
 
   await chargerCategoriesBibliotheque();
 
@@ -4694,11 +4659,7 @@ async function chargerBibliotheque() {
 }
 
 
-/* =====================================================
-   CATÉGORIES BIBLIOTHÈQUE
-===================================================== */
-
-async function chargerCategoriesBibliotheque() {
+async function chargerCategoriesBibliotheque(){
 
   const {
     data,
@@ -4709,16 +4670,13 @@ async function chargerCategoriesBibliotheque() {
       .select("*")
       .order(
         "ordre",
-        {
-          ascending: true
-        }
+        {ascending:true}
       );
 
 
-  if (error) {
+  if(error){
 
     console.error(error);
-
     return;
 
   }
@@ -4730,35 +4688,27 @@ async function chargerCategoriesBibliotheque() {
     );
 
 
-  select.innerHTML =
+  select.innerHTML=
     '<option value="">Choisir une catégorie</option>';
 
 
-  data.forEach(
-    function(categorie) {
+  data.forEach(function(categorie){
 
-      const option =
-        document.createElement(
-          "option"
-        );
+    const option =
+      document.createElement("option");
 
-      option.value =
-        categorie.id;
+    option.value=categorie.id;
 
-      option.textContent =
-        (
-          categorie.emoji ||
-          "📁"
-        ) +
-        " " +
-        categorie.nom;
+    option.textContent=
+      (
+        categorie.emoji||"📁"
+      )+
+      " "+
+      categorie.nom;
 
-      select.appendChild(
-        option
-      );
+    select.appendChild(option);
 
-    }
-  );
+  });
 
 
   const liste =
@@ -4766,65 +4716,53 @@ async function chargerCategoriesBibliotheque() {
       "listeCategoriesBibliotheque"
     );
 
-
-  liste.innerHTML = "";
-
-
-  data.forEach(
-    function(categorie) {
-
-      const ligne =
-        document.createElement(
-          "div"
-        );
-
-      ligne.className =
-        "ligne-bibliotheque";
+  liste.innerHTML="";
 
 
-      ligne.innerHTML = `
+  data.forEach(function(categorie){
 
-        <div class="ligne-bibliotheque-info">
+    const ligne =
+      document.createElement("div");
 
-          ${echapperHTML(
-            (
-              categorie.emoji ||
-              "📁"
-            ) +
-            " " +
-            categorie.nom
-          )}
-
-        </div>
+    ligne.className=
+      "ligne-bibliotheque";
 
 
-        <div class="ligne-bibliotheque-actions">
+    ligne.innerHTML=`
 
-          <button
-            class="btn btn-supprimer"
-            onclick="supprimerCategorieBibliotheque('${categorie.id}')"
-          >
-            🗑️
-          </button>
+      <div class="ligne-bibliotheque-info">
 
-        </div>
+        ${echapperHTML(
+          (
+            categorie.emoji||"📁"
+          )+
+          " "+
+          categorie.nom
+        )}
 
-      `;
+      </div>
 
 
-      liste.appendChild(
-        ligne
-      );
+      <div class="ligne-bibliotheque-actions">
 
-    }
-  );
+        <button
+          class="btn btn-supprimer"
+          onclick="supprimerCategorieBibliotheque('${categorie.id}')"
+        >
+          🗑️
+        </button>
+
+      </div>
+
+    `;
+
+
+    liste.appendChild(ligne);
+
+  });
 
 }
 
-
-/* =====================================================
-   AJOUTER CATÉGORIE BIBLIOTHÈQUE
-===================================================== */
 
 document
   .getElementById(
@@ -4832,14 +4770,10 @@ document
   )
   .addEventListener(
     "click",
-    async function() {
+    async function(){
 
-      if (
-        !(await verifierAdmin())
-      ) {
-
+      if(!(await verifierAdmin())){
         return;
-
       }
 
 
@@ -4861,7 +4795,7 @@ document
           .trim();
 
 
-      if (!nom) {
+      if(!nom){
 
         afficherMessageBibliotheque(
           "❌ Donne un nom à la catégorie.",
@@ -4877,25 +4811,21 @@ document
         error
       } =
         await client
-          .from(
-            "library_categories"
-          )
+          .from("library_categories")
           .insert([{
 
             nom,
 
             emoji:
-              emoji ||
-              "📁"
+              emoji||"📁"
 
           }]);
 
 
-      if (error) {
+      if(error){
 
         afficherMessageBibliotheque(
-          "❌ " +
-          error.message,
+          "❌ "+error.message,
           true
         );
 
@@ -4906,12 +4836,12 @@ document
 
       document.getElementById(
         "nouvelleCategorieBibliotheque"
-      ).value = "";
+      ).value="";
 
 
       document.getElementById(
         "emojiCategorieBibliotheque"
-      ).value = "";
+      ).value="";
 
 
       await chargerCategoriesBibliotheque();
@@ -4926,67 +4856,42 @@ document
   );
 
 
-/* =====================================================
-   SUPPRIMER CATÉGORIE
-===================================================== */
+window.supprimerCategorieBibliotheque=
+async function(id){
 
-window.supprimerCategorieBibliotheque =
-  async function(id) {
-
-    if (
-      !confirm(
-        "⚠️ Supprimer cette catégorie et ses sous-catégories ?"
-      )
-    ) {
-
-      return;
-
-    }
+  if(!confirm(
+    "⚠️ Supprimer cette catégorie et ses sous-catégories ?"
+  )){
+    return;
+  }
 
 
-    if (
-      !(await verifierAdmin())
-    ) {
-
-      return;
-
-    }
+  if(!(await verifierAdmin())){
+    return;
+  }
 
 
-    const {
-      error
-    } =
-      await client
-        .from(
-          "library_categories"
-        )
-        .delete()
-        .eq(
-          "id",
-          id
-        );
+  const {
+    error
+  } =
+    await client
+      .from("library_categories")
+      .delete()
+      .eq("id",id);
 
 
-    if (error) {
+  if(error){
 
-      alert(
-        "❌ " +
-        error.message
-      );
+    alert("❌ "+error.message);
+    return;
 
-      return;
-
-    }
+  }
 
 
-    await chargerBibliotheque();
+  await chargerBibliotheque();
 
-  };
+};
 
-
-/* =====================================================
-   SOUS-CATÉGORIES
-===================================================== */
 
 document
   .getElementById(
@@ -4994,7 +4899,7 @@ document
   )
   .addEventListener(
     "change",
-    async function() {
+    async function(){
 
       await chargerSousCategoriesBibliotheque();
 
@@ -5002,7 +4907,7 @@ document
   );
 
 
-async function chargerSousCategoriesBibliotheque() {
+async function chargerSousCategoriesBibliotheque(){
 
   const categoryId =
     document.getElementById(
@@ -5016,7 +4921,7 @@ async function chargerSousCategoriesBibliotheque() {
     );
 
 
-  select.innerHTML =
+  select.innerHTML=
     '<option value="">Choisir une sous-catégorie</option>';
 
 
@@ -5025,14 +4930,11 @@ async function chargerSousCategoriesBibliotheque() {
       "listeSousCategoriesBibliotheque"
     );
 
+  liste.innerHTML="";
 
-  liste.innerHTML = "";
 
-
-  if (!categoryId) {
-
+  if(!categoryId){
     return;
-
   }
 
 
@@ -5041,9 +4943,7 @@ async function chargerSousCategoriesBibliotheque() {
     error
   } =
     await client
-      .from(
-        "library_subcategories"
-      )
+      .from("library_subcategories")
       .select("*")
       .eq(
         "category_id",
@@ -5051,84 +4951,67 @@ async function chargerSousCategoriesBibliotheque() {
       )
       .order(
         "ordre",
-        {
-          ascending: true
-        }
+        {ascending:true}
       );
 
 
-  if (error) {
+  if(error){
 
     console.error(error);
-
     return;
 
   }
 
 
-  data.forEach(
-    function(
-      sousCategorie
-    ) {
+  data.forEach(function(sousCategorie){
 
-      const option =
-        document.createElement(
-          "option"
-        );
+    const option =
+      document.createElement("option");
 
-      option.value =
-        sousCategorie.id;
+    option.value=sousCategorie.id;
 
-      option.textContent =
-        "📂 " +
-        sousCategorie.nom;
+    option.textContent=
+      "📂 "+sousCategorie.nom;
 
-      select.appendChild(
-        option
-      );
+    select.appendChild(option);
 
 
-      const ligne =
-        document.createElement(
-          "div"
-        );
+    const ligne =
+      document.createElement("div");
 
-      ligne.className =
-        "ligne-bibliotheque";
+    ligne.className=
+      "ligne-bibliotheque";
 
 
-      ligne.innerHTML = `
+    ligne.innerHTML=`
 
-        <div class="ligne-bibliotheque-info">
+      <div class="ligne-bibliotheque-info">
 
-          📂
-          ${echapperHTML(
-            sousCategorie.nom
-          )}
+        📂
+        ${echapperHTML(
+          sousCategorie.nom
+        )}
 
-        </div>
-
-
-        <div class="ligne-bibliotheque-actions">
-
-          <button
-            class="btn btn-supprimer"
-            onclick="supprimerSousCategorieBibliotheque('${sousCategorie.id}')"
-          >
-            🗑️
-          </button>
-
-        </div>
-
-      `;
+      </div>
 
 
-      liste.appendChild(
-        ligne
-      );
+      <div class="ligne-bibliotheque-actions">
 
-    }
-  );
+        <button
+          class="btn btn-supprimer"
+          onclick="supprimerSousCategorieBibliotheque('${sousCategorie.id}')"
+        >
+          🗑️
+        </button>
+
+      </div>
+
+    `;
+
+
+    liste.appendChild(ligne);
+
+  });
 
 
   await chargerDesignsBibliotheque();
@@ -5136,24 +5019,16 @@ async function chargerSousCategoriesBibliotheque() {
 }
 
 
-/* =====================================================
-   AJOUTER SOUS-CATÉGORIE
-===================================================== */
-
 document
   .getElementById(
     "boutonAjouterSousCategorie"
   )
   .addEventListener(
     "click",
-    async function() {
+    async function(){
 
-      if (
-        !(await verifierAdmin())
-      ) {
-
+      if(!(await verifierAdmin())){
         return;
-
       }
 
 
@@ -5172,7 +5047,7 @@ document
           .trim();
 
 
-      if (!categoryId) {
+      if(!categoryId){
 
         afficherMessageBibliotheque(
           "❌ Choisis d'abord une catégorie.",
@@ -5184,7 +5059,7 @@ document
       }
 
 
-      if (!nom) {
+      if(!nom){
 
         afficherMessageBibliotheque(
           "❌ Donne un nom à la sous-catégorie.",
@@ -5200,9 +5075,7 @@ document
         error
       } =
         await client
-          .from(
-            "library_subcategories"
-          )
+          .from("library_subcategories")
           .insert([{
 
             category_id:
@@ -5213,11 +5086,10 @@ document
           }]);
 
 
-      if (error) {
+      if(error){
 
         afficherMessageBibliotheque(
-          "❌ " +
-          error.message,
+          "❌ "+error.message,
           true
         );
 
@@ -5228,7 +5100,7 @@ document
 
       document.getElementById(
         "nouvelleSousCategorieBibliotheque"
-      ).value = "";
+      ).value="";
 
 
       await chargerSousCategoriesBibliotheque();
@@ -5243,67 +5115,42 @@ document
   );
 
 
-/* =====================================================
-   SUPPRIMER SOUS-CATÉGORIE
-===================================================== */
+window.supprimerSousCategorieBibliotheque=
+async function(id){
 
-window.supprimerSousCategorieBibliotheque =
-  async function(id) {
-
-    if (
-      !confirm(
-        "⚠️ Supprimer cette sous-catégorie et ses designs ?"
-      )
-    ) {
-
-      return;
-
-    }
+  if(!confirm(
+    "⚠️ Supprimer cette sous-catégorie et ses designs ?"
+  )){
+    return;
+  }
 
 
-    if (
-      !(await verifierAdmin())
-    ) {
-
-      return;
-
-    }
+  if(!(await verifierAdmin())){
+    return;
+  }
 
 
-    const {
-      error
-    } =
-      await client
-        .from(
-          "library_subcategories"
-        )
-        .delete()
-        .eq(
-          "id",
-          id
-        );
+  const {
+    error
+  } =
+    await client
+      .from("library_subcategories")
+      .delete()
+      .eq("id",id);
 
 
-    if (error) {
+  if(error){
 
-      alert(
-        "❌ " +
-        error.message
-      );
+    alert("❌ "+error.message);
+    return;
 
-      return;
-
-    }
+  }
 
 
-    await chargerSousCategoriesBibliotheque();
+  await chargerSousCategoriesBibliotheque();
 
-  };
+};
 
-
-/* =====================================================
-   DESIGNS
-===================================================== */
 
 document
   .getElementById(
@@ -5311,7 +5158,7 @@ document
   )
   .addEventListener(
     "change",
-    async function() {
+    async function(){
 
       await chargerDesignsBibliotheque();
 
@@ -5319,7 +5166,7 @@ document
   );
 
 
-async function chargerDesignsBibliotheque() {
+async function chargerDesignsBibliotheque(){
 
   const subcategoryId =
     document.getElementById(
@@ -5332,14 +5179,11 @@ async function chargerDesignsBibliotheque() {
       "listeDesignsBibliotheque"
     );
 
+  liste.innerHTML="";
 
-  liste.innerHTML = "";
 
-
-  if (!subcategoryId) {
-
+  if(!subcategoryId){
     return;
-
   }
 
 
@@ -5348,9 +5192,7 @@ async function chargerDesignsBibliotheque() {
     error
   } =
     await client
-      .from(
-        "library_designs"
-      )
+      .from("library_designs")
       .select("*")
       .eq(
         "subcategory_id",
@@ -5358,91 +5200,80 @@ async function chargerDesignsBibliotheque() {
       )
       .order(
         "ordre",
-        {
-          ascending: true
-        }
+        {ascending:true}
       );
 
 
-  if (error) {
+  if(error){
 
     console.error(error);
-
     return;
 
   }
 
 
-  data.forEach(
-    function(design) {
+  data.forEach(function(design){
 
-      const card =
-        document.createElement(
-          "div"
-        );
+    const card =
+      document.createElement("div");
 
-      card.className =
-        "design-card";
+    card.className="design-card";
 
 
-      card.innerHTML = `
+    card.innerHTML=`
 
-        <img
-          src="${echapperHTML(
-            design.image_url
-          )}"
-          alt="${echapperHTML(
+      <img
+        src="${echapperHTML(
+          design.image_url
+        )}"
+        alt="${echapperHTML(
+          design.nom
+        )}"
+      >
+
+
+      <div class="design-card-info">
+
+        <strong>
+          ${echapperHTML(
             design.nom
-          )}"
-        >
+          )}
+        </strong>
 
 
-        <div class="design-card-info">
+        <div class="design-card-actions">
 
-          <strong>
-            ${echapperHTML(
-              design.nom
-            )}
-          </strong>
-
-
-          <div class="design-card-actions">
-
-            <button
-              class="design-modifier"
-              onclick="renommerDesignBibliotheque('${design.id}', '${echapperJS(design.nom)}')"
-            >
-              ✏️
-            </button>
+          <button
+            class="design-modifier"
+            onclick="renommerDesignBibliotheque(
+              '${design.id}',
+              '${echapperJS(design.nom)}'
+            )"
+          >
+            ✏️
+          </button>
 
 
-            <button
-              class="design-supprimer"
-              onclick="supprimerDesignBibliotheque('${design.id}')"
-            >
-              🗑️
-            </button>
-
-          </div>
+          <button
+            class="design-supprimer"
+            onclick="supprimerDesignBibliotheque('${design.id}')"
+          >
+            🗑️
+          </button>
 
         </div>
 
-      `;
+      </div>
+
+    `;
 
 
-      liste.appendChild(
-        card
-      );
+    liste.appendChild(card);
 
-    }
-  );
+  });
 
 }
 
-
-/* =====================================================
-   AJOUTER DES DESIGNS
-===================================================== */
 
 document
   .getElementById(
@@ -5450,14 +5281,10 @@ document
   )
   .addEventListener(
     "click",
-    async function() {
+    async function(){
 
-      if (
-        !(await verifierAdmin())
-      ) {
-
+      if(!(await verifierAdmin())){
         return;
-
       }
 
 
@@ -5473,7 +5300,7 @@ document
         ).files;
 
 
-      if (!subcategoryId) {
+      if(!subcategoryId){
 
         afficherMessageBibliotheque(
           "❌ Choisis une sous-catégorie.",
@@ -5485,7 +5312,7 @@ document
       }
 
 
-      if (!fichiers.length) {
+      if(!fichiers.length){
 
         afficherMessageBibliotheque(
           "❌ Choisis au moins une image.",
@@ -5503,93 +5330,75 @@ document
         );
 
 
-      bouton.disabled =
-        true;
-
-      bouton.textContent =
-        "⏳ Ajout en cours...";
+      bouton.disabled=true;
+      bouton.textContent="⏳ Ajout en cours...";
 
 
-      try {
+      try{
 
-        for (
-          let i = 0;
-          i < fichiers.length;
+        for(
+          let i=0;
+          i<fichiers.length;
           i++
-        ) {
+        ){
 
-          const fichier =
-            fichiers[i];
+          const fichier=fichiers[i];
 
 
-          const nomFichier =
-            Date.now() +
-            "_" +
+          const nomFichier=
+            Date.now()+
+            "_"+
             Math.random()
               .toString(36)
-              .substring(2) +
-            "_" +
+              .substring(2)+
+            "_"+
             fichier.name;
 
 
-          const chemin =
-            "designs/" +
-            nomFichier;
+          const chemin=
+            "designs/"+nomFichier;
 
 
-          const resultatUpload =
+          const resultatUpload=
             await client.storage
-              .from(
-                "product-library"
-              )
+              .from("product-library")
               .upload(
                 chemin,
                 fichier,
                 {
-                  cacheControl:
-                    "3600",
-                  upsert:
-                    false
+                  cacheControl:"3600",
+                  upsert:false
                 }
               );
 
 
-          if (
-            resultatUpload.error
-          ) {
-
+          if(resultatUpload.error){
             throw resultatUpload.error;
-
           }
 
 
-          const resultatURL =
+          const resultatURL=
             client.storage
-              .from(
-                "product-library"
-              )
+              .from("product-library")
               .getPublicUrl(
                 chemin
               );
 
 
-          const image_url =
+          const image_url=
             resultatURL.data.publicUrl;
 
 
-          const nom =
-            fichier.name
-              .replace(
-                /\.[^/.]+$/,
-                ""
-              );
+          const nom=
+            fichier.name.replace(
+              /\.[^/.]+$/,
+              ""
+            );
 
 
-          const resultatInsert =
+          const resultatInsert=
             await client
-              .from(
-                "library_designs"
-              )
+              .from("library_designs")
               .insert([{
 
                 subcategory_id:
@@ -5602,12 +5411,8 @@ document
               }]);
 
 
-          if (
-            resultatInsert.error
-          ) {
-
+          if(resultatInsert.error){
             throw resultatInsert.error;
-
           }
 
         }
@@ -5615,7 +5420,7 @@ document
 
         document.getElementById(
           "fichiersBibliotheque"
-        ).value = "";
+        ).value="";
 
 
         await chargerDesignsBibliotheque();
@@ -5627,22 +5432,20 @@ document
         );
 
 
-      } catch (erreur) {
+      }catch(erreur){
 
         console.error(erreur);
 
         afficherMessageBibliotheque(
-          "❌ " +
-          erreur.message,
+          "❌ "+erreur.message,
           true
         );
 
-      } finally {
+      }finally{
 
-        bouton.disabled =
-          false;
+        bouton.disabled=false;
 
-        bouton.textContent =
+        bouton.textContent=
           "🖼️ Ajouter les designs";
 
       }
@@ -5651,171 +5454,112 @@ document
   );
 
 
-/* =====================================================
-   RENOMMER DESIGN
-===================================================== */
+window.renommerDesignBibliotheque=
+async function(id,ancienNom){
 
-window.renommerDesignBibliotheque =
-  async function(
-    id,
-    ancienNom
-  ) {
-
-    const nouveauNom =
-      prompt(
-        "Nouveau nom du design :",
-        ancienNom
-      );
+  const nouveauNom=
+    prompt(
+      "Nouveau nom du design :",
+      ancienNom
+    );
 
 
-    if (
-      !nouveauNom ||
-      !nouveauNom.trim()
-    ) {
-
-      return;
-
-    }
+  if(
+    !nouveauNom||
+    !nouveauNom.trim()
+  ){
+    return;
+  }
 
 
-    if (
-      !(await verifierAdmin())
-    ) {
-
-      return;
-
-    }
+  if(!(await verifierAdmin())){
+    return;
+  }
 
 
-    const {
-      error
-    } =
-      await client
-        .from(
-          "library_designs"
-        )
-        .update({
-
-          nom:
-            nouveauNom.trim()
-
-        })
-        .eq(
-          "id",
-          id
-        );
+  const {
+    error
+  } =
+    await client
+      .from("library_designs")
+      .update({
+        nom:nouveauNom.trim()
+      })
+      .eq("id",id);
 
 
-    if (error) {
+  if(error){
 
-      alert(
-        "❌ " +
-        error.message
-      );
+    alert("❌ "+error.message);
+    return;
 
-      return;
-
-    }
+  }
 
 
-    await chargerDesignsBibliotheque();
+  await chargerDesignsBibliotheque();
 
-  };
-
-
-/* =====================================================
-   SUPPRIMER DESIGN
-===================================================== */
-
-window.supprimerDesignBibliotheque =
-  async function(id) {
-
-    if (
-      !confirm(
-        "⚠️ Supprimer ce design de la bibliothèque ?"
-      )
-    ) {
-
-      return;
-
-    }
+};
 
 
-    if (
-      !(await verifierAdmin())
-    ) {
+window.supprimerDesignBibliotheque=
+async function(id){
 
-      return;
-
-    }
-
-
-    const {
-      error
-    } =
-      await client
-        .from(
-          "library_designs"
-        )
-        .delete()
-        .eq(
-          "id",
-          id
-        );
+  if(!confirm(
+    "⚠️ Supprimer ce design de la bibliothèque ?"
+  )){
+    return;
+  }
 
 
-    if (error) {
-
-      alert(
-        "❌ " +
-        error.message
-      );
-
-      return;
-
-    }
+  if(!(await verifierAdmin())){
+    return;
+  }
 
 
-    await chargerDesignsBibliotheque();
+  const {
+    error
+  } =
+    await client
+      .from("library_designs")
+      .delete()
+      .eq("id",id);
 
-  };
+
+  if(error){
+
+    alert("❌ "+error.message);
+    return;
+
+  }
 
 
-/* =====================================================
-   MESSAGE BIBLIOTHÈQUE
-===================================================== */
+  await chargerDesignsBibliotheque();
+
+};
+
 
 function afficherMessageBibliotheque(
   texte,
   erreur
-) {
+){
 
   const element =
     document.getElementById(
       "messageBibliotheque"
     );
 
+  element.textContent=texte;
 
-  element.textContent =
-    texte;
-
-
-  element.className =
+  element.className=
     erreur
       ? "message message-erreur"
       : "message message-succes";
 
-
-  element.style.display =
-    "block";
-
+  element.style.display="block";
 
   setTimeout(
-    function() {
-
-      element.style.display =
-        "none";
-
+    function(){
+      element.style.display="none";
     },
     4000
   );
@@ -5828,9 +5572,7 @@ function afficherMessageBibliotheque(
 ===================================================== */
 
 document
-  .getElementById(
-    "boutonActualiser"
-  )
+  .getElementById("boutonActualiser")
   .addEventListener(
     "click",
     chargerProduits
@@ -5838,65 +5580,74 @@ document
 
 
 /* =====================================================
-   PROTECTION HTML
+   NAVIGATION PROGRAMMATIQUE
 ===================================================== */
 
-function echapperHTML(
-  texte
-) {
+function activerSection(nom){
 
-  if (
-    texte === null ||
-    texte === undefined
-  ) {
+  document
+    .querySelectorAll(".menu-bouton")
+    .forEach(function(item){
 
-    return "";
+      item.classList.toggle(
+        "actif",
+        item.dataset.section===nom
+      );
 
-  }
+    });
 
 
-  return String(
-    texte
-  )
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
+  document
+    .querySelectorAll(".section-admin")
+    .forEach(function(item){
+
+      item.classList.remove("active");
+
+    });
+
+
+  const section =
+    document.getElementById(
+      "section-"+nom
     );
+
+
+  if(section){
+    section.classList.add("active");
+  }
 
 }
 
 
-function echapperJS(
-  texte
-) {
+/* =====================================================
+   PROTECTION HTML
+===================================================== */
 
-  return String(
-    texte || ""
-  )
-    .replace(
-      /\\/g,
-      "\\\\"
-    )
-    .replace(
-      /'/g,
-      "\\'"
-    );
+function echapperHTML(texte){
+
+  if(
+    texte===null||
+    texte===undefined
+  ){
+    return "";
+  }
+
+
+  return String(texte)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+function echapperJS(texte){
+
+  return String(texte||"")
+    .replace(/\\/g,"\\\\")
+    .replace(/'/g,"\\'");
 
 }
 
@@ -5913,4 +5664,3 @@ verifierSession();
 
 </body>
 </html>
-```
