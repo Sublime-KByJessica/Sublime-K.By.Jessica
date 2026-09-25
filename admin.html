@@ -1338,7 +1338,83 @@
       });
 
     }
+    /* =========================
+       SOUS-CATÉGORIES BIBLIOTHÈQUE
+    ========================= */
 
+    document
+      .getElementById("bibliothequeCategorie")
+      .addEventListener(
+        "change",
+        async function() {
+
+          const categoryId =
+            this.value;
+
+          const selectSousCategorie =
+            document.getElementById(
+              "bibliothequeSousCategorie"
+            );
+
+          selectSousCategorie.innerHTML =
+            '<option value="">Choisir une sous-catégorie</option>';
+
+          selectSousCategorie.disabled =
+            true;
+
+          if (!categoryId) {
+            return;
+          }
+
+          const { data, error } =
+            await client
+              .from("library_subcategories")
+              .select("id, nom, ordre")
+              .eq(
+                "category_id",
+                categoryId
+              )
+              .order("ordre", {
+                ascending: true
+              });
+
+          if (error) {
+
+            console.error(
+              "Erreur sous-catégories bibliothèque :",
+              error
+            );
+
+            return;
+          }
+
+          data.forEach(function(sousCategorie) {
+
+            const option =
+              document.createElement("option");
+
+            option.value =
+              sousCategorie.id;
+
+            option.textContent =
+              "📂 " +
+              sousCategorie.nom;
+
+            selectSousCategorie.appendChild(
+              option
+            );
+
+          });
+
+          if (data.length > 0) {
+
+            selectSousCategorie.disabled =
+              false;
+
+          }
+
+        }
+      );
 
     /* =========================
        CHARGER PRODUITS
