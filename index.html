@@ -167,6 +167,7 @@
       text-decoration: none;
       font-weight: 500;
       transition: 0.2s ease;
+      cursor: pointer;
     }
 
     .category-link:hover {
@@ -386,6 +387,43 @@
     }
 
     /* =========================
+       BOUTIQUE
+    ========================= */
+
+    #boutique {
+      background: #FFFFFF;
+    }
+
+    .boutique-title {
+      text-align: center;
+      color: #8F5967;
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .boutique-subtitle {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 30px;
+    }
+
+    .boutique-filtre {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .boutique-filtre strong {
+      color: #667052;
+    }
+
+    .boutique-empty {
+      text-align: center;
+      padding: 30px;
+      color: #6B6264;
+      grid-column: 1 / -1;
+    }
+
+    /* =========================
        NOUVEAUTÉS
     ========================= */
 
@@ -559,7 +597,7 @@
           Accueil
         </a>
 
-        <a href="#boutique-produits">
+        <a href="#boutique">
           Boutique
         </a>
 
@@ -612,7 +650,7 @@
       <div class="hero-buttons">
 
         <a
-          href="#boutique-produits"
+          href="#boutique"
           class="btn-primary"
         >
           🛍️ Découvrir la boutique
@@ -643,8 +681,9 @@
 
 
           <a
-            href="#boutique-produits"
+            href="#boutique"
             class="boutique-menu-button"
+            onclick="afficherTousLesProduits()"
           >
             🛍️ Voir la boutique
           </a>
@@ -660,85 +699,97 @@
             <div class="categories-dropdown">
 
               <a
-                href="#boutique-produits"
+                href="#boutique"
                 class="category-link"
+                onclick="filtrerCategorie('Cuisine & Maison')"
               >
                 🍳 Cuisine & Maison
               </a>
 
               <a
-                href="#boutique-produits"
+                href="#boutique"
                 class="category-link"
+                onclick="filtrerCategorie('Bébé & Enfants')"
               >
                 👶 Bébé & Enfants
               </a>
 
               <a
-                href="#boutique-produits"
+                href="#boutique"
                 class="category-link"
+                onclick="filtrerCategorie('Jeux')"
               >
                 🎲 Jeux
               </a>
 
               <a
-                href="#boutique-produits"
+                href="#boutique"
                 class="category-link"
+                onclick="filtrerCategorie('Bureau & Études')"
               >
                 📚 Bureau & Études
               </a>
 
               <a
-                href="#boutique-produits"
+                href="#boutique"
                 class="category-link"
+                onclick="filtrerCategorie('Animaux')"
               >
                 🐾 Animaux
               </a>
 
               <a
-                href="#boutique-produits"
+                href="#boutique"
                 class="category-link"
+                onclick="filtrerCategorie('Beauté & Bien-être')"
               >
                 💆 Beauté & Bien-être
               </a>
 
               <a
-                href="#boutique-produits"
+                href="#boutique"
                 class="category-link"
+                onclick="filtrerCategorie('Bijoux')"
               >
                 💎 Bijoux
               </a>
 
               <a
-                href="#boutique-produits"
+                href="#boutique"
                 class="category-link"
+                onclick="filtrerCategorie('Porte-clés & Accessoires')"
               >
                 🔑 Porte-clés & Accessoires
               </a>
 
               <a
-                href="#boutique-produits"
+                href="#boutique"
                 class="category-link"
+                onclick="filtrerCategorie('Voiture')"
               >
                 🚗 Voiture
               </a>
 
               <a
-                href="#boutique-produits"
+                href="#boutique"
                 class="category-link"
+                onclick="filtrerCategorie('Les Coffrets')"
               >
                 🎁 Les Coffrets
               </a>
 
               <a
-                href="#boutique-produits"
+                href="#boutique"
                 class="category-link"
+                onclick="filtrerCategorie('Événements')"
               >
                 🎉 Événements
               </a>
 
               <a
-                href="#boutique-produits"
+                href="#boutique"
                 class="category-link"
+                onclick="filtrerCategorie('Autres')"
               >
                 ✨ Autres
               </a>
@@ -779,10 +830,50 @@
 
 
     <!-- =========================
-         POINT D'ANCRAGE BOUTIQUE
+         BOUTIQUE
     ========================= -->
 
-    <div id="boutique-produits"></div>
+    <section
+      class="section"
+      id="boutique"
+    >
+
+      <div class="container">
+
+        <h2 class="boutique-title">
+          🛍️ Boutique
+        </h2>
+
+
+        <p class="boutique-subtitle">
+          Découvrez toutes les créations disponibles chez Sublime'K.
+        </p>
+
+
+        <div
+          class="boutique-filtre"
+          id="boutique-filtre"
+        >
+          <strong>
+            Toutes les créations
+          </strong>
+        </div>
+
+
+        <div
+          id="boutique-produits"
+          class="products-grid"
+        >
+
+          <div class="boutique-empty">
+            Chargement de la boutique…
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
 
 
     <!-- =========================
@@ -943,7 +1034,7 @@
 
 
   <!-- =========================
-       SUPABASE + NOUVEAUTÉS
+       SUPABASE + BOUTIQUE + NOUVEAUTÉS
   ========================= -->
 
   <script>
@@ -962,6 +1053,10 @@
         SUPABASE_KEY
       );
 
+
+    /* =========================
+       STATUT PRODUIT
+    ========================= */
 
     function afficherStatut(statut) {
 
@@ -995,6 +1090,380 @@
 
     }
 
+
+    /* =========================
+       CARTE PRODUIT
+    ========================= */
+
+    function creerCarteProduit(produit) {
+
+      const prix =
+        produit.prix !== null &&
+        produit.prix !== undefined
+          ? Number(produit.prix)
+              .toFixed(2)
+              .replace(".", ",") + " €"
+          : "";
+
+
+      const image =
+        produit.image_url
+
+          ? `
+            <img
+              src="${produit.image_url}"
+              alt="${produit.nom}"
+              loading="lazy"
+            >
+          `
+
+          : `
+            <span>
+              ✨
+            </span>
+          `;
+
+
+      return `
+
+        <article class="product-card">
+
+          <div class="product-image">
+            ${image}
+          </div>
+
+
+          <div class="product-content">
+
+            ${afficherStatut(produit.statut)}
+
+
+            <h3>
+              ${produit.nom}
+            </h3>
+
+
+            <p>
+              ${produit.description || ""}
+            </p>
+
+
+            ${
+              prix
+
+                ? `
+                  <div class="product-price">
+                    ${prix}
+                  </div>
+                `
+
+                : ""
+            }
+
+
+            <a
+              href="#contact"
+              class="product-button"
+            >
+              💌 Demander
+            </a>
+
+          </div>
+
+        </article>
+
+      `;
+
+    }
+
+
+    /* =========================
+       CHARGER LES PRODUITS
+    ========================= */
+
+    async function chargerBoutique() {
+
+      const zone =
+        document.getElementById("boutique-produits");
+
+
+      try {
+
+        const { data, error } =
+          await supabaseClient
+
+            .from("products")
+
+            .select(`
+              id,
+              nom,
+              description,
+              prix,
+              categorie_id,
+              statut,
+              image_url,
+              visible,
+              ordre
+            `)
+
+            .eq("visible", true)
+
+            .order("ordre", {
+              ascending: true
+            });
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        if (!data || data.length === 0) {
+
+          zone.innerHTML = `
+
+            <div class="boutique-empty">
+
+              <p>
+                🛍️ La boutique est en cours de préparation.
+              </p>
+
+              <p>
+                De nouvelles créations arrivent bientôt !
+              </p>
+
+            </div>
+
+          `;
+
+          return;
+
+        }
+
+
+        zone.innerHTML = "";
+
+
+        data.forEach(produit => {
+
+          zone.innerHTML +=
+            creerCarteProduit(produit);
+
+        });
+
+      } catch (error) {
+
+        console.error(
+          "Erreur lors du chargement de la boutique :",
+          error
+        );
+
+
+        zone.innerHTML = `
+
+          <div class="boutique-empty">
+
+            <p>
+              La boutique ne peut pas être chargée pour le moment.
+            </p>
+
+          </div>
+
+        `;
+
+      }
+
+    }
+
+
+    /* =========================
+       FILTRER PAR CATÉGORIE
+    ========================= */
+
+    async function filtrerCategorie(nomCategorie) {
+
+      const zone =
+        document.getElementById("boutique-produits");
+
+
+      const titreFiltre =
+        document.getElementById("boutique-filtre");
+
+
+      titreFiltre.innerHTML = `
+        <strong>
+          ${nomCategorie}
+        </strong>
+      `;
+
+
+      zone.innerHTML = `
+
+        <div class="boutique-empty">
+
+          Chargement des produits…
+
+        </div>
+
+      `;
+
+
+      try {
+
+        const { data: categories, error: categoriesError } =
+          await supabaseClient
+
+            .from("categories")
+
+            .select(`
+              id,
+              Nom
+            `);
+
+
+        if (categoriesError) {
+          throw categoriesError;
+        }
+
+
+        const categorie =
+          categories.find(
+            cat =>
+              cat.Nom.trim().toLowerCase() ===
+              nomCategorie.trim().toLowerCase()
+          );
+
+
+        if (!categorie) {
+
+          zone.innerHTML = `
+
+            <div class="boutique-empty">
+
+              <p>
+                Aucun produit trouvé dans cette catégorie.
+              </p>
+
+            </div>
+
+          `;
+
+          return;
+
+        }
+
+
+        const { data: produits, error: produitsError } =
+          await supabaseClient
+
+            .from("products")
+
+            .select(`
+              id,
+              nom,
+              description,
+              prix,
+              categorie_id,
+              statut,
+              image_url,
+              visible,
+              ordre
+            `)
+
+            .eq("visible", true)
+
+            .eq("categorie_id", categorie.id)
+
+            .order("ordre", {
+              ascending: true
+            });
+
+
+        if (produitsError) {
+          throw produitsError;
+        }
+
+
+        if (!produits || produits.length === 0) {
+
+          zone.innerHTML = `
+
+            <div class="boutique-empty">
+
+              <p>
+                🛍️ Aucun produit n'est encore disponible dans cette catégorie.
+              </p>
+
+            </div>
+
+          `;
+
+          return;
+
+        }
+
+
+        zone.innerHTML = "";
+
+
+        produits.forEach(produit => {
+
+          zone.innerHTML +=
+            creerCarteProduit(produit);
+
+        });
+
+
+      } catch (error) {
+
+        console.error(
+          "Erreur lors du filtrage par catégorie :",
+          error
+        );
+
+
+        zone.innerHTML = `
+
+          <div class="boutique-empty">
+
+            <p>
+              Impossible de charger cette catégorie pour le moment.
+            </p>
+
+          </div>
+
+        `;
+
+      }
+
+    }
+
+
+    /* =========================
+       AFFICHER TOUS LES PRODUITS
+    ========================= */
+
+    async function afficherTousLesProduits() {
+
+      const titreFiltre =
+        document.getElementById("boutique-filtre");
+
+
+      titreFiltre.innerHTML = `
+        <strong>
+          Toutes les créations
+        </strong>
+      `;
+
+
+      await chargerBoutique();
+
+    }
+
+
+    /* =========================
+       NOUVEAUTÉS
+    ========================= */
 
     async function chargerNouveautes() {
 
@@ -1039,6 +1508,7 @@
         if (!data || data.length === 0) {
 
           zone.innerHTML = `
+
             <div class="nouveautes-empty">
 
               <p>
@@ -1046,9 +1516,11 @@
               </p>
 
             </div>
+
           `;
 
           return;
+
         }
 
 
@@ -1057,82 +1529,8 @@
 
         data.forEach(produit => {
 
-          const prix =
-            produit.prix !== null &&
-            produit.prix !== undefined
-              ? Number(produit.prix)
-                  .toFixed(2)
-                  .replace(".", ",") + " €"
-              : "";
-
-
-          const image =
-            produit.image_url
-
-              ? `
-                <img
-                  src="${produit.image_url}"
-                  alt="${produit.nom}"
-                  loading="lazy"
-                >
-              `
-
-              : `
-                <span>
-                  ✨
-                </span>
-              `;
-
-
-          zone.innerHTML += `
-
-            <article class="product-card">
-
-              <div class="product-image">
-                ${image}
-              </div>
-
-
-              <div class="product-content">
-
-                ${afficherStatut(produit.statut)}
-
-
-                <h3>
-                  ${produit.nom}
-                </h3>
-
-
-                <p>
-                  ${produit.description || ""}
-                </p>
-
-
-                ${
-                  prix
-
-                    ? `
-                      <div class="product-price">
-                        ${prix}
-                      </div>
-                    `
-
-                    : ""
-                }
-
-
-                <a
-                  href="#contact"
-                  class="product-button"
-                >
-                  💌 Demander
-                </a>
-
-              </div>
-
-            </article>
-
-          `;
+          zone.innerHTML +=
+            creerCarteProduit(produit);
 
         });
 
@@ -1161,6 +1559,12 @@
 
     }
 
+
+    /* =========================
+       DÉMARRAGE
+    ========================= */
+
+    chargerBoutique();
 
     chargerNouveautes();
 
