@@ -682,6 +682,9 @@ footer {
 
 }
 </style>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
 </head>
 
 <body>
@@ -1350,6 +1353,165 @@ footer {
 
 </footer>
 
+<script>
 
+const SUPABASE_URL =
+  "https://buputlhpgaenlwwbrwwf.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_mjzAOL92PWfc3v59ZxdSUw_69xCaInq";
+
+const client =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+async function chargerNouveautes() {
+
+  const zone =
+    document.getElementById("nouveautes-produits");
+
+  if (!zone) return;
+
+
+  const { data, error } =
+    await client
+      .from("products")
+      .select("*")
+      .eq("visible", true)
+      .eq("nouveaute", true)
+      .order("created_at", {
+        ascending: false
+      })
+      .limit(12);
+
+
+  if (error) {
+
+    console.error(
+      "Erreur chargement nouveautés :",
+      error
+    );
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    zone.innerHTML = `
+      <div class="nouveautes-message">
+        ✨ Les nouveautés arrivent bientôt...
+      </div>
+    `;
+
+    return;
+  }
+
+
+  zone.innerHTML = "";
+
+
+  data.forEach(produit => {
+
+    let statutTexte =
+      "🟠 Pré-commande";
+
+    let statutClasse =
+      "status-preorder";
+
+
+    if (produit.statut === "stock") {
+
+      statutTexte =
+        "🟢 En stock";
+
+      statutClasse =
+        "status-stock";
+
+    }
+
+
+    if (produit.statut === "indisponible") {
+
+      statutTexte =
+        "⚫ Indisponible";
+
+      statutClasse =
+        "status-unavailable";
+
+    }
+
+
+    const image =
+      produit.image_url
+        ? `<img
+            src="${produit.image_url}"
+            alt="${produit.nom}"
+            style="
+              width:100%;
+              height:100%;
+              object-fit:cover;
+            "
+          >`
+        : "📷<br>Photo à venir";
+
+
+    const prix =
+      produit.prix !== null &&
+      produit.prix !== undefined
+        ? `${Number(produit.prix).toFixed(2).replace(".", ",")} €`
+        : "Prix sur demande";
+
+
+    zone.innerHTML += `
+
+      <div class="product-card">
+
+        <div class="product-image">
+          ${image}
+        </div>
+
+        <div class="product-content">
+
+          <h4>
+            ${produit.nom}
+          </h4>
+
+          <p class="product-description">
+            ${produit.description || ""}
+          </p>
+
+          <span class="status ${statutClasse}">
+            ${statutTexte}
+          </span>
+
+          <div class="price">
+            ${prix}
+          </div>
+
+          <a
+            href="#contact"
+            class="product-button"
+          >
+            Demander ce produit
+          </a>
+
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+}
+
+
+chargerNouveautes();
+
+</script>
 </body>
 </html>
