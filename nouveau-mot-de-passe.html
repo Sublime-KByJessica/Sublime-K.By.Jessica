@@ -1,1 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Nouveau mot de passe — Sublime'K</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #dfe4cf;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .box {
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    h1 {
+      color: #596044;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #555;
+      margin-bottom: 25px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #8b9568;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #737d52;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+
+    <h1>Sublime'K</h1>
+
+    <p>Choisis ton nouveau mot de passe.</p>
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Nouveau mot de passe"
+    >
+
+    <input
+      type="password"
+      id="confirmPassword"
+      placeholder="Confirmer le mot de passe"
+    >
+
+    <button onclick="changerMotDePasse()">
+      Enregistrer le nouveau mot de passe
+    </button>
+
+    <div id="message"></div>
+
+  </div>
+
+  <script>
+
+    const SUPABASE_URL =
+      "https://buputlhpgaenlwwbrwwf.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_mjzAOL92PWfc3v59ZxdSUw_69xCaInq";
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    async function changerMotDePasse() {
+
+      const password =
+        document.getElementById("password").value;
+
+      const confirmPassword =
+        document.getElementById("confirmPassword").value;
+
+      const message =
+        document.getElementById("message");
+
+
+      if (!password || !confirmPassword) {
+
+        message.textContent =
+          "⚠️ Remplis les deux champs.";
+
+        message.style.color = "orange";
+
+        return;
+      }
+
+
+      if (password !== confirmPassword) {
+
+        message.textContent =
+          "❌ Les deux mots de passe ne correspondent pas.";
+
+        message.style.color = "red";
+
+        return;
+      }
+
+
+      if (password.length < 6) {
+
+        message.textContent =
+          "⚠️ Le mot de passe doit contenir au moins 6 caractères.";
+
+        message.style.color = "orange";
+
+        return;
+      }
+
+
+      message.textContent =
+        "⏳ Enregistrement en cours...";
+
+      message.style.color = "#596044";
+
+
+      const { data, error } =
+        await supabaseClient.auth.updateUser({
+          password: password
+        });
+
+
+      if (error) {
+
+        console.error(error);
+
+        message.textContent =
+          "❌ " + error.message;
+
+        message.style.color = "red";
+
+        return;
+      }
+
+
+      message.textContent =
+        "✅ Mot de passe modifié avec succès !";
+
+      message.style.color = "green";
+
+
+      setTimeout(() => {
+
+        window.location.href =
+          "test-login.html";
+
+      }, 2000);
+
+    }
+
+  </script>
+
+</body>
+</html>
