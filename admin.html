@@ -462,7 +462,25 @@
       background: var(--danger);
       color: var(--danger-texte);
     }
+<!-- =========================
+   INFORMATIONS LÉGALES
+========================= -->
+<div class="bloc">
+  <h2>⚖️ Informations légales</h2>
 
+  <div class="livraison-intro">
+    <p>
+      Gère ici les pages légales qui seront affichées sur le site.
+    </p>
+    <p>
+      Tu pourras modifier leur contenu directement depuis ton administration.
+    </p>
+  </div>
+
+  <div id="listePagesLegales">
+    <p>Chargement des pages légales...</p>
+  </div>
+</div>
     /* =========================
        LIVRAISON
     ========================= */
@@ -1792,7 +1810,8 @@ document
 
 
       await afficherAdmin();
-
+      
+await chargerPagesLegales();
     }
   );
 
@@ -1801,6 +1820,77 @@ document
    DÉCONNEXION
 ===================================================== */
 
+  async function modifierPageLegale(id) {
+
+  const {
+    data,
+    error
+  } = await client
+    .from("legal_pages")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+
+    console.error(error);
+
+    alert(
+      "❌ Impossible de charger cette page légale : " +
+      error.message
+    );
+
+    return;
+  }
+
+  const nouveauTitre =
+    prompt(
+      "Titre de la page :",
+      data.titre
+    );
+
+  if (nouveauTitre === null) {
+    return;
+  }
+
+  const nouveauContenu =
+    prompt(
+      "Contenu de la page :",
+      data.contenu || ""
+    );
+
+  if (nouveauContenu === null) {
+    return;
+  }
+
+  const {
+    error: erreurModification
+  } = await client
+    .from("legal_pages")
+    .update({
+      titre: nouveauTitre,
+      contenu: nouveauContenu,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", id);
+
+  if (erreurModification) {
+
+    console.error(erreurModification);
+
+    alert(
+      "❌ Impossible d'enregistrer : " +
+      erreurModification.message
+    );
+
+    return;
+  }
+
+  alert("✅ Page légale enregistrée !");
+
+  await chargerPagesLegales();
+}
+  
 document
   .getElementById("boutonDeconnexion")
   .addEventListener(
@@ -3561,7 +3651,72 @@ function afficherMessageLivraison(
 /* =====================================================
    COMMANDES
 ===================================================== */
+async function chargerPagesLegales() {
 
+  const conteneur =
+    document.getElementById("listePagesLegales");
+
+  if (!conteneur) {
+    return;
+  }
+
+  conteneur.innerHTML =
+    "<p>Chargement des pages légales...</p>";
+
+  const {
+    data,
+    error
+  } = await client
+    .from("legal_pages")
+    .select("*")
+    .order("ordre", {
+      ascending: true
+    });
+
+  if (error) {
+
+    console.error(error);
+
+    conteneur.innerHTML =
+      "<p class='message-erreur' style='display:block;'>" +
+      "❌ Impossible de charger les pages légales : " +
+      error.message +
+      "</p>";
+
+    return;
+  }
+
+  if (!data || data.length === 0) {
+
+    conteneur.innerHTML =
+      "<p>Aucune page légale n'est disponible.</p>";
+
+    return;
+  }
+
+  conteneur.innerHTML =
+    data.map(function(page) {
+
+      return `
+        <div class="ligne-bibliotheque">
+          <div class="ligne-bibliotheque-info">
+            ⚖️ ${page.titre}
+          </div>
+
+          <div class="ligne-bibliotheque-actions">
+            <button
+              class="btn btn-modifier"
+              type="button"
+              onclick="modifierPageLegale('${page.id}')"
+            >
+              ✏️ Modifier
+            </button>
+          </div>
+        </div>
+      `;
+
+    }).join("");
+}
 async function chargerCommandes() {
 
   const filtrePaiement =
