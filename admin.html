@@ -703,17 +703,31 @@
 
           <div class="checkbox-ligne">
 
-            <input
-              type="checkbox"
-              id="visible"
-              checked
-            >
+  <input
+    type="checkbox"
+    id="visible"
+    checked
+  >
 
-            <label for="visible">
-              Produit visible sur la boutique
-            </label>
+  <label for="visible">
+    Produit visible sur la boutique
+  </label>
 
-          </div>
+</div>
+
+
+<div class="checkbox-ligne">
+
+  <input
+    type="checkbox"
+    id="nouveaute"
+  >
+
+  <label for="nouveaute">
+    ⭐ Afficher dans les nouveautés
+  </label>
+
+</div>
 
 
           <div class="actions-formulaire">
@@ -1262,7 +1276,9 @@
 
         const visible =
           document.getElementById("visible").checked;
-
+        
+const nouveaute =
+  document.getElementById("nouveaute").checked;
         if (!nom) {
 
           afficherMessageFormulaire(
@@ -1295,15 +1311,16 @@
 
         const produit = {
 
-          nom,
-          description,
-          prix,
-          categorie_id,
-          statut,
-          image_url: image_url || null,
-          visible
+  nom,
+  description,
+  prix,
+  categorie_id,
+  statut,
+  image_url: image_url || null,
+  visible,
+  nouveaute
 
-        };
+};
 
 
         let erreur = null;
@@ -1421,6 +1438,9 @@
 
         document.getElementById("visible").checked =
           data.visible !== false;
+
+        document.getElementById("nouveaute").checked =
+  data.nouveaute === true;
 
 
         document.getElementById(
