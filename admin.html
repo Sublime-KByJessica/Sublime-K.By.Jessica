@@ -1567,7 +1567,198 @@
 
     </div>
 
+    <!-- =================================================
+         GESTION FINANCIÈRE
+    ================================================= -->
 
+    <div class="bloc">
+
+      <h2>
+        💰 Gestion financière
+      </h2>
+
+      <div class="livraison-intro">
+
+        <strong>
+          Gère ici tes factures, tes recettes et ton chiffre d'affaires.
+        </strong>
+
+        <p>
+          Les commandes, paiements, factures et recettes seront reliés
+          progressivement pour faciliter le suivi de ton activité.
+        </p>
+
+      </div>
+
+
+      <!-- STATISTIQUES FINANCIÈRES -->
+
+      <div class="stats">
+
+        <div class="stat-card">
+
+          <div
+            class="nombre"
+            id="chiffreAffairesMois"
+          >
+            0,00 €
+          </div>
+
+          <div class="label">
+            💶 CA du mois
+          </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <div
+            class="nombre"
+            id="chiffreAffairesAnnee"
+          >
+            0,00 €
+          </div>
+
+          <div class="label">
+            📊 CA de l'année
+          </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <div
+            class="nombre"
+            id="nombreFactures"
+          >
+            0
+          </div>
+
+          <div class="label">
+            🧾 Factures
+          </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <div
+            class="nombre"
+            id="nombreRecettes"
+          >
+            0
+          </div>
+
+          <div class="label">
+            📖 Recettes enregistrées
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ACTIONS FINANCIÈRES -->
+
+      <div class="actions-formulaire">
+
+        <button
+          class="btn btn-enregistrer"
+          type="button"
+          id="boutonNouvelleFacture"
+        >
+          🧾 Nouvelle facture
+        </button>
+
+
+        <button
+          class="btn btn-modifier"
+          type="button"
+          id="boutonLivreRecettes"
+        >
+          📖 Livre des recettes
+        </button>
+
+
+        <button
+          class="btn btn-modifier"
+          type="button"
+          id="boutonStatistiquesFinancieres"
+        >
+          📊 Statistiques
+        </button>
+
+
+        <button
+          class="btn btn-modifier"
+          type="button"
+          id="boutonExportTiime"
+        >
+          📤 Export Tiime
+        </button>
+
+      </div>
+
+
+      <div
+        id="messageFinancier"
+        class="message"
+      ></div>
+
+
+      <!-- FACTURES -->
+
+      <div
+        style="
+          margin-top:25px;
+          padding-top:20px;
+          border-top:1px solid var(--bordure);
+        "
+      >
+
+        <h3>
+          🧾 Dernières factures
+        </h3>
+
+        <div id="listeFactures">
+
+          <p>
+            Les factures apparaîtront ici.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- LIVRE DES RECETTES -->
+
+      <div
+        style="
+          margin-top:25px;
+          padding-top:20px;
+          border-top:1px solid var(--bordure);
+        "
+      >
+
+        <h3>
+          📖 Livre des recettes
+        </h3>
+
+        <div id="listeRecettes">
+
+          <p>
+            Les recettes encaissées apparaîtront ici.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
     <!-- =================================================
          BIBLIOTHÈQUE
     ================================================= -->
