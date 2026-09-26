@@ -1120,7 +1120,59 @@
 .bibliotheque-contenu {
   margin-top: 30px;
 }
+/* =====================================================
+   APERÇUS DES PLANCHES DE LA BIBLIOTHÈQUE
+===================================================== */
 
+.bibliotheque-contenu img {
+  display: block;
+
+  width: 220px;
+  max-width: 100%;
+  height: auto;
+
+  margin: 20px auto;
+
+  border-radius: 12px;
+
+  object-fit: contain;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
+
+  cursor: pointer;
+
+  transition: transform 0.2s ease;
+}
+
+.bibliotheque-contenu img:hover {
+  transform: scale(1.03);
+}
+
+
+/* =====================================================
+   TABLETTE
+===================================================== */
+
+@media (max-width: 900px) {
+
+  .bibliotheque-contenu img {
+    width: 190px;
+  }
+
+}
+
+
+/* =====================================================
+   TÉLÉPHONE
+===================================================== */
+
+@media (max-width: 600px) {
+
+  .bibliotheque-contenu img {
+    width: 165px;
+  }
+
+}
 
 /* =====================================================
    VERSION MOBILE
