@@ -1292,7 +1292,65 @@ button{cursor:pointer}
 
         </div>
 
+        <div class="champ full">
 
+          <label>
+            📸 Photos supplémentaires du produit
+          </label>
+
+          <div
+            id="photosProduitSupplementaires"
+            style="
+              display:grid;
+              grid-template-columns:
+                repeat(auto-fill,minmax(120px,1fr));
+              gap:12px;
+              margin-top:10px;
+            "
+          >
+          </div>
+
+          <div
+            style="
+              display:flex;
+              gap:10px;
+              flex-wrap:wrap;
+              align-items:center;
+              margin-top:12px;
+            "
+          >
+
+            <label
+              for="fichiersPhotosProduit"
+              class="btn"
+              style="
+                display:inline-block;
+                cursor:pointer;
+              "
+            >
+              📁 Ajouter plusieurs photos
+            </label>
+
+            <input
+              type="file"
+              id="fichiersPhotosProduit"
+              accept="image/*"
+              multiple
+              style="display:none;"
+            >
+
+          </div>
+
+          <div
+            id="messagePhotosProduit"
+            class="stock-info"
+            style="margin-top:8px;"
+          >
+            Tu peux sélectionner plusieurs photos en même temps.
+          </div>
+
+        </div>
+        
         <div class="champ full">
 
                   <div class="champ full">
