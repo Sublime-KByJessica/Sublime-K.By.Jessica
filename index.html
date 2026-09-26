@@ -3457,6 +3457,512 @@
       }
     );
 
+    /* =====================================================
+   BIBLIOTHÈQUE DE DESIGNS - VERSION DYNAMIQUE
+===================================================== */
+
+async function chargerBibliothequePublique() {
+
+  const zoneCategories =
+    document.getElementById(
+      "bibliotheque-categories"
+    );
+
+  const zoneContenu =
+    document.getElementById(
+      "bibliotheque-contenu"
+    );
+
+  if (!zoneCategories || !zoneContenu) {
+    return;
+  }
+
+  zoneCategories.innerHTML = `
+    <div class="bibliotheque-chargement">
+      ⏳ Chargement des collections...
+    </div>
+  `;
+
+  zoneContenu.innerHTML = "";
+
+  try {
+
+    /* =================================================
+       CHARGER LES CATÉGORIES
+    ================================================= */
+
+    const {
+      data: categories,
+      error: categoriesError
+    } =
+      await supabaseClient
+        .from("library_categories")
+        .select(`
+          id,
+          nom,
+          emoji,
+          ordre
+        `)
+        .order(
+          "ordre",
+          {
+            ascending: true
+          }
+        );
+
+    if (categoriesError) {
+      throw categoriesError;
+    }
+
+    if (
+      !categories ||
+      categories.length === 0
+    ) {
+
+      zoneCategories.innerHTML = `
+        <div class="bibliotheque-chargement">
+          📚 Les collections arrivent bientôt…
+        </div>
+      `;
+
+      return;
+    }
+
+
+    /* =================================================
+       AFFICHER LES CATÉGORIES
+    ================================================= */
+
+    zoneCategories.innerHTML = "";
+
+    categories.forEach(
+      function(categorie) {
+
+        const bouton =
+          document.createElement(
+            "button"
+          );
+
+        bouton.type = "button";
+
+        bouton.className =
+          "bibliotheque-categorie-bouton";
+
+        bouton.innerHTML = `
+          <span class="bibliotheque-categorie-emoji">
+            ${categorie.emoji || "📁"}
+          </span>
+
+          <span>
+            ${echapperTexteBibliotheque(
+              categorie.nom
+            )}
+          </span>
+        `;
+
+        bouton.addEventListener(
+          "click",
+          function() {
+
+            chargerSousCategoriesBibliothequePublic(
+              categorie.id,
+              categorie.nom
+            );
+
+          }
+        );
+
+        zoneCategories.appendChild(
+          bouton
+        );
+
+      }
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Erreur bibliothèque :",
+      error
+    );
+
+    zoneCategories.innerHTML = `
+      <div class="bibliotheque-chargement">
+        ⚠️ Impossible de charger les collections pour le moment.
+      </div>
+    `;
+
+  }
+
+}
+
+
+/* =====================================================
+   CHARGER LES SOUS-CATÉGORIES
+===================================================== */
+
+async function chargerSousCategoriesBibliothequePublic(
+  categoryId,
+  categoryName
+) {
+
+  const zone =
+    document.getElementById(
+      "bibliotheque-contenu"
+    );
+
+  if (!zone) {
+    return;
+  }
+
+  zone.innerHTML = `
+    <div class="bibliotheque-chargement">
+      ⏳ Chargement de ${echapperTexteBibliotheque(
+        categoryName
+      )}...
+    </div>
+  `;
+
+  try {
+
+    const {
+      data: sousCategories,
+      error
+    } =
+      await supabaseClient
+        .from("library_subcategories")
+        .select(`
+          id,
+          nom,
+          ordre
+        `)
+        .eq(
+          "category_id",
+          categoryId
+        )
+        .order(
+          "ordre",
+          {
+            ascending: true
+          }
+        );
+
+    if (error) {
+      throw error;
+    }
+
+    if (
+      !sousCategories ||
+      sousCategories.length === 0
+    ) {
+
+      zone.innerHTML = `
+        <div class="bibliotheque-chargement">
+          📂 Cette collection ne contient pas encore de sous-catégories.
+        </div>
+      `;
+
+      return;
+    }
+
+    zone.innerHTML = `
+
+      <div class="bibliotheque-contenu-entete">
+
+        <h3>
+          ${echapperTexteBibliotheque(
+            categoryName
+          )}
+        </h3>
+
+        <p>
+          Choisissez une collection.
+        </p>
+
+      </div>
+
+      <div class="bibliotheque-souscategories"></div>
+
+    `;
+
+    const zoneSousCategories =
+      zone.querySelector(
+        ".bibliotheque-souscategories"
+      );
+
+    sousCategories.forEach(
+      function(sousCategorie) {
+
+        const bouton =
+          document.createElement(
+            "button"
+          );
+
+        bouton.type = "button";
+
+        bouton.className =
+          "bibliotheque-souscategorie-bouton";
+
+        bouton.innerHTML = `
+          <span>📂</span>
+
+          <strong>
+            ${echapperTexteBibliotheque(
+              sousCategorie.nom
+            )}
+          </strong>
+        `;
+
+        bouton.addEventListener(
+          "click",
+          function() {
+
+            chargerDesignsBibliothequePublic(
+              sousCategorie.id,
+              sousCategorie.nom
+            );
+
+          }
+        );
+
+        zoneSousCategories.appendChild(
+          bouton
+        );
+
+      }
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Erreur sous-catégories bibliothèque :",
+      error
+    );
+
+    zone.innerHTML = `
+      <div class="bibliotheque-chargement">
+        ⚠️ Impossible de charger cette collection.
+      </div>
+    `;
+
+  }
+
+}
+
+
+/* =====================================================
+   CHARGER LES DESIGNS
+===================================================== */
+
+async function chargerDesignsBibliothequePublic(
+  subcategoryId,
+  subcategoryName
+) {
+
+  const zone =
+    document.getElementById(
+      "bibliotheque-contenu"
+    );
+
+  if (!zone) {
+    return;
+  }
+
+  zone.innerHTML = `
+    <div class="bibliotheque-chargement">
+      ⏳ Chargement des designs...
+    </div>
+  `;
+
+  try {
+
+    const {
+      data: designs,
+      error
+    } =
+      await supabaseClient
+        .from("library_designs")
+        .select(`
+          id,
+          nom,
+          image_url,
+          ordre
+        `)
+        .eq(
+          "subcategory_id",
+          subcategoryId
+        )
+        .order(
+          "ordre",
+          {
+            ascending: true
+          }
+        );
+
+    if (error) {
+      throw error;
+    }
+
+    if (
+      !designs ||
+      designs.length === 0
+    ) {
+
+      zone.innerHTML = `
+
+        <div class="bibliotheque-chargement">
+
+          🖼️ Aucun design n'est encore disponible
+          dans cette collection.
+
+        </div>
+
+      `;
+
+      return;
+    }
+
+    zone.innerHTML = `
+
+      <div class="bibliotheque-contenu-entete">
+
+        <h3>
+          🎨 ${echapperTexteBibliotheque(
+            subcategoryName
+          )}
+        </h3>
+
+        <p>
+          Découvrez les designs disponibles.
+        </p>
+
+      </div>
+
+      <div class="bibliotheque-designs"></div>
+
+    `;
+
+    const grille =
+      zone.querySelector(
+        ".bibliotheque-designs"
+      );
+
+    designs.forEach(
+      function(design) {
+
+        const carte =
+          document.createElement(
+            "div"
+          );
+
+        carte.className =
+          "bibliotheque-design";
+
+        carte.innerHTML = `
+
+          <div class="bibliotheque-design-image">
+
+            <img
+              src="${echapperAttributBibliotheque(
+                design.image_url
+              )}"
+              alt="${echapperAttributBibliotheque(
+                design.nom
+              )}"
+              loading="lazy"
+            >
+
+          </div>
+
+          <div class="bibliotheque-design-nom">
+
+            ${echapperTexteBibliotheque(
+              design.nom
+            )}
+
+          </div>
+
+        `;
+
+        grille.appendChild(
+          carte
+        );
+
+      }
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Erreur designs bibliothèque :",
+      error
+    );
+
+    zone.innerHTML = `
+      <div class="bibliotheque-chargement">
+        ⚠️ Impossible de charger les designs.
+      </div>
+    `;
+
+  }
+
+}
+
+
+/* =====================================================
+   PROTECTION DU TEXTE
+===================================================== */
+
+function echapperTexteBibliotheque(
+  texte
+) {
+
+  return String(
+    texte || ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+function echapperAttributBibliotheque(
+  texte
+) {
+
+  return echapperTexteBibliotheque(
+    texte
+  );
+
+}
+
+
+/* =====================================================
+   LANCEMENT DE LA BIBLIOTHÈQUE
+===================================================== */
+
+chargerBibliothequePublique();
 
     /* =====================================================
        DÉMARRAGE
