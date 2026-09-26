@@ -3565,32 +3565,18 @@ bouton.innerHTML = `
 
 bouton.onclick = function() {
 
-  const zoneTest =
-    document.getElementById(
-      "bibliotheque-contenu"
-    );
-
-  zoneTest.innerHTML = `
-    <div class="bibliotheque-chargement">
-      ✅ LE CLIC FONCTIONNE : ${echapperTexteBibliotheque(
-        categorie.nom
-      )}
-    </div>
-  `;
-
-  chargerSousCategoriesBibliothequePublic(
-    categorie.id,
+  alert(
+    "CLIC DÉTECTÉ : " +
     categorie.nom
   );
 
 };
-
 zoneCategories.appendChild(
   bouton
 );
         }
     );
-
+        
   } catch (error) {
 
     console.error(
