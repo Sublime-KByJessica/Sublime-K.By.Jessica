@@ -1295,8 +1295,10 @@ button{cursor:pointer}
 
         <div class="champ full">
 
+                  <div class="champ full">
+
           <label for="image_url">
-            URL de l'image
+            📷 Image du produit
           </label>
 
           <input
@@ -1304,6 +1306,78 @@ button{cursor:pointer}
             id="image_url"
             placeholder="https://..."
           >
+
+          <div
+            style="
+              display:flex;
+              gap:10px;
+              flex-wrap:wrap;
+              align-items:center;
+              margin-top:8px;
+            "
+          >
+
+            <label
+              for="fichierImageProduit"
+              class="btn"
+              style="
+                display:inline-block;
+                cursor:pointer;
+              "
+            >
+              📁 Choisir une photo / un fichier
+            </label>
+
+            <input
+              type="file"
+              id="fichierImageProduit"
+              accept="image/*"
+              style="display:none;"
+            >
+
+            <button
+              type="button"
+              class="btn"
+              id="boutonSupprimerImageProduit"
+            >
+              🗑️ Retirer l'image
+            </button>
+
+          </div>
+
+          <div
+            id="messageImageProduit"
+            class="stock-info"
+          >
+            Tu peux coller une URL ou choisir directement une image depuis ta galerie / tes fichiers.
+          </div>
+
+          <div
+            id="apercuImageProduit"
+            style="
+              margin-top:12px;
+              display:none;
+            "
+          >
+
+            <img
+              id="apercuImageProduitImg"
+              src=""
+              alt="Aperçu du produit"
+              style="
+                display:block;
+                width:180px;
+                max-width:100%;
+                max-height:180px;
+                object-fit:contain;
+                border:1px solid var(--bordure);
+                border-radius:12px;
+                background:white;
+                padding:6px;
+              "
+            >
+
+          </div>
 
         </div>
 
