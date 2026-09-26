@@ -2931,6 +2931,20 @@ if (etapePrenom) {
 
 }
 
+  const etapePolice =
+  document.getElementById(
+    "etapePersonnalisationPolice"
+  );
+
+if (etapePolice) {
+
+  etapePolice.style.display =
+    produit.police_active === true
+      ? ""
+      : "none";
+
+}
+
   /* ---------------------------------------------
      CHOIX DE DÉPART
   --------------------------------------------- */
@@ -6603,70 +6617,64 @@ chargerBibliothequePublique();
            3. POLICE
       ================================================== -->
 
-      <section class="personnalisation-etape">
+      <section
+  class="personnalisation-etape"
+  id="etapePersonnalisationPolice"
+>
+  <h3>🔤 3. Choisis ta police</h3>
 
-        <h3>
-          🔤 3. Choisis ta police
-        </h3>
+  <div
+    id="personnalisationPolices"
+    class="personnalisation-polices"
+  >
 
+    <button
+      type="button"
+      class="personnalisation-police active"
+      data-police="Arial"
+      style="font-family:Arial,sans-serif;"
+    >
+      Ton prénom
+    </button>
 
-        <div
-          id="personnalisationPolices"
-          class="personnalisation-polices"
-        >
+    <button
+      type="button"
+      class="personnalisation-police"
+      data-police="Georgia"
+      style="font-family:Georgia,serif;"
+    >
+      Ton prénom
+    </button>
 
-          <button
-            type="button"
-            class="personnalisation-police active"
-            data-police="Arial"
-            style="font-family: Arial, sans-serif;"
-          >
-            Ton Texte
-          </button>
+    <button
+      type="button"
+      class="personnalisation-police"
+      data-police="Trebuchet MS"
+      style="font-family:'Trebuchet MS',sans-serif;"
+    >
+      Ton prénom
+    </button>
 
+    <button
+      type="button"
+      class="personnalisation-police"
+      data-police="Courier New"
+      style="font-family:'Courier New',monospace;"
+    >
+      Ton prénom
+    </button>
 
-          <button
-            type="button"
-            class="personnalisation-police"
-            data-police="Georgia"
-            style="font-family: Georgia, serif;"
-          >
-            Ton Texte
-          </button>
+    <button
+      type="button"
+      class="personnalisation-police"
+      data-police="Comic Sans MS"
+      style="font-family:'Comic Sans MS',cursive;"
+    >
+      Ton prénom
+    </button>
 
-
-          <button
-            type="button"
-            class="personnalisation-police"
-            data-police="Trebuchet MS"
-            style="font-family: 'Trebuchet MS', sans-serif;"
-          >
-            Ton Texte
-          </button>
-
-
-          <button
-            type="button"
-            class="personnalisation-police"
-            data-police="Courier New"
-            style="font-family: 'Courier New', monospace;"
-          >
-            Ton Texte
-          </button>
-
-
-          <button
-            type="button"
-            class="personnalisation-police"
-            data-police="Comic Sans MS"
-            style="font-family: 'Comic Sans MS', cursive;"
-          >
-            Ton Texte
-          </button>
-
-        </div>
-
-      </section>
+  </div>
+</section>
 
 
       <!-- =================================================
