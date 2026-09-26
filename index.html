@@ -3097,9 +3097,9 @@ if (etapeDesign) {
      CHARGER POLICES + COULEURS
   --------------------------------------------- */
 
-  chargerPolicesPublic();
+  await chargerPolicesPublic();
 
-  chargerCouleursPublic();
+  await chargerCouleursPublic();
 
   initialiserChampPrenomPersonnalisation();
 
@@ -3863,15 +3863,11 @@ async function chargerPolicesPublic() {
     return;
   }
 
-
   zone.innerHTML = `
-
     <div class="personnalisation-message">
       ⏳ Chargement des polices…
     </div>
-
   `;
-
 
   try {
 
@@ -3880,37 +3876,22 @@ async function chargerPolicesPublic() {
       error
     } =
       await supabaseClient
-
-        .from(
-          "personnalisation_polices"
-        )
-
+        .from("personnalisation_polices")
         .select(`
           id,
           nom,
           famille_css
         `)
-
-        .eq(
-          "actif",
-          true
-        )
-
-        .order(
-          "ordre",
-          {
-            ascending: true
-          }
-        );
-
+        .eq("actif", true)
+        .order("ordre", {
+          ascending: true
+        });
 
     if (error) {
       throw error;
     }
 
-
     zone.innerHTML = "";
-
 
     if (
       !data ||
@@ -3918,58 +3899,52 @@ async function chargerPolicesPublic() {
     ) {
 
       zone.innerHTML = `
-
         <div class="personnalisation-message">
           Aucune police disponible.
         </div>
-
       `;
 
       return;
-
     }
 
-
     data.forEach(
-      function(police, index) {
+      function(police) {
 
         const bouton =
           document.createElement(
             "button"
           );
 
-
         bouton.type =
           "button";
-
 
         bouton.className =
           "personnalisation-police";
 
+        bouton.dataset.police =
+          police.famille_css;
 
-        if (index === 0) {
+        bouton.style.fontFamily =
+          police.famille_css;
+
+        bouton.textContent =
+          "Ton prénom";
+
+        /*
+         * Si une police était déjà choisie
+         * lors d'une modification du panier,
+         * on la resélectionne.
+         */
+        if (
+          personnalisationChoix.police ===
+          police.famille_css
+        ) {
 
           bouton.classList.add(
             "active"
           );
 
-          personnalisationChoix.police =
-            police.famille_css;
-
         }
-
-
-        bouton.dataset.police =
-          police.famille_css;
-
-
-        bouton.style.fontFamily =
-          police.famille_css;
-
-
-        bouton.textContent =
-          "Ton prénom";
-
 
         bouton.addEventListener(
           "click",
@@ -3989,21 +3964,17 @@ async function chargerPolicesPublic() {
                 }
               );
 
-
             bouton.classList.add(
               "active"
             );
 
-
             personnalisationChoix.police =
               police.famille_css;
-
 
             mettreAJourApercuPersonnalisation();
 
           }
         );
-
 
         zone.appendChild(
           bouton
@@ -4012,9 +3983,34 @@ async function chargerPolicesPublic() {
       }
     );
 
+    /*
+     * Si aucune police n'est encore définie,
+     * on prend la première disponible.
+     */
+    if (
+      !personnalisationChoix.police &&
+      data.length > 0
+    ) {
+
+      personnalisationChoix.police =
+        data[0].famille_css;
+
+      const premierBouton =
+        zone.querySelector(
+          ".personnalisation-police"
+        );
+
+      if (premierBouton) {
+
+        premierBouton.classList.add(
+          "active"
+        );
+
+      }
+
+    }
 
     mettreAJourApercuPersonnalisation();
-
 
   } catch (error) {
 
@@ -4023,20 +4019,15 @@ async function chargerPolicesPublic() {
       error
     );
 
-
     zone.innerHTML = `
-
       <div class="personnalisation-message">
         ❌ Impossible de charger les polices.
       </div>
-
     `;
 
   }
 
 }
-
-
 
 /* =====================================================
    COULEURS
@@ -4053,15 +4044,11 @@ async function chargerCouleursPublic() {
     return;
   }
 
-
   zone.innerHTML = `
-
     <div class="personnalisation-message">
       ⏳ Chargement des couleurs…
     </div>
-
   `;
-
 
   try {
 
@@ -4070,37 +4057,22 @@ async function chargerCouleursPublic() {
       error
     } =
       await supabaseClient
-
-        .from(
-          "personnalisation_couleurs"
-        )
-
+        .from("personnalisation_couleurs")
         .select(`
           id,
           nom,
           code_hex
         `)
-
-        .eq(
-          "actif",
-          true
-        )
-
-        .order(
-          "ordre",
-          {
-            ascending: true
-          }
-        );
-
+        .eq("actif", true)
+        .order("ordre", {
+          ascending: true
+        });
 
     if (error) {
       throw error;
     }
 
-
     zone.innerHTML = "";
-
 
     if (
       !data ||
@@ -4108,64 +4080,57 @@ async function chargerCouleursPublic() {
     ) {
 
       zone.innerHTML = `
-
         <div class="personnalisation-message">
           Aucune couleur disponible.
         </div>
-
       `;
 
       return;
-
     }
 
-
     data.forEach(
-      function(couleur, index) {
+      function(couleur) {
 
         const bouton =
           document.createElement(
             "button"
           );
 
-
         bouton.type =
           "button";
-
 
         bouton.className =
           "personnalisation-couleur";
 
-
-        if (index === 0) {
-
-          bouton.classList.add(
-            "active"
-          );
-
-          personnalisationChoix.couleur =
-            couleur.code_hex;
-
-        }
-
-
         bouton.dataset.couleur =
           couleur.code_hex;
 
-
         bouton.style.background =
           couleur.code_hex;
-
 
         bouton.setAttribute(
           "aria-label",
           couleur.nom
         );
 
-
         bouton.title =
           couleur.nom;
 
+        /*
+         * Si une couleur était déjà choisie
+         * lors d'une modification du panier,
+         * on la resélectionne.
+         */
+        if (
+          personnalisationChoix.couleur ===
+          couleur.code_hex
+        ) {
+
+          bouton.classList.add(
+            "active"
+          );
+
+        }
 
         bouton.addEventListener(
           "click",
@@ -4185,21 +4150,17 @@ async function chargerCouleursPublic() {
                 }
               );
 
-
             bouton.classList.add(
               "active"
             );
 
-
             personnalisationChoix.couleur =
               couleur.code_hex;
-
 
             mettreAJourApercuPersonnalisation();
 
           }
         );
-
 
         zone.appendChild(
           bouton
@@ -4208,9 +4169,34 @@ async function chargerCouleursPublic() {
       }
     );
 
+    /*
+     * Si aucune couleur n'est encore définie,
+     * on prend la première disponible.
+     */
+    if (
+      !personnalisationChoix.couleur &&
+      data.length > 0
+    ) {
+
+      personnalisationChoix.couleur =
+        data[0].code_hex;
+
+      const premierBouton =
+        zone.querySelector(
+          ".personnalisation-couleur"
+        );
+
+      if (premierBouton) {
+
+        premierBouton.classList.add(
+          "active"
+        );
+
+      }
+
+    }
 
     mettreAJourApercuPersonnalisation();
-
 
   } catch (error) {
 
@@ -4219,13 +4205,10 @@ async function chargerCouleursPublic() {
       error
     );
 
-
     zone.innerHTML = `
-
       <div class="personnalisation-message">
         ❌ Impossible de charger les couleurs.
       </div>
-
     `;
 
   }
@@ -4614,27 +4597,47 @@ async function modifierPersonnalisation(
     return;
   }
 
+ 
+const produit = {
 
-  const produit = {
+  id:
+    article.produit_id ||
+    article.id,
 
-    id:
-      article.produit_id ||
-      article.id,
+  nom:
+    article.nom,
 
-    nom:
-      article.nom,
+  prix:
+    article.prix,
 
-    prix:
-      article.prix,
+  image_url:
+    article.image_url,
 
-    image_url:
-      article.image_url,
+  statut:
+    article.statut,
 
-    statut:
-      article.statut
+  personnalisation_active:
+    true,
 
-  };
+  choix_image_active:
+    true,
 
+  prenom_active:
+    true,
+
+  police_active:
+    true,
+
+  couleur_active:
+    true,
+
+  message_active:
+    false,
+
+  photo_client_active:
+    false
+
+};
 
   fermerPanier();
 
