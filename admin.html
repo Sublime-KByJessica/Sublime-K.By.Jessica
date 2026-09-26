@@ -1440,76 +1440,346 @@ button{cursor:pointer}
 
       <div class="personnalisation-admin">
 
-        <h3>
-          ✨ Personnalisation du produit
-        </h3>
+  <h3>
+    ✨ Personnalisation du produit
+  </h3>
 
-        <p class="personnalisation-aide">
-          Active uniquement les options nécessaires
-          à ce produit.
-        </p>
-
-
-        <div class="checkbox-ligne">
-          <input
-            type="checkbox"
-            id="personnalisation_active"
-          >
-
-          <label for="personnalisation_active">
-            ✨ Produit personnalisable
-          </label>
-        </div>
+  <p class="personnalisation-aide">
+    Active uniquement les options nécessaires à ce produit.
+  </p>
 
 
-        <div class="checkbox-ligne">
-          <input
-            type="checkbox"
-            id="choix_image_active"
-          >
+  <div class="checkbox-ligne">
 
-          <label for="choix_image_active">
-            🖼️ Le client peut choisir une image
-          </label>
-        </div>
+    <input
+      type="checkbox"
+      id="personnalisation_active"
+    >
 
+    <label for="personnalisation_active">
+      ✨ Produit personnalisable
+    </label>
 
-        <div class="checkbox-ligne">
-          <input
-            type="checkbox"
-            id="photo_client_active"
-          >
-
-          <label for="photo_client_active">
-            📸 Le client peut envoyer sa propre photo
-          </label>
-        </div>
+  </div>
 
 
-        <div class="checkbox-ligne">
-          <input
-            type="checkbox"
-            id="prenom_active"
-          >
+  <div class="checkbox-ligne">
 
-          <label for="prenom_active">
-            ✏️ Le client peut ajouter un prénom
-          </label>
-        </div>
+    <input
+      type="checkbox"
+      id="choix_image_active"
+    >
+
+    <label for="choix_image_active">
+      🎨 Le client peut choisir un design
+    </label>
+
+  </div>
 
 
-        <div class="checkbox-ligne">
-          <input
-            type="checkbox"
-            id="message_active"
-          >
+  <div class="checkbox-ligne">
 
-          <label for="message_active">
-            💬 Le client peut ajouter un message
-          </label>
-        </div>
+    <input
+      type="checkbox"
+      id="prenom_active"
+    >
 
-      </div>
+    <label for="prenom_active">
+      ✏️ Le client peut ajouter un prénom
+    </label>
+
+  </div>
+
+
+  <div class="checkbox-ligne">
+
+    <input
+      type="checkbox"
+      id="police_active"
+    >
+
+    <label for="police_active">
+      🔤 Le client peut choisir la police
+    </label>
+
+  </div>
+
+
+  <div class="checkbox-ligne">
+
+    <input
+      type="checkbox"
+      id="couleur_active"
+    >
+
+    <label for="couleur_active">
+      🌈 Le client peut choisir la couleur
+    </label>
+
+  </div>
+
+
+  <div class="checkbox-ligne">
+
+    <input
+      type="checkbox"
+      id="message_active"
+    >
+
+    <label for="message_active">
+      💬 Le client peut ajouter un message
+    </label>
+
+  </div>
+
+
+  <div class="checkbox-ligne">
+
+    <input
+      type="checkbox"
+      id="photo_client_active"
+    >
+
+    <label for="photo_client_active">
+      📸 Le client peut envoyer sa propre photo
+    </label>
+
+  </div>
+
+
+  <hr style="margin:20px 0;border:0;border-top:1px solid var(--bordure);">
+
+
+  <h3>
+    🔤 Limites du prénom
+  </h3>
+
+  <div class="form-grid">
+
+    <div class="champ">
+
+      <label for="prenom_min_caracteres">
+        Minimum de caractères
+      </label>
+
+      <input
+        type="number"
+        id="prenom_min_caracteres"
+        min="0"
+        max="100"
+        value="1"
+      >
+
+    </div>
+
+
+    <div class="champ">
+
+      <label for="prenom_max_caracteres">
+        Maximum de caractères
+      </label>
+
+      <input
+        type="number"
+        id="prenom_max_caracteres"
+        min="1"
+        max="100"
+        value="20"
+      >
+
+    </div>
+
+  </div>
+
+
+  <hr style="margin:20px 0;border:0;border-top:1px solid var(--bordure);">
+
+
+  <h3>
+    💬 Limites du message
+  </h3>
+
+  <div class="form-grid">
+
+    <div class="champ">
+
+      <label for="message_min_caracteres">
+        Minimum de caractères
+      </label>
+
+      <input
+        type="number"
+        id="message_min_caracteres"
+        min="0"
+        max="500"
+        value="1"
+      >
+
+    </div>
+
+
+    <div class="champ">
+
+      <label for="message_max_caracteres">
+        Maximum de caractères
+      </label>
+
+      <input
+        type="number"
+        id="message_max_caracteres"
+        min="1"
+        max="500"
+        value="100"
+      >
+
+    </div>
+
+  </div>
+
+
+  <hr style="margin:20px 0;border:0;border-top:1px solid var(--bordure);">
+
+
+  <h3>
+    👀 Aperçu / Mockup
+  </h3>
+
+  <p class="personnalisation-aide">
+    Permet au client de voir approximativement le résultat
+    directement sur la photo du produit.
+  </p>
+
+
+  <div class="checkbox-ligne">
+
+    <input
+      type="checkbox"
+      id="mockup_active"
+    >
+
+    <label for="mockup_active">
+      👀 Activer l'aperçu sur le produit
+    </label>
+
+  </div>
+
+
+  <div class="checkbox-ligne">
+
+    <input
+      type="checkbox"
+      id="mockup_design_active"
+      checked
+    >
+
+    <label for="mockup_design_active">
+      🎨 Afficher le design dans l'aperçu
+    </label>
+
+  </div>
+
+
+  <div class="checkbox-ligne">
+
+    <input
+      type="checkbox"
+      id="mockup_prenom_active"
+      checked
+    >
+
+    <label for="mockup_prenom_active">
+      ✏️ Afficher le prénom dans l'aperçu
+    </label>
+
+  </div>
+
+
+  <div class="checkbox-ligne">
+
+    <input
+      type="checkbox"
+      id="mockup_message_active"
+    >
+
+    <label for="mockup_message_active">
+      💬 Afficher le message dans l'aperçu
+    </label>
+
+  </div>
+
+
+  <div class="form-grid">
+
+    <div class="champ">
+
+      <label for="mockup_position_x">
+        Position horizontale (%)
+      </label>
+
+      <input
+        type="number"
+        id="mockup_position_x"
+        min="0"
+        max="100"
+        value="50"
+      >
+
+    </div>
+
+
+    <div class="champ">
+
+      <label for="mockup_position_y">
+        Position verticale (%)
+      </label>
+
+      <input
+        type="number"
+        id="mockup_position_y"
+        min="0"
+        max="100"
+        value="50"
+      >
+
+    </div>
+
+
+    <div class="champ">
+
+      <label for="mockup_largeur">
+        Taille (%)
+      </label>
+
+      <input
+        type="number"
+        id="mockup_largeur"
+        min="5"
+        max="100"
+        value="35"
+      >
+
+    </div>
+
+
+    <div class="champ">
+
+      <label for="mockup_rotation">
+        Rotation (°)
+      </label>
+
+      <input
+        type="number"
+        id="mockup_rotation"
+        min="-180"
+        max="180"
+        value="0"
+      >
+
+    </div>
+
+  </div>
+
+</div>
 
 
       <div class="actions-formulaire">
@@ -3033,11 +3303,109 @@ document
           ).checked,
 
         message_active:
-          document.getElementById(
-            "message_active"
-          ).checked
+  document.getElementById(
+    "message_active"
+  ).checked,
 
-      };
+police_active:
+  document.getElementById(
+    "police_active"
+  ).checked,
+
+couleur_active:
+  document.getElementById(
+    "couleur_active"
+  ).checked,
+
+prenom_min_caracteres:
+  Math.max(
+    0,
+    parseInt(
+      document.getElementById(
+        "prenom_min_caracteres"
+      ).value
+    ) || 0
+  ),
+
+prenom_max_caracteres:
+  Math.max(
+    1,
+    parseInt(
+      document.getElementById(
+        "prenom_max_caracteres"
+      ).value
+    ) || 20
+  ),
+
+message_min_caracteres:
+  Math.max(
+    0,
+    parseInt(
+      document.getElementById(
+        "message_min_caracteres"
+      ).value
+    ) || 0
+  ),
+
+message_max_caracteres:
+  Math.max(
+    1,
+    parseInt(
+      document.getElementById(
+        "message_max_caracteres"
+      ).value
+    ) || 100
+  ),
+
+mockup_active:
+  document.getElementById(
+    "mockup_active"
+  ).checked,
+
+mockup_design_active:
+  document.getElementById(
+    "mockup_design_active"
+  ).checked,
+
+mockup_prenom_active:
+  document.getElementById(
+    "mockup_prenom_active"
+  ).checked,
+
+mockup_message_active:
+  document.getElementById(
+    "mockup_message_active"
+  ).checked,
+
+mockup_position_x:
+  Number(
+    document.getElementById(
+      "mockup_position_x"
+    ).value
+  ) || 50,
+
+mockup_position_y:
+  Number(
+    document.getElementById(
+      "mockup_position_y"
+    ).value
+  ) || 50,
+
+mockup_largeur:
+  Number(
+    document.getElementById(
+      "mockup_largeur"
+    ).value
+  ) || 35,
+
+mockup_rotation:
+  Number(
+    document.getElementById(
+      "mockup_rotation"
+    ).value
+  ) || 0
+
+};
 
 
       if(!produit.categorie_id){
@@ -3563,6 +3931,104 @@ async function(id){
   document.getElementById("message_active").checked=
     data.message_active===true;
 
+  document.getElementById(
+  "police_active"
+).checked =
+  data.police_active === true;
+
+
+document.getElementById(
+  "couleur_active"
+).checked =
+  data.couleur_active === true;
+
+
+document.getElementById(
+  "prenom_min_caracteres"
+).value =
+  Number(
+    data.prenom_min_caracteres ?? 1
+  );
+
+
+document.getElementById(
+  "prenom_max_caracteres"
+).value =
+  Number(
+    data.prenom_max_caracteres ?? 20
+  );
+
+
+document.getElementById(
+  "message_min_caracteres"
+).value =
+  Number(
+    data.message_min_caracteres ?? 1
+  );
+
+
+document.getElementById(
+  "message_max_caracteres"
+).value =
+  Number(
+    data.message_max_caracteres ?? 100
+  );
+
+
+document.getElementById(
+  "mockup_active"
+).checked =
+  data.mockup_active === true;
+
+
+document.getElementById(
+  "mockup_design_active"
+).checked =
+  data.mockup_design_active !== false;
+
+
+document.getElementById(
+  "mockup_prenom_active"
+).checked =
+  data.mockup_prenom_active !== false;
+
+
+document.getElementById(
+  "mockup_message_active"
+).checked =
+  data.mockup_message_active === true;
+
+
+document.getElementById(
+  "mockup_position_x"
+).value =
+  Number(
+    data.mockup_position_x ?? 50
+  );
+
+
+document.getElementById(
+  "mockup_position_y"
+).value =
+  Number(
+    data.mockup_position_y ?? 50
+  );
+
+
+document.getElementById(
+  "mockup_largeur"
+).value =
+  Number(
+    data.mockup_largeur ?? 35
+  );
+
+
+document.getElementById(
+  "mockup_rotation"
+).value =
+  Number(
+    data.mockup_rotation ?? 0
+  );
 
   document.getElementById(
     "titreFormulaire"
@@ -3668,6 +4134,100 @@ function reinitialiserFormulaire(){
   document.getElementById("delaiMin").value=2;
 
   document.getElementById("delaiMax").value=5;
+
+  document.getElementById(
+  "personnalisation_active"
+).checked = false;
+
+
+document.getElementById(
+  "choix_image_active"
+).checked = false;
+
+
+document.getElementById(
+  "photo_client_active"
+).checked = false;
+
+
+document.getElementById(
+  "prenom_active"
+).checked = false;
+
+
+document.getElementById(
+  "message_active"
+).checked = false;
+
+
+document.getElementById(
+  "police_active"
+).checked = false;
+
+
+document.getElementById(
+  "couleur_active"
+).checked = false;
+
+
+document.getElementById(
+  "prenom_min_caracteres"
+).value = 1;
+
+
+document.getElementById(
+  "prenom_max_caracteres"
+).value = 20;
+
+
+document.getElementById(
+  "message_min_caracteres"
+).value = 1;
+
+
+document.getElementById(
+  "message_max_caracteres"
+).value = 100;
+
+
+document.getElementById(
+  "mockup_active"
+).checked = false;
+
+
+document.getElementById(
+  "mockup_design_active"
+).checked = true;
+
+
+document.getElementById(
+  "mockup_prenom_active"
+).checked = true;
+
+
+document.getElementById(
+  "mockup_message_active"
+).checked = false;
+
+
+document.getElementById(
+  "mockup_position_x"
+).value = 50;
+
+
+document.getElementById(
+  "mockup_position_y"
+).value = 50;
+
+
+document.getElementById(
+  "mockup_largeur"
+).value = 35;
+
+
+document.getElementById(
+  "mockup_rotation"
+).value = 0;
 
   document.getElementById(
     "titreFormulaire"
