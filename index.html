@@ -3564,6 +3564,8 @@ async function chargerBibliothequePublique() {
           "click",
           function() {
 
+            console.log("CLIC CATÉGORIE :", categorie.nom);
+            
             chargerSousCategoriesBibliothequePublic(
               categorie.id,
               categorie.nom
