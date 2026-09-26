@@ -3219,156 +3219,141 @@
 
 
     /* =====================================================
-       INFORMATIONS LÉGALES
-    ===================================================== */
+   INFORMATIONS LÉGALES
+===================================================== */
 
-    async function chargerPagesLegalesPublic() {
+async function chargerPagesLegalesPublic() {
 
-      const zone =
-        document.getElementById(
-          "liensPagesLegales"
-        );
+  const zone =
+    document.getElementById(
+      "liensPagesLegales"
+    );
 
+  if (!zone) {
+    return;
+  }
 
-      if (!zone) {
-        return;
-      }
+  try {
 
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
 
-      try {
+        .from("legal_pages")
 
-        const {
-          data,
-          error
-        } =
-          await supabaseClient
+        .select(`
+          id,
+          titre,
+          contenu,
+          ordre
+        `)
 
-            .from("legal_pages")
-
-            .select(`
-              id,
-              titre,
-              contenu,
-              ordre
-            `)
-
-            .order(
-              "ordre",
-              {
-                ascending: true
-              }
-            );
-
-
-        if (error) {
-          throw error;
-        }
-
-
-        if (
-          !data ||
-          data.length === 0
-        ) {
-
-          zone.innerHTML = "";
-
-          return;
-
-        }
-
-
-        zone.innerHTML = "";
-
-
-        data.forEach(
-          function(page, index) {
-
-            const bouton =
-              document.createElement(
-                "button"
-              );
-
-
-            bouton.type =
-              "button";
-
-
-            bouton.className =
-              "legal-link";
-
-
-            bouton.textContent =
-              page.titre;
-
-
-            bouton.addEventListener(
-              "click",
-              function() {
-
-                ouvrirPageLegale(
-                  page.titre,
-                  page.contenu
-                );
-
-        separateur.textContent =
-                "•";
-
-
-              zone.appendChild(
-                separateur
-              );
-
-            }
-
+        .order(
+          "ordre",
+          {
+            ascending: true
           }
         );
 
-
-      } catch (error) {
-
-        console.error(
-              const separateur =
-                document.createElement(
-                  "span"
-                );
-
-
-              separateur.className =
-                "legal-separator";
-
-
-              separateur.textContent =
-                "•";
-
-
-              zone.appendChild(
-                separateur
-              );
-
-            }
-
-          }
-        );
-
-
-      } catch (error) {
-
-        console.error(
-          "Erreur lors du chargement des pages légales :",
-          error
-        );
-
-
-        zone.innerHTML = "";
-
-      }
-
+    if (error) {
+      throw error;
     }
 
+    zone.innerHTML = "";
 
-    /* =====================================================
-       OUVRIR UNE PAGE LÉGALE
-    ===================================================== */
+    if (
+      !data ||
+      data.length === 0
+    ) {
+      return;
+    }
+
+    data.forEach(
+      function(page, index) {
+
+        /* =================================================
+           BOUTON DE LA PAGE LÉGALE
+        ================================================= */
+
+        const bouton =
+          document.createElement(
+            "button"
+          );
+
+        bouton.type =
+          "button";
+
+        bouton.className =
+          "legal-link";
+
+        bouton.textContent =
+          page.titre;
+
+        bouton.addEventListener(
+          "click",
+          function() {
+
+            ouvrirPageLegale(
+              page.titre,
+              page.contenu
+            );
+
+          }
+        );
+
+        zone.appendChild(
+          bouton
+        );
+
+
+        /* =================================================
+           SÉPARATEUR
+        ================================================= */
+
+        if (
+          index <
+          data.length - 1
+        ) {
+
+          const separateur =
+            document.createElement(
+              "span"
+            );
+
+          separateur.className =
+            "legal-separator";
+
+          separateur.textContent =
+            "•";
+
+          zone.appendChild(
+            separateur
+          );
+
+        }
+
+      }
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Erreur lors du chargement des pages légales :",
+      error
+    );
+
+    zone.innerHTML = "";
+
+  }
+
+}
+
+
+/* =====================================================
+   OUVRIR UNE PAGE LÉGALE
+===================================================== */
 
     function ouvrirPageLegale(
       titre,
