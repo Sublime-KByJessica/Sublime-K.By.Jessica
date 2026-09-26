@@ -2860,6 +2860,8 @@
 
 let personnalisationProduitActuel = null;
 
+    let personnalisationArticleEnModification = null;
+    
 let personnalisationChoix = {
 
   categorieId: "",
@@ -2885,15 +2887,16 @@ let personnalisationChoix = {
    OUVRIR LA PERSONNALISATION
 ===================================================== */
 
-function ouvrirPersonnalisation(produit) {
+async function ouvrirPersonnalisation(
+  produit,
+  articleAModifier = null
+) {
 
   if (
     !produit ||
     produit.statut === "indisponible"
   ) {
-
     return;
-
   }
 
 
@@ -2901,26 +2904,72 @@ function ouvrirPersonnalisation(produit) {
     produit;
 
 
-  personnalisationChoix = {
+  personnalisationArticleEnModification =
+    articleAModifier;
 
-    categorieId: "",
 
-    sousCategorieId: "",
+  /* ---------------------------------------------
+     CHOIX DE DÉPART
+  --------------------------------------------- */
 
-    designId: "",
+  if (articleAModifier && articleAModifier.personnalisation) {
 
-    designNom: "",
+    personnalisationChoix = {
 
-    designImage: "",
+      categorieId:
+        articleAModifier.personnalisation.categorieId || "",
 
-    prenom: "",
+      sousCategorieId:
+        articleAModifier.personnalisation.sousCategorieId || "",
 
-    police: "Arial",
+      designId:
+        articleAModifier.personnalisation.designId || "",
 
-    couleur: "#000000"
+      designNom:
+        articleAModifier.personnalisation.designNom || "",
 
-  };
+      designImage:
+        articleAModifier.personnalisation.designImage || "",
 
+      prenom:
+        articleAModifier.personnalisation.prenom || "",
+
+      police:
+        articleAModifier.personnalisation.police || "Arial",
+
+      couleur:
+        articleAModifier.personnalisation.couleur || "#000000"
+
+    };
+
+  } else {
+
+    personnalisationChoix = {
+
+      categorieId: "",
+
+      sousCategorieId: "",
+
+      designId: "",
+
+      designNom: "",
+
+      designImage: "",
+
+      prenom: "",
+
+      police: "Arial",
+
+      couleur: "#000000"
+
+    };
+
+  }
+
+
+  /* ---------------------------------------------
+     NOM DU PRODUIT
+  --------------------------------------------- */
 
   const nomProduit =
     document.getElementById(
@@ -2931,10 +2980,15 @@ function ouvrirPersonnalisation(produit) {
   if (nomProduit) {
 
     nomProduit.textContent =
-      produit.nom || "Création personnalisée";
+      produit.nom ||
+      "Création personnalisée";
 
   }
 
+
+  /* ---------------------------------------------
+     PRÉNOM
+  --------------------------------------------- */
 
   const prenom =
     document.getElementById(
@@ -2944,13 +2998,15 @@ function ouvrirPersonnalisation(produit) {
 
   if (prenom) {
 
-    prenom.value = "";
+    prenom.value =
+      personnalisationChoix.prenom;
 
   }
 
 
-  mettreAJourApercuPersonnalisation();
-
+  /* ---------------------------------------------
+     OUVRIR LA FENÊTRE
+  --------------------------------------------- */
 
   const overlay =
     document.getElementById(
@@ -2965,12 +3021,194 @@ function ouvrirPersonnalisation(produit) {
   }
 
 
-  chargerCategoriesPersonnalisation();
-chargerPolicesPublic();
-  chargerCouleursPublic();
-  initialiserChampPrenomPersonnalisation();
-}
+  /* ---------------------------------------------
+     CHARGER LES CATÉGORIES
+  --------------------------------------------- */
 
+  await chargerCategoriesPersonnalisation();
+
+
+  /* ---------------------------------------------
+     CHARGER POLICES + COULEURS
+  --------------------------------------------- */
+
+  chargerPolicesPublic();
+
+  chargerCouleursPublic();
+
+  initialiserChampPrenomPersonnalisation();
+
+
+  /* ---------------------------------------------
+     SI MODIFICATION :
+     RECHARGER CATÉGORIE + SOUS-CATÉGORIE
+  --------------------------------------------- */
+
+  if (
+    articleAModifier &&
+    personnalisationChoix.categorieId
+  ) {
+
+    const selectCategorie =
+      document.getElementById(
+        "personnalisationCategorie"
+      );
+
+
+    const selectSousCategorie =
+      document.getElementById(
+        "personnalisationSousCategorie"
+      );
+
+
+    if (
+      selectCategorie &&
+      selectSousCategorie
+    ) {
+
+      selectCategorie.value =
+        personnalisationChoix.categorieId;
+
+
+      selectSousCategorie.innerHTML = `
+
+        <option value="">
+          Chargement…
+        </option>
+
+      `;
+
+      selectSousCategorie.disabled =
+        true;
+
+
+      try {
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient
+
+            .from("library_subcategories")
+
+            .select(`
+              id,
+              nom
+            `)
+
+            .eq(
+              "category_id",
+              personnalisationChoix.categorieId
+            )
+
+            .order(
+              "ordre",
+              {
+                ascending: true
+              }
+            );
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        selectSousCategorie.innerHTML = `
+
+          <option value="">
+            Choisir une sous-catégorie
+          </option>
+
+        `;
+
+
+        (data || []).forEach(
+          function(sousCategorie) {
+
+            const option =
+              document.createElement(
+                "option"
+              );
+
+
+            option.value =
+              sousCategorie.id;
+
+
+            option.textContent =
+              "📂 " +
+              sousCategorie.nom;
+
+
+            selectSousCategorie.appendChild(
+              option
+            );
+
+          }
+        );
+
+
+        selectSousCategorie.disabled =
+          false;
+
+
+        selectSousCategorie.value =
+          personnalisationChoix.sousCategorieId;
+
+
+        await chargerDesignsPersonnalisation(
+          personnalisationChoix.sousCategorieId
+        );
+
+
+        /* -----------------------------------------
+           RESÉLECTIONNER LE DESIGN
+        ----------------------------------------- */
+
+        document
+          .querySelectorAll(
+            ".personnalisation-design"
+          )
+          .forEach(
+            function(element) {
+
+              if (
+                element.dataset.designId ===
+                personnalisationChoix.designId
+              ) {
+
+                element.classList.add(
+                  "active"
+                );
+
+              }
+
+            }
+          );
+
+      } catch (error) {
+
+        console.error(
+          "Erreur restauration personnalisation :",
+          error
+        );
+
+      }
+
+    }
+
+  }
+
+
+  /* ---------------------------------------------
+     APERÇU
+  --------------------------------------------- */
+
+  mettreAJourApercuPersonnalisation();
+
+}
 
 /* =====================================================
    FERMER LA PERSONNALISATION
@@ -3991,16 +4229,16 @@ function initialiserChampPrenomPersonnalisation() {
    BOUTON CONTINUER
 ===================================================== */
 
+/* =====================================================
+   VALIDER / MODIFIER LA PERSONNALISATION
+===================================================== */
+
 function validerPersonnalisation() {
 
   if (!personnalisationProduitActuel) {
     return;
   }
 
-
-  /* ---------------------------------------------
-     RÉCUPÉRER LE PRÉNOM
-  --------------------------------------------- */
 
   const champPrenom =
     document.getElementById(
@@ -4015,7 +4253,7 @@ function validerPersonnalisation() {
 
 
   /* ---------------------------------------------
-     VÉRIFICATION
+     VÉRIFICATION DU PRÉNOM
   --------------------------------------------- */
 
   if (!personnalisationChoix.prenom) {
@@ -4032,7 +4270,85 @@ function validerPersonnalisation() {
 
 
   /* ---------------------------------------------
-     CRÉER UNE LIGNE PERSONNALISÉE
+     MODIFICATION D'UN ARTICLE EXISTANT
+  --------------------------------------------- */
+
+  if (personnalisationArticleEnModification) {
+
+    const article =
+      panier.find(
+        function(element) {
+
+          return String(element.id) ===
+            String(
+              personnalisationArticleEnModification.id
+            );
+
+        }
+      );
+
+
+    if (article) {
+
+      article.personnalisation = {
+
+        categorieId:
+          personnalisationChoix.categorieId,
+
+        sousCategorieId:
+          personnalisationChoix.sousCategorieId,
+
+        designId:
+          personnalisationChoix.designId,
+
+        designNom:
+          personnalisationChoix.designNom,
+
+        designImage:
+          personnalisationChoix.designImage,
+
+        prenom:
+          personnalisationChoix.prenom,
+
+        police:
+          personnalisationChoix.police,
+
+        couleur:
+          personnalisationChoix.couleur
+
+      };
+
+
+      article.image_url =
+        personnalisationChoix.designImage ||
+        article.image_url ||
+        "";
+
+
+      sauvegarderPanier();
+
+      mettreAJourCompteurPanier();
+
+
+      personnalisationArticleEnModification =
+        null;
+
+
+      fermerPersonnalisation();
+
+      afficherPanier();
+
+      ouvrirPanier();
+
+      return;
+
+    }
+
+  }
+
+
+  /* ---------------------------------------------
+     NOUVEL ARTICLE PERSONNALISÉ
   --------------------------------------------- */
 
   const produit =
@@ -4043,15 +4359,6 @@ function validerPersonnalisation() {
     Number(produit.prix || 0);
 
 
-  /*
-     On crée un identifiant unique pour cette
-     personnalisation.
-
-     Ainsi, deux fois le même produit avec
-     deux prénoms différents seront deux lignes
-     différentes dans le panier.
-  */
-
   const idPersonnalise =
     String(produit.id) +
     "-" +
@@ -4060,7 +4367,8 @@ function validerPersonnalisation() {
 
   panier.push({
 
-    id: idPersonnalise,
+    id:
+      idPersonnalise,
 
     produit_id:
       produit.id,
@@ -4112,25 +4420,16 @@ function validerPersonnalisation() {
   });
 
 
-  /* ---------------------------------------------
-     SAUVEGARDER LE PANIER
-  --------------------------------------------- */
-
   sauvegarderPanier();
 
   mettreAJourCompteurPanier();
 
 
-  /* ---------------------------------------------
-     FERMER LA PERSONNALISATION
-  --------------------------------------------- */
+  personnalisationArticleEnModification =
+    null;
+
 
   fermerPersonnalisation();
-
-
-  /* ---------------------------------------------
-     OUVRIR LE PANIER
-  --------------------------------------------- */
 
   afficherPanier();
 
@@ -4199,6 +4498,65 @@ function validerPersonnalisation() {
 
     }
 
+    /* =====================================================
+   MODIFIER UNE PERSONNALISATION DU PANIER
+===================================================== */
+
+async function modifierPersonnalisation(
+  articleId
+) {
+
+  const article =
+    panier.find(
+      function(element) {
+
+        return String(element.id) ===
+          String(articleId);
+
+      }
+    );
+
+
+  if (!article) {
+    return;
+  }
+
+
+  if (!article.personnalisation) {
+    return;
+  }
+
+
+  const produit = {
+
+    id:
+      article.produit_id ||
+      article.id,
+
+    nom:
+      article.nom,
+
+    prix:
+      article.prix,
+
+    image_url:
+      article.image_url,
+
+    statut:
+      article.statut
+
+  };
+
+
+  fermerPanier();
+
+
+  await ouvrirPersonnalisation(
+    produit,
+    article
+  );
+
+}
 
     function modifierQuantite(
       id,
@@ -4373,6 +4731,54 @@ function validerPersonnalisation() {
                 ${article.nom}
               </div>
 
+${
+  article.personnalisation
+    ? `
+      <div class="panier-personnalisation">
+
+        ✏️ Prénom :
+        ${echapperHTML(
+          article.personnalisation.prenom || ""
+        )}
+
+        <br>
+
+        🔤 Police :
+        ${echapperHTML(
+          article.personnalisation.police || ""
+        )}
+
+        <br>
+
+        🌈 Couleur :
+        ${echapperHTML(
+          article.personnalisation.couleur || ""
+        )}
+
+        ${
+          article.personnalisation.designNom
+            ? `
+              <br>
+              🎨 Design :
+              ${echapperHTML(
+                article.personnalisation.designNom
+              )}
+            `
+            : ""
+        }
+
+      </div>
+
+      <button
+        type="button"
+        class="modifier-personnalisation"
+        onclick="modifierPersonnalisation('${article.id}')"
+      >
+        ✏️ Modifier la personnalisation
+      </button>
+    `
+    : ""
+}
 
               <div class="panier-ligne-prix">
                 ${formaterPrix(sousTotal)}
