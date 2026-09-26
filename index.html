@@ -3268,20 +3268,23 @@
                   page.contenu
                 );
 
-              }
-            );
+        separateur.textContent =
+                "•";
 
 
-            zone.appendChild(
-              bouton
-            );
+              zone.appendChild(
+                separateur
+              );
+
+            }
+
+          }
+        );
 
 
-            if (
-              index <
-              data.length - 1
-            ) {
+      } catch (error) {
 
+        console.error(
               const separateur =
                 document.createElement(
                   "span"
@@ -3545,40 +3548,34 @@ async function chargerBibliothequePublique() {
 
         bouton.type = "button";
 
-        bouton.className =
-          "bibliotheque-categorie-bouton";
+bouton.className =
+  "bibliotheque-categorie-bouton";
 
-        bouton.innerHTML = `
-          <span class="bibliotheque-categorie-emoji">
-            ${categorie.emoji || "📁"}
-          </span>
+bouton.innerHTML = `
+  <span class="bibliotheque-categorie-emoji">
+    ${categorie.emoji || "📁"}
+  </span>
 
-          <span>
-            ${echapperTexteBibliotheque(
-              categorie.nom
-            )}
-          </span>
-        `;
+  <span>
+    ${echapperTexteBibliotheque(
+      categorie.nom
+    )}
+  </span>
+`;
 
-        bouton.addEventListener(
-          "click",
-          function() {
+bouton.onclick = function() {
 
-            console.log("CLIC CATÉGORIE :", categorie.nom);
-            
-            chargerSousCategoriesBibliothequePublic(
-              categorie.id,
-              categorie.nom
-            );
+  chargerSousCategoriesBibliothequePublic(
+    categorie.id,
+    categorie.nom
+  );
 
-          }
-        );
+};
 
-        zoneCategories.appendChild(
-          bouton
-        );
-
-      }
+zoneCategories.appendChild(
+  bouton
+);
+        }
     );
 
 
