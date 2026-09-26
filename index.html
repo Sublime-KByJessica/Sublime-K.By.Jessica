@@ -2945,6 +2945,20 @@ if (etapePolice) {
 
 }
 
+  const etapeCouleur =
+  document.getElementById(
+    "etapePersonnalisationCouleur"
+  );
+
+if (etapeCouleur) {
+
+  etapeCouleur.style.display =
+    produit.couleur_active === true
+      ? ""
+      : "none";
+
+}
+  
   /* ---------------------------------------------
      CHOIX DE DÉPART
   --------------------------------------------- */
@@ -6681,110 +6695,99 @@ chargerBibliothequePublique();
            4. COULEUR
       ================================================== -->
 
-      <section class="personnalisation-etape">
+      <section
+  class="personnalisation-etape"
+  id="etapePersonnalisationCouleur"
+>
+  <h3>🌈 4. Choisis ta couleur</h3>
 
-        <h3>
-          🌈 4. Choisis ta couleur
-        </h3>
+  <div
+    id="personnalisationCouleurs"
+    class="personnalisation-couleurs"
+  >
 
+    <button
+      type="button"
+      class="personnalisation-couleur active"
+      data-couleur="#000000"
+      style="background:#000000;"
+      aria-label="Noir"
+    ></button>
 
-        <div
-          id="personnalisationCouleurs"
-          class="personnalisation-couleurs"
-        >
+    <button
+      type="button"
+      class="personnalisation-couleur"
+      data-couleur="#FFFFFF"
+      style="background:#FFFFFF;"
+      aria-label="Blanc"
+    ></button>
 
-          <button
-            type="button"
-            class="personnalisation-couleur active"
-            data-couleur="#000000"
-            style="background:#000000;"
-            aria-label="Noir"
-          ></button>
+    <button
+      type="button"
+      class="personnalisation-couleur"
+      data-couleur="#E91E63"
+      style="background:#E91E63;"
+      aria-label="Rose"
+    ></button>
 
+    <button
+      type="button"
+      class="personnalisation-couleur"
+      data-couleur="#9C27B0"
+      style="background:#9C27B0;"
+      aria-label="Violet"
+    ></button>
 
-          <button
-            type="button"
-            class="personnalisation-couleur"
-            data-couleur="#FFFFFF"
-            style="background:#FFFFFF;"
-            aria-label="Blanc"
-          ></button>
+    <button
+      type="button"
+      class="personnalisation-couleur"
+      data-couleur="#2196F3"
+      style="background:#2196F3;"
+      aria-label="Bleu"
+    ></button>
 
+    <button
+      type="button"
+      class="personnalisation-couleur"
+      data-couleur="#4CAF50"
+      style="background:#4CAF50;"
+      aria-label="Vert"
+    ></button>
 
-          <button
-            type="button"
-            class="personnalisation-couleur"
-            data-couleur="#E91E63"
-            style="background:#E91E63;"
-            aria-label="Rose"
-          ></button>
+    <button
+      type="button"
+      class="personnalisation-couleur"
+      data-couleur="#FF9800"
+      style="background:#FF9800;"
+      aria-label="Orange"
+    ></button>
 
+    <button
+      type="button"
+      class="personnalisation-couleur"
+      data-couleur="#FDD835"
+      style="background:#FDD835;"
+      aria-label="Jaune"
+    ></button>
 
-          <button
-            type="button"
-            class="personnalisation-couleur"
-            data-couleur="#9C27B0"
-            style="background:#9C27B0;"
-            aria-label="Violet"
-          ></button>
+    <button
+      type="button"
+      class="personnalisation-couleur"
+      data-couleur="#795548"
+      style="background:#795548;"
+      aria-label="Marron"
+    ></button>
 
+    <button
+      type="button"
+      class="personnalisation-couleur"
+      data-couleur="#C0C0C0"
+      style="background:#C0C0C0;"
+      aria-label="Argent"
+    ></button>
 
-          <button
-            type="button"
-            class="personnalisation-couleur"
-            data-couleur="#2196F3"
-            style="background:#2196F3;"
-            aria-label="Bleu"
-          ></button>
-
-
-          <button
-            type="button"
-            class="personnalisation-couleur"
-            data-couleur="#4CAF50"
-            style="background:#4CAF50;"
-            aria-label="Vert"
-          ></button>
-
-
-          <button
-            type="button"
-            class="personnalisation-couleur"
-            data-couleur="#FF9800"
-            style="background:#FF9800;"
-            aria-label="Orange"
-          ></button>
-
-
-          <button
-            type="button"
-            class="personnalisation-couleur"
-            data-couleur="#FDD835"
-            style="background:#FDD835;"
-            aria-label="Jaune"
-          ></button>
-
-
-          <button
-            type="button"
-            class="personnalisation-couleur"
-            data-couleur="#795548"
-            style="background:#795548;"
-            aria-label="Marron"
-          ></button>
-
-
-          <button
-            type="button"
-            class="personnalisation-couleur"
-            data-couleur="#C0C0C0"
-            style="background:#C0C0C0;"
-            aria-label="Argent"
-          ></button>
-
-        </div>
-
-      </section>
+  </div>
+</section>
 
 
       <!-- =================================================
