@@ -2968,6 +2968,7 @@ function ouvrirPersonnalisation(produit) {
   chargerCategoriesPersonnalisation();
 chargerPolicesPublic();
   chargerCouleursPublic();
+  initialiserChampPrenomPersonnalisation();
 }
 
 
@@ -3932,7 +3933,7 @@ async function chargerCouleursPublic() {
 /* =====================================================
    APERÇU DU PRÉNOM
 ===================================================== */
-    
+
 function mettreAJourApercuPersonnalisation() {
 
   const apercu =
@@ -3940,26 +3941,51 @@ function mettreAJourApercuPersonnalisation() {
       "personnalisationTexteApercu"
     );
 
-
   if (!apercu) {
     return;
   }
-
 
   apercu.textContent =
     personnalisationChoix.prenom ||
     "Ton prénom";
 
-
   apercu.style.fontFamily =
-    personnalisationChoix.police;
-
+    personnalisationChoix.police ||
+    "Arial, sans-serif";
 
   apercu.style.color =
-    personnalisationChoix.couleur;
+    personnalisationChoix.couleur ||
+    "#000000";
 
 }
 
+
+/* =====================================================
+   ENREGISTRER LE PRÉNOM EN DIRECT
+===================================================== */
+
+function initialiserChampPrenomPersonnalisation() {
+
+  const champPrenom =
+    document.getElementById(
+      "personnalisationPrenom"
+    );
+
+  if (!champPrenom) {
+    return;
+  }
+
+  champPrenom.oninput =
+    function() {
+
+      personnalisationChoix.prenom =
+        this.value.trim();
+
+      mettreAJourApercuPersonnalisation();
+
+    };
+
+}
 
 /* =====================================================
    BOUTON CONTINUER
@@ -3967,32 +3993,148 @@ function mettreAJourApercuPersonnalisation() {
 
 function validerPersonnalisation() {
 
-  if (
-    !personnalisationProduitActuel
-  ) {
+  if (!personnalisationProduitActuel) {
+    return;
+  }
+
+
+  /* ---------------------------------------------
+     RÉCUPÉRER LE PRÉNOM
+  --------------------------------------------- */
+
+  const champPrenom =
+    document.getElementById(
+      "personnalisationPrenom"
+    );
+
+
+  personnalisationChoix.prenom =
+    champPrenom
+      ? champPrenom.value.trim()
+      : "";
+
+
+  /* ---------------------------------------------
+     VÉRIFICATION
+  --------------------------------------------- */
+
+  if (!personnalisationChoix.prenom) {
+
+    alert(
+      "✏️ Merci d'indiquer un prénom."
+    );
+
+    champPrenom?.focus();
 
     return;
 
   }
 
 
-  alert(
-    "✅ La personnalisation fonctionne !\n\n" +
-    "Produit : " +
-    personnalisationProduitActuel.nom +
-    "\n" +
-    "Prénom : " +
-    (
-      personnalisationChoix.prenom ||
-      "Non renseigné"
-    ) +
-    "\n" +
-    "Police : " +
-    personnalisationChoix.police +
-    "\n" +
-    "Couleur : " +
-    personnalisationChoix.couleur
-  );
+  /* ---------------------------------------------
+     CRÉER UNE LIGNE PERSONNALISÉE
+  --------------------------------------------- */
+
+  const produit =
+    personnalisationProduitActuel;
+
+
+  const prix =
+    Number(produit.prix || 0);
+
+
+  /*
+     On crée un identifiant unique pour cette
+     personnalisation.
+
+     Ainsi, deux fois le même produit avec
+     deux prénoms différents seront deux lignes
+     différentes dans le panier.
+  */
+
+  const idPersonnalise =
+    String(produit.id) +
+    "-" +
+    Date.now();
+
+
+  panier.push({
+
+    id: idPersonnalise,
+
+    produit_id:
+      produit.id,
+
+    nom:
+      produit.nom,
+
+    prix:
+      prix,
+
+    image_url:
+      personnalisationChoix.designImage ||
+      produit.image_url ||
+      "",
+
+    statut:
+      produit.statut,
+
+    quantite: 1,
+
+    personnalisation: {
+
+      categorieId:
+        personnalisationChoix.categorieId,
+
+      sousCategorieId:
+        personnalisationChoix.sousCategorieId,
+
+      designId:
+        personnalisationChoix.designId,
+
+      designNom:
+        personnalisationChoix.designNom,
+
+      designImage:
+        personnalisationChoix.designImage,
+
+      prenom:
+        personnalisationChoix.prenom,
+
+      police:
+        personnalisationChoix.police,
+
+      couleur:
+        personnalisationChoix.couleur
+
+    }
+
+  });
+
+
+  /* ---------------------------------------------
+     SAUVEGARDER LE PANIER
+  --------------------------------------------- */
+
+  sauvegarderPanier();
+
+  mettreAJourCompteurPanier();
+
+
+  /* ---------------------------------------------
+     FERMER LA PERSONNALISATION
+  --------------------------------------------- */
+
+  fermerPersonnalisation();
+
+
+  /* ---------------------------------------------
+     OUVRIR LE PANIER
+  --------------------------------------------- */
+
+  afficherPanier();
+
+  ouvrirPanier();
 
 }
 
