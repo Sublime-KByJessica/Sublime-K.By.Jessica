@@ -5737,7 +5737,582 @@ async function(id){
 
 };
 
+/* =====================================================
+   PERSONNALISATION — POLICES
+===================================================== */
 
+async function chargerPolicesPersonnalisation() {
+
+  const liste =
+    document.getElementById(
+      "listePolicesPersonnalisation"
+    );
+
+  if (!liste) {
+    return;
+  }
+
+  liste.innerHTML =
+    "⏳ Chargement des polices...";
+
+
+  const {
+    data,
+    error
+  } =
+    await client
+
+      .from(
+        "personnalisation_polices"
+      )
+
+      .select("*")
+
+      .order(
+        "ordre",
+        {
+          ascending: true
+        }
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Erreur chargement polices :",
+      error
+    );
+
+    liste.innerHTML =
+      "❌ Impossible de charger les polices.";
+
+    return;
+
+  }
+
+
+  liste.innerHTML = "";
+
+
+  (data || []).forEach(
+    function(police) {
+
+      const ligne =
+        document.createElement(
+          "div"
+        );
+
+
+      ligne.className =
+        "ligne-bibliotheque";
+
+
+      ligne.innerHTML = `
+
+        <div
+          class="ligne-bibliotheque-info"
+          style="
+            font-family:${echapperHTML(
+              police.famille_css
+            )};
+          "
+        >
+
+          <strong>
+            ${echapperHTML(
+              police.nom
+            )}
+          </strong>
+
+          <span
+            style="
+              margin-left:10px;
+              color:#777;
+            "
+          >
+            Kataleya
+          </span>
+
+        </div>
+
+
+        <div
+          class="ligne-bibliotheque-actions"
+        >
+
+          <button
+            class="btn btn-supprimer"
+            type="button"
+            onclick="supprimerPolicePersonnalisation(
+              '${police.id}'
+            )"
+          >
+            🗑️
+          </button>
+
+        </div>
+
+      `;
+
+
+      liste.appendChild(
+        ligne
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   AJOUTER UNE POLICE
+===================================================== */
+
+document
+  .getElementById(
+    "boutonAjouterPolice"
+  )
+  ?.addEventListener(
+    "click",
+    async function() {
+
+      if (!(await verifierAdmin())) {
+        return;
+      }
+
+
+      const nom =
+        document.getElementById(
+          "nomNouvellePolice"
+        ).value.trim();
+
+
+      const famille =
+        document.getElementById(
+          "familleNouvellePolice"
+        ).value.trim();
+
+
+      if (!nom) {
+
+        alert(
+          "❌ Indique le nom de la police."
+        );
+
+        return;
+
+      }
+
+
+      if (!famille) {
+
+        alert(
+          "❌ Indique la famille CSS."
+        );
+
+        return;
+
+      }
+
+
+      const {
+        error
+      } =
+        await client
+
+          .from(
+            "personnalisation_polices"
+          )
+
+          .insert([{
+
+            nom: nom,
+
+            famille_css: famille
+
+          }]);
+
+
+      if (error) {
+
+        console.error(error);
+
+        alert(
+          "❌ " +
+          error.message
+        );
+
+        return;
+
+      }
+
+
+      document.getElementById(
+        "nomNouvellePolice"
+      ).value = "";
+
+
+      document.getElementById(
+        "familleNouvellePolice"
+      ).value = "";
+
+
+      await chargerPolicesPersonnalisation();
+
+    }
+  );
+
+
+/* =====================================================
+   SUPPRIMER UNE POLICE
+===================================================== */
+
+window.supprimerPolicePersonnalisation =
+async function(id) {
+
+  if (
+    !confirm(
+      "⚠️ Supprimer cette police ?"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  if (!(await verifierAdmin())) {
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await client
+
+      .from(
+        "personnalisation_polices"
+      )
+
+      .delete()
+
+      .eq(
+        "id",
+        id
+      );
+
+
+  if (error) {
+
+    alert(
+      "❌ " +
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  await chargerPolicesPersonnalisation();
+
+};
+
+
+/* =====================================================
+   PERSONNALISATION — COULEURS
+===================================================== */
+
+async function chargerCouleursPersonnalisation() {
+
+  const liste =
+    document.getElementById(
+      "listeCouleursPersonnalisation"
+    );
+
+  if (!liste) {
+    return;
+  }
+
+
+  liste.innerHTML =
+    "⏳ Chargement des couleurs...";
+
+
+  const {
+    data,
+    error
+  } =
+    await client
+
+      .from(
+        "personnalisation_couleurs"
+      )
+
+      .select("*")
+
+      .order(
+        "ordre",
+        {
+          ascending: true
+        }
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Erreur chargement couleurs :",
+      error
+    );
+
+    liste.innerHTML =
+      "❌ Impossible de charger les couleurs.";
+
+    return;
+
+  }
+
+
+  liste.innerHTML = "";
+
+
+  (data || []).forEach(
+    function(couleur) {
+
+      const ligne =
+        document.createElement(
+          "div"
+        );
+
+
+      ligne.className =
+        "ligne-bibliotheque";
+
+
+      ligne.innerHTML = `
+
+        <div
+          class="ligne-bibliotheque-info"
+          style="
+            display:flex;
+            align-items:center;
+            gap:12px;
+          "
+        >
+
+          <span
+            style="
+              width:30px;
+              height:30px;
+              border-radius:50%;
+              display:inline-block;
+              background:${echapperHTML(
+                couleur.code_hex
+              )};
+              border:1px solid #ccc;
+            "
+          ></span>
+
+
+          <strong>
+            ${echapperHTML(
+              couleur.nom
+            )}
+          </strong>
+
+
+          <span
+            style="
+              color:#777;
+            "
+          >
+            ${echapperHTML(
+              couleur.code_hex
+            )}
+          </span>
+
+        </div>
+
+
+        <div
+          class="ligne-bibliotheque-actions"
+        >
+
+          <button
+            class="btn btn-supprimer"
+            type="button"
+            onclick="supprimerCouleurPersonnalisation(
+              '${couleur.id}'
+            )"
+          >
+            🗑️
+          </button>
+
+        </div>
+
+      `;
+
+
+      liste.appendChild(
+        ligne
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   AJOUTER UNE COULEUR
+===================================================== */
+
+document
+  .getElementById(
+    "boutonAjouterCouleur"
+  )
+  ?.addEventListener(
+    "click",
+    async function() {
+
+      if (!(await verifierAdmin())) {
+        return;
+      }
+
+
+      const nom =
+        document.getElementById(
+          "nomNouvelleCouleur"
+        ).value.trim();
+
+
+      const code =
+        document.getElementById(
+          "codeNouvelleCouleur"
+        ).value;
+
+
+      if (!nom) {
+
+        alert(
+          "❌ Indique le nom de la couleur."
+        );
+
+        return;
+
+      }
+
+
+      const {
+        error
+      } =
+        await client
+
+          .from(
+            "personnalisation_couleurs"
+          )
+
+          .insert([{
+
+            nom: nom,
+
+            code_hex: code
+
+          }]);
+
+
+      if (error) {
+
+        console.error(error);
+
+        alert(
+          "❌ " +
+          error.message
+        );
+
+        return;
+
+      }
+
+
+      document.getElementById(
+        "nomNouvelleCouleur"
+      ).value = "";
+
+
+      await chargerCouleursPersonnalisation();
+
+    }
+  );
+
+
+/* =====================================================
+   SUPPRIMER UNE COULEUR
+===================================================== */
+
+window.supprimerCouleurPersonnalisation =
+async function(id) {
+
+  if (
+    !confirm(
+      "⚠️ Supprimer cette couleur ?"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  if (!(await verifierAdmin())) {
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await client
+
+      .from(
+        "personnalisation_couleurs"
+      )
+
+      .delete()
+
+      .eq(
+        "id",
+        id
+      );
+
+
+  if (error) {
+
+    alert(
+      "❌ " +
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  await chargerCouleursPersonnalisation();
+
+};
+
+
+/* =====================================================
+   CHARGEMENT INITIAL
+===================================================== */
+
+chargerPolicesPersonnalisation();
+
+chargerCouleursPersonnalisation();
 function afficherMessageBibliotheque(
   texte,
   erreur
