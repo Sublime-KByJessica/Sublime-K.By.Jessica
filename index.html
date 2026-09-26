@@ -1278,6 +1278,640 @@
   }
 
 }
+
+    /* =====================================================
+   FENÊTRE DE PERSONNALISATION
+===================================================== */
+
+.personnalisation-overlay {
+
+  position: fixed;
+
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.55);
+
+  display: none;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 20px;
+
+  z-index: 9999;
+
+}
+
+
+.personnalisation-overlay.active {
+
+  display: flex;
+
+}
+
+
+.personnalisation-fenetre {
+
+  width: 100%;
+
+  max-width: 720px;
+
+  max-height: 90vh;
+
+  background: #ffffff;
+
+  border-radius: 24px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.25);
+
+  display: flex;
+
+  flex-direction: column;
+
+}
+
+
+/* =====================================================
+   EN-TÊTE
+===================================================== */
+
+.personnalisation-entete {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 15px;
+
+  padding: 20px 24px;
+
+  background: #f1f0e7;
+
+  border-bottom: 1px solid #dddccf;
+
+}
+
+
+.personnalisation-entete h2 {
+
+  margin: 0;
+
+  font-size: 1.35rem;
+
+  color: #4a4143;
+
+}
+
+
+.personnalisation-entete p {
+
+  margin: 5px 0 0;
+
+  color: #777;
+
+  font-size: 0.9rem;
+
+}
+
+
+.personnalisation-fermer {
+
+  width: 42px;
+
+  height: 42px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  color: #555;
+
+  font-size: 1.2rem;
+
+  cursor: pointer;
+
+}
+
+
+/* =====================================================
+   CONTENU
+===================================================== */
+
+.personnalisation-contenu {
+
+  overflow-y: auto;
+
+  padding: 20px 24px;
+
+}
+
+
+.personnalisation-etape {
+
+  margin-bottom: 25px;
+
+  padding: 18px;
+
+  border: 1px solid #e3e2d8;
+
+  border-radius: 18px;
+
+  background: #ffffff;
+
+}
+
+
+.personnalisation-etape h3 {
+
+  margin-top: 0;
+
+  margin-bottom: 16px;
+
+  color: #4a4143;
+
+  font-size: 1.05rem;
+
+}
+
+
+/* =====================================================
+   CHAMPS
+===================================================== */
+
+.personnalisation-champ {
+
+  margin-bottom: 15px;
+
+}
+
+
+.personnalisation-champ:last-child {
+
+  margin-bottom: 0;
+
+}
+
+
+.personnalisation-champ label {
+
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-weight: 600;
+
+  color: #555;
+
+}
+
+
+.personnalisation-champ select,
+.personnalisation-champ input {
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 12px 14px;
+
+  border: 1px solid #d3d2c7;
+
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  color: #444;
+
+  font-size: 1rem;
+
+}
+
+
+.personnalisation-champ select:disabled {
+
+  background: #f4f4f1;
+
+  color: #999;
+
+}
+
+
+/* =====================================================
+   DESIGNS
+===================================================== */
+
+.personnalisation-designs {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fill, minmax(130px, 1fr));
+
+  gap: 12px;
+
+}
+
+
+.personnalisation-design {
+
+  position: relative;
+
+  padding: 8px;
+
+  border: 2px solid #ddd;
+
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+
+}
+
+
+.personnalisation-design:hover {
+
+  border-color: #b9828f;
+
+  transform: translateY(-2px);
+
+}
+
+
+.personnalisation-design.active {
+
+  border-color: #8f5967;
+
+  box-shadow:
+    0 0 0 3px rgba(185, 130, 143, 0.2);
+
+}
+
+
+.personnalisation-design img {
+
+  display: block;
+
+  width: 100%;
+
+  height: 130px;
+
+  object-fit: contain;
+
+  border-radius: 10px;
+
+}
+
+
+.personnalisation-design-nom {
+
+  padding: 8px 4px 2px;
+
+  text-align: center;
+
+  font-size: 0.85rem;
+
+  font-weight: 600;
+
+  color: #555;
+
+}
+
+
+.personnalisation-message {
+
+  padding: 15px;
+
+  text-align: center;
+
+  color: #777;
+
+  background: #f7f7f4;
+
+  border-radius: 12px;
+
+}
+
+
+/* =====================================================
+   POLICES
+===================================================== */
+
+.personnalisation-polices {
+
+  display: flex;
+
+  gap: 10px;
+
+  overflow-x: auto;
+
+  padding: 5px 3px 12px;
+
+}
+
+
+.personnalisation-police {
+
+  flex: 0 0 auto;
+
+  min-width: 130px;
+
+  padding: 14px 18px;
+
+  border: 2px solid #ddd;
+
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  font-size: 1.15rem;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+
+}
+
+
+.personnalisation-police:hover {
+
+  border-color: #b9828f;
+
+}
+
+
+.personnalisation-police.active {
+
+  border-color: #8f5967;
+
+  background: #f5e9eb;
+
+}
+
+
+/* =====================================================
+   COULEURS
+===================================================== */
+
+.personnalisation-couleurs {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, 1fr);
+
+  gap: 12px;
+
+  max-width: 430px;
+
+}
+
+
+.personnalisation-couleur {
+
+  width: 52px;
+
+  height: 52px;
+
+  border-radius: 50%;
+
+  border: 3px solid #ffffff;
+
+  box-shadow:
+    0 0 0 1px #cfcfcf;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+
+}
+
+
+.personnalisation-couleur:hover {
+
+  transform: scale(1.08);
+
+}
+
+
+.personnalisation-couleur.active {
+
+  box-shadow:
+    0 0 0 3px #8f5967;
+
+}
+
+
+.personnalisation-couleur[data-couleur="#FFFFFF"] {
+
+  border-color: #ddd;
+
+}
+
+
+/* =====================================================
+   APERÇU
+===================================================== */
+
+.personnalisation-apercu {
+
+  min-height: 150px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 20px;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #faf9f4,
+      #f0efe7
+    );
+
+  overflow: hidden;
+
+}
+
+
+#personnalisationTexteApercu {
+
+  font-family: Arial, sans-serif;
+
+  font-size: 3rem;
+
+  font-weight: bold;
+
+  color: #000000;
+
+  text-align: center;
+
+  word-break: break-word;
+
+}
+
+
+/* =====================================================
+   PIED
+===================================================== */
+
+.personnalisation-pied {
+
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 12px;
+
+  padding: 16px 24px;
+
+  border-top: 1px solid #e3e2d8;
+
+  background: #fafaf7;
+
+}
+
+
+.personnalisation-annuler,
+.personnalisation-valider {
+
+  padding: 13px 20px;
+
+  border-radius: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+}
+
+
+.personnalisation-annuler {
+
+  border: 1px solid #ccc;
+
+  background: #ffffff;
+
+  color: #555;
+
+}
+
+
+.personnalisation-valider {
+
+  border: none;
+
+  background: #8f5967;
+
+  color: #ffffff;
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+
+  .personnalisation-overlay {
+
+    padding: 8px;
+
+  }
+
+
+  .personnalisation-fenetre {
+
+    max-height: 96vh;
+
+    border-radius: 18px;
+
+  }
+
+
+  .personnalisation-entete {
+
+    padding: 16px;
+
+  }
+
+
+  .personnalisation-contenu {
+
+    padding: 14px;
+
+  }
+
+
+  .personnalisation-etape {
+
+    padding: 14px;
+
+  }
+
+
+  .personnalisation-designs {
+
+    grid-template-columns:
+      repeat(2, 1fr);
+
+  }
+
+
+  .personnalisation-design img {
+
+    height: 110px;
+
+  }
+
+
+  .personnalisation-couleurs {
+
+    grid-template-columns:
+      repeat(5, 1fr);
+
+  }
+
+
+  .personnalisation-couleur {
+
+    width: 44px;
+
+    height: 44px;
+
+  }
+
+
+  #personnalisationTexteApercu {
+
+    font-size: 2.2rem;
+
+  }
+
+
+  .personnalisation-pied {
+
+    padding: 12px 14px;
+
+  }
+
+}
     
   </style>
 
@@ -4058,7 +4692,392 @@ chargerBibliothequePublique();
 
 
   </script>
+<!-- =====================================================
+     FENÊTRE DE PERSONNALISATION
+===================================================== -->
 
+<div
+  id="personnalisationOverlay"
+  class="personnalisation-overlay"
+>
+
+  <div
+    id="personnalisationFenetre"
+    class="personnalisation-fenetre"
+  >
+
+    <!-- EN-TÊTE -->
+
+    <div class="personnalisation-entete">
+
+      <div>
+
+        <h2>
+          ✨ Personnalise ta création
+        </h2>
+
+        <p id="personnalisationProduitNom">
+          Ta personnalisation
+        </p>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="personnalisation-fermer"
+        onclick="fermerPersonnalisation()"
+        aria-label="Fermer"
+      >
+        ✕
+      </button>
+
+    </div>
+
+
+    <!-- CONTENU -->
+
+    <div class="personnalisation-contenu">
+
+
+      <!-- =================================================
+           1. DESIGN
+      ================================================== -->
+
+      <section class="personnalisation-etape">
+
+        <h3>
+          🎨 1. Choisis ton design
+        </h3>
+
+
+        <div class="personnalisation-champ">
+
+          <label for="personnalisationCategorie">
+            Catégorie
+          </label>
+
+          <select
+            id="personnalisationCategorie"
+          >
+
+            <option value="">
+              Choisir une catégorie
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="personnalisation-champ">
+
+          <label for="personnalisationSousCategorie">
+            Sous-catégorie
+          </label>
+
+          <select
+            id="personnalisationSousCategorie"
+            disabled
+          >
+
+            <option value="">
+              Choisir une sous-catégorie
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="personnalisation-champ">
+
+          <label>
+            Design
+          </label>
+
+          <div
+            id="personnalisationDesigns"
+            class="personnalisation-designs"
+          >
+
+            <div class="personnalisation-message">
+              Choisis d'abord une sous-catégorie.
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           2. PRÉNOM
+      ================================================== -->
+
+      <section class="personnalisation-etape">
+
+        <h3>
+          ✏️ 2. Ton prénom
+        </h3>
+
+
+        <div class="personnalisation-champ">
+
+          <label for="personnalisationPrenom">
+            Prénom
+          </label>
+
+          <input
+            type="text"
+            id="personnalisationPrenom"
+            maxlength="30"
+            placeholder="Ex : Kataleya"
+            autocomplete="off"
+          >
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           3. POLICE
+      ================================================== -->
+
+      <section class="personnalisation-etape">
+
+        <h3>
+          🔤 3. Choisis ta police
+        </h3>
+
+
+        <div
+          id="personnalisationPolices"
+          class="personnalisation-polices"
+        >
+
+          <button
+            type="button"
+            class="personnalisation-police active"
+            data-police="Arial"
+            style="font-family: Arial, sans-serif;"
+          >
+            Kataleya
+          </button>
+
+
+          <button
+            type="button"
+            class="personnalisation-police"
+            data-police="Georgia"
+            style="font-family: Georgia, serif;"
+          >
+            Kataleya
+          </button>
+
+
+          <button
+            type="button"
+            class="personnalisation-police"
+            data-police="Trebuchet MS"
+            style="font-family: 'Trebuchet MS', sans-serif;"
+          >
+            Kataleya
+          </button>
+
+
+          <button
+            type="button"
+            class="personnalisation-police"
+            data-police="Courier New"
+            style="font-family: 'Courier New', monospace;"
+          >
+            Kataleya
+          </button>
+
+
+          <button
+            type="button"
+            class="personnalisation-police"
+            data-police="Comic Sans MS"
+            style="font-family: 'Comic Sans MS', cursive;"
+          >
+            Kataleya
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           4. COULEUR
+      ================================================== -->
+
+      <section class="personnalisation-etape">
+
+        <h3>
+          🌈 4. Choisis ta couleur
+        </h3>
+
+
+        <div
+          id="personnalisationCouleurs"
+          class="personnalisation-couleurs"
+        >
+
+          <button
+            type="button"
+            class="personnalisation-couleur active"
+            data-couleur="#000000"
+            style="background:#000000;"
+            aria-label="Noir"
+          ></button>
+
+
+          <button
+            type="button"
+            class="personnalisation-couleur"
+            data-couleur="#FFFFFF"
+            style="background:#FFFFFF;"
+            aria-label="Blanc"
+          ></button>
+
+
+          <button
+            type="button"
+            class="personnalisation-couleur"
+            data-couleur="#E91E63"
+            style="background:#E91E63;"
+            aria-label="Rose"
+          ></button>
+
+
+          <button
+            type="button"
+            class="personnalisation-couleur"
+            data-couleur="#9C27B0"
+            style="background:#9C27B0;"
+            aria-label="Violet"
+          ></button>
+
+
+          <button
+            type="button"
+            class="personnalisation-couleur"
+            data-couleur="#2196F3"
+            style="background:#2196F3;"
+            aria-label="Bleu"
+          ></button>
+
+
+          <button
+            type="button"
+            class="personnalisation-couleur"
+            data-couleur="#4CAF50"
+            style="background:#4CAF50;"
+            aria-label="Vert"
+          ></button>
+
+
+          <button
+            type="button"
+            class="personnalisation-couleur"
+            data-couleur="#FF9800"
+            style="background:#FF9800;"
+            aria-label="Orange"
+          ></button>
+
+
+          <button
+            type="button"
+            class="personnalisation-couleur"
+            data-couleur="#FDD835"
+            style="background:#FDD835;"
+            aria-label="Jaune"
+          ></button>
+
+
+          <button
+            type="button"
+            class="personnalisation-couleur"
+            data-couleur="#795548"
+            style="background:#795548;"
+            aria-label="Marron"
+          ></button>
+
+
+          <button
+            type="button"
+            class="personnalisation-couleur"
+            data-couleur="#C0C0C0"
+            style="background:#C0C0C0;"
+            aria-label="Argent"
+          ></button>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           5. APERÇU
+      ================================================== -->
+
+      <section class="personnalisation-etape">
+
+        <h3>
+          👀 Aperçu
+        </h3>
+
+
+        <div
+          id="personnalisationApercu"
+          class="personnalisation-apercu"
+        >
+
+          <span
+            id="personnalisationTexteApercu"
+          >
+            Ton prénom
+          </span>
+
+        </div>
+
+      </section>
+
+
+    </div>
+
+
+    <!-- PIED DE FENÊTRE -->
+
+    <div class="personnalisation-pied">
+
+      <button
+        type="button"
+        class="personnalisation-annuler"
+        onclick="fermerPersonnalisation()"
+      >
+        Annuler
+      </button>
+
+
+      <button
+        type="button"
+        class="personnalisation-valider"
+        onclick="validerPersonnalisation()"
+      >
+        🛒 Continuer
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
 
 </body>
 
