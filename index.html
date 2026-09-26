@@ -1005,7 +1005,108 @@
       }
 
     }
+/* =====================================================
+   BIBLIOTHÈQUE DE DESIGNS - STYLE
+===================================================== */
 
+.bibliotheque-apercu {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 30px;
+  align-items: center;
+  margin: 30px 0 45px;
+  padding: 25px;
+  border-radius: 24px;
+  background: #f3f1e8;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+}
+
+.bibliotheque-apercu-image {
+  width: 100%;
+  min-height: 280px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bibliotheque-apercu-placeholder {
+  width: 100%;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 70px;
+  background: linear-gradient(
+    135deg,
+    #f8f6ee,
+    #e8eadc,
+    #f7e9e5
+  );
+}
+
+.bibliotheque-apercu-texte {
+  padding: 10px;
+}
+
+.bibliotheque-apercu-texte h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 25px;
+}
+
+.bibliotheque-apercu-texte p {
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+.bibliotheque-categories {
+  margin-top: 25px;
+}
+
+.bibliotheque-chargement {
+  padding: 25px;
+  text-align: center;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px dashed #c9cbbd;
+  font-size: 16px;
+}
+
+.bibliotheque-contenu {
+  margin-top: 30px;
+}
+
+
+/* =====================================================
+   VERSION MOBILE
+===================================================== */
+
+@media (max-width: 768px) {
+
+  .bibliotheque-apercu {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 18px;
+  }
+
+  .bibliotheque-apercu-image,
+  .bibliotheque-apercu-placeholder {
+    min-height: 210px;
+  }
+
+  .bibliotheque-apercu-placeholder {
+    font-size: 55px;
+  }
+
+  .bibliotheque-apercu-texte h3 {
+    font-size: 21px;
+  }
+
+}
+    
   </style>
 
 </head>
@@ -1095,6 +1196,10 @@
               🛍️ Boutique
             </a>
 
+            <a href="#bibliotheque" onclick="fermerMenu()">
+  🎨 Bibliothèque de designs
+</a>
+            
             <a href="#nouveautes" onclick="fermerMenu()">
               ✨ Nouveautés
             </a>
@@ -1364,6 +1469,88 @@
 
     </section>
 
+    <!-- =========================
+     BIBLIOTHÈQUE DE DESIGNS
+========================= -->
+
+<section
+  class="section"
+  id="bibliotheque"
+>
+
+  <div class="container">
+
+    <h2 class="section-title">
+      🎨 Bibliothèque de designs
+    </h2>
+
+    <p class="section-intro">
+      Découvrez notre univers de designs et trouvez l'inspiration
+      pour votre future création Sublime'K.
+    </p>
+
+
+    <!-- PLANCHE D'APERÇU PRINCIPALE -->
+
+    <div class="bibliotheque-apercu">
+
+      <div class="bibliotheque-apercu-image">
+
+        <div class="bibliotheque-apercu-placeholder">
+          🎨
+        </div>
+
+      </div>
+
+
+      <div class="bibliotheque-apercu-texte">
+
+        <h3>
+          ✨ Découvrez nos collections
+        </h3>
+
+        <p>
+          Parcourez nos planches d'aperçu avant de choisir
+          une catégorie ou une sous-catégorie.
+        </p>
+
+        <p>
+          Chaque collection rassemble des designs originaux
+          imaginés pour les créations personnalisées Sublime'K.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <!-- FUTURES CATÉGORIES -->
+
+    <div
+      id="bibliotheque-categories"
+      class="bibliotheque-categories"
+    >
+
+      <div class="bibliotheque-chargement">
+
+        📚 Les collections arrivent bientôt…
+
+      </div>
+
+    </div>
+
+
+    <!-- FUTURES SOUS-CATÉGORIES / DESIGNS -->
+
+    <div
+      id="bibliotheque-contenu"
+      class="bibliotheque-contenu"
+    >
+    </div>
+
+  </div>
+
+</section>
 
     <!-- =========================
          NOUVEAUTÉS
