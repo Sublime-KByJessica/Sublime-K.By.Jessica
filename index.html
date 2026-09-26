@@ -4449,64 +4449,87 @@ function validerPersonnalisation() {
 
     function ajouterAuPanier(produit) {
 
-      if (
-        !produit ||
-        produit.statut === "indisponible"
-      ) {
-
-        return;
-
-      }
+  if (
+    !produit ||
+    produit.statut === "indisponible"
+  ) {
+    return;
+  }
 
 
-      const prix =
-        Number(produit.prix || 0);
+  /*
+   * Si le produit est personnalisable,
+   * on ouvre la fenêtre de personnalisation.
+   */
+  if (
+    produit.personnalisation_active === true
+  ) {
+
+    ouvrirPersonnalisation(produit);
+
+    return;
+  }
 
 
-      const existant =
-        panier.find(
-          article =>
-            String(article.id) ===
-            String(produit.id)
-        );
+  /*
+   * Sinon :
+   * ajout classique au panier.
+   */
+  const prix =
+    Number(produit.prix || 0);
 
 
-      if (existant) {
-
-        existant.quantite += 1;
-
-      } else {
-
-        panier.push({
-
-          id: produit.id,
-
-          nom: produit.nom,
-
-          prix: prix,
-
-          image_url:
-            produit.image_url || "",
-
-          statut:
-            produit.statut,
-
-          quantite: 1
-
-        });
-
-      }
+  const existant =
+    panier.find(
+      article =>
+        String(article.id) ===
+        String(produit.id)
+    );
 
 
-      sauvegarderPanier();
+  if (existant) {
 
-      mettreAJourCompteurPanier();
+    existant.quantite += 1;
 
-      afficherPanier();
+  } else {
 
-      ouvrirPanier();
+    panier.push({
 
-    }
+      id:
+        produit.id,
+
+      produit_id:
+        produit.id,
+
+      nom:
+        produit.nom,
+
+      prix:
+        prix,
+
+      image_url:
+        produit.image_url || "",
+
+      statut:
+        produit.statut,
+
+      quantite:
+        1
+
+    });
+
+  }
+
+
+  sauvegarderPanier();
+
+  mettreAJourCompteurPanier();
+
+  afficherPanier();
+
+  ouvrirPanier();
+
+}
 
     /* =====================================================
    MODIFIER UNE PERSONNALISATION DU PANIER
@@ -5141,16 +5164,40 @@ ${
             .from("products")
 
             .select(`
-              id,
-              nom,
-              description,
-              prix,
-              categorie_id,
-              statut,
-              image_url,
-              visible,
-              ordre
-            `)
+  id,
+  nom,
+  description,
+  prix,
+  categorie_id,
+  statut,
+  image_url,
+  visible,
+  ordre,
+
+  personnalisation_active,
+  choix_image_active,
+  prenom_active,
+  police_active,
+  couleur_active,
+  message_active,
+  photo_client_active,
+
+  prenom_min_caracteres,
+  prenom_max_caracteres,
+
+  message_min_caracteres,
+  message_max_caracteres,
+
+  mockup_active,
+  mockup_design_active,
+  mockup_prenom_active,
+  mockup_message_active,
+
+  mockup_position_x,
+  mockup_position_y,
+  mockup_largeur,
+  mockup_rotation
+`)
 
             .eq("visible", true)
 
