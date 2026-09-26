@@ -2967,6 +2967,7 @@ function ouvrirPersonnalisation(produit) {
 
   chargerCategoriesPersonnalisation();
 chargerPolicesPublic();
+  chargerCouleursPublic();
 }
 
 
@@ -3732,58 +3733,206 @@ async function chargerPolicesPublic() {
 }
 
 
+
 /* =====================================================
    COULEURS
 ===================================================== */
 
-document
-  .querySelectorAll(
-    ".personnalisation-couleur"
-  )
-  .forEach(
-    function(bouton) {
+async function chargerCouleursPublic() {
 
-      bouton.addEventListener(
-        "click",
-        function() {
+  const zone =
+    document.getElementById(
+      "personnalisationCouleurs"
+    );
 
-          document
-            .querySelectorAll(
-              ".personnalisation-couleur"
-            )
-            .forEach(
-              function(element) {
+  if (!zone) {
+    return;
+  }
 
-                element.classList.remove(
-                  "active"
-                );
 
-              }
-            );
+  zone.innerHTML = `
 
+    <div class="personnalisation-message">
+      ⏳ Chargement des couleurs…
+    </div>
+
+  `;
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+
+        .from(
+          "personnalisation_couleurs"
+        )
+
+        .select(`
+          id,
+          nom,
+          code_hex
+        `)
+
+        .eq(
+          "actif",
+          true
+        )
+
+        .order(
+          "ordre",
+          {
+            ascending: true
+          }
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    zone.innerHTML = "";
+
+
+    if (
+      !data ||
+      data.length === 0
+    ) {
+
+      zone.innerHTML = `
+
+        <div class="personnalisation-message">
+          Aucune couleur disponible.
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    data.forEach(
+      function(couleur, index) {
+
+        const bouton =
+          document.createElement(
+            "button"
+          );
+
+
+        bouton.type =
+          "button";
+
+
+        bouton.className =
+          "personnalisation-couleur";
+
+
+        if (index === 0) {
 
           bouton.classList.add(
             "active"
           );
 
-
           personnalisationChoix.couleur =
-            bouton.dataset.couleur;
-
-
-          mettreAJourApercuPersonnalisation();
+            couleur.code_hex;
 
         }
-      );
 
-    }
-  );
+
+        bouton.dataset.couleur =
+          couleur.code_hex;
+
+
+        bouton.style.background =
+          couleur.code_hex;
+
+
+        bouton.setAttribute(
+          "aria-label",
+          couleur.nom
+        );
+
+
+        bouton.title =
+          couleur.nom;
+
+
+        bouton.addEventListener(
+          "click",
+          function() {
+
+            document
+              .querySelectorAll(
+                ".personnalisation-couleur"
+              )
+              .forEach(
+                function(element) {
+
+                  element.classList.remove(
+                    "active"
+                  );
+
+                }
+              );
+
+
+            bouton.classList.add(
+              "active"
+            );
+
+
+            personnalisationChoix.couleur =
+              couleur.code_hex;
+
+
+            mettreAJourApercuPersonnalisation();
+
+          }
+        );
+
+
+        zone.appendChild(
+          bouton
+        );
+
+      }
+    );
+
+
+    mettreAJourApercuPersonnalisation();
+
+
+  } catch (error) {
+
+    console.error(
+      "Erreur couleurs personnalisation :",
+      error
+    );
+
+
+    zone.innerHTML = `
+
+      <div class="personnalisation-message">
+        ❌ Impossible de charger les couleurs.
+      </div>
+
+    `;
+
+  }
+
+}
 
 
 /* =====================================================
    APERÇU DU PRÉNOM
 ===================================================== */
-
+    
 function mettreAJourApercuPersonnalisation() {
 
   const apercu =
