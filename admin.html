@@ -2302,7 +2302,189 @@ button{cursor:pointer}
   </div>
 
 </section>
+<!-- =====================================================
+     PERSONNALISATION
+===================================================== -->
 
+<section
+  class="section-admin"
+  id="section-personnalisation"
+>
+
+  <div class="section-titre">
+
+    <h1>
+      🎨 Personnalisation
+    </h1>
+
+    <p>
+      Gère les polices et les couleurs proposées aux clients.
+    </p>
+
+  </div>
+
+
+  <div class="bloc">
+
+
+    <!-- =================================================
+         POLICES
+    ================================================== -->
+
+    <div class="bibliotheque-etape">
+
+      <h3>
+        🔤 Polices disponibles
+      </h3>
+
+      <p>
+        Ajoute, active ou désactive les polices proposées
+        lors de la personnalisation d'un produit.
+      </p>
+
+
+      <div class="form-grid">
+
+        <div class="champ">
+
+          <label for="nomNouvellePolice">
+            Nom de la police
+          </label>
+
+          <input
+            type="text"
+            id="nomNouvellePolice"
+            placeholder="Ex : Georgia"
+          >
+
+        </div>
+
+
+        <div class="champ">
+
+          <label for="familleNouvellePolice">
+            Famille CSS
+          </label>
+
+          <input
+            type="text"
+            id="familleNouvellePolice"
+            placeholder="Ex : Georgia, serif"
+          >
+
+        </div>
+
+      </div>
+
+
+      <div class="bibliotheque-actions">
+
+        <button
+          class="btn btn-enregistrer"
+          id="boutonAjouterPolice"
+          type="button"
+        >
+          ➕ Ajouter la police
+        </button>
+
+      </div>
+
+
+      <div
+        id="listePolicesPersonnalisation"
+        class="liste-bibliotheque"
+      ></div>
+
+    </div>
+
+
+    <!-- =================================================
+         COULEURS
+    ================================================== -->
+
+    <div class="bibliotheque-etape">
+
+      <h3>
+        🌈 Couleurs disponibles
+      </h3>
+
+      <p>
+        Choisis les couleurs proposées aux clients.
+      </p>
+
+
+      <div class="form-grid">
+
+        <div class="champ">
+
+          <label for="nomNouvelleCouleur">
+            Nom de la couleur
+          </label>
+
+          <input
+            type="text"
+            id="nomNouvelleCouleur"
+            placeholder="Ex : Rose pastel"
+          >
+
+        </div>
+
+
+        <div class="champ">
+
+          <label for="codeNouvelleCouleur">
+            Couleur
+          </label>
+
+          <input
+            type="color"
+            id="codeNouvelleCouleur"
+            value="#E91E63"
+          >
+
+        </div>
+
+      </div>
+
+
+      <div class="bibliotheque-actions">
+
+        <button
+          class="btn btn-enregistrer"
+          id="boutonAjouterCouleur"
+          type="button"
+        >
+          ➕ Ajouter la couleur
+        </button>
+
+      </div>
+
+
+      <div
+        id="listeCouleursPersonnalisation"
+        class="liste-bibliotheque"
+      ></div>
+
+    </div>
+
+
+    <!-- =================================================
+         MESSAGE
+    ================================================== -->
+
+    <div
+      id="messagePersonnalisation"
+      class="message"
+    ></div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     PAGES LÉGALES
+===================================================== -->
 
 <!-- =====================================================
      PAGES LÉGALES
