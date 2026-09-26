@@ -3975,6 +3975,8 @@ async function(id){
   document.getElementById("image_url").value=
     data.image_url||"";
 
+    actualiserApercuImageProduit();
+  
   document.getElementById("visible").checked=
     data.visible!==false;
 
@@ -6947,7 +6949,355 @@ async function(id) {
 
 };
 
+/* =====================================================
+   IMAGE PRODUIT — URL / GALERIE / FICHIERS
+===================================================== */
 
+function actualiserApercuImageProduit() {
+
+  const champ =
+    document.getElementById("image_url");
+
+  const zone =
+    document.getElementById("apercuImageProduit");
+
+  const image =
+    document.getElementById("apercuImageProduitImg");
+
+  if (!champ || !zone || !image) {
+    return;
+  }
+
+  const url =
+    champ.value.trim();
+
+  if (!url) {
+
+    image.removeAttribute("src");
+
+    zone.style.display =
+      "none";
+
+    return;
+  }
+
+  image.src =
+    url;
+
+  zone.style.display =
+    "block";
+
+  image.onerror =
+    function() {
+
+      zone.style.display =
+        "none";
+
+    };
+
+}
+
+
+/* =====================================================
+   ENVOI DE L'IMAGE VERS SUPABASE
+===================================================== */
+
+async function envoyerImageProduitDansSupabase(
+  fichier
+) {
+
+  if (!fichier) {
+    return;
+  }
+
+  if (
+    !fichier.type.startsWith("image/")
+  ) {
+
+    alert(
+      "❌ Merci de sélectionner une image."
+    );
+
+    return;
+  }
+
+  if (
+    fichier.size >
+    10 * 1024 * 1024
+  ) {
+
+    alert(
+      "❌ L'image est trop lourde. Maximum : 10 Mo."
+    );
+
+    return;
+  }
+
+  if (
+    !(await verifierAdmin())
+  ) {
+    return;
+  }
+
+  const message =
+    document.getElementById(
+      "messageImageProduit"
+    );
+
+  if (message) {
+
+    message.textContent =
+      "⏳ Envoi de l'image...";
+
+  }
+
+  try {
+
+    const extension =
+      (
+        fichier.name
+          .split(".")
+          .pop() ||
+        "jpg"
+      )
+      .toLowerCase()
+      .replace(
+        /[^a-z0-9]/g,
+        ""
+      );
+
+    const nomFichier =
+      "produit_" +
+      Date.now() +
+      "_" +
+      Math.random()
+        .toString(36)
+        .slice(2, 8) +
+      "." +
+      extension;
+
+    const chemin =
+      "products/" +
+      nomFichier;
+
+
+    const {
+      error: erreurUpload
+    } =
+      await client
+        .storage
+        .from("product-images")
+        .upload(
+          chemin,
+          fichier,
+          {
+            cacheControl:
+              "3600",
+
+            upsert:
+              false,
+
+            contentType:
+              fichier.type
+          }
+        );
+
+
+    if (erreurUpload) {
+      throw erreurUpload;
+    }
+
+
+    const {
+      data
+    } =
+      client
+        .storage
+        .from("product-images")
+        .getPublicUrl(
+          chemin
+        );
+
+
+    const url =
+      data?.publicUrl ||
+      "";
+
+
+    if (!url) {
+
+      throw new Error(
+        "Impossible de récupérer l'URL publique de l'image."
+      );
+
+    }
+
+
+    const champ =
+      document.getElementById(
+        "image_url"
+      );
+
+
+    if (champ) {
+
+      champ.value =
+        url;
+
+    }
+
+
+    actualiserApercuImageProduit();
+
+
+    if (message) {
+
+      message.textContent =
+        "✅ Image envoyée avec succès.";
+
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "Erreur envoi image produit :",
+      error
+    );
+
+
+    if (message) {
+
+      message.textContent =
+        "❌ Impossible d'envoyer l'image.";
+
+    }
+
+
+    alert(
+      "❌ Impossible d'envoyer l'image :\n" +
+      (
+        error.message ||
+        error
+      )
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   SÉLECTION D'UNE IMAGE
+===================================================== */
+
+document
+  .getElementById(
+    "fichierImageProduit"
+  )
+  ?.addEventListener(
+    "change",
+    async function() {
+
+      const fichier =
+        this.files?.[0];
+
+      await envoyerImageProduitDansSupabase(
+        fichier
+      );
+
+      this.value =
+        "";
+
+    }
+  );
+
+
+/* =====================================================
+   URL MANUELLE
+===================================================== */
+
+document
+  .getElementById(
+    "image_url"
+  )
+  ?.addEventListener(
+    "input",
+    actualiserApercuImageProduit
+  );
+
+
+/* =====================================================
+   SUPPRIMER L'IMAGE
+===================================================== */
+
+document
+  .getElementById(
+    "boutonSupprimerImageProduit"
+  )
+  ?.addEventListener(
+    "click",
+    function() {
+
+      const champ =
+        document.getElementById(
+          "image_url"
+        );
+
+      const zone =
+        document.getElementById(
+          "apercuImageProduit"
+        );
+
+      const image =
+        document.getElementById(
+          "apercuImageProduitImg"
+        );
+
+
+      if (champ) {
+
+        champ.value =
+          "";
+
+      }
+
+
+      if (image) {
+
+        image.removeAttribute(
+          "src"
+        );
+
+      }
+
+
+      if (zone) {
+
+        zone.style.display =
+          "none";
+
+      }
+
+
+      const message =
+        document.getElementById(
+          "messageImageProduit"
+        );
+
+
+      if (message) {
+
+        message.textContent =
+          "Image retirée. Tu peux coller une URL ou choisir une nouvelle image.";
+
+      }
+
+    }
+  );
+
+
+  
 /* =====================================================
    CHARGEMENT INITIAL
 ===================================================== */
