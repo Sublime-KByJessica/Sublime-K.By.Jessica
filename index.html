@@ -2853,7 +2853,858 @@
         .replace(".", ",") + " €";
 
     }
+    
+/* =====================================================
+   PERSONNALISATION PRODUIT
+===================================================== */
 
+let personnalisationProduitActuel = null;
+
+let personnalisationChoix = {
+
+  categorieId: "",
+
+  sousCategorieId: "",
+
+  designId: "",
+
+  designNom: "",
+
+  designImage: "",
+
+  prenom: "",
+
+  police: "Arial",
+
+  couleur: "#000000"
+
+};
+
+
+/* =====================================================
+   OUVRIR LA PERSONNALISATION
+===================================================== */
+
+function ouvrirPersonnalisation(produit) {
+
+  if (
+    !produit ||
+    produit.statut === "indisponible"
+  ) {
+
+    return;
+
+  }
+
+
+  personnalisationProduitActuel =
+    produit;
+
+
+  personnalisationChoix = {
+
+    categorieId: "",
+
+    sousCategorieId: "",
+
+    designId: "",
+
+    designNom: "",
+
+    designImage: "",
+
+    prenom: "",
+
+    police: "Arial",
+
+    couleur: "#000000"
+
+  };
+
+
+  const nomProduit =
+    document.getElementById(
+      "personnalisationProduitNom"
+    );
+
+
+  if (nomProduit) {
+
+    nomProduit.textContent =
+      produit.nom || "Création personnalisée";
+
+  }
+
+
+  const prenom =
+    document.getElementById(
+      "personnalisationPrenom"
+    );
+
+
+  if (prenom) {
+
+    prenom.value = "";
+
+  }
+
+
+  mettreAJourApercuPersonnalisation();
+
+
+  const overlay =
+    document.getElementById(
+      "personnalisationOverlay"
+    );
+
+
+  if (overlay) {
+
+    overlay.classList.add("active");
+
+  }
+
+
+  chargerCategoriesPersonnalisation();
+
+}
+
+
+/* =====================================================
+   FERMER LA PERSONNALISATION
+===================================================== */
+
+function fermerPersonnalisation() {
+
+  const overlay =
+    document.getElementById(
+      "personnalisationOverlay"
+    );
+
+
+  if (overlay) {
+
+    overlay.classList.remove("active");
+
+  }
+
+
+  personnalisationProduitActuel =
+    null;
+
+}
+
+
+/* =====================================================
+   CHARGER LES CATÉGORIES
+===================================================== */
+
+async function chargerCategoriesPersonnalisation() {
+
+  const select =
+    document.getElementById(
+      "personnalisationCategorie"
+    );
+
+
+  if (!select) {
+    return;
+  }
+
+
+  select.innerHTML = `
+
+    <option value="">
+      Chargement des catégories…
+    </option>
+
+  `;
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+
+        .from("library_categories")
+
+        .select(`
+          id,
+          nom,
+          emoji
+        `)
+
+        .order(
+          "ordre",
+          {
+            ascending: true
+          }
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    select.innerHTML = `
+
+      <option value="">
+        Choisir une catégorie
+      </option>
+
+    `;
+
+
+    (data || []).forEach(
+      function(categorie) {
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+
+        option.value =
+          categorie.id;
+
+
+        option.textContent =
+          (
+            categorie.emoji ||
+            "📁"
+          ) +
+          " " +
+          categorie.nom;
+
+
+        select.appendChild(
+          option
+        );
+
+      }
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Erreur catégories personnalisation :",
+      error
+    );
+
+
+    select.innerHTML = `
+
+      <option value="">
+        Impossible de charger les catégories
+      </option>
+
+    `;
+
+  }
+
+}
+
+
+/* =====================================================
+   CHANGEMENT DE CATÉGORIE
+===================================================== */
+
+document
+  .getElementById(
+    "personnalisationCategorie"
+  )
+  ?.addEventListener(
+    "change",
+    async function() {
+
+      const categorieId =
+        this.value;
+
+
+      personnalisationChoix.categorieId =
+        categorieId;
+
+
+      personnalisationChoix.sousCategorieId =
+        "";
+
+      personnalisationChoix.designId =
+        "";
+
+      personnalisationChoix.designNom =
+        "";
+
+      personnalisationChoix.designImage =
+        "";
+
+
+      const selectSousCategorie =
+        document.getElementById(
+          "personnalisationSousCategorie"
+        );
+
+
+      if (!selectSousCategorie) {
+        return;
+      }
+
+
+      selectSousCategorie.innerHTML = `
+
+        <option value="">
+          Choisir une sous-catégorie
+        </option>
+
+      `;
+
+
+      selectSousCategorie.disabled =
+        true;
+
+
+      const zoneDesigns =
+        document.getElementById(
+          "personnalisationDesigns"
+        );
+
+
+      if (zoneDesigns) {
+
+        zoneDesigns.innerHTML = `
+
+          <div class="personnalisation-message">
+            Choisis d'abord une sous-catégorie.
+          </div>
+
+        `;
+
+      }
+
+
+      if (!categorieId) {
+        return;
+      }
+
+
+      try {
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient
+
+            .from("library_subcategories")
+
+            .select(`
+              id,
+              nom
+            `)
+
+            .eq(
+              "category_id",
+              categorieId
+            )
+
+            .order(
+              "ordre",
+              {
+                ascending: true
+              }
+            );
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        selectSousCategorie.innerHTML = `
+
+          <option value="">
+            Choisir une sous-catégorie
+          </option>
+
+        `;
+
+
+        (data || []).forEach(
+          function(sousCategorie) {
+
+            const option =
+              document.createElement(
+                "option"
+              );
+
+
+            option.value =
+              sousCategorie.id;
+
+
+            option.textContent =
+              "📂 " +
+              sousCategorie.nom;
+
+
+            selectSousCategorie.appendChild(
+              option
+            );
+
+          }
+        );
+
+
+        selectSousCategorie.disabled =
+          false;
+
+
+      } catch (error) {
+
+        console.error(
+          "Erreur sous-catégories personnalisation :",
+          error
+        );
+
+      }
+
+    }
+  );
+
+
+/* =====================================================
+   CHANGEMENT DE SOUS-CATÉGORIE
+===================================================== */
+
+document
+  .getElementById(
+    "personnalisationSousCategorie"
+  )
+  ?.addEventListener(
+    "change",
+    async function() {
+
+      const sousCategorieId =
+        this.value;
+
+
+      personnalisationChoix.sousCategorieId =
+        sousCategorieId;
+
+
+      personnalisationChoix.designId =
+        "";
+
+      personnalisationChoix.designNom =
+        "";
+
+      personnalisationChoix.designImage =
+        "";
+
+
+      await chargerDesignsPersonnalisation(
+        sousCategorieId
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   CHARGER LES DESIGNS
+===================================================== */
+
+async function chargerDesignsPersonnalisation(
+  sousCategorieId
+) {
+
+  const zone =
+    document.getElementById(
+      "personnalisationDesigns"
+    );
+
+
+  if (!zone) {
+    return;
+  }
+
+
+  zone.innerHTML = `
+
+    <div class="personnalisation-message">
+      Chargement des designs…
+    </div>
+
+  `;
+
+
+  if (!sousCategorieId) {
+
+    zone.innerHTML = `
+
+      <div class="personnalisation-message">
+        Choisis d'abord une sous-catégorie.
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+
+        .from("library_designs")
+
+        .select(`
+          id,
+          nom,
+          image_url
+        `)
+
+        .eq(
+          "subcategory_id",
+          sousCategorieId
+        )
+
+        .order(
+          "ordre",
+          {
+            ascending: true
+          }
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    zone.innerHTML = "";
+
+
+    if (
+      !data ||
+      data.length === 0
+    ) {
+
+      zone.innerHTML = `
+
+        <div class="personnalisation-message">
+          Aucun design disponible dans cette sous-catégorie.
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    data.forEach(
+      function(design) {
+
+        const bouton =
+          document.createElement(
+            "button"
+          );
+
+
+        bouton.type =
+          "button";
+
+
+        bouton.className =
+          "personnalisation-design";
+
+
+        bouton.dataset.designId =
+          design.id;
+
+
+        bouton.innerHTML = `
+
+          <img
+            src="${echapperHTML(
+              design.image_url || ""
+            )}"
+            alt="${echapperHTML(
+              design.nom || "Design"
+            )}"
+          >
+
+          <div class="personnalisation-design-nom">
+            ${echapperHTML(
+              design.nom || "Design"
+            )}
+          </div>
+
+        `;
+
+
+        bouton.addEventListener(
+          "click",
+          function() {
+
+            document
+              .querySelectorAll(
+                ".personnalisation-design"
+              )
+              .forEach(
+                function(element) {
+
+                  element.classList.remove(
+                    "active"
+                  );
+
+                }
+              );
+
+
+            bouton.classList.add(
+              "active"
+            );
+
+
+            personnalisationChoix.designId =
+              design.id;
+
+
+            personnalisationChoix.designNom =
+              design.nom || "";
+
+
+            personnalisationChoix.designImage =
+              design.image_url || "";
+
+          }
+        );
+
+
+        zone.appendChild(
+          bouton
+        );
+
+      }
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Erreur designs personnalisation :",
+      error
+    );
+
+
+    zone.innerHTML = `
+
+      <div class="personnalisation-message">
+        Impossible de charger les designs.
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+/* =====================================================
+   PRÉNOM
+===================================================== */
+
+document
+  .getElementById(
+    "personnalisationPrenom"
+  )
+  ?.addEventListener(
+    "input",
+    function() {
+
+      personnalisationChoix.prenom =
+        this.value.trim();
+
+
+      mettreAJourApercuPersonnalisation();
+
+    }
+  );
+
+
+/* =====================================================
+   POLICES
+===================================================== */
+
+document
+  .querySelectorAll(
+    ".personnalisation-police"
+  )
+  .forEach(
+    function(bouton) {
+
+      bouton.addEventListener(
+        "click",
+        function() {
+
+          document
+            .querySelectorAll(
+              ".personnalisation-police"
+            )
+            .forEach(
+              function(element) {
+
+                element.classList.remove(
+                  "active"
+                );
+
+              }
+            );
+
+
+          bouton.classList.add(
+            "active"
+          );
+
+
+          personnalisationChoix.police =
+            bouton.dataset.police;
+
+
+          mettreAJourApercuPersonnalisation();
+
+        }
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   COULEURS
+===================================================== */
+
+document
+  .querySelectorAll(
+    ".personnalisation-couleur"
+  )
+  .forEach(
+    function(bouton) {
+
+      bouton.addEventListener(
+        "click",
+        function() {
+
+          document
+            .querySelectorAll(
+              ".personnalisation-couleur"
+            )
+            .forEach(
+              function(element) {
+
+                element.classList.remove(
+                  "active"
+                );
+
+              }
+            );
+
+
+          bouton.classList.add(
+            "active"
+          );
+
+
+          personnalisationChoix.couleur =
+            bouton.dataset.couleur;
+
+
+          mettreAJourApercuPersonnalisation();
+
+        }
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   APERÇU DU PRÉNOM
+===================================================== */
+
+function mettreAJourApercuPersonnalisation() {
+
+  const apercu =
+    document.getElementById(
+      "personnalisationTexteApercu"
+    );
+
+
+  if (!apercu) {
+    return;
+  }
+
+
+  apercu.textContent =
+    personnalisationChoix.prenom ||
+    "Ton prénom";
+
+
+  apercu.style.fontFamily =
+    personnalisationChoix.police;
+
+
+  apercu.style.color =
+    personnalisationChoix.couleur;
+
+}
+
+
+/* =====================================================
+   BOUTON CONTINUER
+===================================================== */
+
+function validerPersonnalisation() {
+
+  if (
+    !personnalisationProduitActuel
+  ) {
+
+    return;
+
+  }
+
+
+  alert(
+    "✅ La personnalisation fonctionne !\n\n" +
+    "Produit : " +
+    personnalisationProduitActuel.nom +
+    "\n" +
+    "Prénom : " +
+    (
+      personnalisationChoix.prenom ||
+      "Non renseigné"
+    ) +
+    "\n" +
+    "Police : " +
+    personnalisationChoix.police +
+    "\n" +
+    "Couleur : " +
+    personnalisationChoix.couleur
+  );
+
+}
 
     function ajouterAuPanier(produit) {
 
