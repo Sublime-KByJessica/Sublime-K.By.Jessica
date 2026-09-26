@@ -19,6 +19,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+
   <style>
 
     * {
@@ -38,14 +39,23 @@
       line-height: 1.6;
     }
 
+    body.panier-ouvert {
+      overflow: hidden;
+    }
+
     a {
       color: inherit;
+    }
+
+    button {
+      font-family: inherit;
     }
 
     .container {
       width: min(1100px, 92%);
       margin: auto;
     }
+
 
     /* =========================
        HEADER
@@ -75,13 +85,13 @@
       object-fit: contain;
     }
 
-    nav {
+    .main-nav {
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    nav a {
+    .main-nav > a {
       text-decoration: none;
       color: #4A4143;
       font-weight: bold;
@@ -90,90 +100,133 @@
       transition: 0.2s ease;
     }
 
-    nav a:hover {
+    .main-nav > a:hover {
       background: #E9D9D5;
     }
 
+
     /* =========================
-       BOUTIQUE MENU
+       BOUTON PANIER HEADER
     ========================= */
 
-    .boutique-menu {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 15px;
-      margin: 30px auto;
-      flex-wrap: wrap;
+    .cart-header-button {
+      border: none;
+      background: #667052;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s ease;
+      white-space: nowrap;
     }
 
-    .boutique-menu-button {
+    .cart-header-button:hover {
+      background: #8F5967;
+    }
+
+    .cart-count {
       display: inline-flex;
+      min-width: 22px;
+      height: 22px;
       align-items: center;
       justify-content: center;
-      min-width: 170px;
-      padding: 13px 22px;
-      border-radius: 12px;
+      padding: 0 6px;
+      margin-left: 4px;
+      border-radius: 20px;
+      background: #FFFFFF;
+      color: #667052;
+      font-size: 0.8rem;
+    }
+
+
+    /* =========================
+       MENU DÉROULANT
+    ========================= */
+
+    .menu-wrapper {
+      position: relative;
+    }
+
+    .menu-button {
       border: 2px solid #B9828F;
       background: #B9828F;
       color: white;
-      text-decoration: none;
+      padding: 10px 15px;
+      border-radius: 11px;
       font-weight: bold;
       cursor: pointer;
       transition: 0.2s ease;
     }
 
-    .boutique-menu-button:hover {
+    .menu-button:hover,
+    .menu-wrapper.open .menu-button {
       background: #8F5967;
       border-color: #8F5967;
     }
 
-    .boutique-categories {
-      position: relative;
-    }
-
-    .boutique-categories summary {
-      list-style: none;
-    }
-
-    .boutique-categories summary::-webkit-details-marker {
+    .site-menu {
       display: none;
-    }
-
-    .boutique-categories[open] summary {
-      background: #8F9B78;
-      border-color: #8F9B78;
-    }
-
-    .categories-dropdown {
       position: absolute;
-      top: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%);
-      width: 280px;
-      background: #FFFFFF;
+      top: calc(100% + 10px);
+      right: 0;
+      width: 310px;
+      max-height: 75vh;
+      overflow-y: auto;
+      background: white;
       border: 1px solid #D8B6BC;
-      border-radius: 16px;
-      padding: 10px;
-      box-shadow: 0 10px 30px rgba(74, 65, 67, 0.15);
-      z-index: 20;
+      border-radius: 18px;
+      padding: 12px;
+      box-shadow: 0 15px 40px rgba(74, 65, 67, 0.18);
+      z-index: 200;
     }
 
-    .category-link {
+    .menu-wrapper.open .site-menu {
       display: block;
-      padding: 11px 13px;
-      border-radius: 10px;
-      color: #4A4143;
-      text-decoration: none;
-      font-weight: 500;
-      transition: 0.2s ease;
-      cursor: pointer;
     }
 
-    .category-link:hover {
+    .site-menu-title {
+      color: #8F5967;
+      font-weight: bold;
+      padding: 8px 12px;
+      border-bottom: 1px solid #E6DADB;
+      margin-bottom: 6px;
+    }
+
+    .site-menu a,
+    .menu-category-button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      border: none;
+      background: transparent;
+      padding: 10px 12px;
+      border-radius: 9px;
+      text-decoration: none;
+      color: #4A4143;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .site-menu a:hover,
+    .menu-category-button:hover {
       background: #F1E5E5;
       color: #8F5967;
     }
+
+    .menu-separator {
+      height: 1px;
+      background: #E6DADB;
+      margin: 8px 0;
+    }
+
+    .menu-category-title {
+      padding: 8px 12px 4px;
+      color: #667052;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
 
     /* =========================
        HERO
@@ -246,6 +299,7 @@
       background: #E9D9D5;
     }
 
+
     /* =========================
        SECTIONS
     ========================= */
@@ -267,8 +321,44 @@
       margin: -10px auto 30px;
     }
 
+
     /* =========================
-       PRECOMMANDE
+       MENU BOUTIQUE
+    ========================= */
+
+    .boutique-menu {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin: 30px auto;
+      flex-wrap: wrap;
+    }
+
+    .boutique-menu-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 180px;
+      padding: 13px 22px;
+      border-radius: 12px;
+      border: 2px solid #B9828F;
+      background: #B9828F;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .boutique-menu-button:hover {
+      background: #8F5967;
+      border-color: #8F5967;
+    }
+
+
+    /* =========================
+       PRÉCOMMANDE
     ========================= */
 
     .preorder-banner {
@@ -284,6 +374,7 @@
     .preorder-banner strong {
       color: #8F5967;
     }
+
 
     /* =========================
        PRODUITS
@@ -345,8 +436,15 @@
       margin-bottom: 12px;
     }
 
+    .product-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
     .product-button {
       display: inline-block;
+      border: none;
       background: #667052;
       color: white;
       text-decoration: none;
@@ -354,9 +452,19 @@
       border-radius: 9px;
       font-size: 0.9rem;
       font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s ease;
     }
 
     .product-button:hover {
+      background: #8F5967;
+    }
+
+    .product-button.secondary {
+      background: #B9828F;
+    }
+
+    .product-button.secondary:hover {
       background: #8F5967;
     }
 
@@ -385,6 +493,7 @@
       background: #EEE9E8;
       color: #6B6264;
     }
+
 
     /* =========================
        BOUTIQUE
@@ -423,6 +532,7 @@
       grid-column: 1 / -1;
     }
 
+
     /* =========================
        NOUVEAUTÉS
     ========================= */
@@ -435,7 +545,9 @@
       text-align: center;
       padding: 25px;
       color: #6B6264;
+      grid-column: 1 / -1;
     }
+
 
     /* =========================
        CRÉATIONS
@@ -458,6 +570,7 @@
     .creations-box p {
       margin-bottom: 18px;
     }
+
 
     /* =========================
        CONTACT
@@ -492,6 +605,202 @@
     .instagram-button:hover {
       background: #8F5967;
     }
+
+
+    /* =========================
+       PANIER
+    ========================= */
+
+    .panier-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 500;
+    }
+
+    .panier-overlay.active {
+      display: block;
+    }
+
+    .panier-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(450px, 100%);
+      height: 100vh;
+      background: #FFFFFF;
+      z-index: 501;
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -10px 0 35px rgba(0,0,0,0.18);
+    }
+
+    .panier-panel.active {
+      transform: translateX(0);
+    }
+
+    .panier-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 20px;
+      border-bottom: 1px solid #E6DADB;
+      background: #FAF7F5;
+    }
+
+    .panier-header h2 {
+      color: #8F5967;
+      font-size: 1.4rem;
+    }
+
+    .panier-fermer {
+      width: 38px;
+      height: 38px;
+      border: none;
+      border-radius: 50%;
+      background: #E9D9D5;
+      color: #8F5967;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .panier-contenu {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px;
+    }
+
+    .panier-vide {
+      text-align: center;
+      padding: 50px 20px;
+      color: #6B6264;
+    }
+
+    .panier-vide strong {
+      display: block;
+      color: #8F5967;
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    .panier-ligne {
+      display: grid;
+      grid-template-columns: 70px 1fr;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #E6DADB;
+    }
+
+    .panier-image {
+      width: 70px;
+      height: 70px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #F1E5E5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panier-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .panier-ligne-nom {
+      font-weight: bold;
+      color: #8F5967;
+      margin-bottom: 4px;
+    }
+
+    .panier-ligne-prix {
+      color: #667052;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .panier-actions-ligne {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .quantite-button {
+      width: 30px;
+      height: 30px;
+      border: none;
+      border-radius: 7px;
+      background: #E9D9D5;
+      color: #8F5967;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .quantite {
+      min-width: 25px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .supprimer-panier {
+      border: none;
+      background: transparent;
+      color: #8F5967;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 0.82rem;
+      margin-left: 5px;
+    }
+
+    .panier-footer {
+      border-top: 1px solid #E6DADB;
+      padding: 18px;
+      background: #FAF7F5;
+    }
+
+    .panier-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      font-size: 1.15rem;
+    }
+
+    .panier-total strong:last-child {
+      color: #667052;
+      font-size: 1.3rem;
+    }
+
+    .panier-commander {
+      width: 100%;
+      border: none;
+      padding: 13px;
+      border-radius: 12px;
+      background: #667052;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .panier-commander:hover {
+      background: #8F5967;
+    }
+
+    .panier-note {
+      text-align: center;
+      font-size: 0.78rem;
+      color: #6B6264;
+      margin-top: 8px;
+    }
+
 
     /* =========================
        INFORMATIONS LÉGALES
@@ -581,6 +890,7 @@
       text-align: left;
     }
 
+
     /* =========================
        FOOTER
     ========================= */
@@ -597,28 +907,61 @@
       color: white;
     }
 
+
     /* =========================
        MOBILE
     ========================= */
 
-    @media (max-width: 850px) {
+    @media (max-width: 900px) {
 
       .products-grid {
         grid-template-columns: repeat(2, 1fr);
       }
 
       .header-inner {
-        flex-direction: column;
+        flex-wrap: wrap;
       }
 
-      nav {
-        flex-wrap: wrap;
-        justify-content: center;
+      .main-nav {
+        display: none;
       }
 
     }
 
+
     @media (max-width: 600px) {
+
+      .header-inner {
+        min-height: 75px;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .logo-header {
+        width: 150px;
+      }
+
+      .header-actions {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 7px;
+      }
+
+      .cart-header-button,
+      .menu-button {
+        padding: 9px 11px;
+        font-size: 0.85rem;
+      }
+
+      .site-menu {
+        position: fixed;
+        top: 75px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+        max-height: calc(100vh - 90px);
+      }
 
       .boutique-menu {
         flex-direction: column;
@@ -631,13 +974,6 @@
         width: 100%;
       }
 
-      .categories-dropdown {
-        position: static;
-        transform: none;
-        width: 100%;
-        margin-top: 8px;
-      }
-
       .products-grid {
         grid-template-columns: 1fr;
       }
@@ -648,6 +984,15 @@
 
       .hero-logo {
         max-height: 300px;
+      }
+
+      .product-actions {
+        flex-direction: column;
+      }
+
+      .product-button {
+        width: 100%;
+        text-align: center;
       }
 
       .legal-modal {
@@ -688,7 +1033,7 @@
       </a>
 
 
-      <nav>
+      <nav class="main-nav">
 
         <a href="#accueil">
           Accueil
@@ -698,19 +1043,168 @@
           Boutique
         </a>
 
-        <a href="#nouveautes">
-          ✨ Nouveautés
-        </a>
-
-        <a href="#creations">
-          🎨 Créations
-        </a>
-
-        <a href="#contact">
-          💌 Contact
-        </a>
-
       </nav>
+
+
+      <div class="header-actions">
+
+        <button
+          type="button"
+          class="cart-header-button"
+          onclick="ouvrirPanier()"
+        >
+          🛒 Panier
+          <span
+            id="nombrePanier"
+            class="cart-count"
+          >
+            0
+          </span>
+        </button>
+
+
+        <div
+          class="menu-wrapper"
+          id="menuWrapper"
+        >
+
+          <button
+            type="button"
+            class="menu-button"
+            onclick="toggleMenu()"
+          >
+            ☰ Menu
+          </button>
+
+
+          <div
+            class="site-menu"
+            id="siteMenu"
+          >
+
+            <div class="site-menu-title">
+              ✨ Sublime'K
+            </div>
+
+
+            <a href="#accueil" onclick="fermerMenu()">
+              🏠 Accueil
+            </a>
+
+            <a href="#boutique" onclick="fermerMenu()">
+              🛍️ Boutique
+            </a>
+
+            <a href="#nouveautes" onclick="fermerMenu()">
+              ✨ Nouveautés
+            </a>
+
+            <a href="#creations" onclick="fermerMenu()">
+              🎨 Créations personnalisées
+            </a>
+
+            <a href="#contact" onclick="fermerMenu()">
+              💌 Contact
+            </a>
+
+
+            <div class="menu-separator"></div>
+
+
+            <div class="menu-category-title">
+              📂 Catégories
+            </div>
+
+
+            <button
+              class="menu-category-button"
+              onclick="filtrerDepuisMenu('Cuisine & Maison')"
+            >
+              🍳 Cuisine & Maison
+            </button>
+
+            <button
+              class="menu-category-button"
+              onclick="filtrerDepuisMenu('Bébé & Enfants')"
+            >
+              👶 Bébé & Enfants
+            </button>
+
+            <button
+              class="menu-category-button"
+              onclick="filtrerDepuisMenu('Jeux')"
+            >
+              🎲 Jeux
+            </button>
+
+            <button
+              class="menu-category-button"
+              onclick="filtrerDepuisMenu('Bureau & Études')"
+            >
+              📚 Bureau & Études
+            </button>
+
+            <button
+              class="menu-category-button"
+              onclick="filtrerDepuisMenu('Animaux')"
+            >
+              🐾 Animaux
+            </button>
+
+            <button
+              class="menu-category-button"
+              onclick="filtrerDepuisMenu('Beauté & Bien-être')"
+            >
+              💆 Beauté & Bien-être
+            </button>
+
+            <button
+              class="menu-category-button"
+              onclick="filtrerDepuisMenu('Bijoux')"
+            >
+              💎 Bijoux
+            </button>
+
+            <button
+              class="menu-category-button"
+              onclick="filtrerDepuisMenu('Porte-clés & Accessoires')"
+            >
+              🔑 Porte-clés & Accessoires
+            </button>
+
+            <button
+              class="menu-category-button"
+              onclick="filtrerDepuisMenu('Voiture')"
+            >
+              🚗 Voiture
+            </button>
+
+            <button
+              class="menu-category-button"
+              onclick="filtrerDepuisMenu('Les Coffrets')"
+            >
+              🎁 Les Coffrets
+            </button>
+
+            <button
+              class="menu-category-button"
+              onclick="filtrerDepuisMenu('Événements')"
+            >
+              🎉 Événements
+            </button>
+
+            <button
+              class="menu-category-button"
+              onclick="filtrerDepuisMenu('Autres')"
+            >
+              ✨ Autres
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
 
     </div>
 
@@ -776,7 +1270,6 @@
 
         <div class="boutique-menu">
 
-
           <a
             href="#boutique"
             class="boutique-menu-button"
@@ -786,114 +1279,13 @@
           </a>
 
 
-          <details class="boutique-categories">
-
-            <summary class="boutique-menu-button">
-              📂 Catégories ▾
-            </summary>
-
-
-            <div class="categories-dropdown">
-
-              <a
-                href="#boutique"
-                class="category-link"
-                onclick="filtrerCategorie('Cuisine & Maison')"
-              >
-                🍳 Cuisine & Maison
-              </a>
-
-              <a
-                href="#boutique"
-                class="category-link"
-                onclick="filtrerCategorie('Bébé & Enfants')"
-              >
-                👶 Bébé & Enfants
-              </a>
-
-              <a
-                href="#boutique"
-                class="category-link"
-                onclick="filtrerCategorie('Jeux')"
-              >
-                🎲 Jeux
-              </a>
-
-              <a
-                href="#boutique"
-                class="category-link"
-                onclick="filtrerCategorie('Bureau & Études')"
-              >
-                📚 Bureau & Études
-              </a>
-
-              <a
-                href="#boutique"
-                class="category-link"
-                onclick="filtrerCategorie('Animaux')"
-              >
-                🐾 Animaux
-              </a>
-
-              <a
-                href="#boutique"
-                class="category-link"
-                onclick="filtrerCategorie('Beauté & Bien-être')"
-              >
-                💆 Beauté & Bien-être
-              </a>
-
-              <a
-                href="#boutique"
-                class="category-link"
-                onclick="filtrerCategorie('Bijoux')"
-              >
-                💎 Bijoux
-              </a>
-
-              <a
-                href="#boutique"
-                class="category-link"
-                onclick="filtrerCategorie('Porte-clés & Accessoires')"
-              >
-                🔑 Porte-clés & Accessoires
-              </a>
-
-              <a
-                href="#boutique"
-                class="category-link"
-                onclick="filtrerCategorie('Voiture')"
-              >
-                🚗 Voiture
-              </a>
-
-              <a
-                href="#boutique"
-                class="category-link"
-                onclick="filtrerCategorie('Les Coffrets')"
-              >
-                🎁 Les Coffrets
-              </a>
-
-              <a
-                href="#boutique"
-                class="category-link"
-                onclick="filtrerCategorie('Événements')"
-              >
-                🎉 Événements
-              </a>
-
-              <a
-                href="#boutique"
-                class="category-link"
-                onclick="filtrerCategorie('Autres')"
-              >
-                ✨ Autres
-              </a>
-
-            </div>
-
-          </details>
+          <button
+            type="button"
+            class="boutique-menu-button"
+            onclick="ouvrirPanier()"
+          >
+            🛒 Voir mon panier
+          </button>
 
         </div>
 
@@ -1114,6 +1506,82 @@
 
 
   <!-- =========================
+       PANIER
+  ========================= -->
+
+  <div
+    id="panierOverlay"
+    class="panier-overlay"
+    onclick="fermerPanier()"
+  ></div>
+
+
+  <aside
+    id="panierPanel"
+    class="panier-panel"
+    aria-label="Panier"
+  >
+
+    <div class="panier-header">
+
+      <h2>
+        🛒 Mon panier
+      </h2>
+
+
+      <button
+        type="button"
+        class="panier-fermer"
+        onclick="fermerPanier()"
+        aria-label="Fermer le panier"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div
+      id="panierContenu"
+      class="panier-contenu"
+    >
+    </div>
+
+
+    <div class="panier-footer">
+
+      <div class="panier-total">
+
+        <strong>
+          Total
+        </strong>
+
+        <strong id="panierTotal">
+          0,00 €
+        </strong>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="panier-commander"
+        onclick="preparerCommandePanier()"
+      >
+        💌 Passer ma commande
+      </button>
+
+
+      <p class="panier-note">
+        La commande sera préparée avec le contenu de votre panier.
+      </p>
+
+    </div>
+
+  </aside>
+
+
+  <!-- =========================
        FOOTER
   ========================= -->
 
@@ -1127,10 +1595,6 @@
       Fait avec ❤️
     </p>
 
-
-    <!-- =========================
-         LIENS PAGES LÉGALES
-    ========================= -->
 
     <div
       id="liensPagesLegales"
@@ -1186,7 +1650,7 @@
 
 
   <!-- =========================
-       SUPABASE + BOUTIQUE + NOUVEAUTÉS
+       SUPABASE
   ========================= -->
 
   <script>
@@ -1206,9 +1670,571 @@
       );
 
 
-    /* =========================
+    /* =====================================================
+       MENU PRINCIPAL
+    ===================================================== */
+
+    function toggleMenu() {
+
+      const wrapper =
+        document.getElementById("menuWrapper");
+
+      wrapper.classList.toggle("open");
+
+    }
+
+
+    function fermerMenu() {
+
+      const wrapper =
+        document.getElementById("menuWrapper");
+
+      wrapper.classList.remove("open");
+
+    }
+
+
+    document.addEventListener(
+      "click",
+      function(event) {
+
+        const wrapper =
+          document.getElementById("menuWrapper");
+
+        if (
+          wrapper &&
+          !wrapper.contains(event.target)
+        ) {
+
+          wrapper.classList.remove("open");
+
+        }
+
+      }
+    );
+
+
+    /* =====================================================
+       PANIER
+    ===================================================== */
+
+    const CLE_PANIER =
+      "sublimek-panier";
+
+
+    let panier = [];
+
+
+    function chargerPanierLocal() {
+
+      try {
+
+        const contenu =
+          localStorage.getItem(CLE_PANIER);
+
+        if (contenu) {
+
+          panier =
+            JSON.parse(contenu);
+
+        }
+
+        if (!Array.isArray(panier)) {
+
+          panier = [];
+
+        }
+
+      } catch (error) {
+
+        console.error(
+          "Impossible de charger le panier :",
+          error
+        );
+
+        panier = [];
+
+      }
+
+    }
+
+
+    function sauvegarderPanier() {
+
+      try {
+
+        localStorage.setItem(
+          CLE_PANIER,
+          JSON.stringify(panier)
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Impossible de sauvegarder le panier :",
+          error
+        );
+
+      }
+
+    }
+
+
+    function nombreTotalArticlesPanier() {
+
+      return panier.reduce(
+        function(total, article) {
+
+          return total + article.quantite;
+
+        },
+        0
+      );
+
+    }
+
+
+    function mettreAJourCompteurPanier() {
+
+      const compteur =
+        document.getElementById(
+          "nombrePanier"
+        );
+
+      if (!compteur) {
+        return;
+      }
+
+      compteur.textContent =
+        nombreTotalArticlesPanier();
+
+    }
+
+
+    function formaterPrix(prix) {
+
+      return Number(prix || 0)
+        .toFixed(2)
+        .replace(".", ",") + " €";
+
+    }
+
+
+    function ajouterAuPanier(produit) {
+
+      if (
+        !produit ||
+        produit.statut === "indisponible"
+      ) {
+
+        return;
+
+      }
+
+
+      const prix =
+        Number(produit.prix || 0);
+
+
+      const existant =
+        panier.find(
+          article =>
+            String(article.id) ===
+            String(produit.id)
+        );
+
+
+      if (existant) {
+
+        existant.quantite += 1;
+
+      } else {
+
+        panier.push({
+
+          id: produit.id,
+
+          nom: produit.nom,
+
+          prix: prix,
+
+          image_url:
+            produit.image_url || "",
+
+          statut:
+            produit.statut,
+
+          quantite: 1
+
+        });
+
+      }
+
+
+      sauvegarderPanier();
+
+      mettreAJourCompteurPanier();
+
+      afficherPanier();
+
+      ouvrirPanier();
+
+    }
+
+
+    function modifierQuantite(
+      id,
+      changement
+    ) {
+
+      const article =
+        panier.find(
+          element =>
+            String(element.id) ===
+            String(id)
+        );
+
+
+      if (!article) {
+        return;
+      }
+
+
+      article.quantite += changement;
+
+
+      if (article.quantite <= 0) {
+
+        panier =
+          panier.filter(
+            element =>
+              String(element.id) !==
+              String(id)
+          );
+
+      }
+
+
+      sauvegarderPanier();
+
+      mettreAJourCompteurPanier();
+
+      afficherPanier();
+
+    }
+
+
+    function supprimerDuPanier(id) {
+
+      panier =
+        panier.filter(
+          article =>
+            String(article.id) !==
+            String(id)
+        );
+
+
+      sauvegarderPanier();
+
+      mettreAJourCompteurPanier();
+
+      afficherPanier();
+
+    }
+
+
+    function calculerTotalPanier() {
+
+      return panier.reduce(
+        function(total, article) {
+
+          return total +
+            (
+              Number(article.prix || 0) *
+              Number(article.quantite || 0)
+            );
+
+        },
+        0
+      );
+
+    }
+
+
+    function afficherPanier() {
+
+      const zone =
+        document.getElementById(
+          "panierContenu"
+        );
+
+      const total =
+        document.getElementById(
+          "panierTotal"
+        );
+
+
+      if (!zone || !total) {
+        return;
+      }
+
+
+      if (panier.length === 0) {
+
+        zone.innerHTML = `
+
+          <div class="panier-vide">
+
+            <strong>
+              🛒 Votre panier est vide
+            </strong>
+
+            <p>
+              Ajoutez vos créations préférées
+              pour les retrouver ici.
+            </p>
+
+          </div>
+
+        `;
+
+
+        total.textContent =
+          "0,00 €";
+
+        return;
+
+      }
+
+
+      zone.innerHTML = "";
+
+
+      panier.forEach(
+        function(article) {
+
+          const ligne =
+            document.createElement("div");
+
+          ligne.className =
+            "panier-ligne";
+
+
+          const image =
+            article.image_url
+
+              ? `
+                <img
+                  src="${article.image_url}"
+                  alt="${article.nom}"
+                >
+              `
+
+              : `
+                <span>
+                  ✨
+                </span>
+              `;
+
+
+          const sousTotal =
+            Number(article.prix || 0) *
+            Number(article.quantite || 0);
+
+
+          ligne.innerHTML = `
+
+            <div class="panier-image">
+              ${image}
+            </div>
+
+
+            <div>
+
+              <div class="panier-ligne-nom">
+                ${article.nom}
+              </div>
+
+
+              <div class="panier-ligne-prix">
+                ${formaterPrix(sousTotal)}
+              </div>
+
+
+              <div class="panier-actions-ligne">
+
+                <button
+                  type="button"
+                  class="quantite-button"
+                  onclick="modifierQuantite('${article.id}', -1)"
+                >
+                  −
+                </button>
+
+
+                <span class="quantite">
+                  ${article.quantite}
+                </span>
+
+
+                <button
+                  type="button"
+                  class="quantite-button"
+                  onclick="modifierQuantite('${article.id}', 1)"
+                >
+                  +
+                </button>
+
+
+                <button
+                  type="button"
+                  class="supprimer-panier"
+                  onclick="supprimerDuPanier('${article.id}')"
+                >
+                  Supprimer
+                </button>
+
+              </div>
+
+            </div>
+
+          `;
+
+
+          zone.appendChild(ligne);
+
+        }
+      );
+
+
+      total.textContent =
+        formaterPrix(
+          calculerTotalPanier()
+        );
+
+    }
+
+
+    function ouvrirPanier() {
+
+      fermerMenu();
+
+      afficherPanier();
+
+
+      document
+        .getElementById("panierOverlay")
+        ?.classList.add("active");
+
+
+      document
+        .getElementById("panierPanel")
+        ?.classList.add("active");
+
+
+      document.body.classList.add(
+        "panier-ouvert"
+      );
+
+    }
+
+
+    function fermerPanier() {
+
+      document
+        .getElementById("panierOverlay")
+        ?.classList.remove("active");
+
+
+      document
+        .getElementById("panierPanel")
+        ?.classList.remove("active");
+
+
+      document.body.classList.remove(
+        "panier-ouvert"
+      );
+
+    }
+
+
+    /* =====================================================
+       PRÉPARER LA COMMANDE
+    ===================================================== */
+
+    function preparerCommandePanier() {
+
+      if (panier.length === 0) {
+
+        alert(
+          "Votre panier est vide."
+        );
+
+        return;
+
+      }
+
+
+      let message =
+        "Bonjour Jessica,%0D%0A%0D%0A" +
+        "Je souhaite commander les articles suivants :%0D%0A%0D%0A";
+
+
+      panier.forEach(
+        function(article) {
+
+          const sousTotal =
+            Number(article.prix || 0) *
+            Number(article.quantite || 0);
+
+
+          message +=
+            "• " +
+            encodeURIComponent(article.nom) +
+            " — quantité : " +
+            article.quantite +
+            " — " +
+            encodeURIComponent(
+              formaterPrix(sousTotal)
+            ) +
+            "%0D%0A";
+
+        }
+      );
+
+
+      message +=
+        "%0D%0ATotal du panier : " +
+        encodeURIComponent(
+          formaterPrix(
+            calculerTotalPanier()
+          )
+        ) +
+        "%0D%0A%0D%0A";
+
+
+      message +=
+        "Merci !";
+
+
+      const url =
+        "mailto:Sublime-k.by.jessica@proton.me" +
+        "?subject=" +
+        encodeURIComponent(
+          "Commande Sublime'K"
+        ) +
+        "&body=" +
+        message;
+
+
+      window.location.href = url;
+
+    }
+
+
+    /* =====================================================
        STATUT PRODUIT
-    ========================= */
+    ===================================================== */
 
     function afficherStatut(statut) {
 
@@ -1243,18 +2269,20 @@
     }
 
 
-    /* =========================
+    /* =====================================================
        CARTE PRODUIT
-    ========================= */
+    ===================================================== */
 
     function creerCarteProduit(produit) {
 
       const prix =
         produit.prix !== null &&
         produit.prix !== undefined
+
           ? Number(produit.prix)
               .toFixed(2)
               .replace(".", ",") + " €"
+
           : "";
 
 
@@ -1274,6 +2302,11 @@
               ✨
             </span>
           `;
+
+
+      const indisponible =
+        produit.statut ===
+        "indisponible";
 
 
       return `
@@ -1313,12 +2346,34 @@
             }
 
 
-            <a
-              href="#contact"
-              class="product-button"
-            >
-              💌 Demander
-            </a>
+            <div class="product-actions">
+
+              <button
+                type="button"
+                class="product-button"
+                ${
+                  indisponible
+                    ? "disabled"
+                    : ""
+                }
+                onclick='ajouterAuPanier(${JSON.stringify(produit).replace(/'/g, "&#39;")})'
+              >
+                ${
+                  indisponible
+                    ? "⚫ Indisponible"
+                    : "🛒 Ajouter au panier"
+                }
+              </button>
+
+
+              <a
+                href="#contact"
+                class="product-button secondary"
+              >
+                💌 Demander
+              </a>
+
+            </div>
 
           </div>
 
@@ -1329,19 +2384,24 @@
     }
 
 
-    /* =========================
-       CHARGER LES PRODUITS
-    ========================= */
+    /* =====================================================
+       CHARGER LA BOUTIQUE
+    ===================================================== */
 
     async function chargerBoutique() {
 
       const zone =
-        document.getElementById("boutique-produits");
+        document.getElementById(
+          "boutique-produits"
+        );
 
 
       try {
 
-        const { data, error } =
+        const {
+          data,
+          error
+        } =
           await supabaseClient
 
             .from("products")
@@ -1360,9 +2420,12 @@
 
             .eq("visible", true)
 
-            .order("ordre", {
-              ascending: true
-            });
+            .order(
+              "ordre",
+              {
+                ascending: true
+              }
+            );
 
 
         if (error) {
@@ -1370,7 +2433,10 @@
         }
 
 
-        if (!data || data.length === 0) {
+        if (
+          !data ||
+          data.length === 0
+        ) {
 
           zone.innerHTML = `
 
@@ -1396,12 +2462,17 @@
         zone.innerHTML = "";
 
 
-        data.forEach(produit => {
+        data.forEach(
+          function(produit) {
 
-          zone.innerHTML +=
-            creerCarteProduit(produit);
+            zone.innerHTML +=
+              creerCarteProduit(
+                produit
+              );
 
-        });
+          }
+        );
+
 
       } catch (error) {
 
@@ -1428,33 +2499,39 @@
     }
 
 
-    /* =========================
+    /* =====================================================
        FILTRER PAR CATÉGORIE
-    ========================= */
+    ===================================================== */
 
-    async function filtrerCategorie(nomCategorie) {
+    async function filtrerCategorie(
+      nomCategorie
+    ) {
 
       const zone =
-        document.getElementById("boutique-produits");
+        document.getElementById(
+          "boutique-produits"
+        );
 
 
       const titreFiltre =
-        document.getElementById("boutique-filtre");
+        document.getElementById(
+          "boutique-filtre"
+        );
 
 
       titreFiltre.innerHTML = `
+
         <strong>
           ${nomCategorie}
         </strong>
+
       `;
 
 
       zone.innerHTML = `
 
         <div class="boutique-empty">
-
           Chargement des produits…
-
         </div>
 
       `;
@@ -1462,7 +2539,10 @@
 
       try {
 
-        const { data: categories, error: categoriesError } =
+        const {
+          data: categories,
+          error: categoriesError
+        } =
           await supabaseClient
 
             .from("categories")
@@ -1480,9 +2560,14 @@
 
         const categorie =
           categories.find(
-            cat =>
-              cat.Nom.trim().toLowerCase() ===
-              nomCategorie.trim().toLowerCase()
+            function(cat) {
+
+              return (
+                cat.Nom.trim().toLowerCase() ===
+                nomCategorie.trim().toLowerCase()
+              );
+
+            }
           );
 
 
@@ -1505,7 +2590,10 @@
         }
 
 
-        const { data: produits, error: produitsError } =
+        const {
+          data: produits,
+          error: produitsError
+        } =
           await supabaseClient
 
             .from("products")
@@ -1524,11 +2612,17 @@
 
             .eq("visible", true)
 
-            .eq("categorie_id", categorie.id)
+            .eq(
+              "categorie_id",
+              categorie.id
+            )
 
-            .order("ordre", {
-              ascending: true
-            });
+            .order(
+              "ordre",
+              {
+                ascending: true
+              }
+            );
 
 
         if (produitsError) {
@@ -1536,7 +2630,10 @@
         }
 
 
-        if (!produits || produits.length === 0) {
+        if (
+          !produits ||
+          produits.length === 0
+        ) {
 
           zone.innerHTML = `
 
@@ -1558,12 +2655,16 @@
         zone.innerHTML = "";
 
 
-        produits.forEach(produit => {
+        produits.forEach(
+          function(produit) {
 
-          zone.innerHTML +=
-            creerCarteProduit(produit);
+            zone.innerHTML +=
+              creerCarteProduit(
+                produit
+              );
 
-        });
+          }
+        );
 
 
       } catch (error) {
@@ -1591,20 +2692,58 @@
     }
 
 
-    /* =========================
-       AFFICHER TOUS LES PRODUITS
-    ========================= */
+    /* =====================================================
+       CATÉGORIE DEPUIS LE MENU
+    ===================================================== */
+
+    function filtrerDepuisMenu(
+      nomCategorie
+    ) {
+
+      fermerMenu();
+
+      filtrerCategorie(
+        nomCategorie
+      );
+
+
+      setTimeout(
+        function() {
+
+          document
+            .getElementById("boutique")
+            ?.scrollIntoView({
+              behavior: "smooth"
+            });
+
+        },
+        100
+      );
+
+    }
+
+
+    /* =====================================================
+       TOUS LES PRODUITS
+    ===================================================== */
 
     async function afficherTousLesProduits() {
 
+      fermerMenu();
+
+
       const titreFiltre =
-        document.getElementById("boutique-filtre");
+        document.getElementById(
+          "boutique-filtre"
+        );
 
 
       titreFiltre.innerHTML = `
+
         <strong>
           Toutes les créations
         </strong>
+
       `;
 
 
@@ -1613,19 +2752,24 @@
     }
 
 
-    /* =========================
+    /* =====================================================
        NOUVEAUTÉS
-    ========================= */
+    ===================================================== */
 
     async function chargerNouveautes() {
 
       const zone =
-        document.getElementById("nouveautes-produits");
+        document.getElementById(
+          "nouveautes-produits"
+        );
 
 
       try {
 
-        const { data, error } =
+        const {
+          data,
+          error
+        } =
           await supabaseClient
 
             .from("products")
@@ -1643,11 +2787,17 @@
 
             .eq("visible", true)
 
-            .eq("nouveaute", true)
+            .eq(
+              "nouveaute",
+              true
+            )
 
-            .order("ordre", {
-              ascending: true
-            })
+            .order(
+              "ordre",
+              {
+                ascending: true
+              }
+            )
 
             .limit(12);
 
@@ -1657,7 +2807,10 @@
         }
 
 
-        if (!data || data.length === 0) {
+        if (
+          !data ||
+          data.length === 0
+        ) {
 
           zone.innerHTML = `
 
@@ -1679,12 +2832,16 @@
         zone.innerHTML = "";
 
 
-        data.forEach(produit => {
+        data.forEach(
+          function(produit) {
 
-          zone.innerHTML +=
-            creerCarteProduit(produit);
+            zone.innerHTML +=
+              creerCarteProduit(
+                produit
+              );
 
-        });
+          }
+        );
 
 
       } catch (error) {
@@ -1712,9 +2869,9 @@
     }
 
 
-    /* =========================
+    /* =====================================================
        INFORMATIONS LÉGALES
-    ========================= */
+    ===================================================== */
 
     async function chargerPagesLegalesPublic() {
 
@@ -1731,7 +2888,10 @@
 
       try {
 
-        const { data, error } =
+        const {
+          data,
+          error
+        } =
           await supabaseClient
 
             .from("legal_pages")
@@ -1743,9 +2903,12 @@
               ordre
             `)
 
-            .order("ordre", {
-              ascending: true
-            });
+            .order(
+              "ordre",
+              {
+                ascending: true
+              }
+            );
 
 
         if (error) {
@@ -1753,7 +2916,10 @@
         }
 
 
-        if (!data || data.length === 0) {
+        if (
+          !data ||
+          data.length === 0
+        ) {
 
           zone.innerHTML = "";
 
@@ -1766,7 +2932,7 @@
 
 
         data.forEach(
-          (page, index) => {
+          function(page, index) {
 
             const bouton =
               document.createElement(
@@ -1848,9 +3014,9 @@
     }
 
 
-    /* =========================
+    /* =====================================================
        OUVRIR UNE PAGE LÉGALE
-    ========================= */
+    ===================================================== */
 
     function ouvrirPageLegale(
       titre,
@@ -1901,9 +3067,9 @@
     }
 
 
-    /* =========================
-       FERMER UNE PAGE LÉGALE
-    ========================= */
+    /* =====================================================
+       FERMER PAGE LÉGALE
+    ===================================================== */
 
     function fermerPageLegale() {
 
@@ -1923,16 +3089,23 @@
       );
 
 
-      document.body.style.overflow =
-        "";
+      if (
+        !document
+          .getElementById("panierPanel")
+          ?.classList.contains("active")
+      ) {
+
+        document.body.style.overflow =
+          "";
+
+      }
 
     }
 
 
-    /* =========================
-       FERMER EN CLIQUANT
-       EN DEHORS DE LA FENÊTRE
-    ========================= */
+    /* =====================================================
+       FERMER MODALE LÉGALE EN CLIQUANT À L'EXTÉRIEUR
+    ===================================================== */
 
     document
       .getElementById(
@@ -1954,9 +3127,9 @@
       );
 
 
-    /* =========================
-       FERMER AVEC LA TOUCHE ÉCHAP
-    ========================= */
+    /* =====================================================
+       TOUCHE ÉCHAP
+    ===================================================== */
 
     document.addEventListener(
       "keydown",
@@ -1968,21 +3141,32 @@
 
           fermerPageLegale();
 
+          fermerPanier();
+
+          fermerMenu();
+
         }
 
       }
     );
 
 
-    /* =========================
+    /* =====================================================
        DÉMARRAGE
-    ========================= */
+    ===================================================== */
+
+    chargerPanierLocal();
+
+    mettreAJourCompteurPanier();
+
+    afficherPanier();
 
     chargerBoutique();
 
     chargerNouveautes();
 
     chargerPagesLegalesPublic();
+
 
   </script>
 
