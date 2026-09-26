@@ -2958,6 +2958,20 @@ if (etapeCouleur) {
       : "none";
 
 }
+
+  const etapeDesign =
+  document.getElementById(
+    "etapePersonnalisationDesign"
+  );
+
+if (etapeDesign) {
+
+  etapeDesign.style.display =
+    produit.choix_image_active === true
+      ? ""
+      : "none";
+
+}
   
   /* ---------------------------------------------
      CHOIX DE DÉPART
@@ -6531,29 +6545,61 @@ chargerBibliothequePublique();
            1. DESIGN
       ================================================== -->
 
-      <section class="personnalisation-etape">
+      <section
+  class="personnalisation-etape"
+  id="etapePersonnalisationDesign"
+>
+  <h3>🎨 1. Choisis ton design</h3>
 
-        <h3>
-          🎨 1. Choisis ton design
-        </h3>
+  <div class="personnalisation-champ">
 
+    <label for="personnalisationCategorie">
+      Catégorie
+    </label>
 
-        <div class="personnalisation-champ">
+    <select id="personnalisationCategorie">
+      <option value="">
+        Choisir une catégorie
+      </option>
+    </select>
 
-          <label for="personnalisationCategorie">
-            Catégorie
-          </label>
+  </div>
 
-          <select
-            id="personnalisationCategorie"
-          >
+  <div class="personnalisation-champ">
 
-            <option value="">
-              Choisir une catégorie
-            </option>
+    <label for="personnalisationSousCategorie">
+      Sous-catégorie
+    </label>
 
-          </select>
+    <select
+      id="personnalisationSousCategorie"
+      disabled
+    >
+      <option value="">
+        Choisir une sous-catégorie
+      </option>
+    </select>
 
+  </div>
+
+  <div class="personnalisation-champ">
+
+    <label>
+      Design
+    </label>
+
+    <div
+      id="personnalisationDesigns"
+      class="personnalisation-designs"
+    >
+      <div class="personnalisation-message">
+        Choisis d'abord une sous-catégorie.
+      </div>
+    </div>
+
+  </div>
+
+</section>
         </div>
 
 
