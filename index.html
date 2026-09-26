@@ -2917,6 +2917,19 @@ async function ouvrirPersonnalisation(
   personnalisationArticleEnModification =
     articleAModifier;
 
+  const etapePrenom =
+  document.getElementById(
+    "etapePersonnalisationPrenom"
+  );
+
+if (etapePrenom) {
+
+  etapePrenom.style.display =
+    produit.prenom_active === true
+      ? ""
+      : "none";
+
+}
 
   /* ---------------------------------------------
      CHOIX DE DÉPART
