@@ -1106,6 +1106,84 @@
   }
 
 }
+/* =====================================================
+   PLANCHES D'APERÇU DES COLLECTIONS
+===================================================== */
+
+.bibliotheque-planches {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin: 35px 0 45px;
+}
+
+.bibliotheque-planche {
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.bibliotheque-planche:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.bibliotheque-planche-image {
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 55px;
+  background: linear-gradient(
+    135deg,
+    #f8f6ee,
+    #e8eadc,
+    #f7e9e5
+  );
+}
+
+.bibliotheque-planche-titre {
+  padding: 16px 12px;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+
+/* =====================================================
+   PLANCHES - TABLETTE
+===================================================== */
+
+@media (max-width: 900px) {
+
+  .bibliotheque-planches {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+
+/* =====================================================
+   PLANCHES - MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+
+  .bibliotheque-planches {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .bibliotheque-planche-image {
+    min-height: 160px;
+  }
+
+}
     
   </style>
 
@@ -1498,6 +1576,7 @@
 
         <div class="bibliotheque-apercu-placeholder">
           🎨
+          
         </div>
 
       </div>
@@ -1523,6 +1602,47 @@
 
     </div>
 
+    <!-- PLANCHES D'APERÇU DES COLLECTIONS -->
+
+<div class="bibliotheque-planches">
+
+  <div class="bibliotheque-planche">
+    <div class="bibliotheque-planche-image">
+      ✨
+    </div>
+    <div class="bibliotheque-planche-titre">
+      Astrologie
+    </div>
+  </div>
+
+  <div class="bibliotheque-planche">
+    <div class="bibliotheque-planche-image">
+      🐾
+    </div>
+    <div class="bibliotheque-planche-titre">
+      Animaux
+    </div>
+  </div>
+
+  <div class="bibliotheque-planche">
+    <div class="bibliotheque-planche-image">
+      👨‍👩‍👧
+    </div>
+    <div class="bibliotheque-planche-titre">
+      Famille
+    </div>
+  </div>
+
+  <div class="bibliotheque-planche">
+    <div class="bibliotheque-planche-image">
+      🧸
+    </div>
+    <div class="bibliotheque-planche-titre">
+      Enfants
+    </div>
+  </div>
+
+</div>
 
     <!-- FUTURES CATÉGORIES -->
 
