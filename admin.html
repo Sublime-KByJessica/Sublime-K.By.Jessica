@@ -1027,11 +1027,18 @@ button{cursor:pointer}
     💰 Gestion financière
   </button>
 
-  <button
+   <button
     class="menu-bouton"
     data-section="bibliotheque"
   >
     🎨 Bibliothèque
+  </button>
+
+  <button
+    class="menu-bouton"
+    data-section="personnalisation"
+  >
+    ✨ Personnalisation
   </button>
 
   <button
@@ -2694,7 +2701,8 @@ async function afficherAdmin(){
   await chargerLivraisons();
   await chargerCommandes();
   await chargerPagesLegales();
-
+  await chargerPolicesPersonnalisation();
+  await chargerCouleursPersonnalisation();
 }
 
 
