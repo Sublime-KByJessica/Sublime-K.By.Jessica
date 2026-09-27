@@ -5557,6 +5557,295 @@ async function chargerPhotosSupplementairesProduits(
 }
 
     /* =====================================================
+   📖 CARROUSEL PRODUIT — NAVIGATION
+===================================================== */
+
+function initialiserCarrouselsProduits() {
+
+  const carrousels =
+    document.querySelectorAll(
+      "[data-carousel]"
+    );
+
+  carrousels.forEach(
+    function(carrousel) {
+
+      if (
+        carrousel.dataset.initialise ===
+        "true"
+      ) {
+        return;
+      }
+
+      carrousel.dataset.initialise =
+        "true";
+
+
+      const pages =
+        carrousel.querySelectorAll(
+          "[data-carousel-page]"
+        );
+
+      const boutonPrecedent =
+        carrousel.querySelector(
+          "[data-carousel-prev]"
+        );
+
+      const boutonSuivant =
+        carrousel.querySelector(
+          "[data-carousel-next]"
+        );
+
+      const points =
+        carrousel.querySelectorAll(
+          "[data-carousel-dot]"
+        );
+
+
+      if (pages.length <= 1) {
+        return;
+      }
+
+
+      let indexActuel = 0;
+
+
+      function afficherPage(
+        nouvelIndex,
+        direction = 1
+      ) {
+
+        if (
+          nouvelIndex < 0
+        ) {
+
+          nouvelIndex =
+            pages.length - 1;
+
+        }
+
+        if (
+          nouvelIndex >= pages.length
+        ) {
+
+          nouvelIndex = 0;
+
+        }
+
+
+        pages.forEach(
+          function(page, index) {
+
+            page.classList.remove(
+              "active"
+            );
+
+            page.style.transform =
+              index === nouvelIndex
+                ? "translateX(0) rotateY(0)"
+                : (
+                    index <
+                    nouvelIndex
+                      ? "translateX(-100%) rotateY(12deg)"
+                      : "translateX(100%) rotateY(-12deg)"
+                  );
+
+          }
+        );
+
+
+        points.forEach(
+          function(point, index) {
+
+            point.classList.toggle(
+              "active",
+              index === nouvelIndex
+            );
+
+          }
+        );
+
+
+        indexActuel =
+          nouvelIndex;
+
+      }
+
+
+      boutonPrecedent?.addEventListener(
+        "click",
+        function(event) {
+
+          event.preventDefault();
+          event.stopPropagation();
+
+          afficherPage(
+            indexActuel - 1,
+            -1
+          );
+
+        }
+      );
+
+
+      boutonSuivant?.addEventListener(
+        "click",
+        function(event) {
+
+          event.preventDefault();
+          event.stopPropagation();
+
+          afficherPage(
+            indexActuel + 1,
+            1
+          );
+
+        }
+      );
+
+
+      points.forEach(
+        function(point) {
+
+          point.addEventListener(
+            "click",
+            function(event) {
+
+              event.preventDefault();
+              event.stopPropagation();
+
+              const index =
+                Number(
+                  point.dataset.carouselDot
+                );
+
+              afficherPage(
+                index
+              );
+
+            }
+          );
+
+        }
+      );
+
+
+      /* =================================================
+         👆 GLISSEMENT TACTILE
+      ================================================= */
+
+      let positionDepartX = 0;
+      let positionDepartY = 0;
+
+
+      carrousel.addEventListener(
+        "touchstart",
+        function(event) {
+
+          const doigt =
+            event.touches[0];
+
+          if (!doigt) {
+            return;
+          }
+
+          positionDepartX =
+            doigt.clientX;
+
+          positionDepartY =
+            doigt.clientY;
+
+        },
+        {
+          passive: true
+        }
+      );
+
+
+      carrousel.addEventListener(
+        "touchend",
+        function(event) {
+
+          const doigt =
+            event.changedTouches[0];
+
+          if (!doigt) {
+            return;
+          }
+
+          const differenceX =
+            doigt.clientX -
+            positionDepartX;
+
+          const differenceY =
+            doigt.clientY -
+            positionDepartY;
+
+
+          /*
+             On ne déclenche le swipe
+             que si le mouvement est
+             principalement horizontal.
+          */
+
+          if (
+            Math.abs(differenceX) <
+            50
+          ) {
+            return;
+          }
+
+
+          if (
+            Math.abs(differenceX) <=
+            Math.abs(differenceY)
+          ) {
+            return;
+          }
+
+
+          if (
+            differenceX < 0
+          ) {
+
+            afficherPage(
+              indexActuel + 1,
+              1
+            );
+
+          } else {
+
+            afficherPage(
+              indexActuel - 1,
+              -1
+            );
+
+          }
+
+        },
+        {
+          passive: true
+        }
+      );
+
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   📖 INITIALISER LES CARROUSELS APRÈS AFFICHAGE
+===================================================== */
+
+function activerCarrouselsProduits() {
+
+  initialiserCarrouselsProduits();
+
+}
+    
+    /* =====================================================
        CHARGER LA BOUTIQUE
     ===================================================== */
 
