@@ -6386,6 +6386,78 @@ function changerImageFicheProduit(
   );
 
 }
+
+    /* =====================================================
+   👆 SWIPE TACTILE — FICHE PRODUIT
+===================================================== */
+
+let debutSwipeFicheProduit = 0;
+let finSwipeFicheProduit = 0;
+
+
+function initialiserSwipeFicheProduit() {
+
+  const zone =
+    document.querySelector(
+      ".fiche-images-conteneur"
+    );
+
+  if (!zone) {
+    return;
+  }
+
+  zone.ontouchstart =
+    function(event) {
+
+      if (
+        !event.touches ||
+        !event.touches.length
+      ) {
+        return;
+      }
+
+      debutSwipeFicheProduit =
+        event.touches[0].clientX;
+
+    };
+
+
+  zone.ontouchend =
+    function(event) {
+
+      if (
+        !event.changedTouches ||
+        !event.changedTouches.length
+      ) {
+        return;
+      }
+
+      finSwipeFicheProduit =
+        event.changedTouches[0].clientX;
+
+      const distance =
+        finSwipeFicheProduit -
+        debutSwipeFicheProduit;
+
+
+      if (Math.abs(distance) < 50) {
+        return;
+      }
+
+
+      if (distance < 0) {
+
+        changerImageFicheProduit(1);
+
+      } else {
+
+        changerImageFicheProduit(-1);
+
+      }
+
+    };
+
+}
     
     function activerCarrouselsProduits() {
 
