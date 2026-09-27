@@ -4927,21 +4927,159 @@ const produit = {
             "panier-ligne";
 
 
-          const image =
-            article.image_url
+          const imagesProduit = [];
 
-              ? `
-                <img
-                  src="${article.image_url}"
-                  alt="${article.nom}"
-                >
-              `
+if (produit.image_url) {
 
-              : `
-                <span>
-                  ✨
-                </span>
-              `;
+  imagesProduit.push({
+    image_url: produit.image_url,
+    alt_text: produit.nom
+  });
+
+}
+
+(photosSupplementaires || []).forEach(
+  function(photo) {
+
+    if (
+      photo &&
+      photo.image_url &&
+      photo.image_url !== produit.image_url
+    ) {
+
+      imagesProduit.push({
+        image_url: photo.image_url,
+        alt_text:
+          photo.alt_text ||
+          produit.nom
+      });
+
+    }
+
+  }
+);
+
+
+const image =
+
+  imagesProduit.length > 0
+
+    ? `
+
+      <div
+        class="product-carousel"
+        data-carousel
+      >
+
+        ${
+
+          imagesProduit
+            .map(
+              function(photo, index) {
+
+                return `
+
+                  <div
+                    class="product-carousel-page ${
+                      index === 0
+                        ? "active"
+                        : ""
+                    }"
+                    data-carousel-page
+                  >
+
+                    <img
+                      src="${photo.image_url}"
+                      alt="${photo.alt_text}"
+                      loading="lazy"
+                    >
+
+                  </div>
+
+                `;
+
+              }
+            )
+            .join("")
+
+        }
+
+
+        ${
+          imagesProduit.length > 1
+
+            ? `
+
+              <button
+                type="button"
+                class="product-carousel-arrow product-carousel-prev"
+                data-carousel-prev
+                aria-label="Photo précédente"
+              >
+                ‹
+              </button>
+
+
+              <button
+                type="button"
+                class="product-carousel-arrow product-carousel-next"
+                data-carousel-next
+                aria-label="Photo suivante"
+              >
+                ›
+              </button>
+
+
+              <div
+                class="product-carousel-dots"
+              >
+
+                ${
+
+                  imagesProduit
+                    .map(
+                      function(photo, index) {
+
+                        return `
+
+                          <button
+                            type="button"
+                            class="product-carousel-dot ${
+                              index === 0
+                                ? "active"
+                                : ""
+                            }"
+                            data-carousel-dot="${index}"
+                            aria-label="Afficher la photo ${index + 1}"
+                          ></button>
+
+                        `;
+
+                      }
+                    )
+                    .join("")
+
+                }
+
+              </div>
+
+            `
+
+            : ""
+
+        }
+
+      </div>
+
+    `
+
+    : `
+
+      <span>
+        ✨
+      </span>
+
+    `;
 
 
           const sousTotal =
