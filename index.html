@@ -5573,15 +5573,24 @@ async function chargerPhotosSupplementairesProduits(
         }
 
 
-        zone.innerHTML = "";
+                zone.innerHTML = "";
 
 
-        produits.forEach(
+        const photosParProduit =
+          await chargerPhotosSupplementairesProduits(
+            data
+          );
+
+
+        data.forEach(
           function(produit) {
 
             zone.innerHTML +=
               creerCarteProduit(
-                produit
+                produit,
+                photosParProduit[
+                  produit.id
+                ] || []
               );
 
           }
