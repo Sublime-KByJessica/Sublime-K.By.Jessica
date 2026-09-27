@@ -5636,23 +5636,26 @@ function initialiserCarrouselsProduits() {
         pages.forEach(
           function(page, index) {
 
-            page.classList.remove(
-              "active"
-             index === nouvelIndex
-            );
+            pages.forEach(
+  function(page, index) {
 
-            page.style.transform =
-              index === nouvelIndex
-                ? "translateX(0) rotateY(0)"
-                : (
-                    index <
-                    nouvelIndex
-                      ? "translateX(-100%) rotateY(12deg)"
-                      : "translateX(100%) rotateY(-12deg)"
-                  );
+    page.classList.toggle(
+      "active",
+      index === nouvelIndex
+    );
 
-          }
-        );
+    page.style.transform =
+      index === nouvelIndex
+        ? "translateX(0) rotateY(0)"
+        : (
+            index <
+            nouvelIndex
+              ? "translateX(-100%) rotateY(12deg)"
+              : "translateX(100%) rotateY(-12deg)"
+          );
+
+  }
+);
 
 
         points.forEach(
