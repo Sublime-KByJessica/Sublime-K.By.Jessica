@@ -6001,6 +6001,13 @@ async function ouvrirFicheProduit(produit) {
     return;
   }
 
+  const photosSupplementaires =
+  await chargerPhotosSupplementairesProduits(
+    [produit]
+  );
+
+const photosProduit =
+  photosSupplementaires[produit.id] || [];
 
   const prix =
     produit.prix !== null &&
