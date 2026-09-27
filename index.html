@@ -6125,27 +6125,22 @@ async function ouvrirFicheProduit(produit) {
    🛍️ FERMER LA FICHE PRODUIT
 ===================================================== */
 
-document
-  .getElementById("fermerFicheProduit")
-  ?.addEventListener(
-    "click",
-    function() {
+function fermerFicheProduit() {
 
-      const overlay =
-        document.getElementById(
-          "ficheProduitOverlay"
-        );
+  const overlay =
+    document.getElementById(
+      "ficheProduitOverlay"
+    );
 
-      if (!overlay) {
-        return;
-      }
+  if (!overlay) {
+    return;
+  }
 
-      overlay.classList.remove("active");
+  overlay.classList.remove("active");
 
-      document.body.style.overflow = "";
+  document.body.style.overflow = "";
 
-    }
-  );
+}
     
     function activerCarrouselsProduits() {
 
@@ -7866,11 +7861,12 @@ chargerBibliothequePublique();
   >
 
     <button
-      type="button"
-      id="fermerFicheProduit"
-      class="fiche-produit-fermer"
-      aria-label="Fermer"
-    >
+  type="button"
+  id="fermerFicheProduit"
+  class="fiche-produit-fermer"
+  aria-label="Fermer"
+  onclick="fermerFicheProduit()"
+>
       ✕
     </button>
 
