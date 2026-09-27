@@ -1030,6 +1030,189 @@
       text-align: left;
     }
 
+    <!-- ========================= MODALE COMMANDE ========================= -->
+
+<div
+  id="commandeModal"
+  class="commande-modal"
+  style="display:none;"
+>
+  <div class="commande-modal-contenu">
+
+    <button
+      type="button"
+      class="commande-modal-fermer"
+      onclick="fermerCommandeModal()"
+      aria-label="Fermer"
+    >
+      ×
+    </button>
+
+    <h2>🛍️ Finaliser ma commande</h2>
+
+    <p class="commande-intro">
+      Renseignez vos coordonnées pour finaliser votre commande.
+    </p>
+
+    <form id="commandeForm" onsubmit="validerFormulaireCommande(event)">
+
+      <div class="commande-champ">
+        <label for="commandePrenom">Prénom *</label>
+        <input
+          type="text"
+          id="commandePrenom"
+          name="prenom"
+          required
+        >
+      </div>
+
+      <div class="commande-champ">
+        <label for="commandeNom">Nom *</label>
+        <input
+          type="text"
+          id="commandeNom"
+          name="nom"
+          required
+        >
+      </div>
+
+      <div class="commande-champ">
+        <label for="commandeEmail">E-mail *</label>
+        <input
+          type="email"
+          id="commandeEmail"
+          name="email"
+          required
+        >
+      </div>
+
+      <div class="commande-champ">
+        <label for="commandeTelephone">Téléphone</label>
+        <input
+          type="tel"
+          id="commandeTelephone"
+          name="telephone"
+        >
+      </div>
+
+      <div class="commande-champ">
+        <label for="commandeAdresse">Adresse *</label>
+        <input
+          type="text"
+          id="commandeAdresse"
+          name="adresse"
+          required
+        >
+      </div>
+
+      <div class="commande-champ">
+        <label for="commandeComplement">
+          Complément d'adresse
+        </label>
+        <input
+          type="text"
+          id="commandeComplement"
+          name="complement"
+        >
+      </div>
+
+      <div class="commande-ligne">
+
+        <div class="commande-champ">
+          <label for="commandeCodePostal">Code postal *</label>
+          <input
+            type="text"
+            id="commandeCodePostal"
+            name="code_postal"
+            required
+          >
+        </div>
+
+        <div class="commande-champ">
+          <label for="commandeVille">Ville *</label>
+          <input
+            type="text"
+            id="commandeVille"
+            name="ville"
+            required
+          >
+        </div>
+
+      </div>
+
+      <div class="commande-champ">
+        <label for="commandePays">Pays *</label>
+        <input
+          type="text"
+          id="commandePays"
+          name="pays"
+          value="France"
+          required
+        >
+      </div>
+
+      <div class="commande-champ">
+        <label for="commandeLivraison">
+          Mode de livraison *
+        </label>
+
+        <select
+          id="commandeLivraison"
+          name="livraison"
+          required
+        >
+          <option value="">
+            Chargement des modes de livraison...
+          </option>
+        </select>
+      </div>
+
+      <div class="commande-champ">
+        <label for="commandeNote">
+          Note pour la commande
+        </label>
+
+        <textarea
+          id="commandeNote"
+          name="note"
+          rows="3"
+          placeholder="Une précision concernant votre commande ?"
+        ></textarea>
+      </div>
+
+      <div class="commande-recap">
+        <h3>🧾 Votre commande</h3>
+
+        <div id="commandeRecap">
+          <!-- Le récapitulatif sera généré automatiquement -->
+        </div>
+      </div>
+
+      <div class="commande-boutons">
+
+        <button
+          type="button"
+          class="commande-annuler"
+          onclick="fermerCommandeModal()"
+        >
+          Annuler
+        </button>
+
+        <button
+          type="submit"
+          class="commande-continuer"
+        >
+          Continuer →
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+<!-- ========================= FIN MODALE COMMANDE ========================= -->
 
     /* =========================
        FOOTER
