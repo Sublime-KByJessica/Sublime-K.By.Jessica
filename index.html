@@ -6121,6 +6121,32 @@ async function ouvrirFicheProduit(produit) {
 
 }
 
+    /* =====================================================
+   🛍️ FERMER LA FICHE PRODUIT
+===================================================== */
+
+document
+  .getElementById("fermerFicheProduit")
+  ?.addEventListener(
+    "click",
+    function() {
+
+      const overlay =
+        document.getElementById(
+          "ficheProduitOverlay"
+        );
+
+      if (!overlay) {
+        return;
+      }
+
+      overlay.classList.remove("active");
+
+      document.body.style.overflow = "";
+
+    }
+  );
+    
     function activerCarrouselsProduits() {
 
   initialiserCarrouselsProduits();
