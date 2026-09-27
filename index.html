@@ -415,6 +415,146 @@
       object-fit: cover;
     }
 
+    /* =====================================================
+   📖 CARROUSEL PRODUIT — EFFET LIVRE
+===================================================== */
+
+.product-carousel {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  background: #F1E5E5;
+  perspective: 1000px;
+}
+
+.product-carousel-page {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: translateX(100%) rotateY(-12deg);
+  transition:
+    opacity 0.45s ease,
+    transform 0.55s ease;
+  pointer-events: none;
+}
+
+.product-carousel-page.active {
+  opacity: 1;
+  transform: translateX(0) rotateY(0);
+  pointer-events: auto;
+}
+
+.product-carousel-page img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+/* Boutons gauche / droite */
+
+.product-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(255,255,255,0.88);
+  color: #6F5960;
+
+  font-size: 20px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 3px 10px rgba(0,0,0,0.15);
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.product-carousel-arrow:hover {
+  transform:
+    translateY(-50%)
+    scale(1.08);
+
+  background: #FFFFFF;
+}
+
+.product-carousel-prev {
+  left: 8px;
+}
+
+.product-carousel-next {
+  right: 8px;
+}
+
+
+/* Petits points */
+
+.product-carousel-dots {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+
+  z-index: 5;
+
+  display: flex;
+  gap: 6px;
+}
+
+.product-carousel-dot {
+  width: 7px;
+  height: 7px;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(255,255,255,0.65);
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.product-carousel-dot.active {
+  transform: scale(1.35);
+  background: #FFFFFF;
+}
+
+
+/* Mobile / tablette */
+
+@media (max-width: 700px) {
+
+  .product-carousel {
+    height: 180px;
+  }
+
+  .product-carousel-arrow {
+    width: 32px;
+    height: 32px;
+  }
+
+}
+
     .product-content {
       padding: 16px;
     }
