@@ -4014,6 +4014,7 @@ async function(id){
 
   produitEnModification=id;
 
+  await chargerPhotosSupplementairesProduit();
 
   document.getElementById("nom").value=
     data.nom||"";
@@ -7354,7 +7355,608 @@ document
     }
   );
 
+/* =====================================================
+   📸 PHOTOS SUPPLÉMENTAIRES DU PRODUIT
+===================================================== */
 
+async function chargerPhotosSupplementairesProduit() {
+
+  const zone =
+    document.getElementById(
+      "photosProduitSupplementaires"
+    );
+
+  if (!zone) {
+    return;
+  }
+
+  zone.innerHTML =
+    "<p style='color:#766B6D;'>Chargement des photos...</p>";
+
+  if (!produitEnModification) {
+
+    zone.innerHTML = `
+      <p style="
+        color:#766B6D;
+        font-size:14px;
+      ">
+        💡 Enregistre d'abord le produit pour pouvoir
+        ajouter ses photos supplémentaires.
+      </p>
+    `;
+
+    return;
+  }
+
+  const {
+    data,
+    error
+  } =
+    await client
+      .from("product_images")
+      .select("*")
+      .eq(
+        "produit_id",
+        produitEnModification
+      )
+      .order(
+        "ordre",
+        {
+          ascending:true
+        }
+      );
+
+  if (error) {
+
+    console.error(
+      "Erreur chargement photos produit :",
+      error
+    );
+
+    zone.innerHTML = `
+      <p style="color:#8B4F4F;">
+        ❌ Impossible de charger les photos.
+      </p>
+    `;
+
+    return;
+  }
+
+  if (!data || data.length === 0) {
+
+    zone.innerHTML = `
+      <p style="
+        color:#766B6D;
+        font-size:14px;
+      ">
+        Aucune photo supplémentaire pour le moment.
+      </p>
+    `;
+
+    return;
+  }
+
+  zone.innerHTML = "";
+
+  data.forEach(
+    function(photo, index) {
+
+      const carte =
+        document.createElement("div");
+
+      carte.style.cssText = `
+        position:relative;
+        border:1px solid var(--bordure);
+        border-radius:12px;
+        padding:8px;
+        background:white;
+      `;
+
+      carte.innerHTML = `
+
+        <img
+          src="${echapperHTML(photo.image_url)}"
+          alt="${echapperHTML(
+            photo.alt_text || "Photo produit"
+          )}"
+          style="
+            display:block;
+            width:100%;
+            height:120px;
+            object-fit:cover;
+            border-radius:8px;
+            background:#F8F4F2;
+          "
+        >
+
+        <div
+          style="
+            margin-top:8px;
+            text-align:center;
+            font-size:12px;
+            color:#766B6D;
+          "
+        >
+          Photo ${index + 1}
+        </div>
+
+        <div
+          style="
+            display:flex;
+            gap:5px;
+            margin-top:7px;
+          "
+        >
+
+          <button
+            type="button"
+            class="btn"
+            style="
+              flex:1;
+              padding:7px;
+              background:var(--gris-clair);
+            "
+            onclick="
+              modifierOrdrePhotoProduit(
+                '${photo.id}',
+                ${Number(photo.ordre) - 1}
+              )
+            "
+            ${index === 0 ? "disabled" : ""}
+          >
+            ◀️
+          </button>
+
+          <button
+            type="button"
+            class="btn"
+            style="
+              flex:1;
+              padding:7px;
+              background:var(--gris-clair);
+            "
+            onclick="
+              modifierOrdrePhotoProduit(
+                '${photo.id}',
+                ${Number(photo.ordre) + 1}
+              )
+            "
+            ${index === data.length - 1 ? "disabled" : ""}
+          >
+            ▶️
+          </button>
+
+        </div>
+
+        <button
+          type="button"
+          class="btn"
+          style="
+            width:100%;
+            margin-top:7px;
+            padding:7px;
+            background:var(--danger);
+            color:var(--danger-texte);
+          "
+          onclick="
+            supprimerPhotoSupplementaire(
+              '${photo.id}'
+            )
+          "
+        >
+          🗑️ Supprimer
+        </button>
+
+      `;
+
+      zone.appendChild(carte);
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   📤 ENVOYER PLUSIEURS PHOTOS
+===================================================== */
+
+async function envoyerPhotosSupplementaires(
+  fichiers
+) {
+
+  if (
+    !fichiers ||
+    fichiers.length === 0
+  ) {
+    return;
+  }
+
+  if (!produitEnModification) {
+
+    alert(
+      "💡 Enregistre d'abord le produit avant d'ajouter ses photos supplémentaires."
+    );
+
+    return;
+  }
+
+  if (!(await verifierAdmin())) {
+    return;
+  }
+
+  const message =
+    document.getElementById(
+      "messagePhotosProduit"
+    );
+
+  if (message) {
+
+    message.textContent =
+      "⏳ Envoi des photos en cours...";
+
+  }
+
+  try {
+
+    const {
+      data: photosExistantes,
+      error: erreurPhotos
+    } =
+      await client
+        .from("product_images")
+        .select("ordre")
+        .eq(
+          "produit_id",
+          produitEnModification
+        )
+        .order(
+          "ordre",
+          {
+            ascending:false
+          }
+        )
+        .limit(1);
+
+    if (erreurPhotos) {
+      throw erreurPhotos;
+    }
+
+    let ordre =
+      photosExistantes &&
+      photosExistantes.length
+        ? Number(
+            photosExistantes[0].ordre
+          ) + 1
+        : 0;
+
+    for (
+      const fichier of fichiers
+    ) {
+
+      if (
+        !fichier.type.startsWith(
+          "image/"
+        )
+      ) {
+        continue;
+      }
+
+      if (
+        fichier.size >
+        10 * 1024 * 1024
+      ) {
+
+        alert(
+          "⚠️ Une image dépasse 10 Mo et sera ignorée."
+        );
+
+        continue;
+      }
+
+      const extension =
+        (
+          fichier.name
+            .split(".")
+            .pop() ||
+          "jpg"
+        )
+        .toLowerCase()
+        .replace(
+          /[^a-z0-9]/g,
+          ""
+        );
+
+      const nomFichier =
+        "produit_" +
+        produitEnModification +
+        "_" +
+        Date.now() +
+        "_" +
+        Math.random()
+          .toString(36)
+          .slice(2,8) +
+        "." +
+        extension;
+
+      const chemin =
+        "products/" +
+        nomFichier;
+
+      const {
+        error: erreurUpload
+      } =
+        await client
+          .storage
+          .from("product-images")
+          .upload(
+            chemin,
+            fichier,
+            {
+              cacheControl:"3600",
+              upsert:false,
+              contentType:fichier.type
+            }
+          );
+
+      if (erreurUpload) {
+        throw erreurUpload;
+      }
+
+      const {
+        data: urlData
+      } =
+        client
+          .storage
+          .from("product-images")
+          .getPublicUrl(
+            chemin
+          );
+
+      const url =
+        urlData?.publicUrl || "";
+
+      if (!url) {
+        throw new Error(
+          "Impossible de récupérer l'URL publique d'une photo."
+        );
+      }
+
+      const {
+        error: erreurInsertion
+      } =
+        await client
+          .from("product_images")
+          .insert([{
+
+            produit_id:
+              produitEnModification,
+
+            image_url:
+              url,
+
+            ordre:
+              ordre,
+
+            alt_text:
+              document.getElementById("nom")?.value.trim() ||
+              "Photo produit"
+
+          }]);
+
+      if (erreurInsertion) {
+        throw erreurInsertion;
+      }
+
+      ordre++;
+
+    }
+
+    if (message) {
+
+      message.textContent =
+        "✅ Photos ajoutées avec succès.";
+
+    }
+
+    await chargerPhotosSupplementairesProduit();
+
+  } catch (error) {
+
+    console.error(
+      "Erreur photos supplémentaires :",
+      error
+    );
+
+    if (message) {
+
+      message.textContent =
+        "❌ Impossible d'ajouter les photos.";
+
+    }
+
+    alert(
+      "❌ Impossible d'ajouter les photos :\n" +
+      (
+        error.message ||
+        error
+      )
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   ↔️ MODIFIER L'ORDRE D'UNE PHOTO
+===================================================== */
+
+async function modifierOrdrePhotoProduit(
+  id,
+  nouvelOrdre
+) {
+
+  if (!(await verifierAdmin())) {
+    return;
+  }
+
+  if (
+    nouvelOrdre < 0
+  ) {
+    return;
+  }
+
+  const {
+    data: photos
+  } =
+    await client
+      .from("product_images")
+      .select("*")
+      .eq(
+        "produit_id",
+        produitEnModification
+      )
+      .order(
+        "ordre",
+        {
+          ascending:true
+        }
+      );
+
+  if (!photos || photos.length < 2) {
+    return;
+  }
+
+  const index =
+    photos.findIndex(
+      function(photo) {
+        return photo.id === id;
+      }
+    );
+
+  if (index < 0) {
+    return;
+  }
+
+  const direction =
+    nouvelOrdre < Number(photos[index].ordre)
+      ? -1
+      : 1;
+
+  const nouvelIndex =
+    index + direction;
+
+  if (
+    nouvelIndex < 0 ||
+    nouvelIndex >= photos.length
+  ) {
+    return;
+  }
+
+  const photoA =
+    photos[index];
+
+  const photoB =
+    photos[nouvelIndex];
+
+  const ordreA =
+    photoA.ordre;
+
+  const ordreB =
+    photoB.ordre;
+
+  await client
+    .from("product_images")
+    .update({
+      ordre:ordreB
+    })
+    .eq(
+      "id",
+      photoA.id
+    );
+
+  await client
+    .from("product_images")
+    .update({
+      ordre:ordreA
+    })
+    .eq(
+      "id",
+      photoB.id
+    );
+
+  await chargerPhotosSupplementairesProduit();
+
+}
+
+
+/* =====================================================
+   🗑️ SUPPRIMER UNE PHOTO
+===================================================== */
+
+async function supprimerPhotoSupplementaire(
+  id
+) {
+
+  if (
+    !confirm(
+      "🗑️ Supprimer cette photo supplémentaire ?"
+    )
+  ) {
+    return;
+  }
+
+  if (!(await verifierAdmin())) {
+    return;
+  }
+
+  const {
+    error
+  } =
+    await client
+      .from("product_images")
+      .delete()
+      .eq(
+        "id",
+        id
+      );
+
+  if (error) {
+
+    alert(
+      "❌ " +
+      error.message
+    );
+
+    return;
+  }
+
+  await chargerPhotosSupplementairesProduit();
+
+}
+
+
+/* =====================================================
+   📁 SÉLECTION DES PHOTOS
+===================================================== */
+
+document
+  .getElementById(
+    "fichiersPhotosProduit"
+  )
+  ?.addEventListener(
+    "change",
+    async function() {
+
+      await envoyerPhotosSupplementaires(
+        this.files
+      );
+
+      this.value = "";
+
+    }
+  );
   
 /* =====================================================
    CHARGEMENT INITIAL
