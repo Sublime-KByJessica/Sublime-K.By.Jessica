@@ -6325,6 +6325,67 @@ function fermerFicheProduit() {
   document.body.style.overflow = "";
 
 }
+
+    /* =====================================================
+   🖼️ CARROUSEL — FICHE PRODUIT
+===================================================== */
+
+let indexImageFicheProduit = 0;
+
+
+function afficherImageFicheProduit(index) {
+
+  const images =
+    document.querySelectorAll(
+      "[data-fiche-image]"
+    );
+
+  if (!images.length) {
+    return;
+  }
+
+  if (index < 0) {
+    index = images.length - 1;
+  }
+
+  if (index >= images.length) {
+    index = 0;
+  }
+
+  images.forEach(
+    function(image, i) {
+
+      image.style.opacity =
+        i === index
+          ? "1"
+          : "0";
+
+      image.style.transform =
+        i === index
+          ? "translateX(0)"
+          : (
+              i < index
+                ? "translateX(-100%)"
+                : "translateX(100%)"
+            );
+
+    }
+  );
+
+  indexImageFicheProduit = index;
+
+}
+
+
+function changerImageFicheProduit(
+  direction
+) {
+
+  afficherImageFicheProduit(
+    indexImageFicheProduit + direction
+  );
+
+}
     
     function activerCarrouselsProduits() {
 
