@@ -6066,24 +6066,171 @@ photosProduit.forEach(
       <div>
 
         ${
-          produit.image_url
+  imagesFicheProduit.length > 0
+
+    ? `
+      <div
+        class="fiche-images"
+        style="
+          position:relative;
+          width:100%;
+        "
+      >
+
+        <div
+          class="fiche-images-conteneur"
+          style="
+            position:relative;
+            width:100%;
+            height:500px;
+            overflow:hidden;
+            border-radius:18px;
+            background:#F1E5E5;
+          "
+        >
+
+          ${imagesFicheProduit.map(
+            function(image, index) {
+
+              return `
+                <img
+                  src="${image.image_url}"
+                  alt="${image.alt_text || produit.nom}"
+                  class="fiche-image-page ${
+                    index === 0
+                      ? "active"
+                      : ""
+                  }"
+                  data-fiche-image="${index}"
+                  style="
+                    position:absolute;
+                    inset:0;
+                    width:100%;
+                    height:100%;
+                    object-fit:contain;
+                    opacity:${
+                      index === 0 ? "1" : "0"
+                    };
+                    transform:
+                      translateX(${
+                        index === 0
+                          ? "0"
+                          : "100%"
+                      });
+                    transition:
+                      opacity 0.45s ease,
+                      transform 0.55s ease;
+                  "
+                >
+              `;
+
+            }
+          ).join("")}
+
+        </div>
+
+        ${
+          imagesFicheProduit.length > 1
 
             ? `
-              <img
-                src="${produit.image_url}"
-                alt="${produit.nom}"
+
+              <button
+                type="button"
+                onclick="changerImageFicheProduit(-1)"
                 style="
-                  display:block;
-                  width:100%;
-                  max-height:500px;
-                  object-fit:contain;
-                  border-radius:18px;
-                  background:#F1E5E5;
+                  position:absolute;
+                  left:10px;
+                  top:50%;
+                  transform:translateY(-50%);
+                  z-index:5;
+                  width:40px;
+                  height:40px;
+                  border:none;
+                  border-radius:50%;
+                  background:rgba(255,255,255,0.9);
+                  color:#6F5960;
+                  font-size:22px;
+                  cursor:pointer;
+                  box-shadow:
+                    0 3px 12px rgba(0,0,0,0.15);
                 "
               >
+                ‹
+              </button>
+
+              <button
+                type="button"
+                onclick="changerImageFicheProduit(1)"
+                style="
+                  position:absolute;
+                  right:10px;
+                  top:50%;
+                  transform:translateY(-50%);
+                  z-index:5;
+                  width:40px;
+                  height:40px;
+                  border:none;
+                  border-radius:50%;
+                  background:rgba(255,255,255,0.9);
+                  color:#6F5960;
+                  font-size:22px;
+                  cursor:pointer;
+                  box-shadow:
+                    0 3px 12px rgba(0,0,0,0.15);
+                "
+              >
+                ›
+              </button>
+
+              <div
+                style="
+                  position:absolute;
+                  left:50%;
+                  bottom:10px;
+                  transform:translateX(-50%);
+                  display:flex;
+                  gap:7px;
+                  z-index:5;
+                "
+              >
+
+                ${imagesFicheProduit.map(
+                  function(image, index) {
+
+                    return `
+                      <button
+                        type="button"
+                        onclick="afficherImageFicheProduit(${index})"
+                        style="
+                          width:9px;
+                          height:9px;
+                          padding:0;
+                          border:none;
+                          border-radius:50%;
+                          background:${
+                            index === 0
+                              ? "#FFFFFF"
+                              : "rgba(255,255,255,0.6)"
+                          };
+                          cursor:pointer;
+                        "
+                        aria-label="Voir l'image ${index + 1}"
+                      ></button>
+                    `;
+
+                  }
+                ).join("")}
+
+              </div>
+
             `
 
-            : `
+            : ""
+        }
+
+      </div>
+    `
+          : `
               <div
                 style="
                   min-height:300px;
