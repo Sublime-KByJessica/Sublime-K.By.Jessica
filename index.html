@@ -6149,27 +6149,27 @@ function activerCarrouselsProduits() {
 
                 zone.innerHTML = "";
 
+const photosParProduit =
+  await chargerPhotosSupplementairesProduits(
+    produits
+  );
 
-        const photosParProduit =
-          await chargerPhotosSupplementairesProduits(
-            data
-          );
+produits.forEach(
+  function(produit) {
 
+    zone.innerHTML +=
+      creerCarteProduit(
+        produit,
+        photosParProduit[
+          produit.id
+        ] || []
+      );
 
-        data.forEach(
-          function(produit) {
+  }
+);
 
-            zone.innerHTML +=
-              creerCarteProduit(
-                produit,
-                photosParProduit[
-                  produit.id
-                ] || []
-              );
-
-          }
-        );
-
+activerCarrouselsProduits();
+        
 
       } catch (error) {
 
