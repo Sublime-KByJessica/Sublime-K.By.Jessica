@@ -8318,6 +8318,295 @@ chargerBibliothequePublique();
 
     chargerPagesLegalesPublic();
 
+    /* =====================================================
+   COMMANDE — OUVERTURE DE LA FENÊTRE
+===================================================== */
+
+function ouvrirCommandeModal() {
+
+  if (!panier || panier.length === 0) {
+    alert("Votre panier est vide.");
+    return;
+  }
+
+  const modal = document.getElementById("commandeModal");
+
+  if (!modal) {
+    console.error("Fenêtre de commande introuvable.");
+    return;
+  }
+
+  modal.style.display = "flex";
+
+  afficherRecapCommande();
+
+  chargerModesLivraisonCommande();
+}
+
+
+/* =====================================================
+   COMMANDE — FERMETURE
+===================================================== */
+
+function fermerCommandeModal() {
+
+  const modal = document.getElementById("commandeModal");
+
+  if (modal) {
+    modal.style.display = "none";
+  }
+
+}
+
+
+/* =====================================================
+   COMMANDE — RÉCAPITULATIF
+===================================================== */
+
+function afficherRecapCommande() {
+
+  const recap = document.getElementById("commandeRecap");
+
+  if (!recap) {
+    return;
+  }
+
+  if (!panier || panier.length === 0) {
+
+    recap.innerHTML = `
+      <p>Votre panier est vide.</p>
+    `;
+
+    return;
+  }
+
+  let html = "";
+
+  panier.forEach(function(article) {
+
+    const nom =
+      article.nom ||
+      article.name ||
+      "Produit";
+
+    const quantite =
+      Number(article.quantite || article.quantity || 1);
+
+    const prix =
+      Number(article.prix || article.price || 0);
+
+    const totalLigne =
+      prix * quantite;
+
+    html += `
+      <div
+        style="
+          display:flex;
+          justify-content:space-between;
+          gap:15px;
+          padding:8px 0;
+          border-bottom:1px solid #e5dddd;
+        "
+      >
+        <span>
+          ${nom}
+          × ${quantite}
+        </span>
+
+        <strong>
+          ${formaterPrix(totalLigne)}
+        </strong>
+      </div>
+    `;
+
+  });
+
+  const sousTotal =
+    typeof calculerTotalPanier === "function"
+      ? calculerTotalPanier()
+      : panier.reduce(function(total, article) {
+
+          const prix =
+            Number(article.prix || article.price || 0);
+
+          const quantite =
+            Number(article.quantite || article.quantity || 1);
+
+          return total + (prix * quantite);
+
+        }, 0);
+
+  html += `
+    <div
+      style="
+        display:flex;
+        justify-content:space-between;
+        margin-top:15px;
+        padding-top:12px;
+        font-size:18px;
+      "
+    >
+      <strong>Sous-total</strong>
+
+      <strong>
+        ${formaterPrix(sousTotal)}
+      </strong>
+    </div>
+  `;
+
+  recap.innerHTML = html;
+}
+
+
+/* =====================================================
+   COMMANDE — MODES DE LIVRAISON
+===================================================== */
+
+async function chargerModesLivraisonCommande() {
+
+  const select =
+    document.getElementById("commandeLivraison");
+
+  if (!select) {
+    return;
+  }
+
+  select.innerHTML = `
+    <option value="">
+      Chargement...
+    </option>
+  `;
+
+  try {
+
+    const {
+      data,
+      error
+    } = await client
+      .from("shipping_methods")
+      .select(`
+        id,
+        nom,
+        description,
+        prix,
+        gratuite_a_partir_de,
+        delai_min,
+        delai_max
+      `)
+      .eq("actif", true)
+      .order("ordre", {
+        ascending: true
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data || data.length === 0) {
+
+      select.innerHTML = `
+        <option value="">
+          Aucun mode de livraison disponible
+        </option>
+      `;
+
+      return;
+    }
+
+    select.innerHTML = `
+      <option value="">
+        Sélectionnez un mode de livraison
+      </option>
+    `;
+
+    data.forEach(function(mode) {
+
+      const prix =
+        Number(mode.prix || 0);
+
+      let textePrix =
+        prix === 0
+          ? "Gratuit"
+          : formaterPrix(prix);
+
+      let delai = "";
+
+      if (
+        mode.delai_min !== null &&
+        mode.delai_max !== null
+      ) {
+
+        delai =
+          ` — ${mode.delai_min} à ${mode.delai_max} jours`;
+
+      } else if (
+        mode.delai_min !== null
+      ) {
+
+        delai =
+          ` — à partir de ${mode.delai_min} jours`;
+
+      }
+
+      const option =
+        document.createElement("option");
+
+      option.value = mode.id;
+
+      option.textContent =
+        `${mode.nom} — ${textePrix}${delai}`;
+
+      select.appendChild(option);
+
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Erreur chargement livraison :",
+      error
+    );
+
+    select.innerHTML = `
+      <option value="">
+        Impossible de charger les modes de livraison
+      </option>
+    `;
+
+  }
+
+}
+
+
+/* =====================================================
+   COMMANDE — VALIDATION DU FORMULAIRE
+===================================================== */
+
+function validerFormulaireCommande(event) {
+
+  event.preventDefault();
+
+  const formulaire =
+    document.getElementById("commandeForm");
+
+  if (!formulaire) {
+    return;
+  }
+
+  if (!formulaire.checkValidity()) {
+
+    formulaire.reportValidity();
+
+    return;
+  }
+
+  alert(
+    "Les informations sont correctement remplies.\n\n" +
+    "La prochaine étape sera le récapitulatif final " +
+    "et l'enregistrement de la commande."
+  );
+
+}
 
   </script>
 <!-- =====================================================
