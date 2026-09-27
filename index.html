@@ -6336,16 +6336,26 @@ activerCarrouselsProduits();
         zone.innerHTML = "";
 
 
-        data.forEach(
-          function(produit) {
+        const photosParProduit =
+  await chargerPhotosSupplementairesProduits(
+    data
+  );
 
-            zone.innerHTML +=
-              creerCarteProduit(
-                produit
-              );
+data.forEach(
+  function(produit) {
 
-          }
-        );
+    zone.innerHTML +=
+      creerCarteProduit(
+        produit,
+        photosParProduit[
+          produit.id
+        ] || []
+      );
+
+  }
+);
+
+activerCarrouselsProduits();
 
 
       } catch (error) {
