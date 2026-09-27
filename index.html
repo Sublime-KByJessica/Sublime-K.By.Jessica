@@ -5257,75 +5257,163 @@ ${
        PRÉPARER LA COMMANDE
     ===================================================== */
 
-    function preparerCommandePanier() {
+   function preparerCommandePanier() {
 
-      if (panier.length === 0) {
+  if (panier.length === 0) {
 
-        alert(
-          "Votre panier est vide."
-        );
+    alert(
+      "Votre panier est vide."
+    );
 
-        return;
-
-      }
-
-
-      let message =
-        "Bonjour Jessica,%0D%0A%0D%0A" +
-        "Je souhaite commander les articles suivants :%0D%0A%0D%0A";
+    return;
+  }
 
 
-      panier.forEach(
-        function(article) {
+  let message =
+    "Bonjour Jessica,%0D%0A%0D%0A" +
+    "Je souhaite commander les articles suivants :%0D%0A%0D%0A";
 
-          const sousTotal =
-            Number(article.prix || 0) *
-            Number(article.quantite || 0);
 
+  panier.forEach(
+    function(article) {
+
+      const sousTotal =
+        Number(article.prix || 0) *
+        Number(article.quantite || 0);
+
+
+      message +=
+        "• " +
+        encodeURIComponent(article.nom) +
+        "%0D%0A" +
+
+        "  Quantité : " +
+        article.quantite +
+        "%0D%0A";
+
+
+      /* =================================================
+         PERSONNALISATION
+      ================================================= */
+
+      if (article.personnalisation) {
+
+        const p =
+          article.personnalisation;
+
+
+        if (p.designNom) {
 
           message +=
-            "• " +
-            encodeURIComponent(article.nom) +
-            " — quantité : " +
-            article.quantite +
-            " — " +
+            "  🎨 Design : " +
             encodeURIComponent(
-              formaterPrix(sousTotal)
+              p.designNom
             ) +
             "%0D%0A";
 
         }
-      );
+
+
+        if (p.prenom) {
+
+          message +=
+            "  ✏️ Prénom : " +
+            encodeURIComponent(
+              p.prenom
+            ) +
+            "%0D%0A";
+
+        }
+
+
+        if (p.police) {
+
+          message +=
+            "  🔤 Police : " +
+            encodeURIComponent(
+              p.police
+            ) +
+            "%0D%0A";
+
+        }
+
+
+        if (p.couleur) {
+
+          message +=
+            "  🎨 Couleur : " +
+            encodeURIComponent(
+              p.couleur
+            ) +
+            "%0D%0A";
+
+        }
+
+
+        if (p.message) {
+
+          message +=
+            "  💬 Message : " +
+            encodeURIComponent(
+              p.message
+            ) +
+            "%0D%0A";
+
+        }
+
+
+        if (p.photoUrl) {
+
+          message +=
+            "  📷 Photo client : " +
+            encodeURIComponent(
+              p.photoUrl
+            ) +
+            "%0D%0A";
+
+        }
+
+      }
 
 
       message +=
-        "%0D%0ATotal du panier : " +
+        "  Prix : " +
         encodeURIComponent(
-          formaterPrix(
-            calculerTotalPanier()
-          )
+          formaterPrix(sousTotal)
         ) +
         "%0D%0A%0D%0A";
 
-
-      message +=
-        "Merci !";
-
-
-      const url =
-        "mailto:Sublime-k.by.jessica@proton.me" +
-        "?subject=" +
-        encodeURIComponent(
-          "Commande Sublime'K"
-        ) +
-        "&body=" +
-        message;
-
-
-      window.location.href = url;
-
     }
+  );
 
+
+  message +=
+    "Total du panier : " +
+    encodeURIComponent(
+      formaterPrix(
+        calculerTotalPanier()
+      )
+    ) +
+    "%0D%0A%0D%0A";
+
+
+  message +=
+    "Merci !";
+
+
+  const url =
+    "mailto:Sublime-k.by.jessica@proton.me" +
+    "?subject=" +
+    encodeURIComponent(
+      "Commande Sublime'K"
+    ) +
+    "&body=" +
+    message;
+
+
+  window.location.href = url;
+
+}
 
     /* =====================================================
        STATUT PRODUIT
