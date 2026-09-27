@@ -5088,7 +5088,10 @@ ${
        CARTE PRODUIT
     ===================================================== */
 
-    function creerCarteProduit(produit) {
+    function creerCarteProduit(
+  produit,
+  photosSupplementaires = []
+) {
 
       const prix =
         produit.prix !== null &&
