@@ -8565,7 +8565,7 @@ async function chargerModesLivraisonCommande() {
     const {
       data,
       error
-    } = await client
+    } = await supabaseClient
       .from("shipping_methods")
       .select(`
         id,
