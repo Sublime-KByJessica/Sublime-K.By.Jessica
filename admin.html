@@ -4580,13 +4580,73 @@ function afficherLivraison(livraison){
   element.className="methode-livraison";
 
 
-  const prix =
-    Number(livraison.prix||0).toFixed(2);
+  /* =========================
+     PRIX
+  ========================= */
 
+  let textePrix = "";
+
+  if(
+    livraison.prix === null ||
+    livraison.prix === undefined
+  ){
+
+    textePrix = "Tarif à définir";
+
+  } else {
+
+    const prix =
+      Number(livraison.prix);
+
+    textePrix =
+      prix === 0
+        ? "Gratuit"
+        : prix.toFixed(2) + " €";
+
+  }
+
+
+  /* =========================
+     DÉLAI
+  ========================= */
+
+  let texteDelai =
+    "Délai à définir";
+
+
+  if(
+    livraison.delai_min !== null &&
+    livraison.delai_min !== undefined &&
+    livraison.delai_max !== null &&
+    livraison.delai_max !== undefined
+  ){
+
+    texteDelai =
+      livraison.delai_min +
+      " à " +
+      livraison.delai_max +
+      " jours";
+
+  } else if(
+    livraison.delai_min !== null &&
+    livraison.delai_min !== undefined
+  ){
+
+    texteDelai =
+      "À partir de " +
+      livraison.delai_min +
+      " jours";
+
+  }
+
+
+  /* =========================
+     GRATUITÉ
+  ========================= */
 
   const gratuit =
-    livraison.gratuite_a_partir_de!==null &&
-    livraison.gratuite_a_partir_de!==undefined
+    livraison.gratuite_a_partir_de !== null &&
+    livraison.gratuite_a_partir_de !== undefined
       ? `
         <p>
           🎁 Gratuit à partir de
@@ -4598,6 +4658,10 @@ function afficherLivraison(livraison){
       : "";
 
 
+  /* =========================
+     AFFICHAGE
+  ========================= */
+
   element.innerHTML=`
 
     <div>
@@ -4607,15 +4671,11 @@ function afficherLivraison(livraison){
       </strong>
 
       <p>
-        💶 ${prix} €
+        💶 ${textePrix}
       </p>
 
       <p>
-        ⏱️
-        ${livraison.delai_min??0}
-        à
-        ${livraison.delai_max??0}
-        jours
+        ⏱️ ${texteDelai}
       </p>
 
       ${
@@ -4640,6 +4700,13 @@ function afficherLivraison(livraison){
 
 
     <div class="methode-actions">
+
+      <button
+        class="btn btn-modifier"
+        onclick="modifierLivraison('${livraison.id}')"
+      >
+        ✏️ Modifier
+      </button>
 
       <button
         class="btn btn-modifier"
