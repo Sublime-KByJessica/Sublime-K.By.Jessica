@@ -4768,48 +4768,193 @@ document
         );
 
         return;
-
       }
 
 
+      /* =========================
+         RÉCUPÉRER LES VALEURS
+      ========================= */
+
+      const prixValue =
+        document
+          .getElementById("livraisonPrix")
+          .value
+          .trim();
+
+
       const prix =
-        parseFloat(
-          document.getElementById(
-            "livraisonPrix"
-          ).value
-        )||0;
+        prixValue === ""
+          ? null
+          : parseFloat(prixValue);
+
+
+      const delaiMinValue =
+        document
+          .getElementById("livraisonDelaiMin")
+          .value
+          .trim();
+
+
+      const delaiMaxValue =
+        document
+          .getElementById("livraisonDelaiMax")
+          .value
+          .trim();
 
 
       const delaiMin =
-        parseInt(
-          document.getElementById(
-            "livraisonDelaiMin"
-          ).value
-        )||0;
+        delaiMinValue === ""
+          ? null
+          : parseInt(delaiMinValue);
 
 
       const delaiMax =
-        Math.max(
-          delaiMin,
-          parseInt(
-            document.getElementById(
-              "livraisonDelaiMax"
-            ).value
-          )||delaiMin
-        );
+        delaiMaxValue === ""
+          ? null
+          : parseInt(delaiMaxValue);
 
 
       const gratuitValue =
-        document.getElementById(
-          "livraisonGratuite"
-        ).value;
+        document
+          .getElementById("livraisonGratuite")
+          .value
+          .trim();
 
 
       const gratuite =
-        gratuitValue===""
+        gratuitValue === ""
           ? null
           : parseFloat(gratuitValue);
 
+
+      const description =
+        document
+          .getElementById("livraisonDescription")
+          .value
+          .trim();
+
+
+      /* =========================
+         SI MODIFICATION
+      ========================= */
+
+      if(window.livraisonEnModificationId){
+
+        const {
+          error
+        } =
+          await client
+            .from("shipping_methods")
+            .update({
+
+              nom,
+
+              description:
+                description || null,
+
+              prix,
+
+              gratuite_a_partir_de:
+                gratuite,
+
+              delai_min:
+                delaiMin,
+
+              delai_max:
+                delaiMax
+
+            })
+            .eq(
+              "id",
+              window.livraisonEnModificationId
+            );
+
+
+        if(error){
+
+          afficherMessageLivraison(
+            "❌ " + error.message,
+            true
+          );
+
+          return;
+        }
+
+
+        window.livraisonEnModificationId =
+          null;
+
+
+        document
+          .getElementById(
+            "boutonAjouterLivraison"
+          )
+          .textContent =
+            "➕ Ajouter le mode de livraison";
+
+
+        /* =========================
+           VIDER LE FORMULAIRE
+        ========================= */
+
+        document
+          .getElementById(
+            "livraisonNom"
+          )
+          .value = "";
+
+
+        document
+          .getElementById(
+            "livraisonPrix"
+          )
+          .value = "";
+
+
+        document
+          .getElementById(
+            "livraisonDelaiMin"
+          )
+          .value = "";
+
+
+        document
+          .getElementById(
+            "livraisonDelaiMax"
+          )
+          .value = "";
+
+
+        document
+          .getElementById(
+            "livraisonDescription"
+          )
+          .value = "";
+
+
+        document
+          .getElementById(
+            "livraisonGratuite"
+          )
+          .value = "";
+
+
+        await chargerLivraisons();
+
+
+        afficherMessageLivraison(
+          "✅ Mode de livraison modifié !",
+          false
+        );
+
+
+        return;
+      }
+
+
+      /* =========================
+         AJOUTER UN NOUVEAU MODE
+      ========================= */
 
       const {
         error
@@ -4821,18 +4966,18 @@ document
             nom,
 
             description:
-              document.getElementById(
-                "livraisonDescription"
-              ).value.trim()||null,
+              description || null,
 
             prix,
 
             gratuite_a_partir_de:
               gratuite,
 
-            delai_min:delaiMin,
+            delai_min:
+              delaiMin,
 
-            delai_max:delaiMax,
+            delai_max:
+              delaiMax,
 
             actif:true
 
@@ -4842,30 +4987,58 @@ document
       if(error){
 
         afficherMessageLivraison(
-          "❌ "+error.message,
+          "❌ " + error.message,
           true
         );
 
         return;
-
       }
 
 
-      document.getElementById(
-        "livraisonNom"
-      ).value="";
+      /* =========================
+         VIDER LE FORMULAIRE
+      ========================= */
 
-      document.getElementById(
-        "livraisonDescription"
-      ).value="";
+      document
+        .getElementById(
+          "livraisonNom"
+        )
+        .value = "";
 
-      document.getElementById(
-        "livraisonPrix"
-      ).value="0";
 
-      document.getElementById(
-        "livraisonGratuite"
-      ).value="";
+      document
+        .getElementById(
+          "livraisonPrix"
+        )
+        .value = "";
+
+
+      document
+        .getElementById(
+          "livraisonDelaiMin"
+        )
+        .value = "";
+
+
+      document
+        .getElementById(
+          "livraisonDelaiMax"
+        )
+        .value = "";
+
+
+      document
+        .getElementById(
+          "livraisonDescription"
+        )
+        .value = "";
+
+
+      document
+        .getElementById(
+          "livraisonGratuite"
+        )
+        .value = "";
 
 
       await chargerLivraisons();
