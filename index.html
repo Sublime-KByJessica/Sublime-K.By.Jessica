@@ -5198,6 +5198,88 @@ ${
 
     }
 
+    /* =====================================================
+   📸 CHARGER LES PHOTOS SUPPLÉMENTAIRES DES PRODUITS
+===================================================== */
+
+async function chargerPhotosSupplementairesProduits(
+  produits
+) {
+
+  const photosParProduit = {};
+
+  if (
+    !produits ||
+    produits.length === 0
+  ) {
+    return photosParProduit;
+  }
+
+  const idsProduits =
+    produits.map(
+      function(produit) {
+        return produit.id;
+      }
+    );
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("product_images")
+      .select(`
+        id,
+        produit_id,
+        image_url,
+        ordre,
+        alt_text
+      `)
+      .in(
+        "produit_id",
+        idsProduits
+      )
+      .order(
+        "ordre",
+        {
+          ascending: true
+        }
+      );
+
+  if (error) {
+
+    console.error(
+      "Erreur chargement photos produits :",
+      error
+    );
+
+    return photosParProduit;
+  }
+
+  (data || []).forEach(
+    function(photo) {
+
+      if (
+        !photosParProduit[
+          photo.produit_id
+        ]
+      ) {
+
+        photosParProduit[
+          photo.produit_id
+        ] = [];
+
+      }
+
+      photosParProduit[
+        photo.produit_id
+      ].push(photo);
+
+    }
+  );
+
+  return photosParProduit;
+}
 
     /* =====================================================
        CHARGER LA BOUTIQUE
