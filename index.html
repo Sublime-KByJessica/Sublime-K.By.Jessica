@@ -2375,6 +2375,193 @@
   }
 
 }
+
+    /* =========================
+   MODALE COMMANDE
+========================= */
+
+.commande-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.55);
+  overflow-y: auto;
+}
+
+.commande-modal-contenu {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 30px;
+  box-sizing: border-box;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.commande-modal-contenu h2 {
+  margin: 0 45px 8px 0;
+  color: #8F5967;
+  font-size: 26px;
+  text-align: center;
+}
+
+.commande-intro {
+  margin: 0 0 25px;
+  text-align: center;
+  color: #5d5557;
+}
+
+.commande-modal-fermer {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: #f2eeee;
+  color: #8F5967;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.commande-modal-fermer:hover {
+  background: #e8dddd;
+}
+
+.commande-champ {
+  margin-bottom: 16px;
+}
+
+.commande-champ label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #4A4143;
+}
+
+.commande-champ input,
+.commande-champ select,
+.commande-champ textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid #d8cfd1;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #3f383a;
+  font-family: inherit;
+  font-size: 15px;
+}
+
+.commande-champ input:focus,
+.commande-champ select:focus,
+.commande-champ textarea:focus {
+  outline: none;
+  border-color: #8F5967;
+  box-shadow: 0 0 0 3px rgba(143, 89, 103, 0.12);
+}
+
+.commande-champ textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.commande-ligne {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 15px;
+}
+
+.commande-recap {
+  margin-top: 25px;
+  padding: 18px;
+  border-radius: 14px;
+  background: #f7f3f3;
+}
+
+.commande-recap h3 {
+  margin: 0 0 12px;
+  color: #8F5967;
+}
+
+.commande-boutons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.commande-annuler,
+.commande-continuer {
+  border: none;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.commande-annuler {
+  background: #eeeeee;
+  color: #4A4143;
+}
+
+.commande-continuer {
+  background: #8F5967;
+  color: white;
+}
+
+.commande-annuler:hover {
+  background: #e2e2e2;
+}
+
+.commande-continuer:hover {
+  opacity: 0.9;
+}
+
+/* Adaptation téléphone */
+
+@media (max-width: 600px) {
+
+  .commande-modal {
+    padding: 10px;
+    align-items: flex-start;
+  }
+
+  .commande-modal-contenu {
+    margin-top: 10px;
+    padding: 22px 18px;
+    border-radius: 18px;
+    max-height: 95vh;
+  }
+
+  .commande-modal-contenu h2 {
+    font-size: 22px;
+  }
+
+  .commande-ligne {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .commande-boutons {
+    flex-direction: column;
+  }
+
+  .commande-annuler,
+  .commande-continuer {
+    width: 100%;
+  }
+}
     
   </style>
 
