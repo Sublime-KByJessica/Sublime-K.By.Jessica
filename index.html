@@ -5543,7 +5543,7 @@ const image =
 
         <article
   class="product-card"
-  onclick="ouvrirFicheProduit()"
+  onclick='ouvrirFicheProduit(${JSON.stringify(produit).replace(/'/g, "&#39;")})'
 >
 
           <div class="product-image">
