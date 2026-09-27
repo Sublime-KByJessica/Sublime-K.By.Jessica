@@ -5981,8 +5981,147 @@ pages.forEach(
 /* =====================================================
    📖 INITIALISER LES CARROUSELS APRÈS AFFICHAGE
 ===================================================== */
+async function ouvrirFicheProduit(produit) {
 
-function activerCarrouselsProduits() {
+  if (!produit) {
+    return;
+  }
+
+  const overlay =
+    document.getElementById(
+      "ficheProduitOverlay"
+    );
+
+  const contenu =
+    document.getElementById(
+      "ficheProduitContenu"
+    );
+
+  if (!overlay || !contenu) {
+    return;
+  }
+
+
+  const prix =
+    produit.prix !== null &&
+    produit.prix !== undefined
+
+      ? Number(produit.prix)
+          .toFixed(2)
+          .replace(".", ",") + " €"
+
+      : "";
+
+
+  contenu.innerHTML = `
+
+    <div
+      style="
+        display:grid;
+        grid-template-columns:
+          minmax(0,1fr)
+          minmax(0,1fr);
+        gap:30px;
+        align-items:start;
+      "
+    >
+
+      <div>
+
+        ${
+          produit.image_url
+
+            ? `
+              <img
+                src="${produit.image_url}"
+                alt="${produit.nom}"
+                style="
+                  display:block;
+                  width:100%;
+                  max-height:500px;
+                  object-fit:contain;
+                  border-radius:18px;
+                  background:#F1E5E5;
+                "
+              >
+            `
+
+            : `
+              <div
+                style="
+                  min-height:300px;
+                  display:flex;
+                  align-items:center;
+                  justify-content:center;
+                  background:#F1E5E5;
+                  border-radius:18px;
+                  font-size:4rem;
+                "
+              >
+                ✨
+              </div>
+            `
+        }
+
+      </div>
+
+
+      <div>
+
+        <h2>
+          ${produit.nom || ""}
+        </h2>
+
+        ${
+          produit.description
+            ? `
+              <p>
+                ${produit.description}
+              </p>
+            `
+            : ""
+        }
+
+        ${
+          prix
+            ? `
+              <div
+                class="product-price"
+                style="margin:20px 0;"
+              >
+                ${prix}
+              </div>
+            `
+            : ""
+        }
+
+        <button
+          type="button"
+          class="product-button"
+          onclick='ouvrirPersonnalisation(${JSON.stringify(produit).replace(/'/g, "&#39;")})'
+        >
+          🛒 ${
+            produit.statut === "indisponible"
+              ? "Indisponible"
+              : "Ajouter au panier"
+          }
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  overlay.classList.add("active");
+
+  document.body.style.overflow =
+    "hidden";
+
+}
+
+    function activerCarrouselsProduits() {
 
   initialiserCarrouselsProduits();
 
