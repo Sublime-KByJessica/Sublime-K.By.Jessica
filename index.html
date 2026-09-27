@@ -8604,13 +8604,23 @@ async function chargerModesLivraisonCommande() {
 
     data.forEach(function(mode) {
 
-      const prix =
-        Number(mode.prix || 0);
+      let textePrix = "";
 
-      let textePrix =
-        prix === 0
-          ? "Gratuit"
-          : formaterPrix(prix);
+if (mode.prix === null || mode.prix === undefined) {
+
+  textePrix = "Tarif à définir";
+
+} else {
+
+  const prix =
+    Number(mode.prix);
+
+  textePrix =
+    prix === 0
+      ? "Gratuit"
+      : formaterPrix(prix);
+
+}
 
       let delai = "";
 
