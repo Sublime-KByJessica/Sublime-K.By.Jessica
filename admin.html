@@ -4879,6 +4879,130 @@ document
     }
   );
 
+  /* =====================================================
+   MODIFIER UNE LIVRAISON
+===================================================== */
+
+window.modifierLivraison =
+async function(id){
+
+  if(!(await verifierAdmin())){
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await client
+      .from("shipping_methods")
+      .select("*")
+      .eq("id",id)
+      .single();
+
+
+  if(error){
+
+    alert(
+      "❌ Impossible de récupérer ce mode de livraison : " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  /* =========================
+     REMPLIR LE FORMULAIRE
+  ========================= */
+
+  document
+    .getElementById("livraisonNom")
+    .value =
+      data.nom || "";
+
+
+  document
+    .getElementById("livraisonPrix")
+    .value =
+      data.prix === null ||
+      data.prix === undefined
+        ? ""
+        : data.prix;
+
+
+  document
+    .getElementById("livraisonDelaiMin")
+    .value =
+      data.delai_min === null ||
+      data.delai_min === undefined
+        ? ""
+        : data.delai_min;
+
+
+  document
+    .getElementById("livraisonDelaiMax")
+    .value =
+      data.delai_max === null ||
+      data.delai_max === undefined
+        ? ""
+        : data.delai_max;
+
+
+  document
+    .getElementById("livraisonDescription")
+    .value =
+      data.description || "";
+
+
+  document
+    .getElementById("livraisonGratuite")
+    .value =
+      data.gratuite_a_partir_de === null ||
+      data.gratuite_a_partir_de === undefined
+        ? ""
+        : data.gratuite_a_partir_de;
+
+
+  /* =========================
+     MÉMORISER L'ID
+  ========================= */
+
+  window.livraisonEnModificationId =
+    id;
+
+
+  /* =========================
+     CHANGER LE BOUTON
+  ========================= */
+
+  const bouton =
+    document.getElementById(
+      "boutonAjouterLivraison"
+    );
+
+
+  if(bouton){
+
+    bouton.textContent =
+      "💾 Enregistrer les modifications";
+
+  }
+
+
+  /* =========================
+     REMONTER AU FORMULAIRE
+  ========================= */
+
+  document
+    .getElementById("livraisonNom")
+    .scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+    });
+
+};
 
 window.basculerLivraison=
 async function(id,actif){
