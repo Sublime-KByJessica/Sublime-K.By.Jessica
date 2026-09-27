@@ -6009,6 +6009,36 @@ async function ouvrirFicheProduit(produit) {
 const photosProduit =
   photosSupplementaires[produit.id] || [];
 
+  const imagesFicheProduit = [];
+
+if (produit.image_url) {
+  imagesFicheProduit.push({
+    image_url: produit.image_url,
+    alt_text: produit.nom
+  });
+}
+
+photosProduit.forEach(
+  function(photo) {
+
+    if (
+      photo &&
+      photo.image_url &&
+      photo.image_url !== produit.image_url
+    ) {
+
+      imagesFicheProduit.push({
+        image_url: photo.image_url,
+        alt_text:
+          photo.alt_text ||
+          produit.nom
+      });
+
+    }
+
+  }
+);
+  
   const prix =
     produit.prix !== null &&
     produit.prix !== undefined
