@@ -5625,10 +5625,26 @@ async function afficherCommande(commande){
           ).toFixed(2)}
           €
 
-          ${
+                    ${
             article.prenom
               ? `<br>✏️ Prénom : ${echapperHTML(
                   article.prenom
+                )}`
+              : ""
+          }
+
+          ${
+            article.couleur
+              ? `<br>🎨 Couleur : ${echapperHTML(
+                  article.couleur
+                )}`
+              : ""
+          }
+
+          ${
+            article.police
+              ? `<br>🔤 Police : ${echapperHTML(
+                  article.police
                 )}`
               : ""
           }
