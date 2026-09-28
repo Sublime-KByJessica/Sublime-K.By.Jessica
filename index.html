@@ -2800,44 +2800,83 @@
 
     </div>
 
-    <!-- PLANCHES D'APERÇU DES COLLECTIONS -->
+    <!-- BOUTON POUR OUVRIR LA BIBLIOTHÈQUE DES APERÇUS -->
 
-<div class="bibliotheque-planches">
+<div
+  style="
+    display:flex;
+    justify-content:center;
+    margin:30px 0 35px;
+  "
+>
 
-  <div class="bibliotheque-planche">
-    <div class="bibliotheque-planche-image">
-      ✨
-    </div>
-    <div class="bibliotheque-planche-titre">
-      Astrologie
-    </div>
-  </div>
+  <button
+    type="button"
+    class="bibliotheque-categorie-bouton"
+    onclick="ouvrirBibliothequeApercus()"
+    style="
+      max-width:520px;
+      min-height:68px;
+      font-size:1.05rem;
+    "
+  >
 
-  <div class="bibliotheque-planche">
-    <div class="bibliotheque-planche-image">
-      🐾
-    </div>
-    <div class="bibliotheque-planche-titre">
-      Animaux
-    </div>
-  </div>
+    <span class="bibliotheque-categorie-emoji">
+      🎨
+    </span>
 
-  <div class="bibliotheque-planche">
-    <div class="bibliotheque-planche-image">
-      👨‍👩‍👧
-    </div>
-    <div class="bibliotheque-planche-titre">
-      Famille
-    </div>
-  </div>
+    <span>
+      Ouvrir la bibliothèque des aperçus
+    </span>
 
-  <div class="bibliotheque-planche">
-    <div class="bibliotheque-planche-image">
-      🧸
+  </button>
+
+</div>
+
+    <!-- FENÊTRE BIBLIOTHÈQUE DES APERÇUS -->
+
+<div
+  id="bibliothequeApercusOverlay"
+  class="bibliotheque-apercus-overlay"
+  onclick="fermerBibliothequeApercus(event)"
+>
+
+  <div
+    class="bibliotheque-apercus-fenetre"
+    onclick="event.stopPropagation()"
+  >
+
+    <div class="bibliotheque-apercus-entete">
+
+      <div>
+
+        <h2>
+          🎨 Bibliothèque des aperçus
+        </h2>
+
+        <p>
+          Découvrez les planches disponibles.
+        </p>
+
+      </div>
+
+      <button
+        type="button"
+        class="bibliotheque-apercus-fermer"
+        onclick="fermerBibliothequeApercus()"
+        aria-label="Fermer"
+      >
+        ×
+      </button>
+
     </div>
-    <div class="bibliotheque-planche-titre">
-      Enfants
+
+    <div
+      id="bibliothequeApercusContenu"
+      class="bibliotheque-apercus-contenu"
+    >
     </div>
+
   </div>
 
 </div>
@@ -7988,6 +8027,180 @@ async function chargerPagesLegalesPublic() {
       }
     );
 
+/* =====================================================
+   OUVRIR LA BIBLIOTHÈQUE DES APERÇUS
+===================================================== */
+
+async function ouvrirBibliothequeApercus() {
+
+  const overlay =
+    document.getElementById(
+      "bibliothequeApercusOverlay"
+    );
+
+  const zone =
+    document.getElementById(
+      "bibliothequeApercusContenu"
+    );
+
+  if (!overlay || !zone) {
+    return;
+  }
+
+  overlay.classList.add("active");
+
+  zone.innerHTML = `
+    <div class="bibliotheque-chargement">
+      ⏳ Chargement des planches...
+    </div>
+  `;
+
+  try {
+
+    const {
+      data: planches,
+      error
+    } =
+      await supabaseClient
+
+        .from("library_designs")
+
+        .select(`
+          id,
+          nom,
+          image_url,
+          ordre
+        `)
+
+        .not(
+          "image_url",
+          "is",
+          null
+        )
+
+        .order(
+          "ordre",
+          {
+            ascending: true
+          }
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    if (
+      !planches ||
+      planches.length === 0
+    ) {
+
+      zone.innerHTML = `
+        <div class="bibliotheque-chargement">
+          🖼️ Aucune planche d'aperçu n'est encore disponible.
+        </div>
+      `;
+
+      return;
+    }
+
+
+    zone.innerHTML = "";
+
+
+    planches.forEach(
+      function(planche) {
+
+        if (!planche.image_url) {
+          return;
+        }
+
+
+        const image =
+          document.createElement(
+            "img"
+          );
+
+
+        image.className =
+          "bibliotheque-apercus-planche";
+
+
+        image.src =
+          planche.image_url;
+
+
+        image.alt =
+          planche.nom ||
+          "Planche d'aperçu";
+
+
+        image.loading =
+          "lazy";
+
+
+        zone.appendChild(
+          image
+        );
+
+      }
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Erreur bibliothèque des aperçus :",
+      error
+    );
+
+
+    zone.innerHTML = `
+      <div class="bibliotheque-chargement">
+        ⚠️ Impossible de charger les planches pour le moment.
+      </div>
+    `;
+
+  }
+
+}
+
+
+/* =====================================================
+   FERMER LA BIBLIOTHÈQUE DES APERÇUS
+===================================================== */
+
+function fermerBibliothequeApercus(
+  event
+) {
+
+  if (
+    event &&
+    event.target &&
+    event.target.id !==
+      "bibliothequeApercusOverlay"
+  ) {
+    return;
+  }
+
+
+  const overlay =
+    document.getElementById(
+      "bibliothequeApercusOverlay"
+    );
+
+
+  if (overlay) {
+
+    overlay.classList.remove(
+      "active"
+    );
+
+  }
+
+}
+    
     /* =====================================================
    BIBLIOTHÈQUE DE DESIGNS - VERSION DYNAMIQUE
 ===================================================== */
@@ -9606,6 +9819,189 @@ async function confirmerCommande() {
 }
 
   </script>
+
+  /* =====================================================
+   FENÊTRE BIBLIOTHÈQUE DES APERÇUS
+===================================================== */
+
+.bibliotheque-apercus-overlay {
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 9998;
+
+  display: none;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 18px;
+
+  background:
+    rgba(45, 38, 40, 0.55);
+
+  backdrop-filter:
+    blur(4px);
+
+}
+
+
+.bibliotheque-apercus-overlay.active {
+
+  display: flex;
+
+}
+
+
+.bibliotheque-apercus-fenetre {
+
+  width: 100%;
+
+  max-width: 1000px;
+
+  max-height: 92vh;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 20px 60px
+    rgba(0,0,0,0.25);
+
+  display: flex;
+
+  flex-direction: column;
+
+}
+
+
+.bibliotheque-apercus-entete {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 20px 24px;
+
+  background: #f1f0e7;
+
+  border-bottom:
+    1px solid #dddccf;
+
+}
+
+
+.bibliotheque-apercus-entete h2 {
+
+  margin: 0;
+
+  color: #4a4143;
+
+}
+
+
+.bibliotheque-apercus-entete p {
+
+  margin: 5px 0 0;
+
+  color: #777;
+
+}
+
+
+.bibliotheque-apercus-fermer {
+
+  flex: 0 0 auto;
+
+  width: 42px;
+
+  height: 42px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  color: #555;
+
+  font-size: 1.4rem;
+
+  cursor: pointer;
+
+}
+
+
+.bibliotheque-apercus-contenu {
+
+  overflow-y: auto;
+
+  padding: 24px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 24px;
+
+}
+
+
+.bibliotheque-apercus-planche {
+
+  width: 100%;
+
+  display: block;
+
+  margin: 0 auto;
+
+  border-radius: 16px;
+
+  object-fit: contain;
+
+  box-shadow:
+    0 5px 18px
+    rgba(0,0,0,0.10);
+
+}
+
+
+@media (max-width: 600px) {
+
+  .bibliotheque-apercus-fenetre {
+
+    max-height: 96vh;
+
+    border-radius: 18px;
+
+  }
+
+
+  .bibliotheque-apercus-entete {
+
+    padding: 16px;
+
+  }
+
+
+  .bibliotheque-apercus-contenu {
+
+    padding: 14px;
+
+  }
+
+}
+  
 <!-- =====================================================
      FENÊTRE DE PERSONNALISATION
 ===================================================== -->
