@@ -9201,7 +9201,6 @@ function modifierCommandeDepuisRecap() {
 
 let commandeEnCoursDeCreation = false;
 
-
 async function confirmerCommande() {
 
   if (commandeEnCoursDeCreation) {
@@ -9248,45 +9247,54 @@ async function confirmerCommande() {
         "commandePrenom"
       ).value.trim();
 
+
     const nom =
       document.getElementById(
         "commandeNom"
       ).value.trim();
+
 
     const email =
       document.getElementById(
         "commandeEmail"
       ).value.trim();
 
+
     const telephone =
       document.getElementById(
         "commandeTelephone"
       ).value.trim();
+
 
     const adresse =
       document.getElementById(
         "commandeAdresse"
       ).value.trim();
 
+
     const complement =
       document.getElementById(
         "commandeComplement"
       ).value.trim();
+
 
     const codePostal =
       document.getElementById(
         "commandeCodePostal"
       ).value.trim();
 
+
     const ville =
       document.getElementById(
         "commandeVille"
       ).value.trim();
 
+
     const pays =
       document.getElementById(
         "commandePays"
       ).value.trim();
+
 
     const note =
       document.getElementById(
@@ -9320,87 +9328,83 @@ async function confirmerCommande() {
       selectLivraison.value;
 
 
-    const {
-      data: livraison,
-      error: erreurLivraison
-    } = await supabaseClient
-
-      .from("shipping_methods")
-
-      .select(`
-        id,
-        nom,
-        prix,
-        gratuite_a_partir_de
-      `)
-
-      .eq(
-        "id",
-        shippingMethodId
-      )
-
-      .single();
-
-
-    if (erreurLivraison) {
-      throw erreurLivraison;
-    }
-
-
-    if (!livraison) {
-
-      throw new Error(
-        "Le mode de livraison sélectionné est introuvable."
-      );
-
-    }
-
-
     /* ---------------------------------------------
-       CALCUL DU SOUS-TOTAL
+       PRÉPARER LES ARTICLES
+       Les prix sont recalculés côté Supabase.
     --------------------------------------------- */
 
-    const sousTotal =
-      Number(
-        calculerTotalPanier()
-      );
+    const articlesCommande =
+      panier.map(function(article) {
+
+        const quantite =
+          Number(
+            article.quantite || 1
+          );
+
+
+        const personnalisation =
+          article.personnalisation ||
+          null;
+
+
+        return {
+
+          product_id:
+            article.produit_id ||
+            article.id ||
+            null,
+
+
+          quantite:
+            quantite,
+
+
+          personnalisation_active:
+            personnalisation !== null,
+
+
+          library_design_id:
+            personnalisation &&
+            personnalisation.designId
+              ? personnalisation.designId
+              : null,
+
+
+          customer_image_path:
+            null,
+
+
+          prenom:
+            personnalisation &&
+            personnalisation.prenom
+              ? personnalisation.prenom
+              : null,
+
+
+          couleur:
+            personnalisation &&
+            personnalisation.couleur
+              ? personnalisation.couleur
+              : null,
+
+
+          police:
+            personnalisation &&
+            personnalisation.police
+              ? personnalisation.police
+              : null,
+
+
+          message:
+            null
+
+        };
+
+      });
 
 
     /* ---------------------------------------------
-       CALCUL DU PRIX DE LIVRAISON
-    --------------------------------------------- */
-
-    let prixLivraison =
-      Number(
-        livraison.prix || 0
-      );
-
-
-    if (
-      livraison.gratuite_a_partir_de !== null &&
-      livraison.gratuite_a_partir_de !== undefined &&
-      sousTotal >=
-        Number(
-          livraison.gratuite_a_partir_de
-        )
-    ) {
-
-      prixLivraison = 0;
-
-    }
-
-
-    /* ---------------------------------------------
-       CALCUL DU TOTAL
-    --------------------------------------------- */
-
-    const totalCommande =
-      sousTotal +
-      prixLivraison;
-
-
-    /* ---------------------------------------------
-       CRÉER LA COMMANDE
+       CRÉER LA COMMANDE DE FAÇON SÉCURISÉE
     --------------------------------------------- */
 
     const {
@@ -9408,75 +9412,59 @@ async function confirmerCommande() {
       error: erreurCommande
     } = await supabaseClient
 
-      .from("orders")
+      .rpc(
+        "creer_commande_securisee",
+        {
 
-      .insert({
+          p_client_prenom:
+            prenom,
 
-        client_prenom:
-          prenom,
 
-        client_nom:
-          nom,
+          p_client_nom:
+            nom,
 
-        client_email:
-          email,
 
-        client_telephone:
-          telephone || null,
+          p_client_email:
+            email,
 
-        adresse:
-          adresse,
 
-        complement_adresse:
-          complement || null,
+          p_client_telephone:
+            telephone,
 
-        code_postal:
-          codePostal,
 
-        ville:
-          ville,
+          p_adresse:
+            adresse,
 
-        pays:
-          pays || "France",
 
-        shipping_method_id:
-          livraison.id,
+          p_complement_adresse:
+            complement,
 
-        livraison_nom:
-          livraison.nom,
 
-        livraison_prix:
-          prixLivraison,
+          p_code_postal:
+            codePostal,
 
-        sous_total:
-          sousTotal,
 
-        total:
-          totalCommande,
+          p_ville:
+            ville,
 
-        statut:
-          "nouvelle",
 
-        numero_suivi:
-          null,
+          p_pays:
+            pays,
 
-        notes_client:
-          note || null,
 
-        notes_admin:
-          null,
+          p_shipping_method_id:
+            shippingMethodId,
 
-        payment_status:
-          "en_attente"
 
-      })
+          p_notes_client:
+            note,
 
-      .select(`
-        id,
-        numero_commande,
-        total,
-        created_at
-      `)
+
+          p_articles:
+            articlesCommande
+
+        }
+      )
 
       .single();
 
@@ -9496,120 +9484,8 @@ async function confirmerCommande() {
 
 
     /* ---------------------------------------------
-       PRÉPARER LES ARTICLES
-    --------------------------------------------- */
-
-    const articlesCommande =
-      panier.map(function(article) {
-
-        const quantite =
-          Number(
-            article.quantite || 1
-          );
-
-
-        const prixUnitaire =
-          Number(
-            article.prix || 0
-          );
-
-
-        const personnalisation =
-          article.personnalisation ||
-          null;
-
-
-        return {
-
-          order_id:
-            commande.id,
-
-          product_id:
-            article.produit_id ||
-            null,
-
-          nom_produit:
-            article.nom ||
-            "Produit",
-
-          quantite:
-            quantite,
-
-          prix_unitaire:
-            prixUnitaire,
-
-          total:
-            prixUnitaire *
-            quantite,
-
-          statut_produit:
-            article.statut ||
-            null,
-
-          personnalisation_active:
-            personnalisation !== null,
-
-          library_design_id:
-            personnalisation &&
-            personnalisation.designId
-              ? personnalisation.designId
-              : null,
-
-          customer_image_path:
-            null,
-
-          prenom:
-  personnalisation &&
-  personnalisation.prenom
-    ? personnalisation.prenom
-    : null,
-
-couleur:
-  personnalisation &&
-  personnalisation.couleur
-    ? personnalisation.couleur
-    : null,
-
-police:
-  personnalisation &&
-  personnalisation.police
-    ? personnalisation.police
-    : null,
-
-message:
-  null
-
-        };
-
-      });
-
-
-    /* ---------------------------------------------
-       ENREGISTRER LES ARTICLES
-    --------------------------------------------- */
-
-    const {
-      error: erreurArticles
-    } = await supabaseClient
-
-      .from("order_items")
-
-      .insert(
-        articlesCommande
-      );
-
-
-    if (erreurArticles) {
-      throw erreurArticles;
-    }
-
-
-    /* ---------------------------------------------
        TOUT EST ENREGISTRÉ
     --------------------------------------------- */
-
-    sauvegarderPanier();
-
 
     panier = [];
 
