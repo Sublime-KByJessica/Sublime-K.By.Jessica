@@ -8737,6 +8737,124 @@ if (mode.prix === null || mode.prix === undefined) {
 
 }
 
+   /* =====================================================
+   COMMANDE — CALCUL DE LA LIVRAISON
+===================================================== */
+
+async function mettreAJourTotalCommande() {
+
+  const select =
+    document.getElementById("commandeLivraison");
+
+  const recapLivraison =
+    document.getElementById(
+      "commandeRecapLivraison"
+    );
+
+  const recapTotal =
+    document.getElementById(
+      "commandeRecapTotal"
+    );
+
+  if (
+    !select ||
+    !recapLivraison ||
+    !recapTotal
+  ) {
+    return;
+  }
+
+  const sousTotal =
+    typeof calculerTotalPanier === "function"
+      ? calculerTotalPanier()
+      : 0;
+
+  if (!select.value) {
+
+    recapLivraison.textContent =
+      "Sélectionnez un mode";
+
+    recapTotal.textContent =
+      formaterPrix(sousTotal);
+
+    return;
+  }
+
+  try {
+
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("shipping_methods")
+      .select(`
+        id,
+        nom,
+        prix,
+        gratuite_a_partir_de
+      `)
+      .eq("id", select.value)
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      return;
+    }
+
+    let prixLivraison =
+      Number(data.prix || 0);
+
+    let livraisonGratuite = false;
+
+    if (
+      data.gratuite_a_partir_de !== null &&
+      data.gratuite_a_partir_de !== undefined &&
+      sousTotal >=
+        Number(data.gratuite_a_partir_de)
+    ) {
+
+      prixLivraison = 0;
+      livraisonGratuite = true;
+
+    }
+
+    if (livraisonGratuite) {
+
+      recapLivraison.textContent =
+        "Gratuite";
+
+    } else {
+
+      recapLivraison.textContent =
+        formaterPrix(prixLivraison);
+
+    }
+
+    const total =
+      sousTotal + prixLivraison;
+
+    recapTotal.textContent =
+      formaterPrix(total);
+
+  } catch (error) {
+
+    console.error(
+      "Erreur calcul livraison :",
+      error
+    );
+
+    recapLivraison.textContent =
+      "Erreur";
+
+    recapTotal.textContent =
+      formaterPrix(sousTotal);
+
+  }
+
+} 
 
 /* =====================================================
    COMMANDE — VALIDATION DU FORMULAIRE
