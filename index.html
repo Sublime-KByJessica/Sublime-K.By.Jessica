@@ -9170,16 +9170,513 @@ function modifierCommandeDepuisRecap() {
 
 }
 
-
 /* =====================================================
-   COMMANDE — CONFIRMATION
+   COMMANDE — CRÉER LA COMMANDE DANS SUPABASE
 ===================================================== */
 
-function confirmerCommande() {
+let commandeEnCoursDeCreation = false;
 
-  alert(
-    "La confirmation définitive de la commande sera ajoutée à l'étape suivante."
-  );
+
+async function confirmerCommande() {
+
+  if (commandeEnCoursDeCreation) {
+    return;
+  }
+
+  if (!panier || panier.length === 0) {
+
+    alert(
+      "Votre panier est vide."
+    );
+
+    return;
+  }
+
+
+  commandeEnCoursDeCreation = true;
+
+
+  const bouton =
+    document.querySelector(
+      "#commandeRecapFinalModal .commande-continuer"
+    );
+
+
+  if (bouton) {
+
+    bouton.disabled = true;
+
+    bouton.textContent =
+      "Enregistrement de la commande...";
+
+  }
+
+
+  try {
+
+    /* ---------------------------------------------
+       RÉCUPÉRER LES INFORMATIONS CLIENT
+    --------------------------------------------- */
+
+    const prenom =
+      document.getElementById(
+        "commandePrenom"
+      ).value.trim();
+
+    const nom =
+      document.getElementById(
+        "commandeNom"
+      ).value.trim();
+
+    const email =
+      document.getElementById(
+        "commandeEmail"
+      ).value.trim();
+
+    const telephone =
+      document.getElementById(
+        "commandeTelephone"
+      ).value.trim();
+
+    const adresse =
+      document.getElementById(
+        "commandeAdresse"
+      ).value.trim();
+
+    const complement =
+      document.getElementById(
+        "commandeComplement"
+      ).value.trim();
+
+    const codePostal =
+      document.getElementById(
+        "commandeCodePostal"
+      ).value.trim();
+
+    const ville =
+      document.getElementById(
+        "commandeVille"
+      ).value.trim();
+
+    const pays =
+      document.getElementById(
+        "commandePays"
+      ).value.trim();
+
+    const note =
+      document.getElementById(
+        "commandeNote"
+      ).value.trim();
+
+
+    /* ---------------------------------------------
+       MODE DE LIVRAISON
+    --------------------------------------------- */
+
+    const selectLivraison =
+      document.getElementById(
+        "commandeLivraison"
+      );
+
+
+    if (
+      !selectLivraison ||
+      !selectLivraison.value
+    ) {
+
+      throw new Error(
+        "Veuillez sélectionner un mode de livraison."
+      );
+
+    }
+
+
+    const shippingMethodId =
+      selectLivraison.value;
+
+
+    const {
+      data: livraison,
+      error: erreurLivraison
+    } = await supabaseClient
+
+      .from("shipping_methods")
+
+      .select(`
+        id,
+        nom,
+        prix,
+        gratuite_a_partir_de
+      `)
+
+      .eq(
+        "id",
+        shippingMethodId
+      )
+
+      .single();
+
+
+    if (erreurLivraison) {
+      throw erreurLivraison;
+    }
+
+
+    if (!livraison) {
+
+      throw new Error(
+        "Le mode de livraison sélectionné est introuvable."
+      );
+
+    }
+
+
+    /* ---------------------------------------------
+       CALCUL DU SOUS-TOTAL
+    --------------------------------------------- */
+
+    const sousTotal =
+      Number(
+        calculerTotalPanier()
+      );
+
+
+    /* ---------------------------------------------
+       CALCUL DU PRIX DE LIVRAISON
+    --------------------------------------------- */
+
+    let prixLivraison =
+      Number(
+        livraison.prix || 0
+      );
+
+
+    if (
+      livraison.gratuite_a_partir_de !== null &&
+      livraison.gratuite_a_partir_de !== undefined &&
+      sousTotal >=
+        Number(
+          livraison.gratuite_a_partir_de
+        )
+    ) {
+
+      prixLivraison = 0;
+
+    }
+
+
+    /* ---------------------------------------------
+       CALCUL DU TOTAL
+    --------------------------------------------- */
+
+    const totalCommande =
+      sousTotal +
+      prixLivraison;
+
+
+    /* ---------------------------------------------
+       CRÉER LA COMMANDE
+    --------------------------------------------- */
+
+    const {
+      data: commande,
+      error: erreurCommande
+    } = await supabaseClient
+
+      .from("orders")
+
+      .insert({
+
+        client_prenom:
+          prenom,
+
+        client_nom:
+          nom,
+
+        client_email:
+          email,
+
+        client_telephone:
+          telephone || null,
+
+        adresse:
+          adresse,
+
+        complement_adresse:
+          complement || null,
+
+        code_postal:
+          codePostal,
+
+        ville:
+          ville,
+
+        pays:
+          pays || "France",
+
+        shipping_method_id:
+          livraison.id,
+
+        livraison_nom:
+          livraison.nom,
+
+        livraison_prix:
+          prixLivraison,
+
+        sous_total:
+          sousTotal,
+
+        total:
+          totalCommande,
+
+        statut:
+          "nouvelle",
+
+        numero_suivi:
+          null,
+
+        notes_client:
+          note || null,
+
+        notes_admin:
+          null,
+
+        payment_status:
+          "en_attente"
+
+      })
+
+      .select(`
+        id,
+        numero_commande,
+        total,
+        created_at
+      `)
+
+      .single();
+
+
+    if (erreurCommande) {
+      throw erreurCommande;
+    }
+
+
+    if (!commande) {
+
+      throw new Error(
+        "La commande n'a pas pu être créée."
+      );
+
+    }
+
+
+    /* ---------------------------------------------
+       PRÉPARER LES ARTICLES
+    --------------------------------------------- */
+
+    const articlesCommande =
+      panier.map(function(article) {
+
+        const quantite =
+          Number(
+            article.quantite || 1
+          );
+
+
+        const prixUnitaire =
+          Number(
+            article.prix || 0
+          );
+
+
+        const personnalisation =
+          article.personnalisation ||
+          null;
+
+
+        return {
+
+          order_id:
+            commande.id,
+
+          product_id:
+            article.produit_id ||
+            null,
+
+          nom_produit:
+            article.nom ||
+            "Produit",
+
+          quantite:
+            quantite,
+
+          prix_unitaire:
+            prixUnitaire,
+
+          total:
+            prixUnitaire *
+            quantite,
+
+          statut_produit:
+            article.statut ||
+            null,
+
+          personnalisation_active:
+            personnalisation !== null,
+
+          library_design_id:
+            personnalisation &&
+            personnalisation.designId
+              ? personnalisation.designId
+              : null,
+
+          customer_image_path:
+            null,
+
+          prenom:
+            personnalisation &&
+            personnalisation.prenom
+              ? personnalisation.prenom
+              : null,
+
+          message:
+            null
+
+        };
+
+      });
+
+
+    /* ---------------------------------------------
+       ENREGISTRER LES ARTICLES
+    --------------------------------------------- */
+
+    const {
+      error: erreurArticles
+    } = await supabaseClient
+
+      .from("order_items")
+
+      .insert(
+        articlesCommande
+      );
+
+
+    if (erreurArticles) {
+      throw erreurArticles;
+    }
+
+
+    /* ---------------------------------------------
+       TOUT EST ENREGISTRÉ
+    --------------------------------------------- */
+
+    sauvegarderPanier();
+
+
+    panier = [];
+
+
+    sauvegarderPanier();
+
+
+    mettreAJourCompteurPanier();
+
+
+    afficherPanier();
+
+
+    /* ---------------------------------------------
+       FERMER LES MODALES
+    --------------------------------------------- */
+
+    const recapModal =
+      document.getElementById(
+        "commandeRecapFinalModal"
+      );
+
+
+    if (recapModal) {
+
+      recapModal.style.display =
+        "none";
+
+    }
+
+
+    const commandeModal =
+      document.getElementById(
+        "commandeModal"
+      );
+
+
+    if (commandeModal) {
+
+      commandeModal.style.display =
+        "none";
+
+    }
+
+
+    /* ---------------------------------------------
+       MESSAGE DE CONFIRMATION
+    --------------------------------------------- */
+
+    alert(
+
+      "🎉 Votre commande a bien été enregistrée !\n\n" +
+
+      "Numéro de commande : " +
+      (
+        commande.numero_commande ||
+        commande.id
+      ) +
+
+      "\n\n" +
+
+      "Montant total : " +
+      formaterPrix(
+        commande.total
+      )
+
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Erreur création commande :",
+      error
+    );
+
+
+    alert(
+
+      "❌ Une erreur est survenue lors de l'enregistrement de votre commande.\n\n" +
+
+      "Votre panier n'a pas été vidé.\n\n" +
+
+      "Vous pouvez réessayer."
+
+    );
+
+
+  } finally {
+
+    commandeEnCoursDeCreation =
+      false;
+
+
+    if (bouton) {
+
+      bouton.disabled = false;
+
+      bouton.textContent =
+        "Confirmer la commande →";
+
+    }
+
+  }
 
 }
 
