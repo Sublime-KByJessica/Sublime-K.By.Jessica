@@ -8862,7 +8862,7 @@ async function mettreAJourTotalCommande() {
 } 
 
 /* =====================================================
-   COMMANDE — VALIDATION DU FORMULAIRE
+   COMMANDE — RÉCAPITULATIF FINAL
 ===================================================== */
 
 function validerFormulaireCommande(event) {
@@ -8883,11 +8883,177 @@ function validerFormulaireCommande(event) {
     return;
   }
 
-  alert(
-    "Les informations sont correctement remplies.\n\n" +
-    "La prochaine étape sera le récapitulatif final " +
-    "et l'enregistrement de la commande."
-  );
+  const prenom =
+    document.getElementById("commandePrenom").value;
+
+  const nom =
+    document.getElementById("commandeNom").value;
+
+  const email =
+    document.getElementById("commandeEmail").value;
+
+  const telephone =
+    document.getElementById("commandeTelephone").value;
+
+  const adresse =
+    document.getElementById("commandeAdresse").value;
+
+  const complement =
+    document.getElementById("commandeComplement").value;
+
+  const codePostal =
+    document.getElementById("commandeCodePostal").value;
+
+  const ville =
+    document.getElementById("commandeVille").value;
+
+  const pays =
+    document.getElementById("commandePays").value;
+
+  const livraison =
+    document.getElementById("commandeLivraison");
+
+  const modeLivraison =
+    livraison.options[
+      livraison.selectedIndex
+    ].textContent;
+
+  const note =
+    document.getElementById("commandeNote").value;
+
+
+  const recap =
+    document.getElementById("commandeRecap");
+
+  const recapFinal =
+    document.getElementById("commandeRecapFinal");
+
+  if (!recap || !recapFinal) {
+    return;
+  }
+
+
+  recapFinal.innerHTML = `
+
+    <div
+      style="
+        margin-bottom:20px;
+        padding:15px;
+        background:#FAF7F5;
+        border-radius:12px;
+      "
+    >
+
+      <h3>
+        👤 Vos coordonnées
+      </h3>
+
+      <p>
+        <strong>
+          ${prenom} ${nom}
+        </strong>
+      </p>
+
+      <p>
+        ${email}
+      </p>
+
+      ${
+        telephone
+          ? `<p>${telephone}</p>`
+          : ""
+      }
+
+      <p>
+        ${adresse}
+        ${
+          complement
+            ? `<br>${complement}`
+            : ""
+        }
+        <br>
+        ${codePostal} ${ville}
+        <br>
+        ${pays}
+      </p>
+
+    </div>
+
+
+    <div
+      style="
+        margin-bottom:20px;
+        padding:15px;
+        background:#FAF7F5;
+        border-radius:12px;
+      "
+    >
+
+      <h3>
+        🚚 Livraison
+      </h3>
+
+      <p>
+        ${modeLivraison}
+      </p>
+
+    </div>
+
+
+    <div
+      style="
+        margin-bottom:20px;
+        padding:15px;
+        background:#FFFFFF;
+        border-radius:12px;
+        border:1px solid #E6DADB;
+      "
+    >
+
+      <h3>
+        🧾 Votre commande
+      </h3>
+
+      ${recap.innerHTML}
+
+    </div>
+
+
+    ${
+      note
+        ? `
+          <div
+            style="
+              padding:15px;
+              background:#FAF7F5;
+              border-radius:12px;
+            "
+          >
+
+            <h3>
+              📝 Note
+            </h3>
+
+            <p>
+              ${note}
+            </p>
+
+          </div>
+        `
+        : ""
+    }
+
+  `;
+
+
+  document.getElementById(
+    "commandeModal"
+  ).style.display = "none";
+
+
+  document.getElementById(
+    "commandeRecapFinalModal"
+  ).style.display = "flex";
 
 }
 
