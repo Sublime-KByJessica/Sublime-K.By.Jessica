@@ -3350,6 +3350,75 @@
 <!-- ========================= FIN MODALE COMMANDE ========================= -->
 
   <!-- =========================
+     MODALE RÉCAPITULATIF FINAL
+========================= -->
+
+<div
+  id="commandeRecapFinalModal"
+  class="commande-modal"
+  style="display:none;"
+>
+
+  <div class="commande-modal-contenu">
+
+    <button
+      type="button"
+      class="commande-modal-fermer"
+      onclick="fermerRecapFinalCommande()"
+      aria-label="Fermer"
+    >
+      ×
+    </button>
+
+
+    <h2>
+      🧾 Récapitulatif de votre commande
+    </h2>
+
+
+    <p class="commande-intro">
+      Vérifiez attentivement vos informations
+      avant de confirmer votre commande.
+    </p>
+
+
+    <div id="commandeRecapFinal">
+
+      <!-- Le récapitulatif sera généré automatiquement -->
+
+    </div>
+
+
+    <div class="commande-boutons">
+
+      <button
+        type="button"
+        class="commande-annuler"
+        onclick="modifierCommandeDepuisRecap()"
+      >
+        ← Modifier
+      </button>
+
+
+      <button
+        type="button"
+        class="commande-continuer"
+        onclick="confirmerCommande()"
+      >
+        Confirmer la commande →
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- =========================
+     FIN RÉCAPITULATIF FINAL
+========================= -->
+  
+  <!-- =========================
        FOOTER
   ========================= -->
   
@@ -9054,6 +9123,63 @@ function validerFormulaireCommande(event) {
   document.getElementById(
     "commandeRecapFinalModal"
   ).style.display = "flex";
+
+}
+
+            /* =====================================================
+   COMMANDE — FERMER LE RÉCAPITULATIF FINAL
+===================================================== */
+
+function fermerRecapFinalCommande() {
+
+  const modal =
+    document.getElementById(
+      "commandeRecapFinalModal"
+    );
+
+  if (modal) {
+    modal.style.display = "none";
+  }
+
+}
+
+
+/* =====================================================
+   COMMANDE — MODIFIER DEPUIS LE RÉCAPITULATIF
+===================================================== */
+
+function modifierCommandeDepuisRecap() {
+
+  const recap =
+    document.getElementById(
+      "commandeRecapFinalModal"
+    );
+
+  const commande =
+    document.getElementById(
+      "commandeModal"
+    );
+
+  if (recap) {
+    recap.style.display = "none";
+  }
+
+  if (commande) {
+    commande.style.display = "flex";
+  }
+
+}
+
+
+/* =====================================================
+   COMMANDE — CONFIRMATION
+===================================================== */
+
+function confirmerCommande() {
+
+  alert(
+    "La confirmation définitive de la commande sera ajoutée à l'étape suivante."
+  );
 
 }
 
