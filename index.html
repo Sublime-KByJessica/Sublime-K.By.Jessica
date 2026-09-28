@@ -5625,42 +5625,67 @@ const image =
               </div>
 
 ${
-  article.personnalisation
+  article.prenom ||
+  article.police ||
+  article.couleur ||
+  article.library_design_id
     ? `
       <div class="panier-personnalisation">
 
-        ✏️ Prénom :
-        ${echapperHTML(
-          article.personnalisation.prenom || ""
-        )}
-
-        <br>
-
-        🔤 Police :
-        ${echapperHTML(
-          article.personnalisation.police || ""
-        )}
-
-        <br>
-
-        🌈 Couleur :
-        ${echapperHTML(
-          article.personnalisation.couleur || ""
-        )}
+        ${
+          article.prenom
+            ? `
+              ✏️ Prénom :
+              ${echapperHTML(
+                article.prenom
+              )}
+            `
+            : ""
+        }
 
         ${
-          article.personnalisation.designNom
+          article.police
             ? `
               <br>
-              🎨 Design :
+
+              🔤 Police :
               ${echapperHTML(
-                article.personnalisation.designNom
+                article.police
+              )}
+            `
+            : ""
+        }
+
+        ${
+          article.couleur
+            ? `
+              <br>
+
+              🌈 Couleur :
+              ${echapperHTML(
+                article.couleur
+              )}
+            `
+            : ""
+        }
+
+        ${
+          article.library_design_id
+            ? `
+              <br>
+
+              🎨 Design sélectionné :
+              ${echapperHTML(
+                article.library_design_id
               )}
             `
             : ""
         }
 
       </div>
+    `
+    : ""
+}
 
       <button
         type="button"
