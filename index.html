@@ -8621,6 +8621,9 @@ async function chargerModesLivraisonCommande() {
     return;
   }
 
+  select.onchange =
+  mettreAJourTotalCommande;
+  
   select.innerHTML = `
     <option value="">
       Chargement...
@@ -8737,25 +8740,7 @@ if (mode.prix === null || mode.prix === undefined) {
 
 }
 
-    /* =====================================================
-   COMMANDE — ÉCOUTER LE CHANGEMENT DE LIVRAISON
-===================================================== */
-
-const selectLivraisonCommande =
-  document.getElementById("commandeLivraison");
-
-if (selectLivraisonCommande) {
-
-  selectLivraisonCommande.addEventListener(
-    "change",
-    function() {
-
-      mettreAJourTotalCommande();
-
-    }
-  );
-
-}
+    
 
    /* =====================================================
    COMMANDE — CALCUL DE LA LIVRAISON
