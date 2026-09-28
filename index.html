@@ -8448,7 +8448,8 @@ function fermerCommandeModal() {
 
 function afficherRecapCommande() {
 
-  const recap = document.getElementById("commandeRecap");
+  const recap =
+    document.getElementById("commandeRecap");
 
   if (!recap) {
     return;
@@ -8473,10 +8474,18 @@ function afficherRecapCommande() {
       "Produit";
 
     const quantite =
-      Number(article.quantite || article.quantity || 1);
+      Number(
+        article.quantite ||
+        article.quantity ||
+        1
+      );
 
     const prix =
-      Number(article.prix || article.price || 0);
+      Number(
+        article.prix ||
+        article.price ||
+        0
+      );
 
     const totalLigne =
       prix * quantite;
@@ -8491,6 +8500,7 @@ function afficherRecapCommande() {
           border-bottom:1px solid #e5dddd;
         "
       >
+
         <span>
           ${nom}
           × ${quantite}
@@ -8499,10 +8509,12 @@ function afficherRecapCommande() {
         <strong>
           ${formaterPrix(totalLigne)}
         </strong>
+
       </div>
     `;
 
   });
+
 
   const sousTotal =
     typeof calculerTotalPanier === "function"
@@ -8510,14 +8522,23 @@ function afficherRecapCommande() {
       : panier.reduce(function(total, article) {
 
           const prix =
-            Number(article.prix || article.price || 0);
+            Number(
+              article.prix ||
+              article.price ||
+              0
+            );
 
           const quantite =
-            Number(article.quantite || article.quantity || 1);
+            Number(
+              article.quantite ||
+              article.quantity ||
+              1
+            );
 
           return total + (prix * quantite);
 
         }, 0);
+
 
   html += `
     <div
@@ -8526,18 +8547,64 @@ function afficherRecapCommande() {
         justify-content:space-between;
         margin-top:15px;
         padding-top:12px;
-        font-size:18px;
       "
     >
-      <strong>Sous-total</strong>
+
+      <strong>
+        Sous-total
+      </strong>
 
       <strong>
         ${formaterPrix(sousTotal)}
       </strong>
+
+    </div>
+
+
+    <div
+      style="
+        display:flex;
+        justify-content:space-between;
+        margin-top:8px;
+      "
+    >
+
+      <strong>
+        Livraison
+      </strong>
+
+      <strong id="commandeRecapLivraison">
+        Sélectionnez un mode
+      </strong>
+
+    </div>
+
+
+    <div
+      style="
+        display:flex;
+        justify-content:space-between;
+        margin-top:12px;
+        padding-top:12px;
+        border-top:2px solid #667052;
+        font-size:20px;
+      "
+    >
+
+      <strong>
+        Total
+      </strong>
+
+      <strong id="commandeRecapTotal">
+        ${formaterPrix(sousTotal)}
+      </strong>
+
     </div>
   `;
 
+
   recap.innerHTML = html;
+
 }
 
 
