@@ -7175,15 +7175,22 @@ function initialiserSwipeFicheProduit() {
        CHARGER LA BOUTIQUE
     ===================================================== */
 
-    async function chargerBoutique() {
+ async function chargerBoutique() {
 
-console.log("TEST : chargerBoutique démarre");
+  console.log("TEST : chargerBoutique démarre");
 
-      const zone =
-        document.getElementById(
-          "boutique-produits"
-        );
+  const zone =
+    document.getElementById(
+      "boutique-produits"
+    );
 
+  if (zone) {
+    zone.innerHTML = `
+      <div class="boutique-empty">
+        <p>🧪 TEST : la boutique démarre bien.</p>
+      </div>
+    `;
+  }
 
       try {
 
