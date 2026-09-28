@@ -6201,7 +6201,7 @@ const image =
                     ? "disabled"
                     : ""
                 }
-                onclick='ouvrirPersonnalisation(${JSON.stringify(produit).replace(/'/g, "&#39;")})'
+                onclick='ajouterAuPanier(${JSON.stringify(produit).replace(/'/g, "&#39;")})'
               >
                 ${
                   indisponible
@@ -6961,7 +6961,7 @@ photosProduit.forEach(
         <button
           type="button"
           class="product-button"
-          onclick='ouvrirPersonnalisation(${JSON.stringify(produit).replace(/'/g, "&#39;")})'
+          onclick='ajouterAuPanier(${JSON.stringify(produit).replace(/'/g, "&#39;")})'
         >
           🛒 ${
             produit.statut === "indisponible"
