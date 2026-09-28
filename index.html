@@ -5304,7 +5304,8 @@ function validerPersonnalisation() {
   if (
     produit.personnalisation_active === true
   ) {
-
+    
+fermerFicheProduit();
     ouvrirPersonnalisation(produit);
 
     return;
