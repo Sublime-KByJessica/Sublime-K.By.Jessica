@@ -4056,60 +4056,99 @@ if (etapeDesign) {
 
 }
   
-  /* ---------------------------------------------
+   /* ---------------------------------------------
      CHOIX DE DÉPART
   --------------------------------------------- */
 
-  if (articleAModifier && articleAModifier.personnalisation) {
+  if (
+    articleAModifier &&
+    articleAModifier.personnalisation
+  ) {
 
     personnalisationChoix = {
 
       categorieId:
-        articleAModifier.personnalisation.categorieId || "",
+        articleAModifier.personnalisation.categorieId ||
+        "",
 
       sousCategorieId:
-        articleAModifier.personnalisation.sousCategorieId || "",
+        articleAModifier.personnalisation.sousCategorieId ||
+        "",
 
       designId:
-        articleAModifier.personnalisation.designId || "",
+        articleAModifier.personnalisation.designId ||
+        "",
 
       designNom:
-        articleAModifier.personnalisation.designNom || "",
+        articleAModifier.personnalisation.designNom ||
+        "",
 
       designImage:
-        articleAModifier.personnalisation.designImage || "",
+        articleAModifier.personnalisation.designImage ||
+        "",
 
       prenom:
-        articleAModifier.personnalisation.prenom || "",
+        articleAModifier.personnalisation.prenom ||
+        "",
 
       police:
-        articleAModifier.personnalisation.police || "Arial",
+        articleAModifier.personnalisation.police ||
+        "Arial",
 
       policeNom:
-  articleAModifier.personnalisation.policeNom ||
-  articleAModifier.personnalisation.police ||
-  "Arial",
-      
-      couleur:
-        articleAModifier.personnalisation.couleur || "#000000"
+        articleAModifier.personnalisation.policeNom ||
+        articleAModifier.personnalisation.police ||
+        "Arial",
 
       couleur:
-  articleAModifier.personnalisation.couleur ||
-  "#E6C2BF",
+        articleAModifier.personnalisation.couleur ||
+        "#E6C2BF",
 
-couleurNom:
-  articleAModifier.personnalisation.couleurNom ||
-  "",
+      couleurNom:
+        articleAModifier.personnalisation.couleurNom ||
+        "",
 
-couleurType:
-  articleAModifier.personnalisation.couleurType ||
-  "solid",
+      couleurType:
+        articleAModifier.personnalisation.couleurType ||
+        "solid",
 
-couleurGradient:
-  articleAModifier.personnalisation.couleurGradient ||
-  ""
+      couleurGradient:
+        articleAModifier.personnalisation.couleurGradient ||
+        ""
 
     };
+
+  } else {
+
+    personnalisationChoix = {
+
+      categorieId: "",
+
+      sousCategorieId: "",
+
+      designId: "",
+
+      designNom: "",
+
+      designImage: "",
+
+      prenom: "",
+
+      police: "Arial",
+
+      policeNom: "Arial",
+
+      couleur: "#E6C2BF",
+
+      couleurNom: "",
+
+      couleurType: "solid",
+
+      couleurGradient: ""
+
+    };
+
+  }
 
   } else {
 
@@ -5762,7 +5801,7 @@ couleurGradient:
 
     quantite: 1,
 
-    personnalisation: {
+        personnalisation: {
 
       categorieId:
         personnalisationChoix.categorieId,
@@ -5785,8 +5824,24 @@ couleurGradient:
       police:
         personnalisationChoix.police,
 
+      policeNom:
+        personnalisationChoix.policeNom ||
+        personnalisationChoix.police,
+
       couleur:
-        personnalisationChoix.couleur
+        personnalisationChoix.couleur,
+
+      couleurNom:
+        personnalisationChoix.couleurNom ||
+        "",
+
+      couleurType:
+        personnalisationChoix.couleurType ||
+        "solid",
+
+      couleurGradient:
+        personnalisationChoix.couleurGradient ||
+        ""
 
     }
 
