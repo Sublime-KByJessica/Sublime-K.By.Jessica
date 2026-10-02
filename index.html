@@ -2019,79 +2019,29 @@
 
 
 /* =====================================================
-   COULEURS
-===================================================== */
-
-.personnalisation-couleurs {
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(6, minmax(0, 1fr));
-
-  gap: 12px;
-
-  width: 100%;
-
-  max-width: none;
-
-}
-
-
-/* =====================================================
-   GROUPES DE COULEURS
-===================================================== */
-
-.personnalisation-groupe-couleurs {
-
-  margin-bottom: 22px;
-
-}
-
-
-.personnalisation-groupe-titre {
-
-  margin-bottom: 12px;
-
-  color: #4A4143;
-
-  font-weight: bold;
-
-  font-size: 0.95rem;
-
-}
-
-
-/* =====================================================
-   GRILLE DES COULEURS
+   COULEURS DE PERSONNALISATION
 ===================================================== */
 
 .personnalisation-groupe-couleurs
 .personnalisation-couleurs {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 14px;
+  gap: 18px 20px;
   width: 100%;
   max-width: none;
   align-items: center;
+  justify-items: center;
 }
 
-
-/* =====================================================
-   PASTILLES DE COULEURS
-===================================================== */
-
 .personnalisation-couleur {
-  width: min(46px, 100%);
-  aspect-ratio: 1 / 1;
-  height: auto;
-  min-width: 0;
-  justify-self: center;
-
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
+  box-sizing: border-box;
   border-radius: 50%;
   border: 3px solid #ffffff;
   box-shadow: 0 0 0 1px #cfcfcf;
-
   cursor: pointer;
   transition: 0.2s ease;
 }
@@ -2110,51 +2060,24 @@
 }
 
 
-.personnalisation-couleur {
+/* =====================================================
+   MOBILE
+===================================================== */
 
-  width: 46px;
+@media (max-width: 768px) {
 
-  height: 46px;
+  .personnalisation-groupe-couleurs
+  .personnalisation-couleurs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px 18px;
+  }
 
-  justify-self: center;
-
-  border-radius: 50%;
-
-  border: 3px solid #ffffff;
-
-  box-shadow:
-    0 0 0 1px #cfcfcf;
-
-  cursor: pointer;
-
-  transition:
-    0.2s ease;
-
-}
-
-
-.personnalisation-couleur:hover {
-
-  transform:
-    scale(1.08);
-
-}
-
-
-.personnalisation-couleur.active {
-
-  transform:
-    scale(1.12);
-
-  box-shadow:
-    0 0 0 3px #8f5967;
-
-}
-
-
-.personnalisation-couleur[data-couleur="#FFFFFF"] {
-
-  border-color: #ddd;
+  .personnalisation-couleur {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+  }
 
 }
     
