@@ -1819,6 +1819,40 @@
 
 }
 
+    /* =====================================================
+   GROUPES DE COULEURS
+===================================================== */
+
+.personnalisation-groupe-couleurs {
+  margin-bottom: 22px;
+}
+
+.personnalisation-groupe-titre {
+  margin-bottom: 12px;
+  color: #4A4143;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.personnalisation-groupe-couleurs
+.personnalisation-couleurs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-width: none;
+}
+
+.personnalisation-groupe-couleurs
+.personnalisation-couleur {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+}
+
+.personnalisation-groupe-couleurs
+.personnalisation-couleur.active {
+  transform: scale(1.1);
+}
 
 .personnalisation-couleur {
 
@@ -1861,6 +1895,7 @@
 
 }
 
+    
 
 /* =====================================================
    APERÇU
@@ -5634,10 +5669,25 @@ function validerPersonnalisation() {
           personnalisationChoix.prenom,
 
         police:
-          personnalisationChoix.police,
+  personnalisationChoix.police,
 
-        couleur:
-          personnalisationChoix.couleur
+policeNom:
+  personnalisationChoix.policeNom ||
+  personnalisationChoix.police,
+
+couleur:
+  personnalisationChoix.couleur,
+
+couleurNom:
+  personnalisationChoix.couleurNom || "",
+
+couleurType:
+  personnalisationChoix.couleurType ||
+  "solid",
+
+couleurGradient:
+  personnalisationChoix.couleurGradient ||
+  ""
 
       };
 
@@ -10041,17 +10091,40 @@ async function confirmerCommande() {
 
 
           couleur:
-            personnalisation &&
-            personnalisation.couleur
-              ? personnalisation.couleur
-              : null,
+  personnalisation &&
+  personnalisation.couleur
+    ? personnalisation.couleur
+    : null,
 
+couleur_nom:
+  personnalisation &&
+  personnalisation.couleurNom
+    ? personnalisation.couleurNom
+    : null,
 
-          police:
-            personnalisation &&
-            personnalisation.police
-              ? personnalisation.police
-              : null,
+couleur_type:
+  personnalisation &&
+  personnalisation.couleurType
+    ? personnalisation.couleurType
+    : "solid",
+
+couleur_gradient:
+  personnalisation &&
+  personnalisation.couleurGradient
+    ? personnalisation.couleurGradient
+    : null,
+
+police:
+  personnalisation &&
+  personnalisation.police
+    ? personnalisation.police
+    : null,
+
+police_nom:
+  personnalisation &&
+  personnalisation.policeNom
+    ? personnalisation.policeNom
+    : null,
 
 
           message:
