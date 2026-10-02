@@ -3929,10 +3929,17 @@ let personnalisationChoix = {
 
   police: "Arial",
 
-  couleur: "#000000"
+  policeNom: "Arial",
+
+  couleur: "#E6C2BF",
+
+  couleurNom: "Signature Sublime'K 01",
+
+  couleurType: "solid",
+
+  couleurGradient: ""
 
 };
-
 
 /* =====================================================
    OUVRIR LA PERSONNALISATION
@@ -4043,8 +4050,29 @@ if (etapeDesign) {
       police:
         articleAModifier.personnalisation.police || "Arial",
 
+      policeNom:
+  articleAModifier.personnalisation.policeNom ||
+  articleAModifier.personnalisation.police ||
+  "Arial",
+      
       couleur:
         articleAModifier.personnalisation.couleur || "#000000"
+
+      couleur:
+  articleAModifier.personnalisation.couleur ||
+  "#E6C2BF",
+
+couleurNom:
+  articleAModifier.personnalisation.couleurNom ||
+  "",
+
+couleurType:
+  articleAModifier.personnalisation.couleurType ||
+  "solid",
+
+couleurGradient:
+  articleAModifier.personnalisation.couleurGradient ||
+  ""
 
     };
 
@@ -5071,7 +5099,7 @@ async function chargerPolicesPublic() {
 }
 
 /* =====================================================
-   COULEURS
+   COULEURS — CHARGEMENT PUBLIC
 ===================================================== */
 
 async function chargerCouleursPublic() {
@@ -5102,9 +5130,16 @@ async function chargerCouleursPublic() {
         .select(`
           id,
           nom,
-          code_hex
+          code_hex,
+          groupe,
+          groupe_ordre,
+          type,
+          code_gradient
         `)
         .eq("actif", true)
+        .order("groupe_ordre", {
+          ascending: true
+        })
         .order("ordre", {
           ascending: true
         });
@@ -5115,10 +5150,7 @@ async function chargerCouleursPublic() {
 
     zone.innerHTML = "";
 
-    if (
-      !data ||
-      data.length === 0
-    ) {
+    if (!data || data.length === 0) {
 
       zone.innerHTML = `
         <div class="personnalisation-message">
@@ -5129,115 +5161,284 @@ async function chargerCouleursPublic() {
       return;
     }
 
+
+    /* =================================================
+       REGROUPER LES COULEURS
+    ================================================= */
+
+    const groupes = {};
+
     data.forEach(
       function(couleur) {
 
-        const bouton =
-          document.createElement(
-            "button"
-          );
+        const groupe =
+          couleur.groupe ||
+          "Les classiques";
 
-        bouton.type =
-          "button";
+        if (!groupes[groupe]) {
 
-        bouton.className =
-          "personnalisation-couleur";
-
-        bouton.dataset.couleur =
-          couleur.code_hex;
-
-        bouton.style.background =
-          couleur.code_hex;
-
-        bouton.setAttribute(
-          "aria-label",
-          couleur.nom
-        );
-
-        bouton.title =
-          couleur.nom;
-
-        /*
-         * Si une couleur était déjà choisie
-         * lors d'une modification du panier,
-         * on la resélectionne.
-         */
-        if (
-          personnalisationChoix.couleur ===
-          couleur.code_hex
-        ) {
-
-          bouton.classList.add(
-            "active"
-          );
+          groupes[groupe] = [];
 
         }
 
-        bouton.addEventListener(
-          "click",
-          function() {
-
-            document
-              .querySelectorAll(
-                ".personnalisation-couleur"
-              )
-              .forEach(
-                function(element) {
-
-                  element.classList.remove(
-                    "active"
-                  );
-
-                }
-              );
-
-            bouton.classList.add(
-              "active"
-            );
-
-            personnalisationChoix.couleur =
-              couleur.code_hex;
-
-            mettreAJourApercuPersonnalisation();
-
-          }
-        );
-
-        zone.appendChild(
-          bouton
+        groupes[groupe].push(
+          couleur
         );
 
       }
     );
 
-    /*
-     * Si aucune couleur n'est encore définie,
-     * on prend la première disponible.
-     */
-    if (
-      !personnalisationChoix.couleur &&
-      data.length > 0
-    ) {
 
-      personnalisationChoix.couleur =
-        data[0].code_hex;
+    /* =================================================
+       AFFICHER LES 3 GROUPES
+    ================================================= */
 
-      const premierBouton =
-        zone.querySelector(
-          ".personnalisation-couleur"
-        );
+    Object.keys(groupes)
+      .forEach(
+        function(nomGroupe) {
 
-      if (premierBouton) {
+          const bloc =
+            document.createElement(
+              "div"
+            );
 
-        premierBouton.classList.add(
-          "active"
-        );
+          bloc.className =
+            "personnalisation-groupe-couleurs";
 
-      }
 
-    }
+          const titre =
+            document.createElement(
+              "div"
+            );
+
+          titre.className =
+            "personnalisation-groupe-titre";
+
+
+          if (
+            nomGroupe === "Effets"
+          ) {
+
+            titre.textContent =
+              "✨ Effets";
+
+          } else if (
+            nomGroupe ===
+            "Les signatures Sublime'K"
+          ) {
+
+            titre.textContent =
+              "🌿 Les signatures Sublime'K";
+
+          } else {
+
+            titre.textContent =
+              "🎨 Les classiques";
+
+          }
+
+
+          bloc.appendChild(
+            titre
+          );
+
+
+          const grille =
+            document.createElement(
+              "div"
+            );
+
+          grille.className =
+            "personnalisation-couleurs";
+
+
+          groupes[nomGroupe]
+            .forEach(
+              function(couleur) {
+
+                const bouton =
+                  document.createElement(
+                    "button"
+                  );
+
+                bouton.type =
+                  "button";
+
+                bouton.className =
+                  "personnalisation-couleur";
+
+
+                bouton.dataset.couleur =
+                  couleur.code_hex;
+
+
+                bouton.dataset.couleurNom =
+                  couleur.nom || "";
+
+
+                bouton.dataset.couleurType =
+                  couleur.type || "solid";
+
+
+                bouton.dataset.couleurGradient =
+                  couleur.code_gradient || "";
+
+
+                bouton.title =
+                  couleur.nom || "";
+
+
+                bouton.setAttribute(
+                  "aria-label",
+                  couleur.nom || "Couleur"
+                );
+
+
+                /* -----------------------------------------
+                   APERÇU DU CARRÉ
+                ----------------------------------------- */
+
+                if (
+                  couleur.type ===
+                    "gradient" &&
+                  couleur.code_gradient
+                ) {
+
+                  bouton.style.background =
+                    "linear-gradient(135deg," +
+                    couleur.code_gradient +
+                    ")";
+
+                } else {
+
+                  bouton.style.background =
+                    couleur.code_hex;
+
+                }
+
+
+                /* -----------------------------------------
+                   COULEUR BLANCHE
+                ----------------------------------------- */
+
+                if (
+                  String(
+                    couleur.code_hex
+                  ).toUpperCase() ===
+                  "#FFFFFF"
+                ) {
+
+                  bouton.style.borderColor =
+                    "#DDD";
+
+                }
+
+
+                /* -----------------------------------------
+                   RESTAURER LE CHOIX
+                ----------------------------------------- */
+
+                if (
+                  personnalisationChoix.couleur ===
+                    couleur.code_hex
+                ) {
+
+                  if (
+                    (
+                      personnalisationChoix
+                        .couleurGradient ||
+                      ""
+                    ) ===
+                    (
+                      couleur.code_gradient ||
+                      ""
+                    )
+                  ) {
+
+                    bouton.classList.add(
+                      "active"
+                    );
+
+                  }
+
+                }
+
+
+                /* -----------------------------------------
+                   CLIC
+                ----------------------------------------- */
+
+                bouton.addEventListener(
+                  "click",
+                  function() {
+
+                    document
+                      .querySelectorAll(
+                        ".personnalisation-couleur"
+                      )
+                      .forEach(
+                        function(element) {
+
+                          element.classList.remove(
+                            "active"
+                          );
+
+                        }
+                      );
+
+
+                    bouton.classList.add(
+                      "active"
+                    );
+
+
+                    personnalisationChoix.couleur =
+                      couleur.code_hex;
+
+
+                    personnalisationChoix.couleurNom =
+                      couleur.nom || "";
+
+
+                    personnalisationChoix.couleurType =
+                      couleur.type ||
+                      "solid";
+
+
+                    personnalisationChoix.couleurGradient =
+                      couleur.code_gradient ||
+                      "";
+
+
+                    mettreAJourApercuPersonnalisation();
+
+                  }
+                );
+
+
+                grille.appendChild(
+                  bouton
+                );
+
+              }
+            );
+
+
+          bloc.appendChild(
+            grille
+          );
+
+
+          zone.appendChild(
+            bloc
+          );
+
+        }
+      );
+
 
     mettreAJourApercuPersonnalisation();
+
 
   } catch (error) {
 
@@ -5245,6 +5446,7 @@ async function chargerCouleursPublic() {
       "Erreur couleurs personnalisation :",
       error
     );
+
 
     zone.innerHTML = `
       <div class="personnalisation-message">
@@ -5255,7 +5457,6 @@ async function chargerCouleursPublic() {
   }
 
 }
-
 
 /* =====================================================
    APERÇU DU PRÉNOM
@@ -5280,10 +5481,43 @@ function mettreAJourApercuPersonnalisation() {
     personnalisationChoix.police ||
     "Arial, sans-serif";
 
+  
+if (
+  personnalisationChoix.couleurType ===
+    "gradient" &&
+  personnalisationChoix.couleurGradient
+) {
+
+  apercu.style.color =
+    "transparent";
+
+  apercu.style.backgroundImage =
+    "linear-gradient(135deg," +
+    personnalisationChoix.couleurGradient +
+    ")";
+
+  apercu.style.backgroundClip =
+    "text";
+
+  apercu.style.webkitBackgroundClip =
+    "text";
+
+} else {
+
+  apercu.style.backgroundImage =
+    "none";
+
+  apercu.style.backgroundClip =
+    "border-box";
+
+  apercu.style.webkitBackgroundClip =
+    "border-box";
+
   apercu.style.color =
     personnalisationChoix.couleur ||
-    "#000000";
+    "#E6C2BF";
 
+}
 }
 
 
