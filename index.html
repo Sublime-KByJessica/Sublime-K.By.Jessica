@@ -5443,14 +5443,39 @@ async function chargerCouleursPublic() {
       await supabaseClient
         .from("personnalisation_couleurs")
         .select(`
-          id,
-          nom,
-          code_hex,
-          groupe,
-          groupe_ordre,
-          type,
-          code_gradient
-        `)
+  id,
+  nom,
+  description,
+  prix,
+  statut,
+  image_url,
+  visible,
+  nouveaute,
+
+  personnalisation_active,
+  choix_image_active,
+  prenom_active,
+  police_active,
+  couleur_active,
+  message_active,
+  photo_client_active,
+
+  prenom_min_caracteres,
+  prenom_max_caracteres,
+
+  message_min_caracteres,
+  message_max_caracteres,
+
+  mockup_active,
+  mockup_design_active,
+  mockup_prenom_active,
+  mockup_message_active,
+
+  mockup_position_x,
+  mockup_position_y,
+  mockup_largeur,
+  mockup_rotation
+`)
         .eq("actif", true)
         .order("groupe_ordre", {
           ascending: true
@@ -8453,15 +8478,39 @@ activerCarrouselsProduits();
             .from("products")
 
             .select(`
-              id,
-              nom,
-              description,
-              prix,
-              statut,
-              image_url,
-              visible,
-              nouveaute
-            `)
+  id,
+  nom,
+  description,
+  prix,
+  statut,
+  image_url,
+  visible,
+  nouveaute,
+
+  personnalisation_active,
+  choix_image_active,
+  prenom_active,
+  police_active,
+  couleur_active,
+  message_active,
+  photo_client_active,
+
+  prenom_min_caracteres,
+  prenom_max_caracteres,
+
+  message_min_caracteres,
+  message_max_caracteres,
+
+  mockup_active,
+  mockup_design_active,
+  mockup_prenom_active,
+  mockup_message_active,
+
+  mockup_position_x,
+  mockup_position_y,
+  mockup_largeur,
+  mockup_rotation
+`)
 
             .eq("visible", true)
 
