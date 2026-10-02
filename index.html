@@ -5933,6 +5933,47 @@ couleurGradient:
   const produit =
     personnalisationProduitActuel;
 
+  /*
+ * Vérification du stock avant ajout
+ */
+
+if (
+  produit.statut === "stock" &&
+  Number.isFinite(Number(produit.stock_quantite))
+) {
+
+  const quantiteDejaDansPanier =
+    panier.reduce(
+      function(total, article) {
+
+        return (
+          String(article.produit_id || article.id) ===
+          String(produit.id)
+        )
+          ? total + Number(article.quantite || 0)
+          : total;
+
+      },
+      0
+    );
+
+
+  if (
+    quantiteDejaDansPanier >=
+    Number(produit.stock_quantite)
+  ) {
+
+    alert(
+      "❌ Vous avez atteint la quantité disponible pour ce produit.\n\n" +
+      "Stock disponible : " +
+      Number(produit.stock_quantite) +
+      " unité(s)."
+    );
+
+    return;
+  }
+
+}
 
   const prix =
     Number(produit.prix || 0);
@@ -6043,29 +6084,61 @@ couleurGradient:
 
 
   /*
-   * Si le produit est personnalisable,
-   * on ouvre la fenêtre de personnalisation.
+   * Vérification du stock disponible
    */
+
+  if (
+    produit.statut === "stock" &&
+    Number.isFinite(Number(produit.stock_quantite))
+  ) {
+
+    const quantiteDejaDansPanier =
+      panier.reduce(
+        function(total, article) {
+
+          return (
+            String(article.produit_id || article.id) ===
+            String(produit.id)
+          )
+            ? total + Number(article.quantite || 0)
+            : total;
+
+        },
+        0
+      );
+
+
+    if (
+      quantiteDejaDansPanier >=
+      Number(produit.stock_quantite)
+    ) {
+
+      alert(
+        "❌ Vous avez atteint la quantité disponible pour ce produit.\n\n" +
+        "Stock disponible : " +
+        Number(produit.stock_quantite) +
+        " unité(s)."
+      );
+
+      return;
+    }
+
+  }
+
+
+  /*
+   * Produit personnalisable
+   */
+
   if (
     produit.personnalisation_active === true
   ) {
-
-    /*
-     * On ferme proprement les autres fenêtres
-     * avant d'ouvrir la personnalisation.
-     */
 
     fermerFicheProduit();
 
     fermerPanier();
 
     fermerPersonnalisation();
-
-
-    /*
-     * On attend complètement l'ouverture
-     * de la personnalisation.
-     */
 
     await ouvrirPersonnalisation(
       produit
@@ -6076,8 +6149,7 @@ couleurGradient:
 
 
   /*
-   * Sinon :
-   * ajout classique au panier.
+   * Ajout classique au panier
    */
 
   const prix =
@@ -6117,6 +6189,11 @@ couleurGradient:
 
       statut:
         produit.statut,
+
+      stock_quantite:
+        Number.isFinite(Number(produit.stock_quantite))
+          ? Number(produit.stock_quantite)
+          : null,
 
       quantite:
         1
@@ -6216,47 +6293,77 @@ const produit = {
 
 }
 
-    function modifierQuantite(
-      id,
-      changement
-    ) {
+   function modifierQuantite(
+  id,
+  changement
+) {
 
-      const article =
-        panier.find(
-          element =>
-            String(element.id) ===
-            String(id)
-        );
-
-
-      if (!article) {
-        return;
-      }
+  const article =
+    panier.find(
+      element =>
+        String(element.id) ===
+        String(id)
+    );
 
 
-      article.quantite += changement;
+  if (!article) {
+    return;
+  }
 
 
-      if (article.quantite <= 0) {
-
-        panier =
-          panier.filter(
-            element =>
-              String(element.id) !==
-              String(id)
-          );
-
-      }
+  const nouvelleQuantite =
+    Number(article.quantite || 0) +
+    Number(changement || 0);
 
 
-      sauvegarderPanier();
+  /*
+   * Empêcher de dépasser le stock
+   */
 
-      mettreAJourCompteurPanier();
+  if (
+    changement > 0 &&
+    article.statut === "stock" &&
+    Number.isFinite(Number(article.stock_quantite)) &&
+    nouvelleQuantite >
+      Number(article.stock_quantite)
+  ) {
 
-      afficherPanier();
+    alert(
+      "❌ Vous avez atteint la quantité disponible pour ce produit.\n\n" +
+      "Stock disponible : " +
+      Number(article.stock_quantite) +
+      " unité(s)."
+    );
 
-    }
+    return;
+  }
 
+
+  article.quantite =
+    nouvelleQuantite;
+
+
+  if (
+    article.quantite <= 0
+  ) {
+
+    panier =
+      panier.filter(
+        element =>
+          String(element.id) !==
+          String(id)
+      );
+
+  }
+
+
+  sauvegarderPanier();
+
+  mettreAJourCompteurPanier();
+
+  afficherPanier();
+
+}
 
     function supprimerDuPanier(id) {
 
@@ -7974,6 +8081,7 @@ function initialiserSwipeFicheProduit() {
   image_url,
   visible,
   ordre,
+  stock_quantite,
 
   personnalisation_active,
   choix_image_active,
@@ -8387,6 +8495,7 @@ activerCarrouselsProduits();
   image_url,
   visible,
   nouveaute,
+  stock_quantite,
 
   personnalisation_active,
   choix_image_active,
