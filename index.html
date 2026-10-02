@@ -1752,11 +1752,14 @@
 
 .personnalisation-polices {
 
-  display: flex;
+  display: grid;
+
+  grid-template-columns:
+    repeat(6, minmax(0, 1fr));
 
   gap: 10px;
 
-  overflow-x: auto;
+  width: 100%;
 
   padding: 5px 3px 12px;
 
@@ -1765,11 +1768,13 @@
 
 .personnalisation-police {
 
-  flex: 0 0 auto;
+  width: 100%;
 
-  min-width: 130px;
+  min-width: 0;
 
-  padding: 14px 18px;
+  min-height: 58px;
+
+  padding: 10px 6px;
 
   border: 2px solid #ddd;
 
@@ -1777,11 +1782,21 @@
 
   background: #ffffff;
 
-  font-size: 1.15rem;
+  font-size: 1.05rem;
+
+  line-height: 1.2;
 
   cursor: pointer;
 
   transition: 0.2s ease;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
 
 }
 
@@ -1789,6 +1804,8 @@
 .personnalisation-police:hover {
 
   border-color: #b9828f;
+
+  transform: translateY(-2px);
 
 }
 
@@ -1798,6 +1815,9 @@
   border-color: #8f5967;
 
   background: #f5e9eb;
+
+  box-shadow:
+    0 0 0 2px rgba(143, 89, 103, 0.15);
 
 }
 
@@ -1811,54 +1831,65 @@
   display: grid;
 
   grid-template-columns:
-    repeat(5, 1fr);
+    repeat(6, minmax(0, 1fr));
 
   gap: 12px;
 
-  max-width: 430px;
+  width: 100%;
+
+  max-width: none;
 
 }
 
-    /* =====================================================
+
+/* =====================================================
    GROUPES DE COULEURS
 ===================================================== */
 
 .personnalisation-groupe-couleurs {
+
   margin-bottom: 22px;
+
 }
 
+
 .personnalisation-groupe-titre {
+
   margin-bottom: 12px;
+
   color: #4A4143;
+
   font-weight: bold;
+
   font-size: 0.95rem;
+
 }
+
 
 .personnalisation-groupe-couleurs
 .personnalisation-couleurs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(6, minmax(0, 1fr));
+
+  gap: 12px;
+
+  width: 100%;
+
   max-width: none;
+
 }
 
-.personnalisation-groupe-couleurs
-.personnalisation-couleur {
-  flex: 0 0 auto;
-  width: 42px;
-  height: 42px;
-}
-
-.personnalisation-groupe-couleurs
-.personnalisation-couleur.active {
-  transform: scale(1.1);
-}
 
 .personnalisation-couleur {
 
-  width: 52px;
+  width: 46px;
 
-  height: 52px;
+  height: 46px;
+
+  justify-self: center;
 
   border-radius: 50%;
 
@@ -1869,19 +1900,24 @@
 
   cursor: pointer;
 
-  transition: 0.2s ease;
+  transition:
+    0.2s ease;
 
 }
 
 
 .personnalisation-couleur:hover {
 
-  transform: scale(1.08);
+  transform:
+    scale(1.08);
 
 }
 
 
 .personnalisation-couleur.active {
+
+  transform:
+    scale(1.12);
 
   box-shadow:
     0 0 0 3px #8f5967;
@@ -1894,7 +1930,6 @@
   border-color: #ddd;
 
 }
-
     
 
 /* =====================================================
@@ -2057,15 +2092,11 @@
     height: 110px;
 
   }
-
-
-  .personnalisation-couleurs {
-
-    grid-template-columns:
-      repeat(5, 1fr);
-
-  }
-
+  
+.personnalisation-couleurs {
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+}
 
   .personnalisation-couleur {
 
