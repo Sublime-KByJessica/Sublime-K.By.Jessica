@@ -22,6 +22,202 @@
 
   <style>
 
+    /* =====================================================
+   POLICES PERSONNALISATION SUBLIME'K
+===================================================== */
+
+@font-face {
+  font-family: "Alex Brush";
+  src: url("./AlexBrush-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Allura";
+  src: url("./Allura-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Amatic SC";
+  src: url("./AmaticSC-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Berkshire Swash";
+  src: url("./BerkshireSwash-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Chewy";
+  src: url("./Chewy.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Comfortaa";
+  src: url("./Comfortaa-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Elsie Swash Caps";
+  src: url("./ElsieSwashCaps-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Ewert";
+  src: url("./Ewert-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Fleur De Leah";
+  src: url("./FleurDeLeah-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Freckle Face";
+  src: url("./FreckleFace-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Fredericka the Great";
+  src: url("./FrederickatheGreat-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Great Vibes";
+  src: url("./GreatVibes-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Imperial Script";
+  src: url("./ImperialScript-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Ingrid Darling";
+  src: url("./IngridDarling-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Jolly Lodger";
+  src: url("./JollyLodger-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Lavishly Yours";
+  src: url("./LavishlyYours-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Londrina Shadow";
+  src: url("./LondrinaShadow-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Monoton";
+  src: url("./Monoton-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Parisienne";
+  src: url("./Parisienne-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Pirata One";
+  src: url("./PirataOne-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Qwigley";
+  src: url("./Qwigley-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Sonsie One";
+  src: url("./SonsieOne-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "UnifrakturMaguntia";
+  src: url("./UnifrakturMaguntia-Book.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Emilys Candy";
+  src: url("./emilyscandy-400-latin.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+    
     * {
       box-sizing: border-box;
       margin: 0;
@@ -1866,20 +2062,51 @@
 }
 
 
+/* =====================================================
+   GRILLE DES COULEURS
+===================================================== */
+
 .personnalisation-groupe-couleurs
 .personnalisation-couleurs {
-
   display: grid;
-
-  grid-template-columns:
-    repeat(6, minmax(0, 1fr));
-
-  gap: 12px;
-
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 14px;
   width: 100%;
-
   max-width: none;
+  align-items: center;
+}
 
+
+/* =====================================================
+   PASTILLES DE COULEURS
+===================================================== */
+
+.personnalisation-couleur {
+  width: min(46px, 100%);
+  aspect-ratio: 1 / 1;
+  height: auto;
+  min-width: 0;
+  justify-self: center;
+
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 0 1px #cfcfcf;
+
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.personnalisation-couleur:hover {
+  transform: scale(1.08);
+}
+
+.personnalisation-couleur.active {
+  transform: scale(1.12);
+  box-shadow: 0 0 0 3px #8f5967;
+}
+
+.personnalisation-couleur[data-couleur="#FFFFFF"] {
+  border-color: #ddd;
 }
 
 
@@ -2096,6 +2323,11 @@
 .personnalisation-couleurs {
   grid-template-columns:
     repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.personnalisation-couleur {
+  width: min(44px, 100%);
 }
 
   .personnalisation-couleur {
