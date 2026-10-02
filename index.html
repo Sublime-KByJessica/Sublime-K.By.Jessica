@@ -6106,7 +6106,7 @@ couleurGradient:
 
 }
 
-    function ajouterAuPanier(produit) {
+    async function ajouterAuPanier(produit) {
 
   if (
     !produit ||
@@ -6123,9 +6123,27 @@ couleurGradient:
   if (
     produit.personnalisation_active === true
   ) {
-    
-fermerFicheProduit();
-    ouvrirPersonnalisation(produit);
+
+    /*
+     * On ferme proprement les autres fenêtres
+     * avant d'ouvrir la personnalisation.
+     */
+
+    fermerFicheProduit();
+
+    fermerPanier();
+
+    fermerPersonnalisation();
+
+
+    /*
+     * On attend complètement l'ouverture
+     * de la personnalisation.
+     */
+
+    await ouvrirPersonnalisation(
+      produit
+    );
 
     return;
   }
@@ -6135,6 +6153,7 @@ fermerFicheProduit();
    * Sinon :
    * ajout classique au panier.
    */
+
   const prix =
     Number(produit.prix || 0);
 
