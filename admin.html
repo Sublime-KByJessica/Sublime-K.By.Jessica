@@ -2824,36 +2824,97 @@ button{cursor:pointer}
 
       <div class="form-grid">
 
-        <div class="champ">
+  <div class="champ">
 
-          <label for="nomNouvelleCouleur">
-            Nom de la couleur
-          </label>
+    <label for="nomNouvelleCouleur">
+      Nom
+    </label>
 
-          <input
-            type="text"
-            id="nomNouvelleCouleur"
-            placeholder="Ex : Rose pastel"
-          >
+    <input
+      type="text"
+      id="nomNouvelleCouleur"
+      placeholder="Ex : Rose pastel"
+    >
 
-        </div>
+  </div>
 
 
-        <div class="champ">
+  <div class="champ">
 
-          <label for="codeNouvelleCouleur">
-            Couleur
-          </label>
+    <label for="groupeNouvelleCouleur">
+      Groupe
+    </label>
 
-          <input
-            type="color"
-            id="codeNouvelleCouleur"
-            value="#E91E63"
-          >
+    <select id="groupeNouvelleCouleur">
 
-        </div>
+      <option value="Effets">
+        ✨ Effets
+      </option>
 
-      </div>
+      <option value="Les signatures Sublime'K">
+        🌿 Les signatures Sublime'K
+      </option>
+
+      <option value="Les classiques">
+        🎨 Les classiques
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <div class="champ">
+
+    <label for="typeNouvelleCouleur">
+      Type
+    </label>
+
+    <select id="typeNouvelleCouleur">
+
+      <option value="solid">
+        Couleur simple
+      </option>
+
+      <option value="gradient">
+        Dégradé / métallisé
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <div class="champ">
+
+    <label for="codeNouvelleCouleur">
+      Couleur principale
+    </label>
+
+    <input
+      type="color"
+      id="codeNouvelleCouleur"
+      value="#E6C2BF"
+    >
+
+  </div>
+
+
+  <div class="champ full">
+
+    <label for="gradientNouvelleCouleur">
+      Dégradé
+    </label>
+
+    <input
+      type="text"
+      id="gradientNouvelleCouleur"
+      placeholder="#B77480,#FEAAA0,#B77480,#F7E8C9,#B77480"
+    >
+
+  </div>
+
+</div>
 
 
       <div class="bibliotheque-actions">
@@ -7119,7 +7180,6 @@ async function chargerCouleursPersonnalisation() {
     return;
   }
 
-
   liste.innerHTML =
     "⏳ Chargement des couleurs...";
 
@@ -7129,27 +7189,25 @@ async function chargerCouleursPersonnalisation() {
     error
   } =
     await client
-
-      .from(
-        "personnalisation_couleurs"
-      )
-
+      .from("personnalisation_couleurs")
       .select("*")
-
+      .order(
+        "groupe_ordre",
+        {
+          ascending:true
+        }
+      )
       .order(
         "ordre",
         {
-          ascending: true
+          ascending:true
         }
       );
 
 
   if (error) {
 
-    console.error(
-      "Erreur chargement couleurs :",
-      error
-    );
+    console.error(error);
 
     liste.innerHTML =
       "❌ Impossible de charger les couleurs.";
@@ -7162,89 +7220,201 @@ async function chargerCouleursPersonnalisation() {
   liste.innerHTML = "";
 
 
+  const groupes = {};
+
+
   (data || []).forEach(
     function(couleur) {
 
-      const ligne =
-        document.createElement(
-          "div"
-        );
+      const groupe =
+        couleur.groupe ||
+        "Les classiques";
 
+      if (!groupes[groupe]) {
+        groupes[groupe] = [];
+      }
 
-      ligne.className =
-        "ligne-bibliotheque";
-
-
-      ligne.innerHTML = `
-
-        <div
-          class="ligne-bibliotheque-info"
-          style="
-            display:flex;
-            align-items:center;
-            gap:12px;
-          "
-        >
-
-          <span
-            style="
-              width:30px;
-              height:30px;
-              border-radius:50%;
-              display:inline-block;
-              background:${echapperHTML(
-                couleur.code_hex
-              )};
-              border:1px solid #ccc;
-            "
-          ></span>
-
-
-          <strong>
-            ${echapperHTML(
-              couleur.nom
-            )}
-          </strong>
-
-
-          <span
-            style="
-              color:#777;
-            "
-          >
-            ${echapperHTML(
-              couleur.code_hex
-            )}
-          </span>
-
-        </div>
-
-
-        <div
-          class="ligne-bibliotheque-actions"
-        >
-
-          <button
-            class="btn btn-supprimer"
-            type="button"
-            onclick="supprimerCouleurPersonnalisation(
-              '${couleur.id}'
-            )"
-          >
-            🗑️
-          </button>
-
-        </div>
-
-      `;
-
-
-      liste.appendChild(
-        ligne
+      groupes[groupe].push(
+        couleur
       );
 
     }
   );
+
+
+  Object.keys(groupes)
+    .forEach(
+      function(groupe) {
+
+        const titre =
+          document.createElement(
+            "h3"
+          );
+
+        titre.textContent =
+          groupe === "Effets"
+            ? "✨ Effets"
+            : groupe ===
+                "Les signatures Sublime'K"
+              ? "🌿 Les signatures Sublime'K"
+              : "🎨 Les classiques";
+
+        titre.style.marginTop =
+          "25px";
+
+        liste.appendChild(
+          titre
+        );
+
+
+        groupes[groupe]
+          .forEach(
+            function(couleur) {
+
+              const ligne =
+                document.createElement(
+                  "div"
+                );
+
+              ligne.className =
+                "ligne-bibliotheque";
+
+
+              const fond =
+                couleur.type ===
+                  "gradient" &&
+                couleur.code_gradient
+                  ? "linear-gradient(135deg," +
+                    couleur.code_gradient +
+                    ")"
+                  : couleur.code_hex;
+
+
+              ligne.innerHTML = `
+
+                <div
+                  class="ligne-bibliotheque-info"
+                  style="
+                    display:flex;
+                    align-items:center;
+                    gap:12px;
+                    flex-wrap:wrap;
+                  "
+                >
+
+                  <span
+                    style="
+                      width:32px;
+                      height:32px;
+                      border-radius:8px;
+                      display:inline-block;
+                      background:${echapperHTML(
+                        fond
+                      )};
+                      border:1px solid #ccc;
+                    "
+                  ></span>
+
+                  <strong>
+                    ${echapperHTML(
+                      couleur.nom
+                    )}
+                  </strong>
+
+                  <span
+                    style="color:#777;"
+                  >
+                    ${echapperHTML(
+                      couleur.code_hex
+                    )}
+                  </span>
+
+                  ${
+                    couleur.type ===
+                    "gradient"
+                      ? `
+                        <span>
+                          ✨ Dégradé
+                        </span>
+                      `
+                      : `
+                        <span>
+                          Couleur
+                        </span>
+                      `
+                  }
+
+                  ${
+                    couleur.actif
+                      ? `
+                        <span
+                          style="
+                            color:#667052;
+                            font-weight:bold;
+                          "
+                        >
+                          ● Active
+                        </span>
+                      `
+                      : `
+                        <span
+                          style="
+                            color:#8B4F4F;
+                            font-weight:bold;
+                          "
+                        >
+                          ● Désactivée
+                        </span>
+                      `
+                  }
+
+                </div>
+
+
+                <div
+                  class="ligne-bibliotheque-actions"
+                >
+
+                  <button
+                    class="btn btn-modifier"
+                    type="button"
+                    onclick="basculerCouleurPersonnalisation(
+                      '${couleur.id}',
+                      ${couleur.actif}
+                    )"
+                  >
+                    ${
+                      couleur.actif
+                        ? "🙈 Désactiver"
+                        : "👁️ Activer"
+                    }
+                  </button>
+
+
+                  <button
+                    class="btn btn-supprimer"
+                    type="button"
+                    onclick="supprimerCouleurPersonnalisation(
+                      '${couleur.id}'
+                    )"
+                  >
+                    🗑️
+                  </button>
+
+                </div>
+
+              `;
+
+
+              liste.appendChild(
+                ligne
+              );
+
+            }
+          );
+
+      }
+    );
 
 }
 
@@ -7289,22 +7459,61 @@ document
       }
 
 
-      const {
-        error
-      } =
-        await client
+      const groupe =
+  document.getElementById(
+    "groupeNouvelleCouleur"
+  ).value;
 
-          .from(
-            "personnalisation_couleurs"
-          )
 
-          .insert([{
+const type =
+  document.getElementById(
+    "typeNouvelleCouleur"
+  ).value;
 
-            nom: nom,
 
-            code_hex: code
+const gradient =
+  document.getElementById(
+    "gradientNouvelleCouleur"
+  ).value.trim();
 
-          }]);
+
+const groupeOrdre =
+  groupe === "Effets"
+    ? 1
+    : groupe ===
+        "Les signatures Sublime'K"
+      ? 2
+      : 3;
+
+
+const {
+  error
+} =
+  await client
+    .from(
+      "personnalisation_couleurs"
+    )
+    .insert([{
+
+      nom: nom,
+
+      code_hex: code,
+
+      groupe: groupe,
+
+      groupe_ordre:
+        groupeOrdre,
+
+      type: type,
+
+      code_gradient:
+        type === "gradient"
+          ? gradient
+          : null,
+
+      actif: true
+
+    }]);
 
 
       if (error) {
@@ -7325,6 +7534,9 @@ document
         "nomNouvelleCouleur"
       ).value = "";
 
+      document.getElementById(
+  "gradientNouvelleCouleur"
+).value = "";
 
       await chargerCouleursPersonnalisation();
 
@@ -7387,7 +7599,52 @@ async function(id) {
   await chargerCouleursPersonnalisation();
 
 };
+/* =====================================================
+   ACTIVER / DÉSACTIVER UNE COULEUR
+===================================================== */
 
+window.basculerCouleurPersonnalisation =
+async function(
+  id,
+  actif
+) {
+
+  if (!(await verifierAdmin())) {
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await client
+      .from(
+        "personnalisation_couleurs"
+      )
+      .update({
+        actif: !actif
+      })
+      .eq(
+        "id",
+        id
+      );
+
+
+  if (error) {
+
+    alert(
+      "❌ " +
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  await chargerCouleursPersonnalisation();
+
+};
 /* =====================================================
    IMAGE PRODUIT — URL / GALERIE / FICHIERS
 ===================================================== */
