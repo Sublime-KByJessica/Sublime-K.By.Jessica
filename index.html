@@ -7105,7 +7105,7 @@ const image =
                     ? "disabled"
                     : ""
                 }
-                onclick='ajouterAuPanier(${JSON.stringify(produit).replace(/'/g, "&#39;")})'
+                onclick='event.stopPropagation(); ajouterAuPanier(${JSON.stringify(produit).replace(/'/g, "&#39;")})'
               >
                 ${
                   indisponible
