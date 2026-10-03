@@ -6913,6 +6913,158 @@ document
     }
   );
 
+  /* =====================================================
+   MODIFIER UNE CATÉGORIE
+===================================================== */
+
+window.modifierCategorieBibliotheque =
+async function(
+  id,
+  ancienNom,
+  ancienEmoji
+){
+
+  if(!(await verifierAdmin())){
+    return;
+  }
+
+
+  const nouveauNom =
+    prompt(
+      "Nom de la catégorie :",
+      ancienNom
+    );
+
+
+  if(
+    nouveauNom === null ||
+    nouveauNom.trim() === ""
+  ){
+    return;
+  }
+
+
+  const nouvelEmoji =
+    prompt(
+      "Emoji de la catégorie :",
+      ancienEmoji || "📁"
+    );
+
+
+  if(nouvelEmoji === null){
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await client
+      .from("library_categories")
+      .update({
+
+        nom:
+          nouveauNom.trim(),
+
+        emoji:
+          nouvelEmoji.trim() || "📁"
+
+      })
+      .eq(
+        "id",
+        id
+      );
+
+
+  if(error){
+
+    alert(
+      "❌ Impossible de modifier la catégorie : " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  await chargerCategoriesBibliotheque();
+
+
+  afficherMessageBibliotheque(
+    "✅ Catégorie modifiée !",
+    false
+  );
+
+};
+
+
+/* =====================================================
+   MODIFIER UNE SOUS-CATÉGORIE
+===================================================== */
+
+window.modifierSousCategorieBibliotheque =
+async function(
+  id,
+  ancienNom
+){
+
+  if(!(await verifierAdmin())){
+    return;
+  }
+
+
+  const nouveauNom =
+    prompt(
+      "Nom de la sous-catégorie :",
+      ancienNom
+    );
+
+
+  if(
+    nouveauNom === null ||
+    nouveauNom.trim() === ""
+  ){
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await client
+      .from("library_subcategories")
+      .update({
+
+        nom:
+          nouveauNom.trim()
+
+      })
+      .eq(
+        "id",
+        id
+      );
+
+
+  if(error){
+
+    alert(
+      "❌ Impossible de modifier la sous-catégorie : " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  await chargerSousCategoriesBibliotheque();
+
+
+  afficherMessageBibliotheque(
+    "✅ Sous-catégorie modifiée !",
+    false
+  );
+
+};
 
 window.supprimerCategorieBibliotheque=
 async function(id){
