@@ -8147,7 +8147,9 @@ function initialiserSwipeFicheProduit() {
        CHARGER LA BOUTIQUE
     ===================================================== */
 
- async function chargerBoutique() {
+ async function chargerBoutique(
+  toutesLesCreations = false
+) {
 
   console.log("TEST : chargerBoutique démarre");
 
@@ -8214,11 +8216,17 @@ function initialiserSwipeFicheProduit() {
             .eq("visible", true)
 
             .order(
-              "ordre",
-              {
-                ascending: true
-              }
-            );
+  "ordre",
+  {
+    ascending: true
+  }
+)
+
+.limit(
+  toutesLesCreations
+    ? 1000
+    : 8
+);
 
 
         if (error) {
@@ -8562,7 +8570,7 @@ activerCarrouselsProduits();
       `;
 
 
-      await chargerBoutique();
+      await chargerBoutique(true);
 
     }
 
