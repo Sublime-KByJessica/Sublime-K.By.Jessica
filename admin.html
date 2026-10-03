@@ -849,7 +849,87 @@ button{cursor:pointer}
   flex-wrap:wrap;
 }
 
+/* =========================
+   FENÊTRE MODIFICATION PLANCHE
+========================= */
 
+.planche-edition-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(74,65,67,.45);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:10000;
+}
+
+.planche-edition-modal.active{
+  display:flex;
+}
+
+.planche-edition-contenu{
+  width:min(420px,100%);
+  background:white;
+  border:1px solid var(--bordure);
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 20px 60px rgba(74,65,67,.20);
+}
+
+.planche-edition-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:18px;
+}
+
+.planche-edition-header h3{
+  margin:0;
+  color:var(--rose-fonce);
+}
+
+.planche-edition-fermer{
+  width:36px;
+  height:36px;
+  border:none;
+  border-radius:50%;
+  background:var(--gris-clair);
+  color:var(--texte);
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.planche-edition-champ{
+  display:grid;
+  gap:8px;
+  margin-bottom:18px;
+}
+
+.planche-edition-champ label{
+  font-weight:bold;
+  color:var(--texte);
+}
+
+.planche-edition-champ input{
+  width:100%;
+  box-sizing:border-box;
+  padding:12px;
+  border:1px solid var(--bordure);
+  border-radius:10px;
+  font-size:15px;
+  background:white;
+  color:var(--texte);
+}
+
+.planche-edition-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+}
 
 /* =========================
    FINANCES
@@ -9742,22 +9822,21 @@ function ouvrirDetailsPlanche(planche){
   ).textContent =
     planche.ordre ?? "—";
 
-
+  
   document.getElementById(
-    "plancheModalRenommer"
-  ).onclick =
-    async function(){
+  "plancheModalRenommer"
+).onclick =
+  function(){
 
-      await renommerPlancheBibliotheque(
-        planche.id,
-        planche.nom ||
-        "Planche d'aperçu"
-      );
+    fermerDetailsPlanche();
 
-      fermerDetailsPlanche();
+    renommerPlancheBibliotheque(
+      planche.id,
+      planche.nom ||
+      "Planche d'aperçu"
+    );
 
-    };
-
+  };
 
   document.getElementById(
     "plancheModalSupprimer"
@@ -10580,25 +10659,118 @@ document
   );
 
   /* =====================================================
-   RENOMMER UNE PLANCHE D'APERÇU
+   MODIFIER LE NOM D'UNE PLANCHE
 ===================================================== */
 
-window.renommerPlancheBibliotheque =
-async function(id, ancienNom){
+let plancheEnCoursEdition = null;
 
-  const nouveauNom =
-    prompt(
-      "Nouveau nom visible de la planche :",
+
+window.renommerPlancheBibliotheque =
+function(id, ancienNom){
+
+  const modal =
+    document.getElementById(
+      "plancheEditionModal"
+    );
+
+  const champ =
+    document.getElementById(
+      "plancheEditionNom"
+    );
+
+  if(!modal || !champ){
+    return;
+  }
+
+
+  plancheEnCoursEdition = {
+    id:id,
+    ancienNom:
       ancienNom ||
       "Planche d'aperçu"
+  };
+
+
+  champ.value =
+    plancheEnCoursEdition.ancienNom;
+
+
+  modal.classList.add(
+    "active"
+  );
+
+
+  setTimeout(
+    function(){
+
+      champ.focus();
+
+      champ.select();
+
+    },
+    50
+  );
+
+};
+
+
+window.fermerEditionPlanche =
+function(){
+
+  const modal =
+    document.getElementById(
+      "plancheEditionModal"
+    );
+
+  if(!modal){
+    return;
+  }
+
+
+  modal.classList.remove(
+    "active"
+  );
+
+
+  plancheEnCoursEdition =
+    null;
+
+};
+
+
+window.enregistrerEditionPlanche =
+async function(){
+
+  if(!plancheEnCoursEdition){
+    return;
+  }
+
+
+  const champ =
+    document.getElementById(
+      "plancheEditionNom"
     );
 
 
-  if(
-    nouveauNom === null ||
-    !nouveauNom.trim()
-  ){
+  if(!champ){
     return;
+  }
+
+
+  const nouveauNom =
+    champ.value.trim();
+
+
+  if(!nouveauNom){
+
+    alert(
+      "⚠️ Le nom de la planche ne peut pas être vide."
+    );
+
+    champ.focus();
+
+    return;
+
   }
 
 
@@ -10613,34 +10785,34 @@ async function(id, ancienNom){
     await client
       .from("library_planches")
       .update({
-
         nom:
-          nouveauNom.trim()
-
+          nouveauNom
       })
       .eq(
         "id",
-        id
+        plancheEnCoursEdition.id
       );
 
 
   if(error){
 
     console.error(
-      "Erreur renommage planche :",
+      "Erreur modification planche :",
       error
     );
 
 
     alert(
-      "❌ Impossible de renommer cette planche : " +
+      "❌ Impossible de modifier la planche : " +
       error.message
     );
-
 
     return;
 
   }
+
+
+  fermerEditionPlanche();
 
 
   await chargerPlanchesBibliotheque();
@@ -11683,6 +11855,73 @@ chargerStatistiquesFinancieres();
   </div>
 
 </div>
+  
+<!-- =================================================
+     FENÊTRE MODIFICATION D'UNE PLANCHE
+================================================== -->
 
+<div
+  id="plancheEditionModal"
+  class="planche-edition-modal"
+>
+
+  <div
+    class="planche-edition-contenu"
+    onclick="event.stopPropagation()"
+  >
+
+    <div class="planche-edition-header">
+
+      <h3>
+        ✏️ Modifier la planche
+      </h3>
+
+      <button
+        type="button"
+        class="planche-edition-fermer"
+        onclick="fermerEditionPlanche()"
+      >
+        ✕
+      </button>
+
+    </div>
+
+    <div class="planche-edition-champ">
+
+      <label for="plancheEditionNom">
+        Nom de la planche
+      </label>
+
+      <input
+        type="text"
+        id="plancheEditionNom"
+        placeholder="Ex. Signes astrologiques"
+      >
+
+    </div>
+
+    <div class="planche-edition-actions">
+
+      <button
+        type="button"
+        class="btn btn-modifier"
+        onclick="enregistrerEditionPlanche()"
+      >
+        💾 Enregistrer
+      </button>
+
+      <button
+        type="button"
+        class="btn"
+        onclick="fermerEditionPlanche()"
+      >
+        Annuler
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
 </body>
 </html>
