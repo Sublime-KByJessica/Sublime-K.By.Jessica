@@ -763,6 +763,94 @@ button{cursor:pointer}
   color:var(--danger-texte);
 }
 
+  <style>
+
+/* =========================
+   FENÊTRE DÉTAIL D'UNE PLANCHE
+========================= */
+
+.planche-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(74,65,67,.45);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:9999;
+}
+
+.planche-modal.active{
+  display:flex;
+}
+
+.planche-modal-contenu{
+  width:min(430px,100%);
+  max-height:90vh;
+  overflow:auto;
+  background:white;
+  border:1px solid var(--bordure);
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 20px 60px rgba(74,65,67,.20);
+}
+
+.planche-modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:15px;
+}
+
+.planche-modal-header h3{
+  margin:0;
+  color:var(--rose-fonce);
+}
+
+.planche-modal-fermer{
+  width:36px;
+  height:36px;
+  border:none;
+  border-radius:50%;
+  background:var(--gris-clair);
+  color:var(--texte);
+  font-size:18px;
+  font-weight:bold;
+}
+
+.planche-modal-image{
+  display:block;
+  width:100%;
+  max-height:280px;
+  object-fit:contain;
+  border-radius:12px;
+  background:#F8F4F2;
+  margin-bottom:16px;
+}
+
+.planche-modal-details{
+  display:grid;
+  gap:8px;
+  margin-bottom:18px;
+}
+
+.planche-modal-detail{
+  padding:10px 12px;
+  border-radius:10px;
+  background:var(--fond);
+  border:1px solid var(--bordure);
+}
+
+.planche-modal-actions{
+  display:flex;
+  gap:8px;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+}
+
+</style>
+
 /* =========================
    FINANCES
 ========================= */
@@ -9603,6 +9691,133 @@ document
   );
 
   /* =====================================================
+   🖼️ FENÊTRE DÉTAIL D'UNE PLANCHE
+===================================================== */
+
+function ouvrirDetailsPlanche(planche){
+
+  const modal =
+    document.getElementById(
+      "plancheModal"
+    );
+
+  if(!modal){
+    return;
+  }
+
+
+  document.getElementById(
+    "plancheModalImage"
+  ).src =
+    planche.image_url;
+
+
+  document.getElementById(
+    "plancheModalImage"
+  ).alt =
+    planche.nom ||
+    "Planche d'aperçu";
+
+
+  document.getElementById(
+    "plancheModalNom"
+  ).textContent =
+    planche.nom ||
+    "Planche d'aperçu";
+
+
+  document.getElementById(
+    "plancheModalSousCategorie"
+  ).textContent =
+    document.getElementById(
+      "selectionSousCategoriePlanche"
+    )?.selectedOptions[0]?.textContent
+    ?.replace(/^📂\s*/, "")
+    ||
+    "—";
+
+
+  document.getElementById(
+    "plancheModalOrdre"
+  ).textContent =
+    planche.ordre ?? "—";
+
+
+  document.getElementById(
+    "plancheModalRenommer"
+  ).onclick =
+    async function(){
+
+      await renommerPlancheBibliotheque(
+        planche.id,
+        planche.nom ||
+        "Planche d'aperçu"
+      );
+
+      fermerDetailsPlanche();
+
+    };
+
+
+  document.getElementById(
+    "plancheModalSupprimer"
+  ).onclick =
+    async function(){
+
+      await supprimerPlancheBibliotheque(
+        planche.id
+      );
+
+      fermerDetailsPlanche();
+
+    };
+
+
+  modal.classList.add(
+    "active"
+  );
+
+}
+
+
+function fermerDetailsPlanche(){
+
+  const modal =
+    document.getElementById(
+      "plancheModal"
+    );
+
+  if(!modal){
+    return;
+  }
+
+  modal.classList.remove(
+    "active"
+  );
+
+}
+
+
+document
+  .getElementById(
+    "plancheModal"
+  )
+  ?.addEventListener(
+    "click",
+    function(event){
+
+      if(
+        event.target === this
+      ){
+
+        fermerDetailsPlanche();
+
+      }
+
+    }
+  );
+  
+  /* =====================================================
    🖼️ PLANCHES D'APERÇU DE LA BIBLIOTHÈQUE
 ===================================================== */
 
@@ -9802,11 +10017,13 @@ async function chargerPlanchesBibliotheque(){
         document.createElement("div");
 
       carte.style.cssText = `
-        border:1px solid var(--bordure);
-        border-radius:14px;
-        padding:12px;
-        background:white;
-      `;
+  border:1px solid var(--bordure);
+  border-radius:14px;
+  padding:12px;
+  background:white;
+  cursor:pointer;
+  transition:.2s;
+`;
 
 
       carte.innerHTML = `
@@ -9883,6 +10100,16 @@ async function chargerPlanchesBibliotheque(){
 
       liste.appendChild(carte);
 
+      carte.addEventListener(
+  "click",
+  function(){
+
+    ouvrirDetailsPlanche(
+      planche
+    );
+
+  }
+);
     }
   );
 
@@ -11336,6 +11563,127 @@ if (boutonExportTiime) {
 
 chargerStatistiquesFinancieres();
 </script>
+
+
+<!-- =================================================
+     FENÊTRE DÉTAIL D'UNE PLANCHE
+================================================== -->
+
+<div
+  id="plancheModal"
+  class="planche-modal"
+>
+
+  <div
+    class="planche-modal-contenu"
+    onclick="event.stopPropagation()"
+  >
+
+    <div class="planche-modal-header">
+
+      <h3>
+        🖼️ Détails de la planche
+      </h3>
+
+      <button
+        type="button"
+        class="planche-modal-fermer"
+        onclick="fermerDetailsPlanche()"
+      >
+        ✕
+      </button>
+
+    </div>
+
+
+    <img
+      id="plancheModalImage"
+      class="planche-modal-image"
+      src=""
+      alt=""
+    >
+
+
+    <div class="planche-modal-details">
+
+      <div class="planche-modal-detail">
+
+        <strong>
+          📝 Nom
+        </strong>
+
+        <div id="plancheModalNom">
+          —
+        </div>
+
+      </div>
+
+
+      <div class="planche-modal-detail">
+
+        <strong>
+          📂 Sous-catégorie
+        </strong>
+
+        <div id="plancheModalSousCategorie">
+          —
+        </div>
+
+      </div>
+
+
+      <div class="planche-modal-detail">
+
+        <strong>
+          👁️ Visibilité
+        </strong>
+
+        <div>
+          Visible
+        </div>
+
+      </div>
+
+
+      <div class="planche-modal-detail">
+
+        <strong>
+          🔢 Ordre
+        </strong>
+
+        <div id="plancheModalOrdre">
+          —
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="planche-modal-actions">
+
+      <button
+        id="plancheModalRenommer"
+        class="btn btn-modifier"
+        type="button"
+      >
+        ✏️ Renommer
+      </button>
+
+      <button
+        id="plancheModalSupprimer"
+        class="btn btn-supprimer"
+        type="button"
+      >
+        🗑️ Supprimer
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
 
 </body>
 </html>
