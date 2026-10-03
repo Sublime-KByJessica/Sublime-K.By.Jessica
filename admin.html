@@ -2830,19 +2830,22 @@ button{cursor:pointer}
   </select>
 
 </div>
-        
-        <label for="fichiersBibliotheque">
-          Images
-        </label>
 
-        <input
-          type="file"
-          id="fichiersBibliotheque"
-          accept="image/jpeg,image/png,image/webp,image/gif"
-          multiple
-        >
 
-      </div>
+<div class="champ">
+
+  <label for="fichiersBibliotheque">
+    Images
+  </label>
+
+  <input
+    type="file"
+    id="fichiersBibliotheque"
+    accept="image/jpeg,image/png,image/webp,image/gif"
+    multiple
+  >
+
+</div>
 
 
       <div class="bibliotheque-actions">
@@ -9840,26 +9843,40 @@ async function chargerPlanchesBibliotheque(){
           "
         >
 
+<div
+  style="
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    margin-top:10px;
+  "
+>
 
-        <div
-          style="
-            display:flex;
-            justify-content:flex-end;
-            margin-top:10px;
-          "
-        >
+  <button
+    class="btn btn-modifier"
+    type="button"
+    onclick="renommerPlancheBibliotheque(
+      '${planche.id}',
+      '${echapperJS(
+        planche.nom ||
+        "Planche d'aperçu"
+      )}'
+    )"
+  >
+    ✏️ Renommer
+  </button>
 
-          <button
-            class="btn btn-supprimer"
-            type="button"
-            onclick="supprimerPlancheBibliotheque(
-              '${planche.id}'
-            )"
-          >
-            🗑️ Supprimer
-          </button>
+  <button
+    class="btn btn-supprimer"
+    type="button"
+    onclick="supprimerPlancheBibliotheque(
+      '${planche.id}'
+    )"
+  >
+    🗑️ Supprimer
+  </button>
 
-        </div>
+</div>
 
       `;
 
@@ -10335,6 +10352,79 @@ document
     }
   );
 
+  /* =====================================================
+   RENOMMER UNE PLANCHE D'APERÇU
+===================================================== */
+
+window.renommerPlancheBibliotheque =
+async function(id, ancienNom){
+
+  const nouveauNom =
+    prompt(
+      "Nouveau nom visible de la planche :",
+      ancienNom ||
+      "Planche d'aperçu"
+    );
+
+
+  if(
+    nouveauNom === null ||
+    !nouveauNom.trim()
+  ){
+    return;
+  }
+
+
+  if(!(await verifierAdmin())){
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await client
+      .from("library_planches")
+      .update({
+
+        nom:
+          nouveauNom.trim()
+
+      })
+      .eq(
+        "id",
+        id
+      );
+
+
+  if(error){
+
+    console.error(
+      "Erreur renommage planche :",
+      error
+    );
+
+
+    alert(
+      "❌ Impossible de renommer cette planche : " +
+      error.message
+    );
+
+
+    return;
+
+  }
+
+
+  await chargerPlanchesBibliotheque();
+
+
+  afficherMessageBibliotheque(
+    "✅ Nom de la planche modifié.",
+    false
+  );
+
+};
 
 /* =====================================================
    SUPPRIMER UNE PLANCHE
