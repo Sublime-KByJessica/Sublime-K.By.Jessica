@@ -2815,6 +2815,24 @@ button{cursor:pointer}
 
       <div class="champ">
 
+        <div class="champ">
+
+  <label for="selectionSousSousCategorieDesign">
+    Sous-sous-catégorie
+  </label>
+
+  <select
+    id="selectionSousSousCategorieDesign"
+  >
+
+    <option value="">
+      Aucune sous-sous-catégorie
+    </option>
+
+  </select>
+
+</div>
+        
         <label for="fichiersBibliotheque">
           Images
         </label>
@@ -7386,7 +7404,6 @@ async function(id){
 
 };
 
-
 document
   .getElementById(
     "selectionSousCategorieBibliotheque"
@@ -7395,11 +7412,104 @@ document
     "change",
     async function(){
 
+      await chargerSousSousCategoriesPourDesign();
+
       await chargerDesignsBibliotheque();
 
     }
   );
 
+
+/* =====================================================
+   SOUS-SOUS-CATÉGORIES POUR L'IMPORT DES DESIGNS
+===================================================== */
+
+async function chargerSousSousCategoriesPourDesign(){
+
+  const select =
+    document.getElementById(
+      "selectionSousSousCategorieDesign"
+    );
+
+  const sousCategorieId =
+    document.getElementById(
+      "selectionSousCategorieBibliotheque"
+    )?.value;
+
+
+  if(!select){
+    return;
+  }
+
+
+  select.innerHTML = `
+    <option value="">
+      Aucune sous-sous-catégorie
+    </option>
+  `;
+
+
+  if(!sousCategorieId){
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await client
+      .from("library_sub_subcategories")
+      .select("id,nom")
+      .eq(
+        "subcategory_id",
+        sousCategorieId
+      )
+      .eq(
+        "visible",
+        true
+      )
+      .order(
+        "ordre",
+        {ascending:true}
+      )
+      .order(
+        "nom",
+        {ascending:true}
+      );
+
+
+  if(error){
+
+    console.error(
+      "Erreur chargement sous-sous-catégories pour designs :",
+      error
+    );
+
+    return;
+
+  }
+
+
+  (data || []).forEach(
+    function(sousSousCategorie){
+
+      const option =
+        document.createElement("option");
+
+      option.value =
+        sousSousCategorie.id;
+
+      option.textContent =
+        "🌿 " +
+        sousSousCategorie.nom;
+
+      select.appendChild(option);
+
+    }
+  );
+
+}
 
 async function chargerDesignsBibliotheque(){
 
@@ -7636,14 +7746,19 @@ document
               .from("library_designs")
               .insert([{
 
-                subcategory_id:
-                  subcategoryId,
+  subcategory_id:
+    subcategoryId,
 
-                nom,
+  sub_subcategory_id:
+    document.getElementById(
+      "selectionSousSousCategorieDesign"
+    ).value || null,
 
-                image_url
+  nom,
 
-              }]);
+  image_url
+
+}]);
 
 
           if(resultatInsert.error){
