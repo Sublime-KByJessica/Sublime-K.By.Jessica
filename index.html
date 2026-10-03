@@ -571,6 +571,64 @@
       color: #8F5967;
     }
 
+    /* =====================================================
+   💬 MESSAGES PERSONNALISÉS DU SITE
+===================================================== */
+
+.site-messages-container {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 20px;
+  margin: 25px auto;
+}
+
+.site-messages {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.site-message {
+  background: #F8F4F2;
+  border: 1px solid #D8B6BC;
+  border-radius: 18px;
+  padding: 22px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.site-message h3 {
+  margin: 0 0 10px;
+  color: #8F5967;
+  font-size: 1.15rem;
+}
+
+.site-message p {
+  margin: 0;
+  color: #4A4143;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+
+/* =========================
+   MESSAGES - MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+  .site-messages {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .site-message {
+    padding: 18px;
+  }
+
+}
 
     /* =========================
        PRODUITS
@@ -3143,6 +3201,22 @@
 
     </div>
 
+        <!-- =====================================================
+         💬 MESSAGES PERSONNALISÉS DU SITE
+    ====================================================== -->
+
+    <div
+      id="siteMessagesContainer"
+      class="site-messages-container"
+      style="display:none;"
+    >
+
+      <div
+        id="siteMessages"
+        class="site-messages"
+      ></div>
+
+    </div>
 
     <!-- =========================
          BOUTIQUE
@@ -9680,6 +9754,181 @@ function echapperAttributBibliotheque(
 
 chargerBibliothequePublique();
 
+    /* =====================================================
+   💬 MESSAGES PERSONNALISÉS DU SITE
+===================================================== */
+
+async function chargerMessagesSitePublic(){
+
+  const conteneur =
+    document.getElementById(
+      "siteMessagesContainer"
+    );
+
+  const zone =
+    document.getElementById(
+      "siteMessages"
+    );
+
+  if(
+    !conteneur ||
+    !zone
+  ){
+    return;
+  }
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("site_messages")
+        .select(
+          "id,emplacement,titre,message,visible,ordre"
+        )
+        .eq(
+          "visible",
+          true
+        )
+        .order(
+          "ordre",
+          {
+            ascending:true
+          }
+        );
+
+    if(error){
+
+      console.error(
+        "Erreur chargement messages du site :",
+        error
+      );
+
+      conteneur.style.display =
+        "none";
+
+      return;
+
+    }
+
+    const messagesVisibles =
+      (data || []).filter(
+        function(message){
+
+          return (
+            message.visible === true &&
+            (
+              message.titre ||
+              message.message
+            )
+          );
+
+        }
+      );
+
+
+    /* =================================================
+       AUCUN MESSAGE VISIBLE
+    ================================================= */
+
+    if(
+      messagesVisibles.length === 0
+    ){
+
+      zone.innerHTML = "";
+
+      conteneur.style.display =
+        "none";
+
+      return;
+
+    }
+
+
+    /* =================================================
+       AFFICHER LES MESSAGES
+    ================================================= */
+
+    zone.innerHTML =
+      messagesVisibles
+        .map(
+          function(message){
+
+            const titre =
+              echapperTexteBibliotheque(
+                message.titre ||
+                ""
+              );
+
+            const contenu =
+              echapperTexteBibliotheque(
+                message.message ||
+                ""
+              );
+
+            return `
+
+              <div
+                class="site-message"
+              >
+
+                ${
+                  titre
+                    ? `
+                      <h3>
+                        ${titre}
+                      </h3>
+                    `
+                    : ""
+                }
+
+                ${
+                  contenu
+                    ? `
+                      <p>
+                        ${contenu}
+                      </p>
+                    `
+                    : ""
+                }
+
+              </div>
+
+            `;
+
+          }
+        )
+        .join("");
+
+
+    /* =================================================
+       AFFICHER LE CONTENEUR
+    ================================================= */
+
+    conteneur.style.display =
+      "block";
+
+  }catch(error){
+
+    console.error(
+      "Erreur inattendue lors du chargement des messages du site :",
+      error
+    );
+
+    zone.innerHTML = "";
+
+    conteneur.style.display =
+      "none";
+
+  }
+
+}
+
+
+chargerMessagesSitePublic();
+    
     /* =====================================================
        DÉMARRAGE
     ===================================================== */
