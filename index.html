@@ -4396,7 +4396,8 @@ if (etapeDesign) {
 
   await chargerCategoriesPersonnalisation();
 
-
+initialiserChoixBibliothequePersonnalisation();
+  
   /* ---------------------------------------------
      CHARGER POLICES + COULEURS
   --------------------------------------------- */
@@ -4720,15 +4721,36 @@ async function chargerCategoriesPersonnalisation() {
 
 
 /* =====================================================
-   CHANGEMENT DE CATÉGORIE
+   INITIALISER LES CHOIX CATÉGORIE / SOUS-CATÉGORIE
+   PERSONNALISATION
 ===================================================== */
 
-document
-  .getElementById(
-    "personnalisationCategorie"
-  )
-  ?.addEventListener(
-    "change",
+function initialiserChoixBibliothequePersonnalisation() {
+
+  const selectCategorie =
+    document.getElementById(
+      "personnalisationCategorie"
+    );
+
+  const selectSousCategorie =
+    document.getElementById(
+      "personnalisationSousCategorie"
+    );
+
+
+  if (
+    !selectCategorie ||
+    !selectSousCategorie
+  ) {
+    return;
+  }
+
+
+  /* =================================================
+     CHANGEMENT DE CATÉGORIE
+  ================================================= */
+
+  selectCategorie.onchange =
     async function() {
 
       const categorieId =
@@ -4752,21 +4774,10 @@ document
         "";
 
 
-      const selectSousCategorie =
-        document.getElementById(
-          "personnalisationSousCategorie"
-        );
-
-
-      if (!selectSousCategorie) {
-        return;
-      }
-
-
       selectSousCategorie.innerHTML = `
 
         <option value="">
-          Choisir une sous-catégorie
+          Chargement des sous-catégories…
         </option>
 
       `;
@@ -4796,7 +4807,17 @@ document
 
 
       if (!categorieId) {
+
+        selectSousCategorie.innerHTML = `
+
+          <option value="">
+            Choisir une sous-catégorie
+          </option>
+
+        `;
+
         return;
+
       }
 
 
@@ -4818,6 +4839,11 @@ document
             .eq(
               "category_id",
               categorieId
+            )
+
+            .eq(
+              "visible",
+              true
             )
 
             .order(
@@ -4868,8 +4894,30 @@ document
         );
 
 
+        /*
+         * On active la liste uniquement
+         * s'il existe réellement une sous-catégorie.
+         */
+
         selectSousCategorie.disabled =
-          false;
+          !data ||
+          data.length === 0;
+
+
+        if (
+          data &&
+          data.length === 0
+        ) {
+
+          selectSousCategorie.innerHTML = `
+
+            <option value="">
+              Aucune sous-catégorie disponible
+            </option>
+
+          `;
+
+        }
 
 
       } catch (error) {
@@ -4879,22 +4927,29 @@ document
           error
         );
 
+
+        selectSousCategorie.innerHTML = `
+
+          <option value="">
+            Impossible de charger les sous-catégories
+          </option>
+
+        `;
+
+
+        selectSousCategorie.disabled =
+          true;
+
       }
 
-    }
-  );
+    };
 
 
-/* =====================================================
-   CHANGEMENT DE SOUS-CATÉGORIE
-===================================================== */
+  /* =================================================
+     CHANGEMENT DE SOUS-CATÉGORIE
+  ================================================= */
 
-document
-  .getElementById(
-    "personnalisationSousCategorie"
-  )
-  ?.addEventListener(
-    "change",
+  selectSousCategorie.onchange =
     async function() {
 
       const sousCategorieId =
@@ -4919,8 +4974,14 @@ document
         sousCategorieId
       );
 
-    }
-  );
+    };
+
+}
+
+
+/* =====================================================
+   CHARGER LES DESIGNS
+===================================================== */
 
 
 /* =====================================================
