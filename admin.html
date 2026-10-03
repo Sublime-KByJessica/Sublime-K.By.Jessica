@@ -1204,6 +1204,13 @@ button{cursor:pointer}
 
   <button
     class="menu-bouton"
+    data-section="messages-site"
+  >
+    💬 Messages du site
+  </button>
+  
+  <button
+    class="menu-bouton"
     data-section="personnalisation"
   >
     ✨ Personnalisation
@@ -2615,6 +2622,203 @@ button{cursor:pointer}
       </div>
 
     </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     MESSAGES DU SITE
+===================================================== -->
+
+<section
+  class="section-admin"
+  id="section-messages-site"
+>
+
+  <div class="section-titre">
+
+    <h1>
+      💬 Messages du site
+    </h1>
+
+    <p>
+      Configure les deux fenêtres de messages qui peuvent
+      apparaître sur ton site.
+    </p>
+
+  </div>
+
+
+  <div class="bloc">
+
+    <div class="bibliotheque-intro">
+
+      <strong>
+        💡 Tu contrôles ici les deux messages indépendamment.
+      </strong>
+
+      <p>
+        Tu peux modifier leur titre et leur contenu,
+        puis choisir si chacun doit être visible ou non.
+      </p>
+
+      <p>
+        Si un message est masqué, il ne prendra aucune place
+        sur le site. S'il n'y en a aucun de visible,
+        aucune zone vide ne sera affichée.
+      </p>
+
+    </div>
+
+
+    <!-- =================================================
+         MESSAGE 1
+    ================================================== -->
+
+    <div class="bibliotheque-etape">
+
+      <h3>
+        💬 Message 1
+      </h3>
+
+      <div class="champ">
+
+        <label for="messageSiteTitre1">
+          📝 Titre
+        </label>
+
+        <input
+          type="text"
+          id="messageSiteTitre1"
+          placeholder="Ex. Informations importantes"
+        >
+
+      </div>
+
+
+      <div
+        class="champ"
+        style="margin-top:15px;"
+      >
+
+        <label for="messageSiteContenu1">
+          💬 Message
+        </label>
+
+        <textarea
+          id="messageSiteContenu1"
+          placeholder="Écris ici ton message..."
+        ></textarea>
+
+      </div>
+
+
+      <div class="checkbox-ligne">
+
+        <input
+          type="checkbox"
+          id="messageSiteVisible1"
+        >
+
+        <label for="messageSiteVisible1">
+          👁️ Afficher ce message sur le site
+        </label>
+
+      </div>
+
+
+      <div class="bibliotheque-actions">
+
+        <button
+          class="btn btn-enregistrer"
+          type="button"
+          id="boutonEnregistrerMessageSite1"
+        >
+          💾 Enregistrer le message 1
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- =================================================
+         MESSAGE 2
+    ================================================== -->
+
+    <div class="bibliotheque-etape">
+
+      <h3>
+        💬 Message 2
+      </h3>
+
+      <div class="champ">
+
+        <label for="messageSiteTitre2">
+          📝 Titre
+        </label>
+
+        <input
+          type="text"
+          id="messageSiteTitre2"
+          placeholder="Ex. Nouveautés Sublime'K"
+        >
+
+      </div>
+
+
+      <div
+        class="champ"
+        style="margin-top:15px;"
+      >
+
+        <label for="messageSiteContenu2">
+          💬 Message
+        </label>
+
+        <textarea
+          id="messageSiteContenu2"
+          placeholder="Écris ici ton message..."
+        ></textarea>
+
+      </div>
+
+
+      <div class="checkbox-ligne">
+
+        <input
+          type="checkbox"
+          id="messageSiteVisible2"
+        >
+
+        <label for="messageSiteVisible2">
+          👁️ Afficher ce message sur le site
+        </label>
+
+      </div>
+
+
+      <div class="bibliotheque-actions">
+
+        <button
+          class="btn btn-enregistrer"
+          type="button"
+          id="boutonEnregistrerMessageSite2"
+        >
+          💾 Enregistrer le message 2
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div
+      id="messageMessagesSite"
+      class="message"
+    ></div>
 
   </div>
 
@@ -8056,6 +8260,342 @@ async function(id){
 
 };
 
+  /* =====================================================
+   💬 MESSAGES DU SITE
+===================================================== */
+
+async function chargerMessagesSite(){
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await client
+        .from("site_messages")
+        .select(
+          "id,emplacement,titre,message,visible,ordre"
+        )
+        .order(
+          "emplacement",
+          {
+            ascending:true
+          }
+        );
+
+
+    if(error){
+
+      console.error(
+        "Erreur chargement messages du site :",
+        error
+      );
+
+      afficherMessageMessagesSite(
+        "❌ Impossible de charger les messages.",
+        true
+      );
+
+      return;
+
+    }
+
+
+    (data || []).forEach(
+      function(message){
+
+        const numero =
+          Number(
+            message.emplacement
+          );
+
+
+        const champTitre =
+          document.getElementById(
+            "messageSiteTitre" +
+            numero
+          );
+
+
+        const champContenu =
+          document.getElementById(
+            "messageSiteContenu" +
+            numero
+          );
+
+
+        const champVisible =
+          document.getElementById(
+            "messageSiteVisible" +
+            numero
+          );
+
+
+        if(champTitre){
+
+          champTitre.value =
+            message.titre ||
+            "";
+
+        }
+
+
+        if(champContenu){
+
+          champContenu.value =
+            message.message ||
+            "";
+
+        }
+
+
+        if(champVisible){
+
+          champVisible.checked =
+            message.visible === true;
+
+        }
+
+      }
+    );
+
+
+  }catch(erreur){
+
+    console.error(
+      "Erreur chargement messages du site :",
+      erreur
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   ENREGISTRER UN MESSAGE
+===================================================== */
+
+async function enregistrerMessageSite(
+  emplacement
+){
+
+  if(!(await verifierAdmin())){
+    return;
+  }
+
+
+  const champTitre =
+    document.getElementById(
+      "messageSiteTitre" +
+      emplacement
+    );
+
+
+  const champContenu =
+    document.getElementById(
+      "messageSiteContenu" +
+      emplacement
+    );
+
+
+  const champVisible =
+    document.getElementById(
+      "messageSiteVisible" +
+      emplacement
+    );
+
+
+  if(
+    !champTitre ||
+    !champContenu ||
+    !champVisible
+  ){
+
+    return;
+
+  }
+
+
+  const titre =
+    champTitre.value.trim();
+
+
+  const contenu =
+    champContenu.value.trim();
+
+
+  const visible =
+    champVisible.checked;
+
+
+  if(!titre){
+
+    alert(
+      "⚠️ Indique un titre pour le message."
+    );
+
+    champTitre.focus();
+
+    return;
+
+  }
+
+
+  if(!contenu){
+
+    alert(
+      "⚠️ Indique le contenu du message."
+    );
+
+    champContenu.focus();
+
+    return;
+
+  }
+
+
+  const {
+    error
+  } =
+    await client
+      .from("site_messages")
+      .update({
+
+        titre:
+          titre,
+
+        message:
+          contenu,
+
+        visible:
+          visible,
+
+        updated_at:
+          new Date().toISOString()
+
+      })
+      .eq(
+        "emplacement",
+        emplacement
+      );
+
+
+  if(error){
+
+    console.error(
+      "Erreur enregistrement message :",
+      error
+    );
+
+    afficherMessageMessagesSite(
+      "❌ Impossible d'enregistrer le message : " +
+      error.message,
+      true
+    );
+
+    return;
+
+  }
+
+
+  afficherMessageMessagesSite(
+    "✅ Message " +
+    emplacement +
+    " enregistré.",
+    false
+  );
+
+}
+
+
+/* =====================================================
+   BOUTONS ENREGISTREMENT
+===================================================== */
+
+document
+  .getElementById(
+    "boutonEnregistrerMessageSite1"
+  )
+  ?.addEventListener(
+    "click",
+    function(){
+
+      enregistrerMessageSite(1);
+
+    }
+  );
+
+
+document
+  .getElementById(
+    "boutonEnregistrerMessageSite2"
+  )
+  ?.addEventListener(
+    "click",
+    function(){
+
+      enregistrerMessageSite(2);
+
+    }
+  );
+
+
+/* =====================================================
+   MESSAGE ADMIN
+===================================================== */
+
+function afficherMessageMessagesSite(
+  texte,
+  erreur
+){
+
+  const element =
+    document.getElementById(
+      "messageMessagesSite"
+    );
+
+
+  if(!element){
+    return;
+  }
+
+
+  element.textContent =
+    texte;
+
+
+  element.className =
+    erreur
+      ? "message message-erreur"
+      : "message message-succes";
+
+
+  element.style.display =
+    "block";
+
+
+  setTimeout(
+    function(){
+
+      element.style.display =
+        "none";
+
+    },
+    4000
+  );
+
+}
+
+
+/* =====================================================
+   CHARGEMENT INITIAL DES MESSAGES
+===================================================== */
+
+chargerMessagesSite();
+
+  
 /* =====================================================
    PERSONNALISATION — POLICES
 ===================================================== */
