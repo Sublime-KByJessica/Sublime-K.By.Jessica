@@ -9839,6 +9839,19 @@ function ouvrirDetailsPlanche(planche){
   };
 
   document.getElementById(
+  "plancheModalModifier"
+).onclick =
+  function(){
+
+    fermerDetailsPlanche();
+
+    ouvrirModificationPlanche(
+      planche
+    );
+
+  };
+  
+  document.getElementById(
     "plancheModalSupprimer"
   ).onclick =
     async function(){
@@ -9876,6 +9889,337 @@ function fermerDetailsPlanche(){
 
 }
 
+  /* =====================================================
+   ⚙️ MODIFICATION COMPLÈTE D'UNE PLANCHE
+===================================================== */
+
+let plancheEnCoursModification = null;
+
+
+async function chargerSousCategoriesModificationPlanche(){
+
+  const select =
+    document.getElementById(
+      "plancheModificationSousCategorie"
+    );
+
+  if(!select){
+    return;
+  }
+
+
+  select.innerHTML =
+    `
+      <option value="">
+        Choisir une sous-catégorie
+      </option>
+    `;
+
+
+  const {
+    data,
+    error
+  } =
+    await client
+      .from("library_subcategories")
+      .select("id,nom")
+      .order(
+        "nom",
+        {
+          ascending:true
+        }
+      );
+
+
+  if(error){
+
+    console.error(
+      "Erreur chargement sous-catégories :",
+      error
+    );
+
+    return;
+
+  }
+
+
+  (data || []).forEach(
+    function(sousCategorie){
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        sousCategorie.id;
+
+      option.textContent =
+        sousCategorie.nom;
+
+      select.appendChild(
+        option
+      );
+
+    }
+  );
+
+}
+
+
+async function ouvrirModificationPlanche(
+  planche
+){
+
+  const modal =
+    document.getElementById(
+      "plancheModificationModal"
+    );
+
+  if(!modal){
+    return;
+  }
+
+
+  plancheEnCoursModification =
+    planche;
+
+
+  const champNom =
+    document.getElementById(
+      "plancheModificationNom"
+    );
+
+  const champSousCategorie =
+    document.getElementById(
+      "plancheModificationSousCategorie"
+    );
+
+  const champVisible =
+    document.getElementById(
+      "plancheModificationVisible"
+    );
+
+  const champOrdre =
+    document.getElementById(
+      "plancheModificationOrdre"
+    );
+
+
+  await chargerSousCategoriesModificationPlanche();
+
+
+  champNom.value =
+    planche.nom ||
+    "";
+
+
+  champSousCategorie.value =
+    planche.subcategory_id ||
+    "";
+
+
+  champVisible.value =
+    planche.visible === false
+      ? "false"
+      : "true";
+
+
+  champOrdre.value =
+    Number.isFinite(
+      Number(planche.ordre)
+    )
+      ? Number(planche.ordre)
+      : 0;
+
+
+  modal.classList.add(
+    "active"
+  );
+
+}
+
+
+window.fermerModificationPlanche =
+function(){
+
+  const modal =
+    document.getElementById(
+      "plancheModificationModal"
+    );
+
+  if(!modal){
+    return;
+  }
+
+
+  modal.classList.remove(
+    "active"
+  );
+
+
+  plancheEnCoursModification =
+    null;
+
+};
+
+
+window.enregistrerModificationPlanche =
+async function(){
+
+  if(!plancheEnCoursModification){
+    return;
+  }
+
+
+  const champNom =
+    document.getElementById(
+      "plancheModificationNom"
+    );
+
+  const champSousCategorie =
+    document.getElementById(
+      "plancheModificationSousCategorie"
+    );
+
+  const champVisible =
+    document.getElementById(
+      "plancheModificationVisible"
+    );
+
+  const champOrdre =
+    document.getElementById(
+      "plancheModificationOrdre"
+    );
+
+
+  const nouveauNom =
+    champNom.value.trim();
+
+
+  const nouvelleSousCategorie =
+    champSousCategorie.value;
+
+
+  const nouvelleVisibilite =
+    champVisible.value === "true";
+
+
+  const nouvelOrdre =
+    parseInt(
+      champOrdre.value,
+      10
+    );
+
+
+  if(!nouveauNom){
+
+    alert(
+      "⚠️ Le nom de la planche ne peut pas être vide."
+    );
+
+    champNom.focus();
+
+    return;
+
+  }
+
+
+  if(!nouvelleSousCategorie){
+
+    alert(
+      "⚠️ Choisis une sous-catégorie."
+    );
+
+    champSousCategorie.focus();
+
+    return;
+
+  }
+
+
+  if(
+    Number.isNaN(
+      nouvelOrdre
+    ) ||
+    nouvelOrdre < 0
+  ){
+
+    alert(
+      "⚠️ L'ordre doit être un nombre supérieur ou égal à 0."
+    );
+
+    champOrdre.focus();
+
+    return;
+
+  }
+
+
+  if(!(await verifierAdmin())){
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await client
+      .from("library_planches")
+      .update({
+
+        nom:
+          nouveauNom,
+
+        subcategory_id:
+          nouvelleSousCategorie,
+
+        visible:
+          nouvelleVisibilite,
+
+        ordre:
+          nouvelOrdre
+
+      })
+      .eq(
+        "id",
+        plancheEnCoursModification.id
+      );
+
+
+  if(error){
+
+    console.error(
+      "Erreur modification complète planche :",
+      error
+    );
+
+
+    alert(
+      "❌ Impossible de modifier la planche : " +
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  fermerModificationPlanche();
+
+
+  fermerDetailsPlanche();
+
+
+  await chargerPlanchesBibliotheque();
+
+
+  afficherMessageBibliotheque(
+    "✅ Planche modifiée avec succès.",
+    false
+  );
+
+};
 
 document
   .getElementById(
@@ -11843,6 +12187,14 @@ chargerStatistiquesFinancieres();
       </button>
 
       <button
+  id="plancheModalModifier"
+  class="btn btn-modifier"
+  type="button"
+>
+  ⚙️ Modifier
+</button>
+
+      <button
         id="plancheModalSupprimer"
         class="btn btn-supprimer"
         type="button"
@@ -11923,5 +12275,135 @@ chargerStatistiquesFinancieres();
   </div>
 
 </div>
+
+  <!-- =================================================
+     FENÊTRE MODIFICATION COMPLÈTE D'UNE PLANCHE
+================================================== -->
+
+<div
+  id="plancheModificationModal"
+  class="planche-edition-modal"
+>
+
+  <div
+    class="planche-edition-contenu"
+    onclick="event.stopPropagation()"
+  >
+
+    <div class="planche-edition-header">
+
+      <h3>
+        ⚙️ Modifier la planche
+      </h3>
+
+      <button
+        type="button"
+        class="planche-edition-fermer"
+        onclick="fermerModificationPlanche()"
+      >
+        ✕
+      </button>
+
+    </div>
+
+
+    <div class="planche-edition-champ">
+
+      <label for="plancheModificationNom">
+        📝 Nom de la planche
+      </label>
+
+      <input
+        type="text"
+        id="plancheModificationNom"
+        placeholder="Nom de la planche"
+      >
+
+    </div>
+
+
+    <div class="planche-edition-champ">
+
+      <label for="plancheModificationSousCategorie">
+        📂 Sous-catégorie
+      </label>
+
+      <select
+        id="plancheModificationSousCategorie"
+      >
+
+        <option value="">
+          Choisir une sous-catégorie
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div class="planche-edition-champ">
+
+      <label for="plancheModificationVisible">
+        👁️ Visibilité
+      </label>
+
+      <select
+        id="plancheModificationVisible"
+      >
+
+        <option value="true">
+          Visible
+        </option>
+
+        <option value="false">
+          Masquée
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div class="planche-edition-champ">
+
+      <label for="plancheModificationOrdre">
+        🔢 Ordre d'affichage
+      </label>
+
+      <input
+        type="number"
+        id="plancheModificationOrdre"
+        min="0"
+        step="1"
+        placeholder="0"
+      >
+
+    </div>
+
+
+    <div class="planche-edition-actions">
+
+      <button
+        type="button"
+        class="btn btn-modifier"
+        onclick="enregistrerModificationPlanche()"
+      >
+        💾 Enregistrer les modifications
+      </button>
+
+      <button
+        type="button"
+        class="btn"
+        onclick="fermerModificationPlanche()"
+      >
+        Annuler
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+  
 </body>
 </html>
