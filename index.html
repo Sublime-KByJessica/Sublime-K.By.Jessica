@@ -857,6 +857,32 @@
       margin-bottom: 25px;
     }
 
+    /* =====================================================
+   BOUTON TOUTES LES CRÉATIONS
+===================================================== */
+    
+    .boutique-toutes-creations {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 22px;
+  border: 2px solid #B9828F;
+  border-radius: 12px;
+  background: #B9828F;
+  color: #FFFFFF;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.boutique-toutes-creations:hover {
+  background: #8F5967;
+  border-color: #8F5967;
+  transform: translateY(-1px);
+}
+
     .boutique-filtre strong {
       color: #667052;
     }
@@ -3140,13 +3166,19 @@
 
 
         <div
-          class="boutique-filtre"
-          id="boutique-filtre"
-        >
-          <strong>
-            Toutes les créations
-          </strong>
-        </div>
+  class="boutique-filtre"
+  id="boutique-filtre"
+>
+
+  <button
+    type="button"
+    class="boutique-toutes-creations"
+    onclick="afficherTousLesProduits()"
+  >
+    🛍️ Toutes les créations
+  </button>
+
+</div>
 
 
         <div
