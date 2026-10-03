@@ -2484,8 +2484,11 @@ button{cursor:pointer}
       </strong>
 
       <p>
-        Tu peux créer tes catégories, tes sous-catégories
-        et ajouter tes designs ici.
+        <p>
+  Tu peux créer tes catégories, tes sous-catégories,
+  gérer séparément tes planches d’aperçu
+  et ajouter tes designs ici.
+</p>
       </p>
 
       <p>
@@ -2630,10 +2633,85 @@ button{cursor:pointer}
       ></div>
 
     </div>
+    
+    <!-- =================================================
+         3. PLANCHES D'APERÇU
+    ================================================== -->
 
+    <div class="bibliotheque-etape">
+
+      <h3>
+        🖼️ 3. Planches d'aperçu
+      </h3>
+
+      <p>
+        Ajoute ici la planche d'aperçu de chaque sous-catégorie.
+        Elle est indépendante des designs.
+      </p>
+
+      <div class="champ">
+
+        <label for="selectionSousCategoriePlanche">
+          Sous-catégorie
+        </label>
+
+        <select
+          id="selectionSousCategoriePlanche"
+        >
+
+          <option value="">
+            Choisir une sous-catégorie
+          </option>
+
+        </select>
+
+      </div>
+
+      <div class="champ">
+
+        <label for="fichierPlancheBibliotheque">
+          Planche d'aperçu
+        </label>
+
+        <input
+          type="file"
+          id="fichierPlancheBibliotheque"
+          accept="image/jpeg,image/png,image/webp"
+        >
+
+      </div>
+
+      <div
+        id="aperçuPlancheBibliotheque"
+        style="
+          margin-top:15px;
+        "
+      ></div>
+
+      <div class="bibliotheque-actions">
+
+        <button
+          class="btn btn-enregistrer"
+          id="boutonAjouterPlancheBibliotheque"
+          type="button"
+        >
+          🖼️ Ajouter / remplacer la planche
+        </button>
+
+        <button
+          class="btn btn-supprimer"
+          id="boutonSupprimerPlancheBibliotheque"
+          type="button"
+        >
+          🗑️ Supprimer la planche
+        </button>
+
+      </div>
+
+    </div>
 
     <!-- =================================================
-         3. DESIGNS
+         4. DESIGNS
     ================================================== -->
 
     <div class="bibliotheque-etape">
@@ -6000,6 +6078,8 @@ async function chargerBibliotheque(){
 
   await chargerDesignsBibliotheque();
 
+  await chargerSousCategoriesPlanches();
+  
 }
 
 
@@ -8594,6 +8674,703 @@ document
 
     }
   );
+
+  /* =====================================================
+   🖼️ PLANCHES D'APERÇU DE LA BIBLIOTHÈQUE
+===================================================== */
+
+
+/* =====================================================
+   CHARGER LES SOUS-CATÉGORIES POUR LES PLANCHES
+===================================================== */
+
+async function chargerSousCategoriesPlanches(){
+
+  const select =
+    document.getElementById(
+      "selectionSousCategoriePlanche"
+    );
+
+  if(!select){
+    return;
+  }
+
+  select.innerHTML =
+    '<option value="">Choisir une sous-catégorie</option>';
+
+
+  const {
+    data,
+    error
+  } =
+    await client
+      .from("library_subcategories")
+      .select("id,nom")
+      .order(
+        "nom",
+        {ascending:true}
+      );
+
+
+  if(error){
+
+    console.error(
+      "Erreur chargement sous-catégories planches :",
+      error
+    );
+
+    return;
+
+  }
+
+
+  (data || []).forEach(
+    function(sousCategorie){
+
+      const option =
+        document.createElement("option");
+
+      option.value =
+        sousCategorie.id;
+
+      option.textContent =
+        "📂 " +
+        sousCategorie.nom;
+
+      select.appendChild(option);
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   AFFICHER LA PLANCHE EXISTANTE
+===================================================== */
+
+async function chargerPlancheBibliotheque(){
+
+  const select =
+    document.getElementById(
+      "selectionSousCategoriePlanche"
+    );
+
+  const apercu =
+    document.getElementById(
+      "aperçuPlancheBibliotheque"
+    );
+
+  if(!select || !apercu){
+    return;
+  }
+
+
+  const subcategoryId =
+    select.value;
+
+
+  apercu.innerHTML = "";
+
+
+  if(!subcategoryId){
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await client
+      .from("library_subcategories")
+      .select(
+        "id,nom,planche_url"
+      )
+      .eq(
+        "id",
+        subcategoryId
+      )
+      .maybeSingle();
+
+
+  if(error){
+
+    console.error(
+      "Erreur chargement planche :",
+      error
+    );
+
+    return;
+
+  }
+
+
+  if(
+    !data ||
+    !data.planche_url
+  ){
+
+    apercu.innerHTML = `
+      <div
+        style="
+          padding:15px;
+          border:1px dashed var(--bordure);
+          border-radius:12px;
+          background:var(--fond);
+          color:#766B6D;
+        "
+      >
+        📭 Aucune planche d'aperçu enregistrée
+        pour cette sous-catégorie.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  apercu.innerHTML = `
+
+    <div
+      style="
+        border:1px solid var(--bordure);
+        border-radius:14px;
+        padding:12px;
+        background:white;
+        max-width:600px;
+      "
+    >
+
+      <div
+        style="
+          font-weight:bold;
+          color:var(--rose-fonce);
+          margin-bottom:10px;
+        "
+      >
+        🖼️ Planche actuelle
+      </div>
+
+      <img
+        src="${echapperHTML(
+          data.planche_url
+        )}"
+        alt="Planche d'aperçu"
+        style="
+          display:block;
+          width:100%;
+          max-height:500px;
+          object-fit:contain;
+          border-radius:10px;
+          background:#F8F4F2;
+        "
+      >
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   PRÉVISUALISATION AVANT ENVOI
+===================================================== */
+
+document
+  .getElementById(
+    "fichierPlancheBibliotheque"
+  )
+  ?.addEventListener(
+    "change",
+    function(){
+
+      const fichier =
+        this.files &&
+        this.files[0];
+
+      const apercu =
+        document.getElementById(
+          "aperçuPlancheBibliotheque"
+        );
+
+
+      if(
+        !fichier ||
+        !apercu
+      ){
+
+        return;
+
+      }
+
+
+      if(
+        !fichier.type.startsWith(
+          "image/"
+        )
+      ){
+
+        afficherMessageBibliotheque(
+          "❌ Le fichier choisi n'est pas une image.",
+          true
+        );
+
+        this.value="";
+
+        return;
+
+      }
+
+
+      const lecteur =
+        new FileReader();
+
+
+      lecteur.onload =
+        function(event){
+
+          apercu.innerHTML = `
+
+            <div
+              style="
+                border:1px solid var(--bordure);
+                border-radius:14px;
+                padding:12px;
+                background:white;
+                max-width:600px;
+              "
+            >
+
+              <div
+                style="
+                  font-weight:bold;
+                  color:var(--rose-fonce);
+                  margin-bottom:10px;
+                "
+              >
+                👀 Aperçu de la nouvelle planche
+              </div>
+
+              <img
+                src="${event.target.result}"
+                alt="Nouvelle planche"
+                style="
+                  display:block;
+                  width:100%;
+                  max-height:500px;
+                  object-fit:contain;
+                  border-radius:10px;
+                  background:#F8F4F2;
+                "
+              >
+
+            </div>
+
+          `;
+
+        };
+
+
+      lecteur.readAsDataURL(
+        fichier
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   CHANGEMENT DE SOUS-CATÉGORIE
+===================================================== */
+
+document
+  .getElementById(
+    "selectionSousCategoriePlanche"
+  )
+  ?.addEventListener(
+    "change",
+    async function(){
+
+      const fichier =
+        document.getElementById(
+          "fichierPlancheBibliotheque"
+        );
+
+      if(fichier){
+        fichier.value="";
+      }
+
+      await chargerPlancheBibliotheque();
+
+    }
+  );
+
+
+/* =====================================================
+   AJOUTER / REMPLACER UNE PLANCHE
+===================================================== */
+
+document
+  .getElementById(
+    "boutonAjouterPlancheBibliotheque"
+  )
+  ?.addEventListener(
+    "click",
+    async function(){
+
+      if(!(await verifierAdmin())){
+        return;
+      }
+
+
+      const select =
+        document.getElementById(
+          "selectionSousCategoriePlanche"
+        );
+
+
+      const fichierInput =
+        document.getElementById(
+          "fichierPlancheBibliotheque"
+        );
+
+
+      const bouton =
+        document.getElementById(
+          "boutonAjouterPlancheBibliotheque"
+        );
+
+
+      const subcategoryId =
+        select?.value || "";
+
+
+      const fichier =
+        fichierInput?.files &&
+        fichierInput.files[0];
+
+
+      if(!subcategoryId){
+
+        afficherMessageBibliotheque(
+          "❌ Choisis une sous-catégorie.",
+          true
+        );
+
+        return;
+
+      }
+
+
+      if(!fichier){
+
+        afficherMessageBibliotheque(
+          "❌ Choisis une planche d'aperçu.",
+          true
+        );
+
+        return;
+
+      }
+
+
+      if(
+        !fichier.type.startsWith(
+          "image/"
+        )
+      ){
+
+        afficherMessageBibliotheque(
+          "❌ Le fichier choisi n'est pas une image.",
+          true
+        );
+
+        return;
+
+      }
+
+
+      bouton.disabled=true;
+
+      bouton.textContent=
+        "⏳ Envoi de la planche...";
+
+
+      try{
+
+        const extension =
+          (
+            fichier.name
+              .split(".")
+              .pop() ||
+            "jpg"
+          )
+          .toLowerCase()
+          .replace(
+            /[^a-z0-9]/g,
+            ""
+          );
+
+
+        const nomFichier =
+          "planche_" +
+          subcategoryId +
+          "_" +
+          Date.now() +
+          "_" +
+          Math.random()
+            .toString(36)
+            .substring(2,8) +
+          "." +
+          extension;
+
+
+        const chemin =
+          "planches/" +
+          nomFichier;
+
+
+        const resultatUpload =
+          await client
+            .storage
+            .from("product-library")
+            .upload(
+              chemin,
+              fichier,
+              {
+                cacheControl:"3600",
+                upsert:false,
+                contentType:fichier.type
+              }
+            );
+
+
+        if(resultatUpload.error){
+
+          throw resultatUpload.error;
+
+        }
+
+
+        const resultatURL =
+          client
+            .storage
+            .from("product-library")
+            .getPublicUrl(
+              chemin
+            );
+
+
+        const plancheUrl =
+          resultatURL
+            ?.data
+            ?.publicUrl ||
+          "";
+
+
+        if(!plancheUrl){
+
+          throw new Error(
+            "Impossible de récupérer l'URL de la planche."
+          );
+
+        }
+
+
+        const {
+          error
+        } =
+          await client
+            .from("library_subcategories")
+            .update({
+
+              planche_url:
+                plancheUrl
+
+            })
+            .eq(
+              "id",
+              subcategoryId
+            );
+
+
+        if(error){
+
+          throw error;
+
+        }
+
+
+        fichierInput.value="";
+
+
+        await chargerPlancheBibliotheque();
+
+
+        afficherMessageBibliotheque(
+          "✅ Planche d'aperçu enregistrée !",
+          false
+        );
+
+
+      }catch(erreur){
+
+        console.error(
+          "Erreur planche :",
+          erreur
+        );
+
+
+        afficherMessageBibliotheque(
+          "❌ Impossible d'enregistrer la planche : " +
+          (
+            erreur.message ||
+            erreur
+          ),
+          true
+        );
+
+
+      }finally{
+
+        bouton.disabled=false;
+
+        bouton.textContent =
+          "🖼️ Ajouter / remplacer la planche";
+
+      }
+
+    }
+  );
+
+
+/* =====================================================
+   SUPPRIMER UNE PLANCHE
+===================================================== */
+
+document
+  .getElementById(
+    "boutonSupprimerPlancheBibliotheque"
+  )
+  ?.addEventListener(
+    "click",
+    async function(){
+
+      const select =
+        document.getElementById(
+          "selectionSousCategoriePlanche"
+        );
+
+
+      const subcategoryId =
+        select?.value || "";
+
+
+      if(!subcategoryId){
+
+        afficherMessageBibliotheque(
+          "❌ Choisis une sous-catégorie.",
+          true
+        );
+
+        return;
+
+      }
+
+
+      if(
+        !confirm(
+          "🗑️ Supprimer la planche d'aperçu de cette sous-catégorie ?"
+        )
+      ){
+
+        return;
+
+      }
+
+
+      if(!(await verifierAdmin())){
+        return;
+      }
+
+
+      const {
+        error
+      } =
+        await client
+          .from("library_subcategories")
+          .update({
+
+            planche_url:null
+
+          })
+          .eq(
+            "id",
+            subcategoryId
+          );
+
+
+      if(error){
+
+        console.error(
+          error
+        );
+
+        afficherMessageBibliotheque(
+          "❌ Impossible de supprimer la planche : " +
+          error.message,
+          true
+        );
+
+        return;
+
+      }
+
+
+      const fichier =
+        document.getElementById(
+          "fichierPlancheBibliotheque"
+        );
+
+
+      if(fichier){
+        fichier.value="";
+      }
+
+
+      await chargerPlancheBibliotheque();
+
+
+      afficherMessageBibliotheque(
+        "✅ Planche supprimée.",
+        false
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   CHARGEMENT INITIAL DES PLANCHES
+===================================================== */
+
+async function initialiserPlanchesBibliotheque(){
+
+  await chargerSousCategoriesPlanches();
+
+}
+
+
+/* =====================================================
+   ACTUALISATION APRÈS CHARGEMENT DE LA BIBLIOTHÈQUE
+===================================================== */
+
+initialiserPlanchesBibliotheque();
   
 /* =====================================================
    CHARGEMENT INITIAL
