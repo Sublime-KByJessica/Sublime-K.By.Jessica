@@ -8915,13 +8915,16 @@ async function ouvrirBibliothequeApercus() {
     return;
   }
 
+
   overlay.classList.add("active");
+
 
   zone.innerHTML = `
     <div class="bibliotheque-chargement">
       ⏳ Chargement des planches...
     </div>
   `;
+
 
   try {
 
@@ -8931,23 +8934,29 @@ async function ouvrirBibliothequeApercus() {
     } =
       await supabaseClient
 
-        .from("library_designs")
+        .from("library_planches")
 
         .select(`
           id,
+          subcategory_id,
           nom,
           image_url,
           ordre
         `)
 
-        .not(
-          "image_url",
-          "is",
-          null
+        .eq(
+          "visible",
+          true
         )
 
         .order(
           "ordre",
+          {
+            ascending: true
+          }
+        )
+        .order(
+          "created_at",
           {
             ascending: true
           }
