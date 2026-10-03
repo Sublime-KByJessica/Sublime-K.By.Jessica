@@ -2702,86 +2702,90 @@ button{cursor:pointer}
 
 </div>
 
-    
     <!-- =================================================
-         4. PLANCHES D'APERÇU
-    ================================================== -->
+     4. PLANCHES D'APERÇU
+================================================== -->
 
-    <div class="bibliotheque-etape">
+<div class="bibliotheque-etape">
 
-      <h3>
-        🖼️ 4. Planches d'aperçu
-      </h3>
+  <h3>
+    🖼️ 4. Planches d'aperçu
+  </h3>
 
-      <p>
-        Ajoute ici la planche d'aperçu de chaque sous-catégorie.
-        Elle est indépendante des designs.
-      </p>
+  <p>
+    Ajoute plusieurs planches d'aperçu pour une même
+    sous-catégorie. Les planches sont indépendantes
+    des designs.
+  </p>
 
-      <div class="champ">
 
-        <label for="selectionSousCategoriePlanche">
-          Sous-catégorie
-        </label>
+  <div class="champ">
 
-        <select
-          id="selectionSousCategoriePlanche"
-        >
+    <label for="selectionSousCategoriePlanche">
+      Sous-catégorie
+    </label>
 
-          <option value="">
-            Choisir une sous-catégorie
-          </option>
+    <select
+      id="selectionSousCategoriePlanche"
+    >
 
-        </select>
+      <option value="">
+        Choisir une sous-catégorie
+      </option>
 
-      </div>
+    </select>
 
-      <div class="champ">
+  </div>
 
-        <label for="fichierPlancheBibliotheque">
-          Planche d'aperçu
-        </label>
 
-        <input
-          type="file"
-          id="fichierPlancheBibliotheque"
-          accept="image/jpeg,image/png,image/webp"
-        >
+  <div class="champ">
 
-      </div>
+    <label for="fichiersPlanchesBibliotheque">
+      Planches d'aperçu
+    </label>
 
-      <div
-        id="aperçuPlancheBibliotheque"
-        style="
-          margin-top:15px;
-        "
-      ></div>
+    <input
+      type="file"
+      id="fichiersPlanchesBibliotheque"
+      accept="image/jpeg,image/png,image/webp"
+      multiple
+    >
 
-      <div class="bibliotheque-actions">
+    <small>
+      Tu peux sélectionner plusieurs planches en même temps.
+    </small>
 
-        <button
-          class="btn btn-enregistrer"
-          id="boutonAjouterPlancheBibliotheque"
-          type="button"
-        >
-          🖼️ Ajouter / remplacer la planche
-        </button>
+  </div>
 
-        <button
-          class="btn btn-supprimer"
-          id="boutonSupprimerPlancheBibliotheque"
-          type="button"
-        >
-          🗑️ Supprimer la planche
-        </button>
 
-      </div>
+  <div class="bibliotheque-actions">
 
-    </div>
+    <button
+      class="btn btn-enregistrer"
+      id="boutonAjouterPlanchesBibliotheque"
+      type="button"
+    >
+      🖼️ Ajouter les planches
+    </button>
 
-    <!-- =================================================
-         5. DESIGNS
-    ================================================== -->
+  </div>
+
+
+  <div
+    id="listePlanchesBibliotheque"
+    style="
+      margin-top:20px;
+      display:grid;
+      gap:15px;
+    "
+  ></div>
+
+</div>
+
+
+<!-- =================================================
+     5. DESIGNS
+================================================== -->
 
     <div class="bibliotheque-etape">
 
@@ -9486,7 +9490,6 @@ document
    🖼️ PLANCHES D'APERÇU DE LA BIBLIOTHÈQUE
 ===================================================== */
 
-
 /* =====================================================
    CHARGER LES SOUS-CATÉGORIES POUR LES PLANCHES
 ===================================================== */
@@ -9501,6 +9504,7 @@ async function chargerSousCategoriesPlanches(){
   if(!select){
     return;
   }
+
 
   select.innerHTML =
     '<option value="">Choisir une sous-catégorie</option>';
@@ -9553,22 +9557,23 @@ async function chargerSousCategoriesPlanches(){
 
 
 /* =====================================================
-   AFFICHER LA PLANCHE EXISTANTE
+   AFFICHER LES PLANCHES D'UNE SOUS-CATÉGORIE
 ===================================================== */
 
-async function chargerPlancheBibliotheque(){
+async function chargerPlanchesBibliotheque(){
 
   const select =
     document.getElementById(
       "selectionSousCategoriePlanche"
     );
 
-  const apercu =
+  const liste =
     document.getElementById(
-      "aperçuPlancheBibliotheque"
+      "listePlanchesBibliotheque"
     );
 
-  if(!select || !apercu){
+
+  if(!select || !liste){
     return;
   }
 
@@ -9577,10 +9582,24 @@ async function chargerPlancheBibliotheque(){
     select.value;
 
 
-  apercu.innerHTML = "";
+  liste.innerHTML = "";
 
 
   if(!subcategoryId){
+
+    liste.innerHTML = `
+      <div
+        style="
+          padding:15px;
+          border:1px dashed var(--bordure);
+          border-radius:12px;
+          background:var(--fond);
+          color:#766B6D;
+        "
+      >
+        📭 Choisis une sous-catégorie pour voir ses planches.
+      </div>
+    `;
 
     return;
 
@@ -9592,35 +9611,55 @@ async function chargerPlancheBibliotheque(){
     error
   } =
     await client
-      .from("library_subcategories")
+      .from("library_planches")
       .select(
-        "id,nom,planche_url"
+        "id,nom,image_url,ordre"
       )
       .eq(
-        "id",
+        "subcategory_id",
         subcategoryId
       )
-      .maybeSingle();
+      .eq(
+        "visible",
+        true
+      )
+      .order(
+        "ordre",
+        {ascending:true}
+      )
+      .order(
+        "created_at",
+        {ascending:true}
+      );
 
 
   if(error){
 
     console.error(
-      "Erreur chargement planche :",
+      "Erreur chargement planches :",
       error
     );
+
+    liste.innerHTML = `
+      <div
+        style="
+          padding:15px;
+          border:1px solid var(--danger);
+          border-radius:12px;
+        "
+      >
+        ❌ Impossible de charger les planches.
+      </div>
+    `;
 
     return;
 
   }
 
 
-  if(
-    !data ||
-    !data.planche_url
-  ){
+  if(!data || data.length === 0){
 
-    apercu.innerHTML = `
+    liste.innerHTML = `
       <div
         style="
           padding:15px;
@@ -9640,152 +9679,200 @@ async function chargerPlancheBibliotheque(){
   }
 
 
-  apercu.innerHTML = `
+  data.forEach(
+    function(planche,index){
 
-    <div
-      style="
+      const carte =
+        document.createElement("div");
+
+      carte.style.cssText = `
         border:1px solid var(--bordure);
         border-radius:14px;
         padding:12px;
         background:white;
-        max-width:600px;
-      "
-    >
+      `;
 
-      <div
-        style="
-          font-weight:bold;
-          color:var(--rose-fonce);
-          margin-bottom:10px;
-        "
-      >
-        🖼️ Planche actuelle
-      </div>
 
-      <img
-        src="${echapperHTML(
-          data.planche_url
-        )}"
-        alt="Planche d'aperçu"
-        style="
-          display:block;
-          width:100%;
-          max-height:500px;
-          object-fit:contain;
-          border-radius:10px;
-          background:#F8F4F2;
-        "
-      >
+      carte.innerHTML = `
 
-    </div>
+        <div
+          style="
+            font-weight:bold;
+            color:var(--rose-fonce);
+            margin-bottom:10px;
+          "
+        >
+          🖼️ ${echapperHTML(
+            planche.nom ||
+            "Planche "+(index+1)
+          )}
+        </div>
 
-  `;
+
+        <img
+          src="${echapperHTML(
+            planche.image_url
+          )}"
+          alt="${echapperHTML(
+            planche.nom ||
+            "Planche d'aperçu"
+          )}"
+          style="
+            display:block;
+            width:100%;
+            max-height:500px;
+            object-fit:contain;
+            border-radius:10px;
+            background:#F8F4F2;
+          "
+        >
+
+
+        <div
+          style="
+            display:flex;
+            justify-content:flex-end;
+            margin-top:10px;
+          "
+        >
+
+          <button
+            class="btn btn-supprimer"
+            type="button"
+            onclick="supprimerPlancheBibliotheque(
+              '${planche.id}'
+            )"
+          >
+            🗑️ Supprimer
+          </button>
+
+        </div>
+
+      `;
+
+
+      liste.appendChild(carte);
+
+    }
+  );
 
 }
 
 
 /* =====================================================
-   PRÉVISUALISATION AVANT ENVOI
+   PRÉVISUALISATION DES PLANCHES SÉLECTIONNÉES
 ===================================================== */
 
 document
   .getElementById(
-    "fichierPlancheBibliotheque"
+    "fichiersPlanchesBibliotheque"
   )
   ?.addEventListener(
     "change",
     function(){
 
-      const fichier =
-        this.files &&
-        this.files[0];
+      const fichiers =
+        this.files;
 
-      const apercu =
+
+      const liste =
         document.getElementById(
-          "aperçuPlancheBibliotheque"
+          "listePlanchesBibliotheque"
         );
 
 
-      if(
-        !fichier ||
-        !apercu
-      ){
+      if(!fichiers || fichiers.length === 0){
 
         return;
 
       }
 
 
-      if(
-        !fichier.type.startsWith(
-          "image/"
-        )
-      ){
+      liste.innerHTML = `
 
-        afficherMessageBibliotheque(
-          "❌ Le fichier choisi n'est pas une image.",
-          true
-        );
+        <div
+          style="
+            padding:15px;
+            border:1px dashed var(--bordure);
+            border-radius:12px;
+            background:var(--fond);
+          "
+        >
 
-        this.value="";
+          <strong>
+            👀 ${fichiers.length}
+            planche(s) sélectionnée(s)
+          </strong>
 
-        return;
+          <div
+            style="
+              margin-top:10px;
+              display:grid;
+              gap:10px;
+            "
+          >
 
-      }
+            ${Array.from(fichiers)
+              .map(
+                function(fichier,index){
 
+                  const url =
+                    URL.createObjectURL(
+                      fichier
+                    );
 
-      const lecteur =
-        new FileReader();
+                  return `
 
+                    <div
+                      style="
+                        display:flex;
+                        align-items:center;
+                        gap:10px;
+                        padding:8px;
+                        border:1px solid var(--bordure);
+                        border-radius:10px;
+                        background:white;
+                      "
+                    >
 
-      lecteur.onload =
-        function(event){
+                      <img
+                        src="${url}"
+                        alt="Aperçu"
+                        style="
+                          width:70px;
+                          height:70px;
+                          object-fit:cover;
+                          border-radius:8px;
+                        "
+                      >
 
-          apercu.innerHTML = `
+                      <div>
+                        <strong>
+                          Planche ${index+1}
+                        </strong>
 
-            <div
-              style="
-                border:1px solid var(--bordure);
-                border-radius:14px;
-                padding:12px;
-                background:white;
-                max-width:600px;
-              "
-            >
+                        <br>
 
-              <div
-                style="
-                  font-weight:bold;
-                  color:var(--rose-fonce);
-                  margin-bottom:10px;
-                "
-              >
-                👀 Aperçu de la nouvelle planche
-              </div>
+                        <small>
+                          ${echapperHTML(
+                            fichier.name
+                          )}
+                        </small>
+                      </div>
 
-              <img
-                src="${event.target.result}"
-                alt="Nouvelle planche"
-                style="
-                  display:block;
-                  width:100%;
-                  max-height:500px;
-                  object-fit:contain;
-                  border-radius:10px;
-                  background:#F8F4F2;
-                "
-              >
+                    </div>
 
-            </div>
+                  `;
 
-          `;
+                }
+              )
+              .join("")}
 
-        };
+          </div>
 
+        </div>
 
-      lecteur.readAsDataURL(
-        fichier
-      );
+      `;
 
     }
   );
@@ -9805,26 +9892,28 @@ document
 
       const fichier =
         document.getElementById(
-          "fichierPlancheBibliotheque"
+          "fichiersPlanchesBibliotheque"
         );
+
 
       if(fichier){
         fichier.value="";
       }
 
-      await chargerPlancheBibliotheque();
+
+      await chargerPlanchesBibliotheque();
 
     }
   );
 
 
 /* =====================================================
-   AJOUTER / REMPLACER UNE PLANCHE
+   AJOUTER PLUSIEURS PLANCHES
 ===================================================== */
 
 document
   .getElementById(
-    "boutonAjouterPlancheBibliotheque"
+    "boutonAjouterPlanchesBibliotheque"
   )
   ?.addEventListener(
     "click",
@@ -9843,13 +9932,13 @@ document
 
       const fichierInput =
         document.getElementById(
-          "fichierPlancheBibliotheque"
+          "fichiersPlanchesBibliotheque"
         );
 
 
       const bouton =
         document.getElementById(
-          "boutonAjouterPlancheBibliotheque"
+          "boutonAjouterPlanchesBibliotheque"
         );
 
 
@@ -9857,9 +9946,12 @@ document
         select?.value || "";
 
 
-      const fichier =
-        fichierInput?.files &&
-        fichierInput.files[0];
+      const fichiers =
+        fichierInput?.files
+          ? Array.from(
+              fichierInput.files
+            )
+          : [];
 
 
       if(!subcategoryId){
@@ -9874,10 +9966,10 @@ document
       }
 
 
-      if(!fichier){
+      if(fichiers.length === 0){
 
         afficherMessageBibliotheque(
-          "❌ Choisis une planche d'aperçu.",
+          "❌ Choisis au moins une planche.",
           true
         );
 
@@ -9886,14 +9978,23 @@ document
       }
 
 
+      const fichiersImages =
+        fichiers.filter(
+          function(fichier){
+            return fichier.type.startsWith(
+              "image/"
+            );
+          }
+        );
+
+
       if(
-        !fichier.type.startsWith(
-          "image/"
-        )
+        fichiersImages.length !==
+        fichiers.length
       ){
 
         afficherMessageBibliotheque(
-          "❌ Le fichier choisi n'est pas une image.",
+          "❌ Tous les fichiers doivent être des images.",
           true
         );
 
@@ -9904,111 +10005,173 @@ document
 
       bouton.disabled=true;
 
-      bouton.textContent=
-        "⏳ Envoi de la planche...";
+      bouton.textContent =
+        "⏳ Envoi des planches...";
 
 
       try{
 
-        const extension =
-          (
-            fichier.name
-              .split(".")
-              .pop() ||
-            "jpg"
-          )
-          .toLowerCase()
-          .replace(
-            /[^a-z0-9]/g,
-            ""
-          );
-
-
-        const nomFichier =
-          "planche_" +
-          subcategoryId +
-          "_" +
-          Date.now() +
-          "_" +
-          Math.random()
-            .toString(36)
-            .substring(2,8) +
-          "." +
-          extension;
-
-
-        const chemin =
-          "planches/" +
-          nomFichier;
-
-
-        const resultatUpload =
-          await client
-            .storage
-            .from("product-library")
-            .upload(
-              chemin,
-              fichier,
-              {
-                cacheControl:"3600",
-                upsert:false,
-                contentType:fichier.type
-              }
-            );
-
-
-        if(resultatUpload.error){
-
-          throw resultatUpload.error;
-
-        }
-
-
-        const resultatURL =
-          client
-            .storage
-            .from("product-library")
-            .getPublicUrl(
-              chemin
-            );
-
-
-        const plancheUrl =
-          resultatURL
-            ?.data
-            ?.publicUrl ||
-          "";
-
-
-        if(!plancheUrl){
-
-          throw new Error(
-            "Impossible de récupérer l'URL de la planche."
-          );
-
-        }
-
-
         const {
-          error
+          data: dernieresPlanches,
+          error: erreurDernieresPlanches
         } =
           await client
-            .from("library_subcategories")
-            .update({
-
-              planche_url:
-                plancheUrl
-
-            })
+            .from("library_planches")
+            .select("ordre")
             .eq(
-              "id",
+              "subcategory_id",
               subcategoryId
+            )
+            .order(
+              "ordre",
+              {ascending:false}
+            )
+            .limit(1);
+
+
+        if(erreurDernieresPlanches){
+
+          throw erreurDernieresPlanches;
+
+        }
+
+
+        let ordre =
+          dernieresPlanches &&
+          dernieresPlanches.length
+            ? Number(
+                dernieresPlanches[0].ordre
+              ) + 1
+            : 0;
+
+
+        for(
+          const fichier
+          of fichiersImages
+        ){
+
+          const extension =
+            (
+              fichier.name
+                .split(".")
+                .pop() ||
+              "jpg"
+            )
+            .toLowerCase()
+            .replace(
+              /[^a-z0-9]/g,
+              ""
             );
 
 
-        if(error){
+          const nomFichier =
+            "planche_" +
+            subcategoryId +
+            "_" +
+            Date.now() +
+            "_" +
+            Math.random()
+              .toString(36)
+              .substring(2,8) +
+            "." +
+            extension;
 
-          throw error;
+
+          const chemin =
+            "planches/" +
+            nomFichier;
+
+
+          const resultatUpload =
+            await client
+              .storage
+              .from("product-library")
+              .upload(
+                chemin,
+                fichier,
+                {
+                  cacheControl:"3600",
+                  upsert:false,
+                  contentType:fichier.type
+                }
+              );
+
+
+          if(resultatUpload.error){
+
+            throw resultatUpload.error;
+
+          }
+
+
+          const resultatURL =
+            client
+              .storage
+              .from("product-library")
+              .getPublicUrl(
+                chemin
+              );
+
+
+          const plancheUrl =
+            resultatURL
+              ?.data
+              ?.publicUrl ||
+            "";
+
+
+          if(!plancheUrl){
+
+            throw new Error(
+              "Impossible de récupérer l'URL d'une planche."
+            );
+
+          }
+
+
+          const nomPlanche =
+            fichier.name
+              .replace(
+                /\.[^/.]+$/,
+                ""
+              )
+              .trim() ||
+            "Planche";
+
+
+          const {
+            error: erreurInsertion
+          } =
+            await client
+              .from("library_planches")
+              .insert({
+
+                subcategory_id:
+                  subcategoryId,
+
+                nom:
+                  nomPlanche,
+
+                image_url:
+                  plancheUrl,
+
+                ordre:
+                  ordre,
+
+                visible:
+                  true
+
+              });
+
+
+          if(erreurInsertion){
+
+            throw erreurInsertion;
+
+          }
+
+
+          ordre++;
 
         }
 
@@ -10016,11 +10179,15 @@ document
         fichierInput.value="";
 
 
-        await chargerPlancheBibliotheque();
+        await chargerPlanchesBibliotheque();
 
 
         afficherMessageBibliotheque(
-          "✅ Planche d'aperçu enregistrée !",
+          fichiersImages.length === 1
+            ? "✅ Planche d'aperçu ajoutée !"
+            : "✅ " +
+              fichiersImages.length +
+              " planches d'aperçu ajoutées !",
           false
         );
 
@@ -10028,13 +10195,13 @@ document
       }catch(erreur){
 
         console.error(
-          "Erreur planche :",
+          "Erreur ajout planches :",
           erreur
         );
 
 
         afficherMessageBibliotheque(
-          "❌ Impossible d'enregistrer la planche : " +
+          "❌ Impossible d'ajouter les planches : " +
           (
             erreur.message ||
             erreur
@@ -10048,7 +10215,7 @@ document
         bouton.disabled=false;
 
         bouton.textContent =
-          "🖼️ Ajouter / remplacer la planche";
+          "🖼️ Ajouter les planches";
 
       }
 
@@ -10060,106 +10227,65 @@ document
    SUPPRIMER UNE PLANCHE
 ===================================================== */
 
-document
-  .getElementById(
-    "boutonSupprimerPlancheBibliotheque"
-  )
-  ?.addEventListener(
-    "click",
-    async function(){
+window.supprimerPlancheBibliotheque =
+async function(id){
 
-      const select =
-        document.getElementById(
-          "selectionSousCategoriePlanche"
-        );
+  if(
+    !confirm(
+      "🗑️ Supprimer cette planche d'aperçu ?"
+    )
+  ){
 
+    return;
 
-      const subcategoryId =
-        select?.value || "";
+  }
 
 
-      if(!subcategoryId){
-
-        afficherMessageBibliotheque(
-          "❌ Choisis une sous-catégorie.",
-          true
-        );
-
-        return;
-
-      }
+  if(!(await verifierAdmin())){
+    return;
+  }
 
 
-      if(
-        !confirm(
-          "🗑️ Supprimer la planche d'aperçu de cette sous-catégorie ?"
-        )
-      ){
-
-        return;
-
-      }
-
-
-      if(!(await verifierAdmin())){
-        return;
-      }
-
-
-      const {
-        error
-      } =
-        await client
-          .from("library_subcategories")
-          .update({
-
-            planche_url:null
-
-          })
-          .eq(
-            "id",
-            subcategoryId
-          );
-
-
-      if(error){
-
-        console.error(
-          error
-        );
-
-        afficherMessageBibliotheque(
-          "❌ Impossible de supprimer la planche : " +
-          error.message,
-          true
-        );
-
-        return;
-
-      }
-
-
-      const fichier =
-        document.getElementById(
-          "fichierPlancheBibliotheque"
-        );
-
-
-      if(fichier){
-        fichier.value="";
-      }
-
-
-      await chargerPlancheBibliotheque();
-
-
-      afficherMessageBibliotheque(
-        "✅ Planche supprimée.",
-        false
+  const {
+    error
+  } =
+    await client
+      .from("library_planches")
+      .delete()
+      .eq(
+        "id",
+        id
       );
 
-    }
+
+  if(error){
+
+    console.error(
+      "Erreur suppression planche :",
+      error
+    );
+
+
+    afficherMessageBibliotheque(
+      "❌ Impossible de supprimer la planche : " +
+      error.message,
+      true
+    );
+
+    return;
+
+  }
+
+
+  await chargerPlanchesBibliotheque();
+
+
+  afficherMessageBibliotheque(
+    "✅ Planche supprimée.",
+    false
   );
+
+};
 
 
 /* =====================================================
@@ -10172,10 +10298,6 @@ async function initialiserPlanchesBibliotheque(){
 
 }
 
-
-/* =====================================================
-   ACTUALISATION APRÈS CHARGEMENT DE LA BIBLIOTHÈQUE
-===================================================== */
 
 initialiserPlanchesBibliotheque();
   
