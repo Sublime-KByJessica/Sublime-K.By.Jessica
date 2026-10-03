@@ -2633,15 +2633,84 @@ button{cursor:pointer}
       ></div>
 
     </div>
+
+    <!-- =================================================
+     3. SOUS-SOUS-CATÉGORIES
+================================================== -->
+
+<div class="bibliotheque-etape">
+
+  <h3>
+    🌿 3. Sous-sous-catégories
+  </h3>
+
+  <p>
+    Crée et gère les sous-sous-catégories liées à une
+    sous-catégorie.
+  </p>
+
+  <div class="champ">
+
+    <label for="selectionSousCategorieSousSousCategorie">
+      Sous-catégorie
+    </label>
+
+    <select
+      id="selectionSousCategorieSousSousCategorie"
+    >
+
+      <option value="">
+        Choisir une sous-catégorie
+      </option>
+
+    </select>
+
+  </div>
+
+  <div class="champ">
+
+    <label for="nomSousSousCategorie">
+      Nom de la sous-sous-catégorie
+    </label>
+
+    <input
+      type="text"
+      id="nomSousSousCategorie"
+      placeholder="Ex. Bélier, Taureau, Gémeaux..."
+    >
+
+  </div>
+
+  <div class="bibliotheque-actions">
+
+    <button
+      class="btn btn-enregistrer"
+      id="boutonAjouterSousSousCategorie"
+      type="button"
+    >
+      ➕ Ajouter
+    </button>
+
+  </div>
+
+  <div
+    id="listeSousSousCategories"
+    style="
+      margin-top:20px;
+    "
+  ></div>
+
+</div>
+
     
     <!-- =================================================
-         3. PLANCHES D'APERÇU
+         4. PLANCHES D'APERÇU
     ================================================== -->
 
     <div class="bibliotheque-etape">
 
       <h3>
-        🖼️ 3. Planches d'aperçu
+        🖼️ 4. Planches d'aperçu
       </h3>
 
       <p>
@@ -2711,13 +2780,13 @@ button{cursor:pointer}
     </div>
 
     <!-- =================================================
-         4. DESIGNS
+         5. DESIGNS
     ================================================== -->
 
     <div class="bibliotheque-etape">
 
       <h3>
-        🎨 3. Designs
+        🎨 5. Designs
       </h3>
 
 
@@ -2789,6 +2858,7 @@ button{cursor:pointer}
   </div>
 
 </section>
+  
 <!-- =====================================================
      PERSONNALISATION
 ===================================================== -->
@@ -3029,10 +3099,6 @@ button{cursor:pointer}
 
 </section>
 
-
-<!-- =====================================================
-     PAGES LÉGALES
-===================================================== -->
 
 <!-- =====================================================
      PAGES LÉGALES
@@ -6081,7 +6147,575 @@ async function chargerBibliotheque(){
   await chargerSousCategoriesPlanches();
   
 }
+/* =====================================================
+   SOUS-SOUS-CATÉGORIES
+===================================================== */
 
+/**
+ * Charge les sous-catégories dans le sélecteur
+ * des sous-sous-catégories.
+ */
+async function chargerSousCategoriesSousSousCategories() {
+
+  const select =
+    document.getElementById(
+      "selectionSousCategorieSousSousCategorie"
+    );
+
+  if (!select) return;
+
+  const {
+    data,
+    error
+  } = await client
+    .from("library_subcategories")
+    .select("id, nom")
+    .order("ordre", {
+      ascending: true
+    })
+    .order("nom", {
+      ascending: true
+    });
+
+  if (error) {
+
+    console.error(
+      "Erreur chargement sous-catégories :",
+      error
+    );
+
+    return;
+  }
+
+  select.innerHTML = `
+    <option value="">
+      Choisir une sous-catégorie
+    </option>
+  `;
+
+  (data || []).forEach(function(sousCategorie) {
+
+    const option =
+      document.createElement("option");
+
+    option.value =
+      sousCategorie.id;
+
+    option.textContent =
+      sousCategorie.nom;
+
+    select.appendChild(option);
+
+  });
+
+}
+
+
+/**
+ * Charge les sous-sous-catégories de la
+ * sous-catégorie sélectionnée.
+ */
+async function chargerListeSousSousCategories() {
+
+  const select =
+    document.getElementById(
+      "selectionSousCategorieSousSousCategorie"
+    );
+
+  const liste =
+    document.getElementById(
+      "listeSousSousCategories"
+    );
+
+  if (!select || !liste) return;
+
+  const sousCategorieId =
+    select.value;
+
+  liste.innerHTML = "";
+
+  if (!sousCategorieId) {
+
+    liste.innerHTML = `
+      <p style="
+        opacity:0.7;
+        margin:0;
+      ">
+        Sélectionne une sous-catégorie
+        pour voir ses sous-sous-catégories.
+      </p>
+    `;
+
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } = await client
+    .from("library_sub_subcategories")
+    .select("*")
+    .eq(
+      "subcategory_id",
+      sousCategorieId
+    )
+    .order("ordre", {
+      ascending: true
+    })
+    .order("nom", {
+      ascending: true
+    });
+
+
+  if (error) {
+
+    console.error(
+      "Erreur chargement sous-sous-catégories :",
+      error
+    );
+
+    liste.innerHTML = `
+      <p style="color:#b00020;">
+        Impossible de charger les sous-sous-catégories.
+      </p>
+    `;
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    liste.innerHTML = `
+      <p style="
+        opacity:0.7;
+        margin:0;
+      ">
+        Aucune sous-sous-catégorie pour le moment.
+      </p>
+    `;
+
+    return;
+  }
+
+
+  data.forEach(function(item) {
+
+    const ligne =
+      document.createElement("div");
+
+    ligne.style.cssText = `
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:12px;
+      margin-bottom:10px;
+      background:#f8f5ef;
+      border-radius:12px;
+      border:1px solid rgba(0,0,0,0.08);
+    `;
+
+
+    const nom =
+      document.createElement("span");
+
+    nom.textContent =
+      "🌿 " + item.nom;
+
+    nom.style.fontWeight =
+      "600";
+
+
+    const actions =
+      document.createElement("div");
+
+    actions.style.cssText = `
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    `;
+
+
+    /* =================================================
+       RENOMMER
+    ================================================= */
+
+    const boutonRenommer =
+      document.createElement("button");
+
+    boutonRenommer.type =
+      "button";
+
+    boutonRenommer.className =
+      "btn";
+
+    boutonRenommer.textContent =
+      "✏️ Renommer";
+
+
+    boutonRenommer.addEventListener(
+      "click",
+      async function() {
+
+        const nouveauNom =
+          prompt(
+            "Nouveau nom de la sous-sous-catégorie :",
+            item.nom
+          );
+
+        if (
+          nouveauNom === null ||
+          nouveauNom.trim() === ""
+        ) {
+          return;
+        }
+
+
+        const nomFinal =
+          nouveauNom.trim();
+
+
+        const {
+          error
+        } = await client
+          .from("library_sub_subcategories")
+          .update({
+            nom: nomFinal
+          })
+          .eq(
+            "id",
+            item.id
+          );
+
+
+        if (error) {
+
+          console.error(
+            "Erreur renommage :",
+            error
+          );
+
+          alert(
+            "❌ Impossible de renommer cette sous-sous-catégorie."
+          );
+
+          return;
+        }
+
+
+        await chargerListeSousSousCategories();
+
+      }
+    );
+
+
+    /* =================================================
+       SUPPRIMER
+    ================================================= */
+
+    const boutonSupprimer =
+      document.createElement("button");
+
+    boutonSupprimer.type =
+      "button";
+
+    boutonSupprimer.className =
+      "btn btn-supprimer";
+
+    boutonSupprimer.textContent =
+      "🗑️ Supprimer";
+
+
+    boutonSupprimer.addEventListener(
+      "click",
+      async function() {
+
+        const confirmation =
+          confirm(
+            `Supprimer la sous-sous-catégorie « ${item.nom} » ?`
+          );
+
+        if (!confirmation) {
+          return;
+        }
+
+
+        const {
+          error
+        } = await client
+          .from("library_sub_subcategories")
+          .delete()
+          .eq(
+            "id",
+            item.id
+          );
+
+
+        if (error) {
+
+          console.error(
+            "Erreur suppression :",
+            error
+          );
+
+          alert(
+            "❌ Impossible de supprimer cette sous-sous-catégorie."
+          );
+
+          return;
+        }
+
+
+        await chargerListeSousSousCategories();
+
+      }
+    );
+
+
+    actions.appendChild(
+      boutonRenommer
+    );
+
+    actions.appendChild(
+      boutonSupprimer
+    );
+
+
+    ligne.appendChild(
+      nom
+    );
+
+    ligne.appendChild(
+      actions
+    );
+
+
+    liste.appendChild(
+      ligne
+    );
+
+  });
+
+}
+
+
+/* =====================================================
+   AJOUTER UNE SOUS-SOUS-CATÉGORIE
+===================================================== */
+
+async function ajouterSousSousCategorie() {
+
+  const select =
+    document.getElementById(
+      "selectionSousCategorieSousSousCategorie"
+    );
+
+  const input =
+    document.getElementById(
+      "nomSousSousCategorie"
+    );
+
+  if (!select || !input) return;
+
+
+  const sousCategorieId =
+    select.value;
+
+  const nom =
+    input.value.trim();
+
+
+  if (!sousCategorieId) {
+
+    alert(
+      "⚠️ Choisis d'abord une sous-catégorie."
+    );
+
+    return;
+  }
+
+
+  if (!nom) {
+
+    alert(
+      "⚠️ Indique le nom de la sous-sous-catégorie."
+    );
+
+    return;
+  }
+
+
+  /* Vérifier si elle existe déjà */
+
+  const {
+    data: existantes,
+    error: erreurVerification
+  } = await client
+    .from("library_sub_subcategories")
+    .select("id")
+    .eq(
+      "subcategory_id",
+      sousCategorieId
+    )
+    .ilike(
+      "nom",
+      nom
+    );
+
+
+  if (erreurVerification) {
+
+    console.error(
+      "Erreur vérification :",
+      erreurVerification
+    );
+
+    alert(
+      "❌ Impossible de vérifier si cette sous-sous-catégorie existe déjà."
+    );
+
+    return;
+  }
+
+
+  if (
+    existantes &&
+    existantes.length > 0
+  ) {
+
+    alert(
+      "⚠️ Cette sous-sous-catégorie existe déjà."
+    );
+
+    return;
+  }
+
+
+  /* Déterminer le prochain ordre */
+
+  const {
+    data: dernieres,
+    error: erreurOrdre
+  } = await client
+    .from("library_sub_subcategories")
+    .select("ordre")
+    .eq(
+      "subcategory_id",
+      sousCategorieId
+    )
+    .order("ordre", {
+      ascending: false
+    })
+    .limit(1);
+
+
+  if (erreurOrdre) {
+
+    console.error(
+      "Erreur récupération ordre :",
+      erreurOrdre
+    );
+
+    return;
+  }
+
+
+  const prochainOrdre =
+    dernieres &&
+    dernieres.length > 0
+      ? Number(dernieres[0].ordre || 0) + 1
+      : 1;
+
+
+  /* Ajouter */
+
+  const {
+    error
+  } = await client
+    .from("library_sub_subcategories")
+    .insert({
+      subcategory_id:
+        sousCategorieId,
+
+      nom:
+        nom,
+
+      ordre:
+        prochainOrdre,
+
+      visible:
+        true
+    });
+
+
+  if (error) {
+
+    console.error(
+      "Erreur ajout sous-sous-catégorie :",
+      error
+    );
+
+    alert(
+      "❌ Impossible d'ajouter la sous-sous-catégorie."
+    );
+
+    return;
+  }
+
+
+  input.value = "";
+
+
+  await chargerListeSousSousCategories();
+
+}
+
+
+/* =====================================================
+   INITIALISATION
+===================================================== */
+
+function initialiserSousSousCategories() {
+
+  const select =
+    document.getElementById(
+      "selectionSousCategorieSousSousCategorie"
+    );
+
+  const bouton =
+    document.getElementById(
+      "boutonAjouterSousSousCategorie"
+    );
+
+  if (!select || !bouton) {
+    return;
+  }
+
+
+  select.addEventListener(
+    "change",
+    chargerListeSousSousCategories
+  );
+
+
+  bouton.addEventListener(
+    "click",
+    ajouterSousSousCategorie
+  );
+
+
+  chargerSousCategoriesSousSousCategories();
+
+}
+
+
+/* =====================================================
+   LANCEMENT
+===================================================== */
+
+initialiserSousSousCategories();
 
 async function chargerCategoriesBibliotheque(){
 
