@@ -6801,16 +6801,27 @@ async function chargerCategoriesBibliotheque(){
       </div>
 
 
-      <div class="ligne-bibliotheque-actions">
+  <div class="ligne-bibliotheque-actions">
 
-        <button
-          class="btn btn-supprimer"
-          onclick="supprimerCategorieBibliotheque('${categorie.id}')"
-        >
-          🗑️
-        </button>
+  <button
+    class="btn btn-modifier"
+    onclick="modifierCategorieBibliotheque(
+      '${categorie.id}',
+      '${echapperJS(categorie.nom)}',
+      '${echapperJS(categorie.emoji || "")}'
+    )"
+  >
+    ✏️ Modifier
+  </button>
 
-      </div>
+  <button
+    class="btn btn-supprimer"
+    onclick="supprimerCategorieBibliotheque('${categorie.id}')"
+  >
+    🗑️
+  </button>
+
+</div>
 
     `;
 
@@ -7207,14 +7218,24 @@ async function chargerSousCategoriesBibliotheque(){
 
       <div class="ligne-bibliotheque-actions">
 
-        <button
-          class="btn btn-supprimer"
-          onclick="supprimerSousCategorieBibliotheque('${sousCategorie.id}')"
-        >
-          🗑️
-        </button>
+  <button
+    class="btn btn-modifier"
+    onclick="modifierSousCategorieBibliotheque(
+      '${sousCategorie.id}',
+      '${echapperJS(sousCategorie.nom)}'
+    )"
+  >
+    ✏️ Modifier
+  </button>
 
-      </div>
+  <button
+    class="btn btn-supprimer"
+    onclick="supprimerSousCategorieBibliotheque('${sousCategorie.id}')"
+  >
+    🗑️
+  </button>
+
+</div>
 
     `;
 
