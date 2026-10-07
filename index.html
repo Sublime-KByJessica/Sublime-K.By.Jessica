@@ -4421,7 +4421,7 @@ if (etapeDesign) {
 
     };
 
-  } else {
+    } else {
 
     personnalisationChoix = {
 
@@ -4453,6 +4453,27 @@ if (etapeDesign) {
 
   }
 
+
+  /* ---------------------------------------------
+     VARIANTE DU PRODUIT SÉLECTIONNÉE
+     
+     La variante choisie dans la fiche produit
+     est conservée pendant la personnalisation.
+  --------------------------------------------- */
+
+  if (
+    produit &&
+    produitFicheActuel &&
+    String(produitFicheActuel.id) ===
+      String(produit.id) &&
+    produitFicheActuel._variantSelectionnee
+  ) {
+
+    produit._variantSelectionnee =
+      produitFicheActuel._variantSelectionnee;
+
+  }
+  
   /* ---------------------------------------------
      NOM DU PRODUIT
   --------------------------------------------- */
