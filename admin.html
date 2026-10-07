@@ -2114,6 +2114,104 @@ button{cursor:pointer}
 
 </div>
 
+        <!-- =====================================================
+     VARIANTES / COULEURS DU PRODUIT
+===================================================== -->
+
+<div
+  class="personnalisation-admin"
+  id="blocVariantesProduit"
+  style="display:none;"
+>
+
+  <h3>
+    🎨 Variantes du produit
+  </h3>
+
+  <p class="personnalisation-aide">
+    Ajoute ici les différentes couleurs ou variantes disponibles.
+    Chaque variante peut avoir sa propre photo.
+  </p>
+
+  <div class="form-grid">
+
+    <div class="champ">
+
+      <label for="varianteNom">
+        Type de variante
+      </label>
+
+      <input
+        type="text"
+        id="varianteNom"
+        value="Couleur"
+        placeholder="Ex : Couleur, Taille, Modèle..."
+      >
+
+    </div>
+
+    <div class="champ">
+
+      <label for="varianteValeur">
+        Valeur
+      </label>
+
+      <input
+        type="text"
+        id="varianteValeur"
+        placeholder="Ex : Rose"
+      >
+
+    </div>
+
+    <div class="champ full">
+
+      <label for="varianteImageUrl">
+        📷 Photo associée à cette variante
+      </label>
+
+      <input
+        type="url"
+        id="varianteImageUrl"
+        placeholder="https://..."
+      >
+
+      <small class="personnalisation-aide">
+        Cette photo sera affichée automatiquement lorsque
+        le client choisira cette variante.
+      </small>
+
+    </div>
+
+  </div>
+
+  <div class="actions-formulaire">
+
+    <button
+      type="button"
+      class="btn btn-enregistrer"
+      id="boutonAjouterVariante"
+    >
+      ➕ Ajouter cette variante
+    </button>
+
+  </div>
+
+  <div
+    id="listeVariantesProduit"
+    style="
+      display:grid;
+      gap:10px;
+      margin-top:18px;
+    "
+  ></div>
+
+  <div
+    id="messageVariantesProduit"
+    class="message"
+  ></div>
+
+</div>
 
       <div class="actions-formulaire">
 
@@ -4815,7 +4913,8 @@ document.getElementById(
 
   activerSection("boutique");
 
-
+  await chargerVariantesProduit(id);
+  
   window.scrollTo({
     top:0,
     behavior:"smooth"
@@ -4878,6 +4977,16 @@ document
 
 
 function reinitialiserFormulaire(){
+
+    produitVariantesActuel = null;
+
+  document.getElementById(
+    "blocVariantesProduit"
+  ).style.display = "none";
+
+  document.getElementById(
+    "listeVariantesProduit"
+  ).innerHTML = "";
 
   produitEnModification=null;
 
@@ -12955,6 +13064,496 @@ if (boutonExportTiime) {
 ===================================================== */
 
 chargerStatistiquesFinancieres();
+  /* =====================================================
+   🎨 VARIANTES / COULEURS DES PRODUITS
+===================================================== */
+
+let produitVariantesActuel = null;
+
+
+/* -----------------------------------------------------
+   CHARGER LES VARIANTES
+----------------------------------------------------- */
+
+async function chargerVariantesProduit(productId){
+
+  const bloc =
+    document.getElementById(
+      "blocVariantesProduit"
+    );
+
+  const liste =
+    document.getElementById(
+      "listeVariantesProduit"
+    );
+
+  if(!bloc || !liste){
+    return;
+  }
+
+  if(!productId){
+
+    bloc.style.display = "none";
+    liste.innerHTML = "";
+    return;
+
+  }
+
+  produitVariantesActuel = productId;
+
+  bloc.style.display = "block";
+
+  liste.innerHTML =
+    "<p>Chargement des variantes...</p>";
+
+
+  const {
+    data,
+    error
+  } = await client
+    .from("product_variants")
+    .select("*")
+    .eq("product_id", productId)
+    .order(
+      "ordre",
+      {ascending:true}
+    );
+
+
+  if(error){
+
+    console.error(
+      "Erreur chargement variantes :",
+      error
+    );
+
+    liste.innerHTML =
+      "<p>❌ Impossible de charger les variantes.</p>";
+
+    return;
+
+  }
+
+
+  afficherListeVariantes(
+    data || []
+  );
+
+}
+
+
+/* -----------------------------------------------------
+   AFFICHER LES VARIANTES
+----------------------------------------------------- */
+
+function afficherListeVariantes(
+  variantes
+){
+
+  const liste =
+    document.getElementById(
+      "listeVariantesProduit"
+    );
+
+  if(!liste){
+    return;
+  }
+
+
+  liste.innerHTML = "";
+
+
+  if(!variantes.length){
+
+    liste.innerHTML = `
+      <div
+        style="
+          padding:14px;
+          border:1px dashed var(--bordure);
+          border-radius:12px;
+          color:#766B6D;
+        "
+      >
+        Aucune variante ajoutée pour le moment.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  variantes.forEach(
+    function(variante){
+
+      const element =
+        document.createElement(
+          "div"
+        );
+
+      element.style.cssText = `
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:12px;
+        padding:12px;
+        border:1px solid var(--bordure);
+        border-radius:12px;
+        background:white;
+        flex-wrap:wrap;
+      `;
+
+
+      const image =
+        variante.image_url
+          ? `
+            <img
+              src="${echapperHTML(
+                variante.image_url
+              )}"
+              alt=""
+              style="
+                width:55px;
+                height:55px;
+                object-fit:contain;
+                border-radius:10px;
+                border:1px solid var(--bordure);
+                background:#FAF7F5;
+              "
+            >
+          `
+          : `
+            <div
+              style="
+                width:55px;
+                height:55px;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                border-radius:10px;
+                background:var(--gris-clair);
+              "
+            >
+              📷
+            </div>
+          `;
+
+
+      element.innerHTML = `
+
+        <div
+          style="
+            display:flex;
+            align-items:center;
+            gap:12px;
+          "
+        >
+
+          ${image}
+
+          <div>
+
+            <strong>
+              ${echapperHTML(
+                variante.nom
+              )}
+            </strong>
+
+            <div
+              style="
+                color:#766B6D;
+                margin-top:3px;
+              "
+            >
+              ${echapperHTML(
+                variante.valeur
+              )}
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="btn btn-supprimer"
+          onclick="
+            supprimerVarianteProduit(
+              '${variante.id}'
+            )
+          "
+        >
+          🗑️ Supprimer
+        </button>
+
+      `;
+
+
+      liste.appendChild(element);
+
+    }
+  );
+
+}
+
+
+/* -----------------------------------------------------
+   AJOUTER UNE VARIANTE
+----------------------------------------------------- */
+
+document
+  .getElementById(
+    "boutonAjouterVariante"
+  )
+  .addEventListener(
+    "click",
+    async function(){
+
+      if(!produitVariantesActuel){
+
+        alert(
+          "⚠️ Enregistre d'abord le produit avant d'ajouter ses variantes."
+        );
+
+        return;
+
+      }
+
+
+      if(!(await verifierAdmin())){
+        return;
+      }
+
+
+      const nom =
+        document
+          .getElementById(
+            "varianteNom"
+          )
+          .value
+          .trim();
+
+
+      const valeur =
+        document
+          .getElementById(
+            "varianteValeur"
+          )
+          .value
+          .trim();
+
+
+      const imageUrl =
+        document
+          .getElementById(
+            "varianteImageUrl"
+          )
+          .value
+          .trim();
+
+
+      if(!nom){
+
+        alert(
+          "⚠️ Indique le type de variante."
+        );
+
+        return;
+
+      }
+
+
+      if(!valeur){
+
+        alert(
+          "⚠️ Indique la valeur de la variante."
+        );
+
+        return;
+
+      }
+
+
+      const {
+        data: existantes,
+        error: erreurExistantes
+      } = await client
+        .from("product_variants")
+        .select("id")
+        .eq(
+          "product_id",
+          produitVariantesActuel
+        )
+        .eq(
+          "nom",
+          nom
+        )
+        .eq(
+          "valeur",
+          valeur
+        );
+
+
+      if(erreurExistantes){
+
+        alert(
+          "❌ " +
+          erreurExistantes.message
+        );
+
+        return;
+
+      }
+
+
+      if(
+        existantes &&
+        existantes.length
+      ){
+
+        alert(
+          "⚠️ Cette variante existe déjà pour ce produit."
+        );
+
+        return;
+
+      }
+
+
+      const {
+        data: ordreData
+      } = await client
+        .from("product_variants")
+        .select("ordre")
+        .eq(
+          "product_id",
+          produitVariantesActuel
+        )
+        .order(
+          "ordre",
+          {ascending:false}
+        )
+        .limit(1);
+
+
+      const prochainOrdre =
+        ordreData &&
+        ordreData.length
+          ? Number(
+              ordreData[0].ordre || 0
+            ) + 1
+          : 0;
+
+
+      const {
+        error
+      } = await client
+        .from("product_variants")
+        .insert([{
+
+          product_id:
+            produitVariantesActuel,
+
+          nom,
+
+          valeur,
+
+          image_url:
+            imageUrl || null,
+
+          actif:true,
+
+          ordre:
+            prochainOrdre
+
+        }]);
+
+
+      if(error){
+
+        console.error(error);
+
+        alert(
+          "❌ Impossible d'ajouter la variante.\n\n" +
+          error.message
+        );
+
+        return;
+
+      }
+
+
+      document
+        .getElementById(
+          "varianteValeur"
+        )
+        .value = "";
+
+
+      document
+        .getElementById(
+          "varianteImageUrl"
+        )
+        .value = "";
+
+
+      await chargerVariantesProduit(
+        produitVariantesActuel
+      );
+
+    }
+  );
+
+
+/* -----------------------------------------------------
+   SUPPRIMER UNE VARIANTE
+----------------------------------------------------- */
+
+window.supprimerVarianteProduit =
+async function(id){
+
+  if(!confirm(
+    "⚠️ Supprimer cette variante ?"
+  )){
+    return;
+  }
+
+
+  if(!(await verifierAdmin())){
+    return;
+  }
+
+
+  const {
+    error
+  } = await client
+    .from("product_variants")
+    .delete()
+    .eq(
+      "id",
+      id
+    );
+
+
+  if(error){
+
+    alert(
+      "❌ " +
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  await chargerVariantesProduit(
+    produitVariantesActuel
+  );
+
+};
+  
 </script>
 
 
