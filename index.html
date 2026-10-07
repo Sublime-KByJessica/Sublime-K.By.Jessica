@@ -6272,6 +6272,53 @@ function validerPersonnalisation() {
 
     async function ajouterAuPanier(produit) {
 
+        /* =================================================
+     VARIANTES PRODUIT
+     Si le produit possède des variantes,
+     on oblige le client à ouvrir la fiche
+     pour choisir sa variante.
+  ================================================= */
+
+  if (
+    produit &&
+    produit.statut !== "indisponible"
+  ) {
+
+    const {
+      data: variantesProduit,
+      error: erreurVariantes
+    } = await supabaseClient
+      .from("product_variants")
+      .select("id")
+      .eq("product_id", produit.id)
+      .eq("actif", true);
+
+    if (
+      !erreurVariantes &&
+      Array.isArray(variantesProduit) &&
+      variantesProduit.length > 0
+    ) {
+
+      /*
+       * Si la fiche de CE produit n'est pas déjà ouverte,
+       * on l'ouvre obligatoirement pour permettre
+       * le choix de la variante.
+       */
+      if (
+        !produitFicheActuel ||
+        String(produitFicheActuel.id) !==
+          String(produit.id)
+      ) {
+
+        await ouvrirFicheProduit(produit);
+
+        return;
+      }
+
+    }
+
+  }
+
   if (
     !produit ||
     produit.statut === "indisponible"
