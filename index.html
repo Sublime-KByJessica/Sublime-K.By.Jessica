@@ -6481,10 +6481,7 @@ function validerPersonnalisation() {
 ================================================= */
 
 const varianteSelectionnee =
-  produitFicheActuel &&
-  produitFicheActuel._variantSelectionnee
-    ? produitFicheActuel._variantSelectionnee
-    : null;
+  produit._variantSelectionnee || null;
 
 
 /*
