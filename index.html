@@ -6210,10 +6210,44 @@ function validerPersonnalisation() {
      * Sinon, on utilise l'image normale du produit.
      */
 
-    image_url:
+        image_url:
       personnalisationChoix.designImage ||
-      produit.image_url ||
+      (
+        produit._variantSelectionnee &&
+        produit._variantSelectionnee.image_url
+          ? produit._variantSelectionnee.image_url
+          : produit.image_url
+      ) ||
       "",
+
+    /* ---------------------------------------------
+       VARIANTE DU PRODUIT
+       La variante choisie dans la fiche produit
+       est conservée dans le panier.
+    --------------------------------------------- */
+
+    variante_id:
+      produit._variantSelectionnee
+        ? produit._variantSelectionnee.id
+        : null,
+
+    variante_nom:
+      produit._variantSelectionnee
+        ? produit._variantSelectionnee.nom
+        : "",
+
+    variante_valeur:
+      produit._variantSelectionnee
+        ? produit._variantSelectionnee.valeur
+        : "",
+
+    variante_image_url:
+      produit._variantSelectionnee
+        ? (
+            produit._variantSelectionnee.image_url ||
+            ""
+          )
+        : "",
 
     statut:
       produit.statut,
