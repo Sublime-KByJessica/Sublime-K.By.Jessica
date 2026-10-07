@@ -7371,9 +7371,19 @@ const image =
             </h3>
 
 
-            <p>
-              ${produit.description || ""}
-            </p>
+            <p
+  style="
+    display:-webkit-box;
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    line-height:1.5;
+    max-height:4.5em;
+  "
+>
+  ${produit.description || ""}
+</p>
 
 
             ${
