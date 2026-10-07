@@ -4,7 +4,7 @@
 <head>
 
   <meta charset="UTF-8">
-
+f
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
@@ -7388,66 +7388,6 @@ const image =
                 : ""
             }
 
-        ${
-          variantesActives.length
-            ? `
-              <div
-                style="
-                  margin:20px 0;
-                  padding:14px;
-                  border:1px solid var(--bordure);
-                  border-radius:14px;
-                  background:#FAF7F5;
-                "
-              >
-
-                <label
-                  for="selecteurVarianteProduit"
-                  style="
-                    display:block;
-                    font-weight:600;
-                    margin-bottom:8px;
-                  "
-                >
-                  ${echapperHTML(
-                    variantesActives[0]?.nom || "Choix"
-                  )}
-                </label>
-
-                <select
-                  id="selecteurVarianteProduit"
-                  style="
-                    width:100%;
-                    padding:12px;
-                    border:1px solid var(--bordure);
-                    border-radius:10px;
-                    background:white;
-                    font-size:1rem;
-                  "
-                >
-                  <option value="">
-                    Sélectionner une option
-                  </option>
-
-                  ${
-                    variantesActives
-                      .map(
-                        variante => `
-                          <option value="${echapperHTML(variante.id)}">
-                            ${echapperHTML(variante.valeur)}
-                          </option>
-                        `
-                      )
-                      .join("")
-                  }
-
-                </select>
-
-              </div>
-            `
-            : ""
-        }
-
             <div class="product-actions">
 
               <button
@@ -8238,6 +8178,66 @@ photosProduit.forEach(
                 style="margin:20px 0;"
               >
                 ${prix}
+              </div>
+            `
+            : ""
+        }
+
+        ${
+          variantesActives.length
+            ? `
+              <div
+                style="
+                  margin:20px 0;
+                  padding:14px;
+                  border:1px solid var(--bordure);
+                  border-radius:14px;
+                  background:#FAF7F5;
+                "
+              >
+
+                <label
+                  for="selecteurVarianteProduit"
+                  style="
+                    display:block;
+                    font-weight:600;
+                    margin-bottom:8px;
+                  "
+                >
+                  ${echapperHTML(
+                    variantesActives[0]?.nom || "Choix"
+                  )}
+                </label>
+
+                <select
+                  id="selecteurVarianteProduit"
+                  style="
+                    width:100%;
+                    padding:12px;
+                    border:1px solid var(--bordure);
+                    border-radius:10px;
+                    background:white;
+                    font-size:1rem;
+                  "
+                >
+                  <option value="">
+                    Sélectionner une option
+                  </option>
+
+                  ${
+                    variantesActives
+                      .map(
+                        variante => `
+                          <option value="${echapperHTML(variante.id)}">
+                            ${echapperHTML(variante.valeur)}
+                          </option>
+                        `
+                      )
+                      .join("")
+                  }
+
+                </select>
+
               </div>
             `
             : ""
