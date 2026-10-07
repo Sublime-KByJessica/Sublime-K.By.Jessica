@@ -6364,6 +6364,33 @@ function validerPersonnalisation() {
         return;
       }
 
+       /*
+       * La fiche est déjà ouverte pour ce produit.
+       * On vérifie qu'une variante a bien été choisie
+       * avant de continuer vers la personnalisation.
+       */
+
+      const varianteSelectionnee =
+        produitFicheActuel._variantSelectionnee || null;
+
+      if (!varianteSelectionnee) {
+
+        alert(
+          "Veuillez sélectionner une option avant de continuer."
+        );
+
+        return;
+      }
+
+      /*
+       * On conserve la variante directement dans le produit
+       * pour qu'elle puisse être récupérée par
+       * la fenêtre de personnalisation puis le panier.
+       */
+
+      produit._variantSelectionnee =
+        varianteSelectionnee;
+
     }
 
   }
