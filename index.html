@@ -6818,6 +6818,36 @@ const produit = {
           design
         );
 
+      /* -------------------------------------------
+   VARIANTE DU PRODUIT
+------------------------------------------- */
+
+const varianteNom =
+  article.variante_nom || "";
+
+const varianteValeur =
+  article.variante_valeur || "";
+
+const aUneVariante =
+  !!(
+    varianteValeur
+  );
+
+
+const blocVariante =
+  aUneVariante
+    ? `
+      <div
+        class="panier-personnalisation"
+        style="margin-top:6px;"
+      >
+        <div>
+          🎨 ${echapperHTML(varianteNom || "Variante")} :
+          ${echapperHTML(varianteValeur)}
+        </div>
+      </div>
+    `
+    : "";
 
       /* -------------------------------------------
          BLOC PERSONNALISATION
@@ -6910,7 +6940,8 @@ const produit = {
             ${echapperHTML(article.nom || "")}
           </div>
 
-
+          ${blocVariante}
+          
           ${blocPersonnalisation}
 
 
