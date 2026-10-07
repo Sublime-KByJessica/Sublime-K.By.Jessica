@@ -13541,6 +13541,224 @@ document
     }
   );
 
+  /* -----------------------------------------------------
+   📷 TÉLÉVERSEMENT PHOTO DE VARIANTE
+----------------------------------------------------- */
+
+async function envoyerImageVarianteDansSupabase(fichier){
+
+  if(!fichier){
+    return;
+  }
+
+
+  if(!fichier.type.startsWith("image/")){
+
+    alert(
+      "❌ Merci de sélectionner une image."
+    );
+
+    return;
+  }
+
+
+  if(fichier.size > 10 * 1024 * 1024){
+
+    alert(
+      "❌ L'image est trop lourde. Maximum : 10 Mo."
+    );
+
+    return;
+  }
+
+
+  if(!produitVariantesActuel){
+
+    alert(
+      "💡 Enregistre d'abord le produit avant d'ajouter une photo de variante."
+    );
+
+    return;
+  }
+
+
+  if(!(await verifierAdmin())){
+    return;
+  }
+
+
+  const message =
+    document.getElementById(
+      "messageImageVariante"
+    );
+
+
+  if(message){
+
+    message.textContent =
+      "⏳ Envoi de la photo...";
+
+  }
+
+
+  try{
+
+    const extension =
+      (
+        fichier.name
+          .split(".")
+          .pop() ||
+        "jpg"
+      )
+      .toLowerCase()
+      .replace(
+        /[^a-z0-9]/g,
+        ""
+      );
+
+
+    const nomFichier =
+      "variante_" +
+      produitVariantesActuel +
+      "_" +
+      Date.now() +
+      "_" +
+      Math.random()
+        .toString(36)
+        .slice(2,8) +
+      "." +
+      extension;
+
+
+    const chemin =
+      "products/" +
+      nomFichier;
+
+
+    const {
+      error: erreurUpload
+    } =
+      await client
+        .storage
+        .from("product-images")
+        .upload(
+          chemin,
+          fichier,
+          {
+            cacheControl:"3600",
+            upsert:false,
+            contentType:fichier.type
+          }
+        );
+
+
+    if(erreurUpload){
+      throw erreurUpload;
+    }
+
+
+    const {
+      data
+    } =
+      client
+        .storage
+        .from("product-images")
+        .getPublicUrl(
+          chemin
+        );
+
+
+    const url =
+      data?.publicUrl ||
+      "";
+
+
+    if(!url){
+
+      throw new Error(
+        "Impossible de récupérer l'URL publique de la photo."
+      );
+
+    }
+
+
+    const champ =
+      document.getElementById(
+        "varianteImageUrl"
+      );
+
+
+    if(champ){
+
+      champ.value =
+        url;
+
+    }
+
+
+    if(message){
+
+      message.textContent =
+        "✅ Photo envoyée avec succès.";
+
+    }
+
+
+  }catch(error){
+
+    console.error(
+      "Erreur envoi photo variante :",
+      error
+    );
+
+
+    if(message){
+
+      message.textContent =
+        "❌ Impossible d'envoyer la photo.";
+
+    }
+
+
+    alert(
+      "❌ Impossible d'envoyer la photo :\n" +
+      (
+        error.message ||
+        error
+      )
+    );
+
+  }
+
+}
+
+
+/* -----------------------------------------------------
+   📁 SÉLECTION PHOTO DEPUIS LA TABLETTE
+----------------------------------------------------- */
+
+document
+  .getElementById(
+    "fichierImageVariante"
+  )
+  ?.addEventListener(
+    "change",
+    async function(){
+
+      const fichier =
+        this.files?.[0];
+
+
+      await envoyerImageVarianteDansSupabase(
+        fichier
+      );
+
+
+      this.value =
+        "";
+
+    }
+  );
 
 /* -----------------------------------------------------
    SUPPRIMER UNE VARIANTE
