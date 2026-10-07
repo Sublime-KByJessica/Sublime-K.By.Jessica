@@ -8264,7 +8264,88 @@ photosProduit.forEach(
 
   overlay.classList.add("active");
 
+        overlay.classList.add("active");
+
+  const selecteurVariante =
+    document.getElementById(
+      "selecteurVarianteProduit"
+    );
+
+  if (selecteurVariante) {
+
+    const imagePrincipale =
+      document.querySelector(
+        '[data-fiche-image="0"]'
+      );
+
+    const imagePrincipaleOriginale =
+      produit.image_url || "";
+
+    selecteurVariante.addEventListener(
+      "change",
+      function() {
+
+        const variante =
+          variantesActives.find(
+            function(item) {
+              return (
+                item.id ===
+                selecteurVariante.value
+              );
+            }
+          );
+
+        varianteSelectionneeFiche =
+          variante || null;
+
+        if (variante) {
+
+          produitFicheActuel._variantSelectionnee =
+            variante;
+
+        } else {
+
+          delete produitFicheActuel._variantSelectionnee;
+
+        }
+
+        if (
+          imagePrincipale &&
+          variante &&
+          variante.image_url
+        ) {
+
+          imagePrincipale.src =
+            variante.image_url;
+
+          imagePrincipale.alt =
+            variante.valeur ||
+            produit.nom;
+
+          afficherImageFicheProduit(0);
+
+        } else if (
+          imagePrincipale &&
+          imagePrincipaleOriginale
+        ) {
+
+          imagePrincipale.src =
+            imagePrincipaleOriginale;
+
+          imagePrincipale.alt =
+            produit.nom;
+
+          afficherImageFicheProduit(0);
+
+        }
+
+      }
+    );
+
+  }
+
   initialiserSwipeFicheProduit();
+
 
   document.body.style.overflow =
     "hidden";
