@@ -11144,15 +11144,14 @@ async function confirmerCommande() {
       "Erreur inconnue";
 
     alert(
-
-      "❌ La commande n'a pas pu être enregistrée.\n\n" +
-
-      "Détail technique :\n" +
-      messageErreur +
-
-      "\n\nVotre panier n'a pas été vidé."
-
-    );
+  "❌ La commande n'a pas pu être enregistrée.\n\n" +
+  "ERREUR SUPABASE :\n\n" +
+  JSON.stringify(
+    error,
+    Object.getOwnPropertyNames(error),
+    2
+  )
+);
 
 
   } finally {
