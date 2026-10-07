@@ -11129,7 +11129,6 @@ async function confirmerCommande() {
 
     );
 
-
   } catch (error) {
 
     console.error(
@@ -11137,17 +11136,25 @@ async function confirmerCommande() {
       error
     );
 
+    const messageErreur =
+      error?.message ||
+      error?.error_description ||
+      error?.details ||
+      error?.hint ||
+      "Erreur inconnue";
 
     alert(
 
-      "❌ Une erreur est survenue lors de l'enregistrement de votre commande.\n\n" +
+      "❌ La commande n'a pas pu être enregistrée.\n\n" +
 
-      "Votre panier n'a pas été vidé.\n\n" +
+      "Détail technique :\n" +
+      messageErreur +
 
-      "Vous pouvez réessayer."
+      "\n\nVotre panier n'a pas été vidé."
 
     );
 
+  }
 
   } finally {
 
