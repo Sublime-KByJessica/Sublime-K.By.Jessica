@@ -6606,226 +6606,328 @@ const produit = {
 
     function afficherPanier() {
 
-      const zone =
-        document.getElementById(
-          "panierContenu"
-        );
+  const zone =
+    document.getElementById(
+      "panierContenu"
+    );
 
-      const total =
-        document.getElementById(
-          "panierTotal"
-        );
-
-
-      if (!zone || !total) {
-        return;
-      }
+  const total =
+    document.getElementById(
+      "panierTotal"
+    );
 
 
-      if (panier.length === 0) {
-
-        zone.innerHTML = `
-
-          <div class="panier-vide">
-
-            <strong>
-              🛒 Votre panier est vide
-            </strong>
-
-            <p>
-              Ajoutez vos créations préférées
-              pour les retrouver ici.
-            </p>
-
-          </div>
-
-        `;
+  if (!zone || !total) {
+    return;
+  }
 
 
-        total.textContent =
-          "0,00 €";
+  /* ---------------------------------------------
+     PANIER VIDE
+  --------------------------------------------- */
 
-        return;
+  if (panier.length === 0) {
 
-      }
+    zone.innerHTML = `
 
+      <div class="panier-vide">
 
-      zone.innerHTML = "";
+        <strong>
+          🛒 Votre panier est vide
+        </strong>
 
+        <p>
+          Ajoutez vos créations préférées
+          pour les retrouver ici.
+        </p>
 
-      panier.forEach(
-        function(article) {
+      </div>
 
-          const ligne =
-            document.createElement("div");
-
-          ligne.className =
-            "panier-ligne";
-
-const image =
-  article.image_url
-
-    ? `
-      <img
-        src="${article.image_url}"
-        alt="${article.nom}"
-        loading="lazy"
-      >
-    `
-
-    : `
-      <span>
-        ✨
-      </span>
     `;
-         
-
-          const sousTotal =
-            Number(article.prix || 0) *
-            Number(article.quantite || 0);
 
 
-          ligne.innerHTML = `
+    total.textContent =
+      "0,00 €";
 
-            <div class="panier-image">
-              ${image}
-            </div>
+    return;
 
-
-            <div>
-
-              <div class="panier-ligne-nom">
-                ${article.nom}
-              </div>
-
-${
-  article.prenom ||
-  article.police ||
-  article.couleur ||
-  article.library_design_id
-    ? `
-      <div class="panier-personnalisation">
-
-        ${
-          article.prenom
-            ? `
-              ✏️ Prénom :
-              ${echapperHTML(
-                article.prenom
-              )}
-            `
-            : ""
-        }
-
-        ${
-          article.police
-            ? `
-              <br>
-
-              🔤 Police :
-              ${echapperHTML(
-                article.police
-              )}
-            `
-            : ""
-        }
-
-        ${
-          article.couleur
-            ? `
-              <br>
-
-              🌈 Couleur :
-              ${echapperHTML(
-                article.couleur
-              )}
-            `
-            : ""
-        }
-
-        ${
-          article.library_design_id
-            ? `
-              <br>
-
-              🎨 Design sélectionné :
-              ${echapperHTML(
-                article.library_design_id
-              )}
-            `
-            : ""
-        }
-
-            </div>
-
-      <button
-        type="button"
-        class="modifier-personnalisation"
-        onclick="modifierPersonnalisation('${article.id}')"
-      >
-        ✏️ Modifier la personnalisation
-      </button>
-    `
-    : ""
-}
-
-              <div class="panier-ligne-prix">
-                ${formaterPrix(sousTotal)}
-              </div>
+  }
 
 
-              <div class="panier-actions-ligne">
-
-                <button
-                  type="button"
-                  class="quantite-button"
-                  onclick="modifierQuantite('${article.id}', -1)"
-                >
-                  −
-                </button>
+  zone.innerHTML = "";
 
 
-                <span class="quantite">
-                  ${article.quantite}
-                </span>
+  /* ---------------------------------------------
+     AFFICHER CHAQUE ARTICLE
+  --------------------------------------------- */
+
+  panier.forEach(
+    function(article) {
+
+      const ligne =
+        document.createElement("div");
+
+      ligne.className =
+        "panier-ligne";
 
 
-                <button
-                  type="button"
-                  class="quantite-button"
-                  onclick="modifierQuantite('${article.id}', 1)"
-                >
-                  +
-                </button>
+      /* -------------------------------------------
+         IMAGE
+      ------------------------------------------- */
 
+      const image =
+        article.image_url
 
-                <button
-                  type="button"
-                  class="supprimer-panier"
-                  onclick="supprimerDuPanier('${article.id}')"
-                >
-                  Supprimer
-                </button>
+          ? `
+            <img
+              src="${article.image_url}"
+              alt="${echapperHTML(article.nom || "")}"
+              loading="lazy"
+            >
+          `
 
-              </div>
-
-            </div>
-
+          : `
+            <span>
+              ✨
+            </span>
           `;
 
 
-          zone.appendChild(ligne);
+      /* -------------------------------------------
+         SOUS-TOTAL
+      ------------------------------------------- */
 
-        }
-      );
+      const sousTotal =
+        Number(article.prix || 0) *
+        Number(article.quantite || 0);
 
 
-      total.textContent =
-        formaterPrix(
-          calculerTotalPanier()
+      /* -------------------------------------------
+         PERSONNALISATION
+         
+         Les données sont stockées dans :
+         article.personnalisation
+      ------------------------------------------- */
+
+      const personnalisation =
+        article.personnalisation || null;
+
+
+      const prenom =
+        personnalisation &&
+        personnalisation.prenom
+          ? personnalisation.prenom
+          : "";
+
+
+      const police =
+        personnalisation &&
+        (
+          personnalisation.policeNom ||
+          personnalisation.police
+        )
+          ? (
+              personnalisation.policeNom ||
+              personnalisation.police
+            )
+          : "";
+
+
+      const couleur =
+        personnalisation &&
+        (
+          personnalisation.couleurNom ||
+          personnalisation.couleur
+        )
+          ? (
+              personnalisation.couleurNom ||
+              personnalisation.couleur
+            )
+          : "";
+
+
+      const design =
+        personnalisation &&
+        (
+          personnalisation.designNom ||
+          personnalisation.designId
+        )
+          ? (
+              personnalisation.designNom ||
+              personnalisation.designId
+            )
+          : "";
+
+
+      /* -------------------------------------------
+         DÉTECTER S'IL Y A UNE PERSONNALISATION
+      ------------------------------------------- */
+
+      const aUnePersonnalisation =
+        !!(
+          prenom ||
+          police ||
+          couleur ||
+          design
         );
 
+
+      /* -------------------------------------------
+         BLOC PERSONNALISATION
+      ------------------------------------------- */
+
+      const blocPersonnalisation =
+        aUnePersonnalisation
+
+          ? `
+
+            <div class="panier-personnalisation">
+
+              ${
+                prenom
+                  ? `
+                    <div>
+                      ✏️ Prénom :
+                      ${echapperHTML(prenom)}
+                    </div>
+                  `
+                  : ""
+              }
+
+
+              ${
+                police
+                  ? `
+                    <div>
+                      🔤 Police :
+                      ${echapperHTML(police)}
+                    </div>
+                  `
+                  : ""
+              }
+
+
+              ${
+                couleur
+                  ? `
+                    <div>
+                      🌈 Couleur :
+                      ${echapperHTML(couleur)}
+                    </div>
+                  `
+                  : ""
+              }
+
+
+              ${
+                design
+                  ? `
+                    <div>
+                      🎨 Design :
+                      ${echapperHTML(design)}
+                    </div>
+                  `
+                  : ""
+              }
+
+            </div>
+
+
+            <button
+              type="button"
+              class="modifier-personnalisation"
+              onclick="modifierPersonnalisation('${article.id}')"
+            >
+              ✏️ Modifier la personnalisation
+            </button>
+
+          `
+
+          : "";
+
+
+      /* -------------------------------------------
+         CONTENU DE LA LIGNE
+      ------------------------------------------- */
+
+      ligne.innerHTML = `
+
+        <div class="panier-image">
+          ${image}
+        </div>
+
+
+        <div>
+
+          <div class="panier-ligne-nom">
+            ${echapperHTML(article.nom || "")}
+          </div>
+
+
+          ${blocPersonnalisation}
+
+
+          <div class="panier-ligne-prix">
+            ${formaterPrix(sousTotal)}
+          </div>
+
+
+          <div class="panier-actions-ligne">
+
+            <button
+              type="button"
+              class="quantite-button"
+              onclick="modifierQuantite('${article.id}', -1)"
+            >
+              −
+            </button>
+
+
+            <span class="quantite">
+              ${article.quantite}
+            </span>
+
+
+            <button
+              type="button"
+              class="quantite-button"
+              onclick="modifierQuantite('${article.id}', 1)"
+            >
+              +
+            </button>
+
+
+            <button
+              type="button"
+              class="supprimer-panier"
+              onclick="supprimerDuPanier('${article.id}')"
+            >
+              Supprimer
+            </button>
+
+          </div>
+
+        </div>
+
+      `;
+
+
+      zone.appendChild(ligne);
+
     }
+  );
+
+
+  /* ---------------------------------------------
+     TOTAL DU PANIER
+  --------------------------------------------- */
+
+  total.textContent =
+    formaterPrix(
+      calculerTotalPanier()
+    );
+
+}
 
 
     function ouvrirPanier() {
