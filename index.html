@@ -5994,21 +5994,15 @@ function validerPersonnalisation() {
       : "";
 
 
-  /* ---------------------------------------------
-     VÉRIFICATION DU PRÉNOM
-  --------------------------------------------- */
-
-  if (!personnalisationChoix.prenom) {
-
-    alert(
-      "✏️ Merci d'indiquer un prénom."
-    );
-
-    champPrenom?.focus();
-
-    return;
-
-  }
+  /*
+   * Le prénom / texte et le design sont tous les deux facultatifs.
+   *
+   * Le client peut choisir :
+   * - un design uniquement
+   * - un prénom / texte uniquement
+   * - un design + un prénom / texte
+   * - aucune personnalisation
+   */
 
 
   /* ---------------------------------------------
@@ -6053,28 +6047,36 @@ function validerPersonnalisation() {
           personnalisationChoix.prenom,
 
         police:
-  personnalisationChoix.police,
+          personnalisationChoix.police,
 
-policeNom:
-  personnalisationChoix.policeNom ||
-  personnalisationChoix.police,
+        policeNom:
+          personnalisationChoix.policeNom ||
+          personnalisationChoix.police,
 
-couleur:
-  personnalisationChoix.couleur,
+        couleur:
+          personnalisationChoix.couleur,
 
-couleurNom:
-  personnalisationChoix.couleurNom || "",
+        couleurNom:
+          personnalisationChoix.couleurNom ||
+          "",
 
-couleurType:
-  personnalisationChoix.couleurType ||
-  "solid",
+        couleurType:
+          personnalisationChoix.couleurType ||
+          "solid",
 
-couleurGradient:
-  personnalisationChoix.couleurGradient ||
-  ""
+        couleurGradient:
+          personnalisationChoix.couleurGradient ||
+          ""
 
       };
 
+
+      /*
+       * Si un design est choisi,
+       * il devient l'image principale de l'article.
+       *
+       * Sinon, on conserve l'image originale du produit.
+       */
 
       article.image_url =
         personnalisationChoix.designImage ||
@@ -6102,6 +6104,170 @@ couleurGradient:
     }
 
   }
+
+
+  /* ---------------------------------------------
+     NOUVEL ARTICLE
+  --------------------------------------------- */
+
+  const produit =
+    personnalisationProduitActuel;
+
+
+  /*
+   * Vérification du stock avant ajout
+   */
+
+  if (
+    produit.statut === "stock" &&
+    Number.isFinite(Number(produit.stock_quantite))
+  ) {
+
+    const quantiteDejaDansPanier =
+      panier.reduce(
+        function(total, article) {
+
+          return (
+            String(article.produit_id || article.id) ===
+            String(produit.id)
+          )
+            ? total + Number(article.quantite || 0)
+            : total;
+
+        },
+        0
+      );
+
+
+    if (
+      quantiteDejaDansPanier >=
+      Number(produit.stock_quantite)
+    ) {
+
+      alert(
+        "❌ Vous avez atteint la quantité disponible pour ce produit.\n\n" +
+        "Stock disponible : " +
+        Number(produit.stock_quantite) +
+        " unité(s)."
+      );
+
+      return;
+
+    }
+
+  }
+
+
+  const prix =
+    Number(produit.prix || 0);
+
+
+  const idPersonnalise =
+    String(produit.id) +
+    "-" +
+    Date.now();
+
+
+  panier.push({
+
+    id:
+      idPersonnalise,
+
+    produit_id:
+      produit.id,
+
+    nom:
+      produit.nom,
+
+    prix:
+      prix,
+
+    /*
+     * Si un design est choisi,
+     * on affiche son image.
+     *
+     * Sinon, on utilise l'image normale du produit.
+     */
+
+    image_url:
+      personnalisationChoix.designImage ||
+      produit.image_url ||
+      "",
+
+    statut:
+      produit.statut,
+
+    stock_quantite:
+      Number.isFinite(Number(produit.stock_quantite))
+        ? Number(produit.stock_quantite)
+        : null,
+
+    quantite:
+      1,
+
+    personnalisation: {
+
+      categorieId:
+        personnalisationChoix.categorieId,
+
+      sousCategorieId:
+        personnalisationChoix.sousCategorieId,
+
+      designId:
+        personnalisationChoix.designId,
+
+      designNom:
+        personnalisationChoix.designNom,
+
+      designImage:
+        personnalisationChoix.designImage,
+
+      prenom:
+        personnalisationChoix.prenom,
+
+      police:
+        personnalisationChoix.police,
+
+      policeNom:
+        personnalisationChoix.policeNom ||
+        personnalisationChoix.police,
+
+      couleur:
+        personnalisationChoix.couleur,
+
+      couleurNom:
+        personnalisationChoix.couleurNom ||
+        "",
+
+      couleurType:
+        personnalisationChoix.couleurType ||
+        "solid",
+
+      couleurGradient:
+        personnalisationChoix.couleurGradient ||
+        ""
+
+    }
+
+  });
+
+
+  sauvegarderPanier();
+
+  mettreAJourCompteurPanier();
+
+
+  personnalisationArticleEnModification =
+    null;
+
+
+  fermerPersonnalisation();
+
+  afficherPanier();
+
+  ouvrirPanier();
+
+}
 
 
   /* ---------------------------------------------
