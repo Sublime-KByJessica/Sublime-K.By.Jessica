@@ -4263,19 +4263,19 @@ let personnalisationChoix = {
 
   designImage: "",
 
-  prenom: "",
+      prenom: "",
 
-  police: "Arial",
+      police: "Arial",
 
-  policeNom: "Arial",
+      policeNom: "Arial",
 
-  couleur: "#E6C2BF",
+      couleur: "#E6C2BF",
 
-  couleurNom: "Signature Sublime'K 01",
+      couleurNom: "",
 
-  couleurType: "solid",
+      couleurType: "solid",
 
-  couleurGradient: ""
+      couleurGradient: ""
 
 };
 
@@ -4437,15 +4437,15 @@ if (etapeDesign) {
 
       prenom: "",
 
-      police: "Arial",
+      police: "",
 
-      policeNom: "Arial",
+      policeNom: "",
 
-      couleur: "#E6C2BF",
+      couleur: "",
 
       couleurNom: "",
 
-      couleurType: "solid",
+      couleurType: "",
 
       couleurGradient: ""
 
@@ -4453,6 +4453,25 @@ if (etapeDesign) {
 
   }
 
+    /* ---------------------------------------------
+     SI AUCUN PRÉNOM / TEXTE
+     Pas de police ni de couleur sélectionnée.
+  --------------------------------------------- */
+
+  if (
+    !personnalisationChoix.prenom ||
+    !personnalisationChoix.prenom.trim()
+  ) {
+
+    personnalisationChoix.police = "";
+    personnalisationChoix.policeNom = "";
+
+    personnalisationChoix.couleur = "";
+    personnalisationChoix.couleurNom = "";
+    personnalisationChoix.couleurType = "";
+    personnalisationChoix.couleurGradient = "";
+
+  }
 
   /* ---------------------------------------------
      VARIANTE DU PRODUIT SÉLECTIONNÉE
@@ -5489,33 +5508,8 @@ async function chargerPolicesPublic() {
       }
     );
 
-    /*
-     * Si aucune police n'est encore définie,
-     * on prend la première disponible.
-     */
-    if (
-      !personnalisationChoix.police &&
-      data.length > 0
-    ) {
 
-      personnalisationChoix.police =
-        data[0].famille_css;
-
-      const premierBouton =
-        zone.querySelector(
-          ".personnalisation-police"
-        );
-
-      if (premierBouton) {
-
-        premierBouton.classList.add(
-          "active"
-        );
-
-      }
-
-    }
-
+    
     mettreAJourApercuPersonnalisation();
 
   } catch (error) {
