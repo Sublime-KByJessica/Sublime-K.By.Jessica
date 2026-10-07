@@ -6350,15 +6350,39 @@ function validerPersonnalisation() {
    */
 
   const prix =
-    Number(produit.prix || 0);
+  Number(produit.prix || 0);
 
 
-  const existant =
-    panier.find(
-      article =>
-        String(article.id) ===
-        String(produit.id)
-    );
+/* =================================================
+   VARIANTE / COULEUR SÉLECTIONNÉE
+================================================= */
+
+const varianteSelectionnee =
+  produitFicheActuel &&
+  produitFicheActuel._variantSelectionnee
+    ? produitFicheActuel._variantSelectionnee
+    : null;
+
+
+/*
+ * Un même produit avec deux variantes différentes
+ * doit pouvoir être ajouté séparément au panier.
+ */
+
+const idPanier =
+  varianteSelectionnee
+    ? String(produit.id) +
+      "-variante-" +
+      String(varianteSelectionnee.id)
+    : String(produit.id);
+
+
+const existant =
+  panier.find(
+    article =>
+      String(article.id) ===
+      String(idPanier)
+  );
 
 
   if (existant) {
@@ -6370,7 +6394,7 @@ function validerPersonnalisation() {
     panier.push({
 
       id:
-        produit.id,
+        idPanier,
 
       produit_id:
         produit.id,
@@ -6383,6 +6407,29 @@ function validerPersonnalisation() {
 
       image_url:
         produit.image_url || "",
+
+        variante_id:
+    varianteSelectionnee
+      ? varianteSelectionnee.id
+      : null,
+
+  variante_nom:
+    varianteSelectionnee
+      ? varianteSelectionnee.nom
+      : "",
+
+  variante_valeur:
+    varianteSelectionnee
+      ? varianteSelectionnee.valeur
+      : "",
+
+  variante_image_url:
+    varianteSelectionnee
+      ? (
+          varianteSelectionnee.image_url ||
+          ""
+        )
+      : "",
 
       statut:
         produit.statut,
