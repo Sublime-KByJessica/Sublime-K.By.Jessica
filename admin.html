@@ -606,6 +606,32 @@ button{cursor:pointer}
   font-size:12px;
 }
 
+  .statut-commande-select{
+  padding:7px 10px;
+  border:1px solid var(--bordure);
+  border-radius:10px;
+  background:white;
+  color:var(--texte);
+  font-weight:bold;
+  font-size:12px;
+}
+
+.commande-actions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.btn-supprimer-test{
+  background:var(--danger);
+  color:var(--danger-texte);
+  border:none;
+  border-radius:10px;
+  padding:8px 11px;
+  font-weight:bold;
+}
+  
 .commande-articles{
   margin-top:15px;
   padding-top:15px;
@@ -6276,16 +6302,59 @@ async function afficherCommande(commande){
         )}
       </div>
 
-      <span class="statut-commande">
-        ${echapperHTML(
-          commande.statut||"nouvelle"
-        )}
-      </span>
-
       <select
-        class="statut-paiement"
-        data-order-id="${commande.id}"
-      >
+  class="statut-commande-select"
+  data-order-id="${commande.id}"
+>
+
+  <option
+    value="nouvelle"
+    ${(commande.statut||"nouvelle")==="nouvelle"?"selected":""}
+  >
+    🆕 Nouvelle
+  </option>
+
+  <option
+    value="en_preparation"
+    ${commande.statut==="en_preparation"?"selected":""}
+  >
+    🔨 En préparation
+  </option>
+
+  <option
+    value="expediee"
+    ${commande.statut==="expediee"?"selected":""}
+  >
+    🚚 Expédiée
+  </option>
+
+  <option
+    value="livree"
+    ${commande.statut==="livree"?"selected":""}
+  >
+    📬 Livrée
+  </option>
+
+  <option
+    value="annulee"
+    ${commande.statut==="annulee"?"selected":""}
+  >
+    ❌ Annulée
+  </option>
+
+  <option
+    value="test"
+    ${commande.statut==="test"?"selected":""}
+  >
+    🧪 Test
+  </option>
+
+</select>
+
+<select
+  class="statut-paiement"
+  data-order-id="${commande.id}"
+>
 
         <option
           value="en_attente"
@@ -6310,10 +6379,28 @@ async function afficherCommande(commande){
 
       </select>
 
-    </div>
+<div class="commande-actions">
+
+  ${
+    commande.statut==="test"
+      ? `
+        <button
+          type="button"
+          class="btn-supprimer-test"
+          data-delete-test-order="${commande.id}"
+        >
+          🗑️ Supprimer le test
+        </button>
+      `
+      : ""
+  }
+
+</div>
+
+</div>
 
 
-    <div class="commande-details">
+<div class="commande-details">
 
       <p>
         👤
@@ -6464,7 +6551,6 @@ document
     chargerCommandes
   );
 
-
 document
   .getElementById(
     "listeCommandes"
@@ -6472,6 +6558,72 @@ document
   .addEventListener(
     "change",
     async function(event){
+
+      /*
+       * ================================
+       * STATUT DE LA COMMANDE
+       * ================================
+       */
+
+      if(
+        event.target.classList.contains(
+          "statut-commande-select"
+        )
+      ){
+
+        const orderId =
+          event.target.dataset.orderId;
+
+        const nouveauStatut =
+          event.target.value;
+
+
+        if(!(await verifierAdmin())){
+          return;
+        }
+
+
+        const {
+          error
+        } =
+          await client
+            .from("orders")
+            .update({
+              statut:
+                nouveauStatut
+            })
+            .eq(
+              "id",
+              orderId
+            );
+
+
+        if(error){
+
+          console.error(error);
+
+          alert(
+            "❌ Impossible de modifier le statut de la commande : "+
+            error.message
+          );
+
+          return;
+
+        }
+
+
+        await chargerCommandes();
+
+        return;
+
+      }
+
+
+      /*
+       * ================================
+       * STATUT DU PAIEMENT
+       * ================================
+       */
 
       if(
         !event.target.classList.contains(
@@ -6504,7 +6656,10 @@ document
             payment_status:
               nouveauStatut
           })
-          .eq("id",orderId);
+          .eq(
+            "id",
+            orderId
+          );
 
 
       if(error){
@@ -6519,6 +6674,178 @@ document
         return;
 
       }
+
+
+      await chargerCommandes();
+
+    }
+  );
+
+
+/*
+ * =====================================================
+ * 🧪 SUPPRIMER UNE COMMANDE DE TEST
+ * =====================================================
+ */
+
+document
+  .getElementById(
+    "listeCommandes"
+  )
+  .addEventListener(
+    "click",
+    async function(event){
+
+      const bouton =
+        event.target.closest(
+          "[data-delete-test-order]"
+        );
+
+
+      if(!bouton){
+        return;
+      }
+
+
+      const orderId =
+        bouton.dataset.deleteTestOrder;
+
+
+      if(!(await verifierAdmin())){
+        return;
+      }
+
+
+      const confirmation =
+        confirm(
+          "⚠️ SUPPRESSION D'UNE COMMANDE DE TEST\n\n" +
+          "Cette action supprimera définitivement :\n" +
+          "• la commande\n" +
+          "• ses articles\n\n" +
+          "Cette action est irréversible.\n\n" +
+          "Confirmer la suppression de cette commande TEST ?"
+        );
+
+
+      if(!confirmation){
+        return;
+      }
+
+
+      /*
+       * Vérification supplémentaire :
+       * on ne supprime que si la commande
+       * est toujours marquée comme TEST.
+       */
+
+      const {
+        data:commande,
+        error:erreurCommande
+      } =
+        await client
+          .from("orders")
+          .select("id, statut, numero_commande")
+          .eq(
+            "id",
+            orderId
+          )
+          .single();
+
+
+      if(erreurCommande){
+
+        console.error(erreurCommande);
+
+        alert(
+          "❌ Impossible de vérifier la commande : "+
+          erreurCommande.message
+        );
+
+        return;
+
+      }
+
+
+      if(
+        !commande ||
+        commande.statut!=="test"
+      ){
+
+        alert(
+          "⚠️ Cette commande n'est plus identifiée comme commande TEST.\n\n" +
+          "Elle n'a pas été supprimée."
+        );
+
+        await chargerCommandes();
+
+        return;
+
+      }
+
+
+      /*
+       * Suppression des articles liés
+       */
+
+      const {
+        error:erreurArticles
+      } =
+        await client
+          .from("order_items")
+          .delete()
+          .eq(
+            "order_id",
+            orderId
+          );
+
+
+      if(erreurArticles){
+
+        console.error(erreurArticles);
+
+        alert(
+          "❌ Impossible de supprimer les articles de la commande : "+
+          erreurArticles.message
+        );
+
+        return;
+
+      }
+
+
+      /*
+       * Suppression de la commande
+       */
+
+      const {
+        error:erreurSuppression
+      } =
+        await client
+          .from("orders")
+          .delete()
+          .eq(
+            "id",
+            orderId
+          );
+
+
+      if(erreurSuppression){
+
+        console.error(erreurSuppression);
+
+        alert(
+          "❌ Impossible de supprimer la commande : "+
+          erreurSuppression.message
+        );
+
+        return;
+
+      }
+
+
+      alert(
+        "✅ La commande de test a été supprimée définitivement."
+      );
 
 
       await chargerCommandes();
