@@ -7388,6 +7388,65 @@ const image =
                 : ""
             }
 
+        ${
+          variantesActives.length
+            ? `
+              <div
+                style="
+                  margin:20px 0;
+                  padding:14px;
+                  border:1px solid var(--bordure);
+                  border-radius:14px;
+                  background:#FAF7F5;
+                "
+              >
+
+                <label
+                  for="selecteurVarianteProduit"
+                  style="
+                    display:block;
+                    font-weight:600;
+                    margin-bottom:8px;
+                  "
+                >
+                  ${echapperHTML(
+                    variantesActives[0]?.nom || "Choix"
+                  )}
+                </label>
+
+                <select
+                  id="selecteurVarianteProduit"
+                  style="
+                    width:100%;
+                    padding:12px;
+                    border:1px solid var(--bordure);
+                    border-radius:10px;
+                    background:white;
+                    font-size:1rem;
+                  "
+                >
+                  <option value="">
+                    Sélectionner une option
+                  </option>
+
+                  ${
+                    variantesActives
+                      .map(
+                        variante => `
+                          <option value="${echapperHTML(variante.id)}">
+                            ${echapperHTML(variante.valeur)}
+                          </option>
+                        `
+                      )
+                      .join("")
+                  }
+
+                </select>
+
+              </div>
+            `
+            : ""
+        }
 
             <div class="product-actions">
 
@@ -7791,7 +7850,10 @@ pages.forEach(
 /* =====================================================
    📖 INITIALISER LES CARROUSELS APRÈS AFFICHAGE
 ===================================================== */
-async function ouvrirFicheProduit(produit) {
+let produitFicheActuel = null;
+let varianteSelectionneeFiche = null;
+    
+    async function ouvrirFicheProduit(produit) {
 
   if (!produit) {
     return;
@@ -7818,6 +7880,31 @@ async function ouvrirFicheProduit(produit) {
 
 const photosProduit =
   photosSupplementaires[produit.id] || [];
+
+        const { data: variantesProduit, error: erreurVariantes } =
+    await supabaseClient
+      .from("product_variants")
+      .select("id, nom, valeur, image_url")
+      .eq("product_id", produit.id)
+      .eq("actif", true)
+      .order("ordre", { ascending: true });
+
+  if (erreurVariantes) {
+    console.warn(
+      "Impossible de charger les variantes :",
+      erreurVariantes
+    );
+  }
+
+  const variantesActives =
+    (!erreurVariantes && Array.isArray(variantesProduit))
+      ? variantesProduit
+      : [];
+
+  produitFicheActuel = produit;
+  produitFicheActuel._variantes = variantesActives;
+  varianteSelectionneeFiche = null;
+  delete produitFicheActuel._variantSelectionnee;
 
   const imagesFicheProduit = [];
 
