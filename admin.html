@@ -2176,6 +2176,42 @@ button{cursor:pointer}
         placeholder="https://..."
       >
 
+      <div
+  style="
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-top:8px;
+  "
+>
+  <label
+    for="fichierImageVariante"
+    class="btn"
+    style="
+      display:inline-block;
+      cursor:pointer;
+    "
+  >
+    📁 Choisir une photo depuis la tablette
+  </label>
+
+  <input
+    type="file"
+    id="fichierImageVariante"
+    accept="image/*"
+    style="display:none;"
+  >
+</div>
+
+<div
+  id="messageImageVariante"
+  class="stock-info"
+  style="margin-top:8px;"
+>
+  Tu peux choisir directement une image depuis ta galerie ou tes fichiers.
+</div>
+
       <small class="personnalisation-aide">
         Cette photo sera affichée automatiquement lorsque
         le client choisira cette variante.
