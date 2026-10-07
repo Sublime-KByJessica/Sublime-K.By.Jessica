@@ -10912,98 +10912,71 @@ async function confirmerCommande() {
        Les prix sont recalculés côté Supabase.
     --------------------------------------------- */
 
-    const articlesCommande =
-      panier.map(function(article) {
+   const articlesCommande = panier.map(article => {
 
-        const quantite =
-          Number(
-            article.quantite || 1
-          );
+  const personnalisation =
+    article.personnalisation || {};
 
+  return {
 
-        const personnalisation =
-          article.personnalisation ||
-          null;
+    product_id:
+      article.produit_id ||
+      article.id ||
+      null,
 
+    quantite:
+      Number(article.quantite || 1),
 
-        return {
+    personnalisation_active:
+      Boolean(
+        personnalisation.active
+      ),
 
-          product_id:
-            article.produit_id ||
-            article.id ||
-            null,
+    library_design_id:
+      personnalisation.designId &&
+      typeof personnalisation.designId === "string" &&
+      personnalisation.designId.trim() !== ""
+        ? personnalisation.designId.trim()
+        : null,
 
+    customer_image_path:
+      personnalisation.customerImagePath ||
+      null,
 
-          quantite:
-            quantite,
+    prenom:
+      personnalisation.prenom ||
+      null,
 
+    couleur:
+      personnalisation.couleur ||
+      null,
 
-          personnalisation_active:
-            personnalisation !== null,
+    police:
+      personnalisation.police ||
+      null,
 
+    message:
+      personnalisation.message ||
+      null,
 
-          library_design_id:
-            personnalisation &&
-            personnalisation.designId
-              ? personnalisation.designId
-              : null,
+    couleur_nom:
+      personnalisation.couleurNom ||
+      null,
 
+    couleur_type:
+      personnalisation.couleurType ||
+      null,
 
-          customer_image_path:
-            null,
+    couleur_gradient:
+      personnalisation.couleurGradient ||
+      null,
 
+    police_nom:
+      personnalisation.policeNom ||
+      null
+  };
 
-          prenom:
-            personnalisation &&
-            personnalisation.prenom
-              ? personnalisation.prenom
-              : null,
-
-
-          couleur:
-  personnalisation &&
-  personnalisation.couleur
-    ? personnalisation.couleur
-    : null,
-
-couleur_nom:
-  personnalisation &&
-  personnalisation.couleurNom
-    ? personnalisation.couleurNom
-    : null,
-
-couleur_type:
-  personnalisation &&
-  personnalisation.couleurType
-    ? personnalisation.couleurType
-    : "solid",
-
-couleur_gradient:
-  personnalisation &&
-  personnalisation.couleurGradient
-    ? personnalisation.couleurGradient
-    : null,
-
-police:
-  personnalisation &&
-  personnalisation.police
-    ? personnalisation.police
-    : null,
-
-police_nom:
-  personnalisation &&
-  personnalisation.policeNom
-    ? personnalisation.policeNom
-    : null,
-
-
-          message:
-            null
-
-        };
-
-      });
-
+});
 
     /* ---------------------------------------------
        CRÉER LA COMMANDE DE FAÇON SÉCURISÉE
