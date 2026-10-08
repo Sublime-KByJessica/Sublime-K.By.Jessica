@@ -4820,111 +4820,171 @@ document
 
 async function chargerProduits(){
 
+  const liste =
+    document.getElementById(
+      "listeProduits"
+    );
+
+  if(!liste){
+    console.error(
+      "Élément listeProduits introuvable."
+    );
+    return;
+  }
+
+
+  liste.innerHTML =
+    "<p>⏳ Chargement des produits...</p>";
+
+
+  /* =====================================================
+     1. CHARGER LES PRODUITS
+     ===================================================== */
+
   const {
-    data,
-    error
+    data: produits,
+    error: erreurProduits
   } =
     await client
       .from("products")
-      .select(`
-        *,
-        categories (
-          Nom,
-          Emoji,
-          Ordre
-        )
-      `)
+      .select("*")
       .order(
         "ordre",
         {ascending:true}
       );
 
 
-  if(error){
+  if(erreurProduits){
 
-    console.error(error);
+    console.error(
+      "Erreur chargement produits :",
+      erreurProduits
+    );
+
+    liste.innerHTML =
+      "<p>❌ Impossible de charger les produits.</p>";
+
     return;
 
   }
 
 
-  const liste =
-    document.getElementById(
-      "listeProduits"
+  const listeProduits =
+    produits || [];
+
+
+  /* =====================================================
+     2. CHARGER LES CATÉGORIES PRINCIPALES
+     ===================================================== */
+
+  const {
+    data: categories,
+    error: erreurCategories
+  } =
+    await client
+      .from("categories")
+      .select(
+        "id, Nom, Emoji, Ordre"
+      )
+      .order(
+        "Ordre",
+        {ascending:true}
+      );
+
+
+  if(erreurCategories){
+
+    console.error(
+      "Erreur chargement catégories :",
+      erreurCategories
     );
 
-
-  liste.innerHTML="";
-
-
-  const produits =
-    data || [];
+  }
 
 
-  /* =========================================
-     RÉCUPÉRER LES CATÉGORIES MULTIPLES
-  ========================================= */
+  const toutesLesCategories =
+    categories || [];
+
+
+  /* =====================================================
+     3. CHARGER LES CATÉGORIES MULTIPLES
+     ===================================================== */
 
   let liaisons = [];
 
 
-  if(produits.length){
+  if(listeProduits.length){
+
+    const idsProduits =
+      listeProduits.map(
+        function(produit){
+
+          return produit.id;
+
+        }
+      );
+
 
     const {
       data: categoriesProduits,
-      error: erreurCategories
+      error: erreurLiaisons
     } =
       await client
         .from("product_categories")
-        .select(`
-          product_id,
-          category_id,
-          categories (
-            Nom,
-            Emoji,
-            Ordre
-          )
-        `)
+        .select(
+          "product_id, category_id"
+        )
         .in(
           "product_id",
-          produits.map(
-            function(produit){
-              return produit.id;
-            }
-          )
+          idsProduits
         );
 
 
-    if(erreurCategories){
+    if(erreurLiaisons){
 
-  console.error(
-    "Erreur catégories multiples :",
-    erreurCategories
-  );
+      console.warn(
+        "⚠️ Les catégories multiples ne sont pas disponibles :",
+        erreurLiaisons
+      );
 
-  /*
-     Si la table product_categories rencontre
-     un problème, on ne bloque surtout pas
-     l'affichage des produits existants.
+      /*
+         On ne bloque PAS l'affichage
+         des produits existants.
+      */
 
-     Les anciens produits continuent à utiliser
-     leur categorie_id principale.
-  */
+      liaisons = [];
 
-  liaisons = [];
+    }else{
 
-}else{
-
-  liaisons =
-    categoriesProduits || [];
-
-      }
+      liaisons =
+        categoriesProduits || [];
 
     }
 
-  /* =========================================
-     REGROUPER LES LIAISONS PAR PRODUIT
-  ========================================= */
+  }
+
+
+  /* =====================================================
+     4. CRÉER UN INDEX DES CATÉGORIES
+     ===================================================== */
+
+  const categoriesParId = {};
+
+
+  toutesLesCategories.forEach(
+    function(categorie){
+
+      categoriesParId[
+        categorie.id
+      ] = categorie;
+
+    }
+  );
+
+
+  /* =====================================================
+     5. INDEXER LES CATÉGORIES MULTIPLES
+     ===================================================== */
 
   const liaisonsParProduit = {};
 
@@ -4945,51 +5005,90 @@ async function chargerProduits(){
       }
 
 
-      liaisonsParProduit[
-        liaison.product_id
-      ].push(
-        liaison
-      );
+      const categorie =
+        categoriesParId[
+          liaison.category_id
+        ];
+
+
+      if(categorie){
+
+        liaisonsParProduit[
+          liaison.product_id
+        ].push(
+          categorie
+        );
+
+      }
 
     }
   );
 
 
-  /* =========================================
-     STATISTIQUES
-  ========================================= */
+  /* =====================================================
+     6. STATISTIQUES
+     ===================================================== */
 
-  document.getElementById(
-    "nombreProduits"
-  ).textContent =
-    produits.length;
-
-
-  document.getElementById(
-    "nombreVisibles"
-  ).textContent =
-    produits.filter(
-      function(produit){
-        return produit.visible;
-      }
-    ).length;
+  const nombreProduits =
+    document.getElementById(
+      "nombreProduits"
+    );
 
 
-  document.getElementById(
-    "nombrePrecommandes"
-  ).textContent =
-    produits.filter(
-      function(produit){
-        return produit.statut === "precommande";
-      }
-    ).length;
+  const nombreVisibles =
+    document.getElementById(
+      "nombreVisibles"
+    );
 
 
-  /* =========================================
-     AUCUN PRODUIT
-  ========================================= */
+  const nombrePrecommandes =
+    document.getElementById(
+      "nombrePrecommandes"
+    );
 
-  if(!produits.length){
+
+  if(nombreProduits){
+
+    nombreProduits.textContent =
+      listeProduits.length;
+
+  }
+
+
+  if(nombreVisibles){
+
+    nombreVisibles.textContent =
+      listeProduits.filter(
+        function(produit){
+
+          return produit.visible;
+
+        }
+      ).length;
+
+  }
+
+
+  if(nombrePrecommandes){
+
+    nombrePrecommandes.textContent =
+      listeProduits.filter(
+        function(produit){
+
+          return produit.statut ===
+            "precommande";
+
+        }
+      ).length;
+
+  }
+
+
+  /* =====================================================
+     7. AUCUN PRODUIT
+     ===================================================== */
+
+  if(!listeProduits.length){
 
     liste.innerHTML =
       "<p>Aucun produit pour le moment.</p>";
@@ -4999,14 +5098,14 @@ async function chargerProduits(){
   }
 
 
-  /* =========================================
-     CRÉER LES GROUPES DE CATÉGORIES
-  ========================================= */
+  /* =====================================================
+     8. CRÉER LES GROUPES DE CATÉGORIES
+     ===================================================== */
 
   const groupes = {};
 
 
-  produits.forEach(
+  listeProduits.forEach(
     function(produit){
 
       let categoriesProduit =
@@ -5015,69 +5114,51 @@ async function chargerProduits(){
         ] || [];
 
 
-      /* =====================================
-         COMPATIBILITÉ ANCIENS PRODUITS
-      ===================================== */
+      /* =================================================
+         COMPATIBILITÉ AVEC LES ANCIENS PRODUITS
+
+         Si le produit n'a pas encore de liaison
+         dans product_categories, on utilise
+         categorie_id.
+         ================================================= */
 
       if(!categoriesProduit.length){
 
-        categoriesProduit = [
+        const categoriePrincipale =
+          categoriesParId[
+            produit.categorie_id
+          ];
 
-          {
-            product_id:
-              produit.id,
 
-            category_id:
-              produit.categorie_id,
+        if(categoriePrincipale){
 
-            categories:
-              produit.categories
+          categoriesProduit = [
+            categoriePrincipale
+          ];
 
-          }
-
-        ];
+        }
 
       }
 
 
-      /* =====================================
-         CATÉGORIES DU PRODUIT POUR
-         afficherProduit()
-      ===================================== */
+      /*
+         On garde les catégories sur le produit
+         pour les fonctions de modification.
+      */
 
       produit.categoriesMultiples =
-        categoriesProduit
-          .map(
-            function(liaison){
-
-              return liaison.categories;
-
-            }
-          )
-          .filter(
-            function(categorie){
-
-              return categorie;
-
-            }
-          );
+        categoriesProduit;
 
 
-      /* =====================================
-         AJOUTER LE PRODUIT DANS
-         CHAQUE CATÉGORIE
-      ===================================== */
+      /* =================================================
+         AJOUTER LE PRODUIT À CHAQUE CATÉGORIE
+         ================================================= */
 
       categoriesProduit.forEach(
-        function(liaison){
-
-          const categorie =
-            liaison.categories;
-
+        function(categorie){
 
           const categorieId =
-            liaison.category_id ||
-            "sans-categorie";
+            categorie.id;
 
 
           if(!groupes[categorieId]){
@@ -5085,16 +5166,17 @@ async function chargerProduits(){
             groupes[categorieId] = {
 
               nom:
-                categorie?.Nom ||
+                categorie.Nom ||
                 "Sans catégorie",
 
               emoji:
-                categorie?.Emoji ||
+                categorie.Emoji ||
                 "📁",
 
               ordre:
-                categorie?.Ordre ??
-                999999,
+                Number(
+                  categorie.Ordre
+                ) || 999999,
 
               produits: []
 
@@ -5103,22 +5185,24 @@ async function chargerProduits(){
           }
 
 
-          /* =================================
-             ÉVITER LES DOUBLONS
-          ================================= */
+          /*
+             Éviter les doublons.
+          */
 
-          if(
-            !groupes[categorieId]
+          const dejaPresent =
+            groupes[categorieId]
               .produits
               .some(
-                function(item){
+                function(element){
 
-                  return item.id ===
+                  return element.id ===
                     produit.id;
 
                 }
-              )
-          ){
+              );
+
+
+          if(!dejaPresent){
 
             groupes[categorieId]
               .produits
@@ -5129,20 +5213,61 @@ async function chargerProduits(){
           }
 
         }
-
       );
 
-    }
 
+      /*
+         Sécurité supplémentaire :
+         si aucune catégorie n'est trouvée,
+         on place quand même le produit.
+      */
+
+      if(!categoriesProduit.length){
+
+        const categorieSans =
+          "sans-categorie";
+
+
+        if(!groupes[categorieSans]){
+
+          groupes[categorieSans] = {
+
+            nom:
+              "Sans catégorie",
+
+            emoji:
+              "📁",
+
+            ordre:
+              999999,
+
+            produits: []
+
+          };
+
+        }
+
+
+        groupes[categorieSans]
+          .produits
+          .push(
+            produit
+          );
+
+      }
+
+    }
   );
 
 
-  /* =========================================
-     TRIER LES CATÉGORIES
-  ========================================= */
+  /* =====================================================
+     9. TRIER LES CATÉGORIES
+     ===================================================== */
 
   const categoriesTriees =
-    Object.values(groupes)
+    Object.values(
+      groupes
+    )
       .sort(
         function(a,b){
 
@@ -5155,9 +5280,12 @@ async function chargerProduits(){
       );
 
 
-  /* =========================================
-     AFFICHER LES CATÉGORIES
-  ========================================= */
+  /* =====================================================
+     10. AFFICHER LES CATÉGORIES
+     ===================================================== */
+
+  liste.innerHTML = "";
+
 
   categoriesTriees.forEach(
     function(groupe){
@@ -5218,7 +5346,6 @@ async function chargerProduits(){
 
         </div>
 
-
         <span
           class="admin-produits-categorie-compteur"
         >
@@ -5249,9 +5376,9 @@ async function chargerProduits(){
         "none";
 
 
-      /* =====================================
+      /* =================================================
          OUVRIR / FERMER LA CATÉGORIE
-      ===================================== */
+         ================================================= */
 
       titre.addEventListener(
         "click",
@@ -5279,9 +5406,9 @@ async function chargerProduits(){
       );
 
 
-      /* =====================================
+      /* =================================================
          AFFICHER LES PRODUITS
-      ===================================== */
+         ================================================= */
 
       groupe.produits.forEach(
         function(produit){
