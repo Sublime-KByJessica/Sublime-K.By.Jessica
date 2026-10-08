@@ -1100,35 +1100,63 @@ button{cursor:pointer}
 
 }
 
-  /* =====================================================
+/* =====================================================
    📂 PRODUITS CLASSÉS PAR CATÉGORIE
 ===================================================== */
 
 .admin-produits-categorie{
 
-  margin-bottom:28px;
+  margin-bottom:18px;
+
   border:1px solid var(--bordure);
+
   border-radius:16px;
+
   overflow:hidden;
+
   background:#fff;
 
 }
 
 
+/* =====================================================
+   BOUTON CATÉGORIE
+===================================================== */
+
 .admin-produits-categorie-titre{
 
+  width:100%;
+
   display:flex;
+
   align-items:center;
+
   justify-content:space-between;
+
   gap:15px;
 
   padding:16px 18px;
 
+  border:none;
+
+  border-radius:0;
+
   background:#f3f1e8;
 
-  border-bottom:1px solid var(--bordure);
+  color:var(--texte);
 
-  font-size:18px;
+  text-align:left;
+
+  font-size:17px;
+
+  font-weight:normal;
+
+}
+
+
+.admin-produits-categorie-titre:hover{
+
+  background:#ebe8dc;
 
 }
 
@@ -1136,8 +1164,37 @@ button{cursor:pointer}
 .admin-produits-categorie-titre > div{
 
   display:flex;
+
   align-items:center;
+
   gap:10px;
+
+}
+
+
+.admin-produits-categorie-fleche{
+
+  display:inline-flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  width:20px;
+
+  font-size:13px;
+
+  transition:transform .2s ease;
+
+}
+
+
+/* Quand la catégorie est ouverte */
+
+.admin-produits-categorie-titre[aria-expanded="true"]
+.admin-produits-categorie-fleche{
+
+  transform:rotate(90deg);
 
 }
 
@@ -1163,15 +1220,21 @@ button{cursor:pointer}
 
   white-space:nowrap;
 
+  flex-shrink:0;
+
 }
 
+
+/* =====================================================
+   LISTE DES PRODUITS
+===================================================== */
 
 .admin-produits-categorie-liste{
 
   padding:15px;
 
-  display:flex;
   flex-direction:column;
+
   gap:12px;
 
 }
@@ -1186,7 +1249,9 @@ button{cursor:pointer}
 }
 
 
-/* Adaptation tablette / téléphone */
+/* =====================================================
+   MOBILE
+===================================================== */
 
 @media(max-width:700px){
 
@@ -1205,8 +1270,17 @@ button{cursor:pointer}
 
   }
 
-}
 
+  .admin-produits-categorie-compteur{
+
+    font-size:12px;
+
+    padding:4px 8px;
+
+  }
+
+}
+  
 </style>
 </head>
 
@@ -4773,22 +4847,36 @@ async function chargerProduits(){
 
 
       /* ---------------------------------------------
-         EN-TÊTE DE CATÉGORIE
+         BOUTON DE CATÉGORIE
       --------------------------------------------- */
 
       const titre =
         document.createElement(
-          "div"
+          "button"
         );
 
+
+      titre.type = "button";
 
       titre.className =
         "admin-produits-categorie-titre";
 
 
+      titre.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
+
       titre.innerHTML = `
 
         <div>
+
+          <span
+            class="admin-produits-categorie-fleche"
+          >
+            ▶
+          </span>
 
           <span
             class="admin-produits-categorie-emoji"
@@ -4820,11 +4908,6 @@ async function chargerProduits(){
       `;
 
 
-      bloc.appendChild(
-        titre
-      );
-
-
       /* ---------------------------------------------
          CONTENEUR DES PRODUITS
       --------------------------------------------- */
@@ -4839,53 +4922,68 @@ async function chargerProduits(){
         "admin-produits-categorie-liste";
 
 
-      groupe.produits.forEach(
-        function(produit){
+      /* Fermé par défaut */
 
-          /* On réutilise complètement
-             l'affichage existant */
+      produitsCategorie.style.display =
+        "none";
 
-          const ancienConteneur =
-            document.getElementById(
-              "listeProduits"
+
+      /* ---------------------------------------------
+         OUVRIR / FERMER LA CATÉGORIE
+      --------------------------------------------- */
+
+      titre.addEventListener(
+        "click",
+        function(){
+
+          const ouverte =
+            produitsCategorie.style.display !== "none";
+
+
+          if(ouverte){
+
+            produitsCategorie.style.display =
+              "none";
+
+            titre.setAttribute(
+              "aria-expanded",
+              "false"
             );
 
+          }else{
 
-          const temporaire =
-            document.createElement(
-              "div"
-            );
+            produitsCategorie.style.display =
+              "flex";
 
-
-          /* afficherProduit() ajoute normalement
-             directement dans #listeProduits.
-             On récupère donc le produit après
-             sa création. */
-
-          const ancienNombre =
-            ancienConteneur.children.length;
-
-
-          afficherProduit(
-            produit
-          );
-
-
-          const nouvelElement =
-            ancienConteneur.children[
-              ancienNombre
-            ];
-
-
-          if(nouvelElement){
-
-            produitsCategorie.appendChild(
-              nouvelElement
+            titre.setAttribute(
+              "aria-expanded",
+              "true"
             );
 
           }
 
         }
+      );
+
+
+      /* ---------------------------------------------
+         AJOUT DES PRODUITS
+      --------------------------------------------- */
+
+      groupe.produits.forEach(
+        function(produit){
+
+          afficherProduit(
+            produit,
+            produitsCategorie
+          );
+
+        }
+      );
+
+
+      bloc.appendChild(
+        titre
       );
 
 
