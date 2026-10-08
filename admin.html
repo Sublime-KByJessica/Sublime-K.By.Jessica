@@ -1280,6 +1280,31 @@ button{cursor:pointer}
   }
 
 }
+
+  /* =====================================================
+   📂 SÉLECTION MULTIPLE DES CATÉGORIES
+===================================================== */
+
+#categorie[multiple]{
+
+  min-height:140px;
+
+}
+
+
+.categorie-aide{
+
+  display:block;
+
+  margin-top:6px;
+
+  color:#766B6D;
+
+  font-size:13px;
+
+  line-height:1.4;
+
+}
   
 </style>
 </head>
@@ -1616,20 +1641,20 @@ button{cursor:pointer}
         <div class="champ">
 
           <label for="categorie">
-            Catégorie *
-          </label>
+  Catégories *
+</label>
 
-          <select
-            id="categorie"
-            required
-          >
+<select
+  id="categorie"
+  multiple
+  required
+  size="5"
+></select>
 
-            <option value="">
-              Choisir une catégorie
-            </option>
-
-          </select>
-
+<small class="categorie-aide">
+  💡 Tu peux sélectionner une ou plusieurs catégories.
+</small>
+          
         </div>
 
 
@@ -4208,6 +4233,7 @@ async function chargerCategories(){
   if(error){
 
     console.error(error);
+
     return;
 
   }
@@ -4219,8 +4245,7 @@ async function chargerCategories(){
     );
 
 
-  select.innerHTML=
-    '<option value="">Choisir une catégorie</option>';
+  select.innerHTML="";
 
 
   data.forEach(function(categorie){
@@ -4230,21 +4255,26 @@ async function chargerCategories(){
         "option"
       );
 
-    option.value=categorie.id;
 
-    option.textContent=
+    option.value =
+      categorie.id;
+
+
+    option.textContent =
       (
         categorie.Emoji || "📁"
       ) +
       " " +
       categorie.Nom;
 
-    select.appendChild(option);
+
+    select.appendChild(
+      option
+    );
 
   });
 
 }
-
 
 /* =====================================================
    FORMULAIRE PRODUIT
@@ -4480,73 +4510,179 @@ mockup_rotation:
 
 };
 
+const categoriesSelectionnees =
+  Array.from(
+    document
+      .getElementById("categorie")
+      .selectedOptions
+  ).map(function(option){
 
-      if(!produit.categorie_id){
+    return option.value;
 
-        afficherMessageFormulaire(
-          "❌ Choisis une catégorie.",
-          true
-        );
-
-        return;
-
-      }
-
-
-      try{
-
-        let resultat;
+  });
 
 
-        if(produitEnModification){
+if(!categoriesSelectionnees.length){
 
-          resultat=
-            await client
-              .from("products")
-              .update(produit)
-              .eq(
-                "id",
-                produitEnModification
-              );
+  afficherMessageFormulaire(
+    "❌ Choisis au moins une catégorie.",
+    true
+  );
 
-        }else{
+  return;
 
-          resultat=
-            await client
-              .from("products")
-              .insert([produit]);
-
-        }
+}
 
 
-        if(resultat.error){
-          throw resultat.error;
-        }
+/*
+   La première catégorie reste enregistrée
+   dans categorie_id pour conserver la
+   compatibilité avec le fonctionnement
+   existant du site.
+*/
+
+produit.categorie_id =
+  categoriesSelectionnees[0];
 
 
-        afficherMessageFormulaire(
+try{
+
+  let productId =
+    produitEnModification;
+
+
+  /* =========================================
+     MODIFICATION
+  ========================================= */
+
+  if(produitEnModification){
+
+    const resultat =
+      await client
+        .from("products")
+        .update(produit)
+        .eq(
+          "id",
           produitEnModification
-            ? "✅ Produit modifié !"
-            : "✅ Produit ajouté !",
-          false
         );
 
 
-        reinitialiserFormulaire();
+    if(resultat.error){
 
-        await chargerProduits();
+      throw resultat.error;
 
-      }catch(erreur){
+    }
 
-        console.error(erreur);
+  }
 
-        afficherMessageFormulaire(
-          "❌ " + erreur.message,
-          true
-        );
 
-      }
+  /* =========================================
+     NOUVEAU PRODUIT
+  ========================================= */
 
+  else{
+
+    const resultat =
+      await client
+        .from("products")
+        .insert([produit])
+        .select("id")
+        .single();
+
+
+    if(resultat.error){
+
+      throw resultat.error;
+
+    }
+
+
+    productId =
+      resultat.data.id;
+
+  }
+
+
+  /* =========================================
+     SUPPRIMER LES ANCIENNES CATÉGORIES
+  ========================================= */
+
+  const suppressionCategories =
+    await client
+      .from("product_categories")
+      .delete()
+      .eq(
+        "product_id",
+        productId
+      );
+
+
+  if(suppressionCategories.error){
+
+    throw suppressionCategories.error;
+
+  }
+
+
+  /* =========================================
+     AJOUTER LES NOUVELLES CATÉGORIES
+  ========================================= */
+
+  const ajoutCategories =
+    await client
+      .from("product_categories")
+      .insert(
+
+        categoriesSelectionnees.map(
+          function(categoryId){
+
+            return {
+
+              product_id:
+                productId,
+
+              category_id:
+                categoryId
+
+            };
+
+          }
+        )
+
+      );
+
+
+  if(ajoutCategories.error){
+
+    throw ajoutCategories.error;
+
+  }
+
+
+  afficherMessageFormulaire(
+    produitEnModification
+      ? "✅ Produit modifié !"
+      : "✅ Produit ajouté !",
+    false
+  );
+
+
+  reinitialiserFormulaire();
+
+  await chargerProduits();
+
+
+}catch(erreur){
+
+  console.error(erreur);
+
+  afficherMessageFormulaire(
+    "❌ " + erreur.message,
+    true
+  );
+
+}
+      
     }
   );
 
@@ -4725,9 +4861,93 @@ async function chargerProduits(){
     data || [];
 
 
-  /* =================================================
+  /* =========================================
+     RÉCUPÉRER LES CATÉGORIES MULTIPLES
+  ========================================= */
+
+  let liaisons = [];
+
+
+  if(produits.length){
+
+    const {
+      data: categoriesProduits,
+      error: erreurCategories
+    } =
+      await client
+        .from("product_categories")
+        .select(`
+          product_id,
+          category_id,
+          categories (
+            Nom,
+            Emoji,
+            Ordre
+          )
+        `)
+        .in(
+          "product_id",
+          produits.map(
+            function(produit){
+              return produit.id;
+            }
+          )
+        );
+
+
+    if(erreurCategories){
+
+      console.error(
+        erreurCategories
+      );
+
+      return;
+
+    }
+
+
+    liaisons =
+      categoriesProduits || [];
+
+  }
+
+
+  /* =========================================
+     REGROUPER LES LIAISONS PAR PRODUIT
+  ========================================= */
+
+  const liaisonsParProduit = {};
+
+
+  liaisons.forEach(
+    function(liaison){
+
+      if(
+        !liaisonsParProduit[
+          liaison.product_id
+        ]
+      ){
+
+        liaisonsParProduit[
+          liaison.product_id
+        ] = [];
+
+      }
+
+
+      liaisonsParProduit[
+        liaison.product_id
+      ].push(
+        liaison
+      );
+
+    }
+  );
+
+
+  /* =========================================
      STATISTIQUES
-  ================================================= */
+  ========================================= */
 
   document.getElementById(
     "nombreProduits"
@@ -4739,7 +4959,9 @@ async function chargerProduits(){
     "nombreVisibles"
   ).textContent =
     produits.filter(
-      p => p.visible
+      function(produit){
+        return produit.visible;
+      }
     ).length;
 
 
@@ -4747,13 +4969,15 @@ async function chargerProduits(){
     "nombrePrecommandes"
   ).textContent =
     produits.filter(
-      p => p.statut === "precommande"
+      function(produit){
+        return produit.statut === "precommande";
+      }
     ).length;
 
 
-  /* =================================================
+  /* =========================================
      AUCUN PRODUIT
-  ================================================= */
+  ========================================= */
 
   if(!produits.length){
 
@@ -4765,73 +4989,165 @@ async function chargerProduits(){
   }
 
 
-  /* =================================================
-     REGROUPEMENT PAR CATÉGORIE
-  ================================================= */
+  /* =========================================
+     CRÉER LES GROUPES DE CATÉGORIES
+  ========================================= */
 
   const groupes = {};
 
 
-  produits.forEach(function(produit){
+  produits.forEach(
+    function(produit){
 
-    const categorie =
-      produit.categories;
-
-
-    const categorieId =
-      produit.categorie_id ||
-      "sans-categorie";
+      let categoriesProduit =
+        liaisonsParProduit[
+          produit.id
+        ] || [];
 
 
-    if(!groupes[categorieId]){
+      /* =====================================
+         COMPATIBILITÉ ANCIENS PRODUITS
+      ===================================== */
 
-      groupes[categorieId] = {
+      if(!categoriesProduit.length){
 
-        nom:
-          categorie?.Nom ||
-          "Sans catégorie",
+        categoriesProduit = [
 
-        emoji:
-          categorie?.Emoji ||
-          "📁",
+          {
+            product_id:
+              produit.id,
 
-        ordre:
-          categorie?.Ordre ??
-          999999,
+            category_id:
+              produit.categorie_id,
 
-        produits: []
+            categories:
+              produit.categories
 
-      };
+          }
+
+        ];
+
+      }
+
+
+      /* =====================================
+         CATÉGORIES DU PRODUIT POUR
+         afficherProduit()
+      ===================================== */
+
+      produit.categoriesMultiples =
+        categoriesProduit
+          .map(
+            function(liaison){
+
+              return liaison.categories;
+
+            }
+          )
+          .filter(
+            function(categorie){
+
+              return categorie;
+
+            }
+          );
+
+
+      /* =====================================
+         AJOUTER LE PRODUIT DANS
+         CHAQUE CATÉGORIE
+      ===================================== */
+
+      categoriesProduit.forEach(
+        function(liaison){
+
+          const categorie =
+            liaison.categories;
+
+
+          const categorieId =
+            liaison.category_id ||
+            "sans-categorie";
+
+
+          if(!groupes[categorieId]){
+
+            groupes[categorieId] = {
+
+              nom:
+                categorie?.Nom ||
+                "Sans catégorie",
+
+              emoji:
+                categorie?.Emoji ||
+                "📁",
+
+              ordre:
+                categorie?.Ordre ??
+                999999,
+
+              produits: []
+
+            };
+
+          }
+
+
+          /* =================================
+             ÉVITER LES DOUBLONS
+          ================================= */
+
+          if(
+            !groupes[categorieId]
+              .produits
+              .some(
+                function(item){
+
+                  return item.id ===
+                    produit.id;
+
+                }
+              )
+          ){
+
+            groupes[categorieId]
+              .produits
+              .push(
+                produit
+              );
+
+          }
+
+        }
+
+      );
 
     }
 
-
-    groupes[categorieId]
-      .produits
-      .push(produit);
-
-  });
+  );
 
 
-  /* =================================================
-     TRI DES CATÉGORIES
-  ================================================= */
+  /* =========================================
+     TRIER LES CATÉGORIES
+  ========================================= */
 
   const categoriesTriees =
     Object.values(groupes)
-      .sort(function(a,b){
+      .sort(
+        function(a,b){
 
-        return (
-          Number(a.ordre) -
-          Number(b.ordre)
-        );
+          return (
+            Number(a.ordre) -
+            Number(b.ordre)
+          );
 
-      });
+        }
+      );
 
 
-  /* =================================================
-     AFFICHAGE DES CATÉGORIES
-  ================================================= */
+  /* =========================================
+     AFFICHER LES CATÉGORIES
+  ========================================= */
 
   categoriesTriees.forEach(
     function(groupe){
@@ -4846,17 +5162,15 @@ async function chargerProduits(){
         "admin-produits-categorie";
 
 
-      /* ---------------------------------------------
-         BOUTON DE CATÉGORIE
-      --------------------------------------------- */
-
       const titre =
         document.createElement(
           "button"
         );
 
 
-      titre.type = "button";
+      titre.type =
+        "button";
+
 
       titre.className =
         "admin-produits-categorie-titre";
@@ -4894,23 +5208,22 @@ async function chargerProduits(){
 
         </div>
 
+
         <span
           class="admin-produits-categorie-compteur"
         >
           ${groupe.produits.length}
+
           ${
             groupe.produits.length > 1
               ? "produits"
               : "produit"
           }
+
         </span>
 
       `;
 
-
-      /* ---------------------------------------------
-         CONTENEUR DES PRODUITS
-      --------------------------------------------- */
 
       const produitsCategorie =
         document.createElement(
@@ -4922,53 +5235,43 @@ async function chargerProduits(){
         "admin-produits-categorie-liste";
 
 
-      /* Fermé par défaut */
-
       produitsCategorie.style.display =
         "none";
 
 
-      /* ---------------------------------------------
+      /* =====================================
          OUVRIR / FERMER LA CATÉGORIE
-      --------------------------------------------- */
+      ===================================== */
 
       titre.addEventListener(
         "click",
         function(){
 
           const ouverte =
-            produitsCategorie.style.display !== "none";
+            produitsCategorie.style.display !==
+            "none";
 
 
-          if(ouverte){
+          produitsCategorie.style.display =
+            ouverte
+              ? "none"
+              : "flex";
 
-            produitsCategorie.style.display =
-              "none";
 
-            titre.setAttribute(
-              "aria-expanded",
-              "false"
-            );
-
-          }else{
-
-            produitsCategorie.style.display =
-              "flex";
-
-            titre.setAttribute(
-              "aria-expanded",
-              "true"
-            );
-
-          }
+          titre.setAttribute(
+            "aria-expanded",
+            ouverte
+              ? "false"
+              : "true"
+          );
 
         }
       );
 
 
-      /* ---------------------------------------------
-         AJOUT DES PRODUITS
-      --------------------------------------------- */
+      /* =====================================
+         AFFICHER LES PRODUITS
+      ===================================== */
 
       groupe.produits.forEach(
         function(produit){
@@ -5000,181 +5303,6 @@ async function chargerProduits(){
   );
 
 }
-
-
-function afficherProduit(produit, conteneur = null){
-
-  const element =
-    document.createElement("div");
-
-  element.className="produit";
-
-
-  let statutTexte="⚫ Indisponible";
-  let statutClasse="statut-indisponible";
-
-
-  if(produit.statut==="stock"){
-
-    if(Number(produit.stock_quantite)<=0){
-
-      statutTexte="🔴 Rupture de stock";
-      statutClasse="rupture";
-
-    }else{
-
-      statutTexte="🟢 En stock";
-      statutClasse="statut-stock";
-
-    }
-
-  }
-
-
-  if(produit.statut==="precommande"){
-
-    statutTexte="🟠 Pré-commande";
-    statutClasse="statut-precommande";
-
-  }
-
-
-  const categorie =
-    produit.categories
-      ? (
-          produit.categories.Emoji||"📁"
-        ) +
-        " " +
-        (
-          produit.categories.Nom||""
-        )
-      : "Sans catégorie";
-
-
-  const prix =
-    produit.prix!==null &&
-    produit.prix!==undefined
-      ? Number(produit.prix).toFixed(2)+" €"
-      : "Prix non défini";
-
-
-  let stockTexte="";
-
-
-  if(produit.statut==="stock"){
-
-    stockTexte=`
-      <p>
-        📦 Stock :
-        <strong>
-          ${Number(produit.stock_quantite)}
-        </strong>
-      </p>
-    `;
-
-  }
-
-
-  let delaiTexte="";
-
-
-  if(produit.statut==="precommande"){
-
-    delaiTexte=`
-      <p>
-        ⏱️ Délai :
-        <strong>
-          ${Number(produit.delai_precommande_min||2)}
-          à
-          ${Number(produit.delai_precommande_max||5)}
-          semaines
-        </strong>
-      </p>
-    `;
-
-  }
-
-
-  const visibilite =
-    produit.visible
-      ? "👁️ Visible"
-      : "🙈 Masqué";
-
-
-  element.innerHTML=`
-
-    <div class="produit-info">
-
-      <h3>
-        ${echapperHTML(produit.nom)}
-      </h3>
-
-      <p>
-        ${echapperHTML(categorie)}
-      </p>
-
-      <p>
-        💰 ${prix}
-      </p>
-
-      <p>
-        <span class="statut ${statutClasse}">
-          ${statutTexte}
-        </span>
-      </p>
-
-      ${stockTexte}
-
-      ${delaiTexte}
-
-      <p>
-        ${visibilite}
-      </p>
-
-      ${
-        produit.personnalisation_active
-          ? "<p>✨ Personnalisable</p>"
-          : ""
-      }
-
-      ${
-        produit.choix_image_active
-          ? "<p>🖼️ Choix d'image activé</p>"
-          : ""
-      }
-
-    </div>
-
-    <div class="produit-actions">
-
-      <button
-        class="btn btn-modifier"
-        onclick="modifierProduit('${produit.id}')"
-      >
-        ✏️ Modifier
-      </button>
-
-      <button
-        class="btn btn-supprimer"
-        onclick="supprimerProduit('${produit.id}')"
-      >
-        🗑️ Supprimer
-      </button>
-
-    </div>
-
-  `;
-
-
-  if(!conteneur){
-  conteneur =
-    document.getElementById("listeProduits");
-}
-
-conteneur.appendChild(element);
-
-}
-
 
 /* =====================================================
    MODIFIER PRODUIT
@@ -5215,8 +5343,68 @@ async function(id){
   document.getElementById("prix").value=
     data.prix??"";
 
-  document.getElementById("categorie").value=
-    data.categorie_id||"";
+  const selectCategories =
+  document.getElementById("categorie");
+
+
+Array.from(
+  selectCategories.options
+).forEach(function(option){
+
+  option.selected = false;
+
+});
+
+
+const {
+  data: categoriesProduit,
+  error: erreurCategoriesProduit
+} =
+  await client
+    .from("product_categories")
+    .select("category_id")
+    .eq(
+      "product_id",
+      id
+    );
+
+
+if(erreurCategoriesProduit){
+
+  console.error(
+    erreurCategoriesProduit
+  );
+
+}
+
+
+const categoriesIds =
+  categoriesProduit &&
+  categoriesProduit.length
+    ? categoriesProduit.map(
+        function(liaison){
+
+          return liaison.category_id;
+
+        }
+      )
+    : (
+        data.categorie_id
+          ? [data.categorie_id]
+          : []
+      );
+
+
+Array.from(
+  selectCategories.options
+).forEach(function(option){
+
+  option.selected =
+    categoriesIds.includes(
+      option.value
+    );
+
+});
 
   document.getElementById("statut").value=
     data.statut||"precommande";
