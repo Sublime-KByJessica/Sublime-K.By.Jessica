@@ -4897,19 +4897,28 @@ async function chargerProduits(){
 
     if(erreurCategories){
 
-      console.error(
-        erreurCategories
-      );
+  console.error(
+    "Erreur catégories multiples :",
+    erreurCategories
+  );
 
-      return;
+  /*
+     Si la table product_categories rencontre
+     un problème, on ne bloque surtout pas
+     l'affichage des produits existants.
 
-    }
+     Les anciens produits continuent à utiliser
+     leur categorie_id principale.
+  */
 
+  liaisons = [];
 
-    liaisons =
-      categoriesProduits || [];
+}else{
 
-  }
+  liaisons =
+    categoriesProduits || [];
+
+}
 
 
   /* =========================================
