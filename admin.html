@@ -5441,7 +5441,340 @@ async function chargerProduits(){
 
 }
 
+  /* =====================================================
+   AFFICHER PRODUIT
+===================================================== */
+
+function afficherProduit(
+  produit,
+  conteneur = null
+){
+
+  const element =
+    document.createElement("div");
+
+
+  element.className =
+    "produit";
+
+
+  let statutTexte =
+    "⚫ Indisponible";
+
+
+  let statutClasse =
+    "statut-indisponible";
+
+
+  if(
+    produit.statut ===
+    "stock"
+  ){
+
+    if(
+      Number(
+        produit.stock_quantite
+      ) <= 0
+    ){
+
+      statutTexte =
+        "🔴 Rupture de stock";
+
+      statutClasse =
+        "rupture";
+
+    }else{
+
+      statutTexte =
+        "🟢 En stock";
+
+      statutClasse =
+        "statut-stock";
+
+    }
+
   }
+
+
+  if(
+    produit.statut ===
+    "precommande"
+  ){
+
+    statutTexte =
+      "🟠 Pré-commande";
+
+    statutClasse =
+      "statut-precommande";
+
+  }
+
+
+  /* =====================================================
+     CATÉGORIES DU PRODUIT
+     ===================================================== */
+
+  let categorieTexte =
+    "📁 Sans catégorie";
+
+
+  if(
+    produit.categoriesMultiples &&
+    produit.categoriesMultiples.length
+  ){
+
+    categorieTexte =
+      produit.categoriesMultiples
+        .map(
+          function(categorie){
+
+            return (
+              categorie.Emoji ||
+              "📁"
+            ) +
+            " " +
+            (
+              categorie.Nom ||
+              ""
+            );
+
+          }
+        )
+        .join(" • ");
+
+  }else if(
+    produit.categories
+  ){
+
+    categorieTexte =
+      (
+        produit.categories.Emoji ||
+        "📁"
+      ) +
+      " " +
+      (
+        produit.categories.Nom ||
+        ""
+      );
+
+  }
+
+
+  const prix =
+    produit.prix !== null &&
+    produit.prix !== undefined
+      ? Number(
+          produit.prix
+        ).toFixed(2) +
+        " €"
+      : "Prix non défini";
+
+
+  let stockTexte =
+    "";
+
+
+  if(
+    produit.statut ===
+    "stock"
+  ){
+
+    stockTexte = `
+
+      <p>
+
+        📦 Stock :
+
+        <strong>
+
+          ${Number(
+            produit.stock_quantite
+          )}
+
+        </strong>
+
+      </p>
+
+    `;
+
+  }
+
+
+  let delaiTexte =
+    "";
+
+
+  if(
+    produit.statut ===
+    "precommande"
+  ){
+
+    delaiTexte = `
+
+      <p>
+
+        ⏱️ Délai :
+
+        <strong>
+
+          ${Number(
+            produit.delai_precommande_min ||
+            2
+          )}
+
+          à
+
+          ${Number(
+            produit.delai_precommande_max ||
+            5
+          )}
+
+          semaines
+
+        </strong>
+
+      </p>
+
+    `;
+
+  }
+
+
+  const visibilite =
+    produit.visible
+      ? "👁️ Visible"
+      : "🙈 Masqué";
+
+
+  element.innerHTML = `
+
+    <div class="produit-info">
+
+      <h3>
+
+        ${echapperHTML(
+          produit.nom
+        )}
+
+      </h3>
+
+
+      <p>
+
+        ${echapperHTML(
+          categorieTexte
+        )}
+
+      </p>
+
+
+      <p>
+
+        💰 ${prix}
+
+      </p>
+
+
+      <p>
+
+        <span
+          class="statut ${statutClasse}"
+        >
+
+          ${statutTexte}
+
+        </span>
+
+      </p>
+
+
+      ${stockTexte}
+
+
+      ${delaiTexte}
+
+
+      <p>
+
+        ${visibilite}
+
+      </p>
+
+
+      ${
+        produit.personnalisation_active
+          ? "<p>✨ Personnalisable</p>"
+          : ""
+      }
+
+
+      ${
+        produit.choix_image_active
+          ? "<p>🖼️ Choix d'image activé</p>"
+          : ""
+      }
+
+    </div>
+
+
+    <div class="produit-actions">
+
+      <button
+        class="btn btn-modifier"
+        onclick="
+          modifierProduit(
+            '${produit.id}'
+          )
+        "
+      >
+
+        ✏️ Modifier
+
+      </button>
+
+
+      <button
+        class="btn btn-supprimer"
+        onclick="
+          supprimerProduit(
+            '${produit.id}'
+          )
+        "
+      >
+
+        🗑️ Supprimer
+
+      </button>
+
+    </div>
+
+  `;
+
+
+  if(!conteneur){
+
+    conteneur =
+      document.getElementById(
+        "listeProduits"
+      );
+
+  }
+
+
+  if(conteneur){
+
+    conteneur.appendChild(
+      element
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   MODIFIER PRODUIT
+===================================================== */
 
 /* =====================================================
    MODIFIER PRODUIT
