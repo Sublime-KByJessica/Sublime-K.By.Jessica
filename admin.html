@@ -5540,7 +5540,36 @@ async function chargerProduits(){
 
     }
   );
+/* =====================================================
+     AFFICHER TOUTES LES CATÉGORIES, MÊME SANS PRODUIT
+     ===================================================== */
 
+  toutesLesCategories.forEach(
+    function(categorie){
+
+      if(!groupes[categorie.id]){
+
+        groupes[categorie.id] = {
+
+          nom:
+            categorie.Nom ||
+            "Sans catégorie",
+
+          emoji:
+            categorie.Emoji ||
+            "📁",
+
+          ordre:
+            Number(categorie.Ordre) || 999999,
+
+          produits: []
+
+        };
+
+      }
+
+    }
+  );
 
   /* =====================================================
      9. TRIER LES CATÉGORIES
