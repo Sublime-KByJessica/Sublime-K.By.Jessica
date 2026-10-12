@@ -6147,10 +6147,13 @@ function validerPersonnalisation() {
     }
 
   }
-
-
-  const prix =
-    Number(produit.prix || 0);
+ 
+const prix =
+  produit._variantSelectionnee &&
+  produit._variantSelectionnee.prix !== null &&
+  produit._variantSelectionnee.prix !== undefined
+    ? Number(produit._variantSelectionnee.prix)
+    : Number(produit.prix || 0);
 
 
   const idPersonnalise =
@@ -6448,8 +6451,17 @@ function validerPersonnalisation() {
    * Ajout classique au panier
    */
 
+  
+  const varianteSelectionnee =
+    produit._variantSelectionnee || null;
+
   const prix =
-  Number(produit.prix || 0);
+    varianteSelectionnee &&
+    varianteSelectionnee.prix !== null &&
+    varianteSelectionnee.prix !== undefined
+      ? Number(varianteSelectionnee.prix)
+      : Number(produit.prix || 0);
+
 
 
 /* =================================================
@@ -8008,7 +8020,7 @@ const photosProduit =
         const { data: variantesProduit, error: erreurVariantes } =
     await supabaseClient
       .from("product_variants")
-      .select("id, nom, valeur, image_url")
+      .select("id, nom, valeur, image_url, prix")
       .eq("product_id", produit.id)
       .eq("actif", true)
       .order("ordre", { ascending: true });
@@ -8355,17 +8367,10 @@ photosProduit.forEach(
         }
 
         ${
-          prix
-            ? `
-              <div
-                class="product-price"
-                style="margin:20px 0;"
-              >
-                ${prix}
-              </div>
-            `
-            : ""
-        }
+(prix || variantesActives.length)
+? "<div id="prixFicheProduit" class="product-price" style="margin:20px 0;" > ${prix} </div>"
+: ""
+}
 
         ${
           variantesActives.length
@@ -8490,6 +8495,32 @@ photosProduit.forEach(
           delete produitFicheActuel._variantSelectionnee;
 
         }
+
+        
+        // Mettre à jour le prix selon la variante choisie
+        const prixFiche =
+          document.getElementById("prixFicheProduit");
+
+        if (prixFiche) {
+
+          const prixChoisi =
+            variante &&
+            variante.prix !== null &&
+            variante.prix !== undefined
+              ? variante.prix
+              : produit.prix;
+
+          prixFiche.textContent =
+            prixChoisi !== null &&
+            prixChoisi !== undefined &&
+            prixChoisi !== ""
+              ? Number(prixChoisi)
+                  .toFixed(2)
+                  .replace(".", ",") + " €"
+              : "";
+
+        }
+
 
         if (
           imagePrincipale &&
