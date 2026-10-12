@@ -1100,6 +1100,90 @@ button{cursor:pointer}
 
 }
 
+  /* =====================================================
+   ORDRE DES CATÉGORIES — GESTION ADMIN
+===================================================== */
+
+.admin-ordre-categories {
+  margin-top: 24px;
+  padding: 18px;
+  border: 1px solid var(--bordure);
+  border-radius: 14px;
+  background: #faf9f5;
+}
+
+.admin-ordre-categories h3 {
+  margin: 0 0 8px;
+  color: var(--texte);
+  font-size: 18px;
+}
+
+.admin-ordre-categories > p {
+  margin: 0 0 15px;
+  line-height: 1.5;
+}
+
+.ordre-categorie-ligne {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.ordre-categorie-nom {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+
+.ordre-categorie-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.ordre-categorie-actions button {
+  min-width: 42px;
+  min-height: 40px;
+  padding: 8px;
+  border: 1px solid var(--bordure);
+  border-radius: 8px;
+  background: #f3f1e8;
+  color: var(--texte);
+  cursor: pointer;
+}
+
+.ordre-categorie-actions button:hover:not(:disabled) {
+  background: #e5e1d3;
+}
+
+.ordre-categorie-actions button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+@media (max-width: 550px) {
+  .admin-ordre-categories {
+    padding: 12px;
+  }
+
+  .ordre-categorie-ligne {
+    padding: 9px;
+    gap: 8px;
+  }
+
+  .ordre-categorie-actions button {
+    min-width: 36px;
+    min-height: 38px;
+  }
+}
+
 /* =====================================================
    📂 PRODUITS CLASSÉS PAR CATÉGORIE
 ===================================================== */
@@ -2600,7 +2684,35 @@ button{cursor:pointer}
 
 </form>
 
-  </div>  <!-- FIN GESTION DES CATÉGORIES DE LA BOUTIQUE -->
+  <!-- =====================================================
+       ORDRE DES CATÉGORIES — GESTION ADMIN
+  ===================================================== -->
+
+  <div class="admin-ordre-categories">
+
+    <h3>↕️ Organiser l'ordre des catégories</h3>
+
+    <p>
+      Utilise les flèches pour faire monter ou descendre
+      une catégorie. Le changement sera enregistré automatiquement.
+    </p>
+
+    <div id="listeOrdreCategories">
+      Chargement des catégories…
+    </div>
+
+    <div
+      id="messageOrdreCategories"
+      class="message"
+      role="status"
+      aria-live="polite"
+    ></div>
+
+  </div>
+    
+  </div>  
+  
+  <!-- FIN GESTION DES CATÉGORIES DE LA BOUTIQUE -->
 
   <!-- LISTE PRODUITS -->
 
@@ -4438,8 +4550,223 @@ async function chargerCategories(){
 
 
   actualiserCasesCategories();
+  
+  await afficherOrdreCategories();
+}
+
+  /* =====================================================
+   ORDRE DES CATÉGORIES — AFFICHAGE ET DÉPLACEMENT
+===================================================== */
+
+let ordreCategoriesEnCours = false;
+
+
+async function afficherOrdreCategories() {
+
+  const liste = document.getElementById(
+    "listeOrdreCategories"
+  );
+
+  if (!liste) return;
+
+  const { data, error } = await client
+    .from("categories")
+    .select("id, Nom, Emoji, Ordre")
+    .order("Ordre", { ascending: true });
+
+  if (error) {
+    console.error(
+      "Erreur de chargement de l'ordre des catégories :",
+      error
+    );
+
+    liste.textContent =
+      "Impossible de charger les catégories.";
+
+    return;
+  }
+
+  const categories = data || [];
+
+  liste.innerHTML = "";
+
+  if (!categories.length) {
+    liste.textContent = "Aucune catégorie disponible.";
+    return;
+  }
+
+  categories.forEach(function(categorie, index) {
+
+    const ligne = document.createElement("div");
+    ligne.className = "ordre-categorie-ligne";
+
+    const nom = document.createElement("div");
+    nom.className = "ordre-categorie-nom";
+
+    nom.textContent =
+      (index + 1) + ". " +
+      (categorie.Emoji || "📁") + " " +
+      categorie.Nom;
+
+    const actions = document.createElement("div");
+    actions.className = "ordre-categorie-actions";
+
+    const boutonHaut = document.createElement("button");
+    boutonHaut.type = "button";
+    boutonHaut.textContent = "⬆️";
+    boutonHaut.title = "Remonter cette catégorie";
+    boutonHaut.setAttribute(
+      "aria-label",
+      "Remonter " + categorie.Nom
+    );
+    boutonHaut.disabled =
+      index === 0 || ordreCategoriesEnCours;
+
+    boutonHaut.addEventListener("click", function() {
+      deplacerCategorie(index, -1);
+    });
+
+    const boutonBas = document.createElement("button");
+    boutonBas.type = "button";
+    boutonBas.textContent = "⬇️";
+    boutonBas.title = "Descendre cette catégorie";
+    boutonBas.setAttribute(
+      "aria-label",
+      "Descendre " + categorie.Nom
+    );
+    boutonBas.disabled =
+      index === categories.length - 1 ||
+      ordreCategoriesEnCours;
+
+    boutonBas.addEventListener("click", function() {
+      deplacerCategorie(index, 1);
+    });
+
+    actions.appendChild(boutonHaut);
+    actions.appendChild(boutonBas);
+
+    ligne.appendChild(nom);
+    ligne.appendChild(actions);
+
+    liste.appendChild(ligne);
+
+  });
 
 }
+
+
+async function deplacerCategorie(index, direction) {
+
+  if (ordreCategoriesEnCours) return;
+
+  if (!(await verifierAdmin())) return;
+
+  const message = document.getElementById(
+    "messageOrdreCategories"
+  );
+
+  ordreCategoriesEnCours = true;
+
+  if (message) {
+    message.textContent = "Enregistrement du nouvel ordre…";
+    message.style.display = "block";
+  }
+
+  try {
+
+    const { data, error } = await client
+      .from("categories")
+      .select("id, Nom, Emoji, Ordre")
+      .order("Ordre", { ascending: true });
+
+    if (error) throw error;
+
+    const categories = data || [];
+    const nouvelIndex = index + direction;
+
+    if (
+      nouvelIndex < 0 ||
+      nouvelIndex >= categories.length
+    ) {
+      return;
+    }
+
+    /* Échanger les deux catégories */
+
+    const temporaire = categories[index];
+
+    categories[index] = categories[nouvelIndex];
+
+    categories[nouvelIndex] = temporaire;
+
+
+    /* Première passe : ordres temporaires uniques */
+
+    for (let i = 0; i < categories.length; i++) {
+
+      const resultat = await client
+        .from("categories")
+        .update({ Ordre: 100000 + i })
+        .eq("id", categories[i].id);
+
+      if (resultat.error) throw resultat.error;
+
+    }
+
+
+    /* Deuxième passe : enregistrer l'ordre définitif */
+
+    for (let i = 0; i < categories.length; i++) {
+
+      const resultat = await client
+        .from("categories")
+        .update({ Ordre: i + 1 })
+        .eq("id", categories[i].id);
+
+      if (resultat.error) throw resultat.error;
+
+    }
+
+    /* Actualiser les listes de l'administration */
+
+    ordreCategoriesEnCours = false;
+
+    await chargerCategories();
+    await chargerProduits();
+
+    if (message) {
+      message.textContent =
+        "✅ Nouvel ordre enregistré avec succès !";
+      message.style.display = "block";
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Erreur lors du changement d'ordre :",
+      error
+    );
+
+    if (message) {
+      message.textContent =
+        "❌ Impossible d'enregistrer le nouvel ordre. " +
+        "Vérifie la connexion puis actualise la page.";
+      message.style.display = "block";
+    }
+
+  } finally {
+
+    ordreCategoriesEnCours = false;
+
+    await afficherOrdreCategories();
+
+  }
+
+}
+
+/* =====================================================
+   FIN ORDRE DES CATÉGORIES
+===================================================== */
 
   /* =====================================================
 AJOUTER UNE CATÉGORIE À LA BOUTIQUE
