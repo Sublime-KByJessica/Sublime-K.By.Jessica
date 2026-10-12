@@ -1281,30 +1281,71 @@ button{cursor:pointer}
 
 }
 
+  
   /* =====================================================
-   📂 SÉLECTION MULTIPLE DES CATÉGORIES
-===================================================== */
+     📂 SÉLECTION MULTIPLE DES CATÉGORIES
+  ===================================================== */
 
-#categorie[multiple]{
+  #categorie[multiple]{
+    min-height:140px;
+  }
 
-  min-height:140px;
+  .categories-cases{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    grid-template-rows:repeat(3,auto);
+    gap:8px;
+    width:100%;
+    box-sizing:border-box;
+    padding:10px;
+    border:1px solid #E4D8D8;
+    border-radius:12px;
+    background:#FFFFFF;
+  }
 
-}
+  .categorie-case{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    min-width:0;
+    box-sizing:border-box;
+    padding:10px 8px;
+    border:1px solid #E4D8D8;
+    border-radius:10px;
+    background:#FAF7F5;
+    cursor:pointer;
+    font-weight:normal;
+    line-height:1.3;
+  }
 
+  .categorie-case input{
+    flex:0 0 18px;
+    width:18px;
+    height:18px;
+    margin:0;
+    accent-color:#829477;
+    cursor:pointer;
+  }
 
-.categorie-aide{
+  .categorie-case span{
+    min-width:0;
+    overflow-wrap:anywhere;
+    font-size:13px;
+  }
 
-  display:block;
+  .categorie-case:has(input:checked){
+    background:#EAF0E5;
+    border-color:#829477;
+  }
 
-  margin-top:6px;
+  .categorie-aide{
+    display:block;
+    margin-top:8px;
+    color:#766B6D;
+    font-size:13px;
+    line-height:1.4;
+  }
 
-  color:#766B6D;
-
-  font-size:13px;
-
-  line-height:1.4;
-
-}
   
 </style>
 </head>
