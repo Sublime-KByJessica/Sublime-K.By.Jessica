@@ -1184,6 +1184,61 @@ button{cursor:pointer}
   }
 }
 
+  
+/* =====================================================
+   SECTIONS ADMIN REPLIABLES
+===================================================== */
+
+.section-repliable-bouton {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--bordure);
+  border-radius: 12px;
+  background: #f3f1e8;
+  color: var(--texte);
+  text-align: left;
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.section-repliable-bouton:hover {
+  background: #ebe8dc;
+}
+
+.section-repliable-icone {
+  flex-shrink: 0;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.section-repliable-produits {
+  min-width: 220px;
+}
+
+.admin-ordre-categories > .section-repliable-bouton {
+  margin-bottom: 0;
+}
+
+.admin-ordre-categories > #contenuOrdreCategories:not([hidden]) {
+  padding-top: 14px;
+}
+
+@media(max-width:550px) {
+  .section-repliable-bouton {
+    font-size: 15px;
+    padding: 11px;
+  }
+
+  .section-repliable-produits {
+    min-width: 0;
+  }
+}
+
 /* =====================================================
    📂 PRODUITS CLASSÉS PAR CATÉGORIE
 ===================================================== */
@@ -2688,9 +2743,21 @@ button{cursor:pointer}
        ORDRE DES CATÉGORIES — GESTION ADMIN
   ===================================================== -->
 
-  <div class="admin-ordre-categories">
+    
+<div class="admin-ordre-categories">
 
-    <h3>↕️ Organiser l'ordre des catégories</h3>
+  <button
+    type="button"
+    class="section-repliable-bouton"
+    aria-expanded="false"
+    aria-controls="contenuOrdreCategories"
+    onclick="basculerBlocAdmin('contenuOrdreCategories', this)"
+  >
+    <span>↕️ Organiser l'ordre des catégories</span>
+    <span class="section-repliable-icone" aria-hidden="true">＋</span>
+  </button>
+
+  <div id="contenuOrdreCategories" hidden>
 
     <p>
       Utilise les flèches pour faire monter ou descendre
@@ -2709,8 +2776,9 @@ button{cursor:pointer}
     ></div>
 
   </div>
-    
-  </div>  
+
+</div>
+
   
   <!-- FIN GESTION DES CATÉGORIES DE LA BOUTIQUE -->
 
@@ -2720,9 +2788,18 @@ button{cursor:pointer}
 
     <div class="barre-produits">
 
-      <h2>
-        🛍️ Mes produits
-      </h2>
+      
+<button
+  type="button"
+  class="section-repliable-bouton section-repliable-produits"
+  aria-expanded="false"
+  aria-controls="contenuMesProduits"
+  onclick="basculerBlocAdmin('contenuMesProduits', this)"
+>
+  <span>📦 Mes produits</span>
+  <span class="section-repliable-icone" aria-hidden="true">＋</span>
+</button>
+
 
       <button
         class="btn btn-modifier"
@@ -2734,10 +2811,16 @@ button{cursor:pointer}
 
     </div>
 
-    <div
-      class="produits-liste"
-      id="listeProduits"
-    ></div>
+    
+<div id="contenuMesProduits" hidden>
+
+  <div
+    class="produits-liste"
+    id="listeProduits"
+  ></div>
+
+</div>
+
 
   </div>
 
@@ -4560,6 +4643,25 @@ async function chargerCategories(){
 
 let ordreCategoriesEnCours = false;
 
+  
+function basculerBlocAdmin(idContenu, bouton) {
+
+  const contenu = document.getElementById(idContenu);
+
+  if (!contenu || !bouton) return;
+
+  const doitOuvrir = contenu.hidden;
+
+  contenu.hidden = !doitOuvrir;
+  bouton.setAttribute("aria-expanded", String(doitOuvrir));
+
+  const icone = bouton.querySelector(".section-repliable-icone");
+
+  if (icone) {
+    icone.textContent = doitOuvrir ? "−" : "＋";
+  }
+
+}
 
 async function afficherOrdreCategories() {
 
