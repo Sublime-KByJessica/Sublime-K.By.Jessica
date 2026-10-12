@@ -2535,6 +2535,72 @@ button{cursor:pointer}
 
   </div>
 
+  <!-- =====================================================
+       GESTION DES CATÉGORIES DE LA BOUTIQUE
+  ===================================================== -->  <div class="bloc"><h2>📂 Gérer les catégories de la boutique</h2>
+
+<p>
+  Crée une nouvelle catégorie pour organiser tes produits.
+</p>
+
+<form id="formNouvelleCategorieBoutique">
+
+  <div class="form-grid">
+
+    <div class="champ">
+
+      <label for="nouveauNomCategorieBoutique">
+        Nom de la catégorie *
+      </label>
+
+      <input
+        type="text"
+        id="nouveauNomCategorieBoutique"
+        required
+        maxlength="80"
+        placeholder="Ex : Décoration"
+      >
+
+    </div>
+
+    <div class="champ">
+
+      <label for="nouvelEmojiCategorieBoutique">
+        Emoji de la catégorie
+      </label>
+
+      <input
+        type="text"
+        id="nouvelEmojiCategorieBoutique"
+        maxlength="12"
+        placeholder="Ex : 🏡"
+      >
+
+    </div>
+
+  </div>
+
+  <div class="actions-formulaire">
+
+    <button
+      class="btn btn-enregistrer"
+      type="submit"
+    >
+      ➕ Ajouter la catégorie
+    </button>
+
+  </div>
+
+  <div
+    id="messageNouvelleCategorieBoutique"
+    class="message"
+    role="status"
+    aria-live="polite"
+  ></div>
+
+</form>
+
+  </div>  <!-- FIN GESTION DES CATÉGORIES DE LA BOUTIQUE -->
 
   <!-- LISTE PRODUITS -->
 
@@ -4375,6 +4441,122 @@ async function chargerCategories(){
 
 }
 
+  /* =====================================================
+AJOUTER UNE CATÉGORIE À LA BOUTIQUE
+===================================================== */
+
+document
+.getElementById("formNouvelleCategorieBoutique")
+.addEventListener("submit", async function(event){
+
+event.preventDefault();
+
+if(!(await verifierAdmin())){
+  return;
+}
+
+const champNom = document.getElementById(
+  "nouveauNomCategorieBoutique"
+);
+
+const champEmoji = document.getElementById(
+  "nouvelEmojiCategorieBoutique"
+);
+
+const message = document.getElementById(
+  "messageNouvelleCategorieBoutique"
+);
+
+const nom = champNom.value.trim();
+const emoji = champEmoji.value.trim() || "📁";
+
+if(!nom){
+  message.textContent = "❌ Saisis un nom de catégorie.";
+  message.style.display = "block";
+  return;
+}
+
+message.textContent = "Enregistrement en cours…";
+message.style.display = "block";
+
+try {
+
+  /* Vérifier si le nom existe déjà */
+
+  const resultatExistence = await client
+    .from("categories")
+    .select("id")
+    .ilike("Nom", nom)
+    .limit(1);
+
+  if(resultatExistence.error){
+    throw resultatExistence.error;
+  }
+
+  if(resultatExistence.data && resultatExistence.data.length > 0){
+    message.textContent = "⚠️ Cette catégorie existe déjà.";
+    return;
+  }
+
+  /* Récupérer le dernier ordre utilisé */
+
+  const resultatOrdre = await client
+    .from("categories")
+    .select("Ordre")
+    .order("Ordre", {ascending:false})
+    .limit(1);
+
+  if(resultatOrdre.error){
+    throw resultatOrdre.error;
+  }
+
+  const dernierOrdre =
+    resultatOrdre.data && resultatOrdre.data.length
+      ? Number(resultatOrdre.data[0].Ordre) || 0
+      : 0;
+
+  /* Créer la catégorie */
+
+  const resultatAjout = await client
+    .from("categories")
+    .insert([{
+      Nom: nom,
+      Emoji: emoji,
+      Ordre: dernierOrdre + 1
+    }]);
+
+  if(resultatAjout.error){
+    throw resultatAjout.error;
+  }
+
+  champNom.value = "";
+  champEmoji.value = "";
+
+  await chargerCategories();
+
+  message.textContent = "✅ Catégorie ajoutée avec succès !";
+  message.style.display = "block";
+
+} catch(error) {
+
+  console.error(
+    "Erreur lors de l'ajout de la catégorie :",
+    error
+  );
+
+  message.textContent =
+    "❌ Impossible d'ajouter la catégorie : " +
+    (error.message || "erreur inconnue");
+
+  message.style.display = "block";
+
+}
+
+});
+
+/* =====================================================
+FIN AJOUT D'UNE CATÉGORIE
+===================================================== */
 
 /* =====================================================
    FORMULAIRE PRODUIT
