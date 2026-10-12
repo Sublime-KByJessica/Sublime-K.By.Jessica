@@ -8869,202 +8869,232 @@ console.log("BOUTIQUE : chargement des photos supplémentaires...");
     ===================================================== */
 
     async function filtrerCategorie(
-      nomCategorie
-    ) {
-
-      const zone =
-        document.getElementById(
-          "boutique-produits"
-        );
-
-
-      const titreFiltre =
-        document.getElementById(
-          "boutique-filtre"
-        );
-
-
-      titreFiltre.innerHTML = `
-
-        <strong>
-          ${nomCategorie}
-        </strong>
-
-      `;
-
-
-      zone.innerHTML = `
-
-        <div class="boutique-empty">
-          Chargement des produits…
-        </div>
-
-      `;
-
-
-      try {
-
-        const {
-          data: categories,
-          error: categoriesError
-        } =
-          await supabaseClient
-
-            .from("categories")
-
-            .select(`
-              id,
-              Nom
-            `);
-
-
-        if (categoriesError) {
-          throw categoriesError;
-        }
-
-
-        const categorie =
-          categories.find(
-            function(cat) {
-
-              return (
-                cat.Nom.trim().toLowerCase() ===
-                nomCategorie.trim().toLowerCase()
-              );
-
-            }
-          );
-
-
-        if (!categorie) {
-
-          zone.innerHTML = `
-
-            <div class="boutique-empty">
-
-              <p>
-                Aucun produit trouvé dans cette catégorie.
-              </p>
-
-            </div>
-
-          `;
-
-          return;
-
-        }
-
-
-        const {
-          data: produits,
-          error: produitsError
-        } =
-          await supabaseClient
-
-            .from("products")
-
-            .select(`
-              id,
-              nom,
-              description,
-              prix,
-              categorie_id,
-              statut,
-              image_url,
-              visible,
-              ordre
-            `)
-
-            .eq("visible", true)
-
-            .eq(
-              "categorie_id",
-              categorie.id
-            )
-
-            .order(
-              "ordre",
-              {
-                ascending: true
-              }
-            );
-
-
-        if (produitsError) {
-          throw produitsError;
-        }
-
-
-        if (
-          !produits ||
-          produits.length === 0
-        ) {
-
-          zone.innerHTML = `
-
-            <div class="boutique-empty">
-
-              <p>
-                🛍️ Aucun produit n'est encore disponible dans cette catégorie.
-              </p>
-
-            </div>
-
-          `;
-
-          return;
-
-        }
-
-
-                zone.innerHTML = "";
-
-const photosParProduit =
-  await chargerPhotosSupplementairesProduits(
-    produits
-  );
-
-produits.forEach(
-  function(produit) {
-
-    zone.innerHTML +=
-      creerCarteProduit(
-        produit,
-        photosParProduit[
-          produit.id
-        ] || []
-      );
-
-  }
-);
-
-activerCarrouselsProduits();
-        
-
-      } catch (error) {
-
-        console.error(
-          "Erreur lors du filtrage par catégorie :",
-          error
-        );
-
-
-        zone.innerHTML = `
-
-          <div class="boutique-empty">
-
-            <p>
-              Impossible de charger cette catégorie pour le moment.
-            </p>
-
-          </div>
-
-        `;
-
-      }
-
+  nomCategorie
+) {
+
+  const zone =
+    document.getElementById(
+      "boutique-produits"
+    );
+
+  const titreFiltre =
+    document.getElementById(
+      "boutique-filtre"
+    );
+
+  titreFiltre.innerHTML = `
+    <strong>
+      ${nomCategorie}
+    </strong>
+  `;
+
+  zone.innerHTML = `
+    <div class="boutique-empty">
+      Chargement des produits…
+    </div>
+  `;
+
+  try {
+
+    const {
+      data: categories,
+      error: categoriesError
+    } = await supabaseClient
+      .from("categories")
+      .select(`
+        id,
+        Nom
+      `);
+
+    if (categoriesError) {
+      throw categoriesError;
     }
 
+    const categorie =
+      categories.find(
+        function(cat) {
+          return (
+            cat.Nom.trim().toLowerCase() ===
+            nomCategorie.trim().toLowerCase()
+          );
+        }
+      );
+
+    if (!categorie) {
+      zone.innerHTML = `
+        <div class="boutique-empty">
+          <p>
+            Aucun produit trouvé dans cette catégorie.
+          </p>
+        </div>
+      `;
+      return;
+    }
+
+
+    /* Produits de la catégorie principale */
+
+    const {
+      data: produitsPrincipaux,
+      error: produitsError
+    } = await supabaseClient
+      .from("products")
+      .select(`
+        id,
+        nom,
+        description,
+        prix,
+        categorie_id,
+        statut,
+        image_url,
+        visible,
+        ordre
+      `)
+      .eq("visible", true)
+      .eq("categorie_id", categorie.id)
+      .order("ordre", {
+        ascending: true
+      });
+
+    if (produitsError) {
+      throw produitsError;
+    }
+
+
+    /* Récupérer les associations avec cette catégorie */
+
+    const {
+      data: associations,
+      error: associationsError
+    } = await supabaseClient
+      .from("product_categories")
+      .select("product_id")
+      .eq("category_id", categorie.id);
+
+    if (associationsError) {
+      throw associationsError;
+    }
+
+    const idsAssocies = (
+      associations || []
+    ).map(function(association) {
+      return association.product_id;
+    });
+
+
+    /* Charger les produits associés */
+
+    let produitsAssocies = [];
+
+    if (idsAssocies.length > 0) {
+
+      const {
+        data: resultatsAssocies,
+        error: erreurAssocies
+      } = await supabaseClient
+        .from("products")
+        .select(`
+          id,
+          nom,
+          description,
+          prix,
+          categorie_id,
+          statut,
+          image_url,
+          visible,
+          ordre
+        `)
+        .eq("visible", true)
+        .in("id", idsAssocies)
+        .order("ordre", {
+          ascending: true
+        });
+
+      if (erreurAssocies) {
+        throw erreurAssocies;
+      }
+
+      produitsAssocies = resultatsAssocies || [];
+    }
+
+
+    /* Fusionner les deux listes sans doublons */
+
+    const produits = Array.from(
+      new Map(
+        [
+          ...(produitsPrincipaux || []),
+          ...produitsAssocies
+        ].map(function(produit) {
+          return [produit.id, produit];
+        })
+      ).values()
+    ).sort(function(a, b) {
+      return (a.ordre || 0) - (b.ordre || 0);
+    });
+
+
+    /* Message si aucun produit n'est disponible */
+
+    if (
+      !produits ||
+      produits.length === 0
+    ) {
+      zone.innerHTML = `
+        <div class="boutique-empty">
+          <p>
+            🛍️ Aucun produit n'est encore disponible dans cette catégorie.
+          </p>
+        </div>
+      `;
+      return;
+    }
+
+
+    /* AFFICHAGE EXISTANT : conservé */
+
+    zone.innerHTML = "";
+
+    const photosParProduit =
+      await chargerPhotosSupplementairesProduits(
+        produits
+      );
+
+    produits.forEach(
+      function(produit) {
+
+        zone.innerHTML +=
+          creerCarteProduit(
+            produit,
+            photosParProduit[
+              produit.id
+            ] || []
+          );
+
+      }
+    );
+
+    activerCarrouselsProduits();
+
+
+  } catch (error) {
+
+    console.error(
+      "Erreur lors du filtrage par catégorie :",
+      error
+    );
+
+    zone.innerHTML = `
+      <div class="boutique-empty">
+        <p>
+          Impossible de charger cette catégorie pour le moment.
+        </p>
+      </div>
+    `;
+
+  }
+
+}
 
     /* =====================================================
        CATÉGORIE DEPUIS LE MENU
