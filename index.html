@@ -4004,6 +4004,61 @@
         SUPABASE_KEY
       );
 
+    /* =====================================================
+   CATÉGORIES DU MENU — CHARGEMENT DEPUIS SUPABASE
+===================================================== */
+
+async function chargerCategoriesMenu() {
+  const conteneur = document.getElementById(
+    "menuCategoriesDynamiques"
+  );
+
+  if (!conteneur) return;
+
+  try {
+    const { data, error } = await supabaseClient
+      .from("categories")
+      .select("id, Nom, Emoji, Ordre")
+      .order("Ordre", { ascending: true });
+
+    if (error) throw error;
+
+    conteneur.innerHTML = "";
+
+    if (!data || data.length === 0) {
+      conteneur.textContent =
+        "Aucune catégorie disponible.";
+      return;
+    }
+
+    data.forEach(function(categorie) {
+      const bouton = document.createElement("button");
+
+      bouton.type = "button";
+      bouton.className = "menu-category-button";
+
+      bouton.textContent =
+        (categorie.Emoji || "📁") +
+        " " +
+        categorie.Nom;
+
+      bouton.addEventListener("click", function() {
+        filtrerDepuisMenu(categorie.Nom);
+      });
+
+      conteneur.appendChild(bouton);
+    });
+
+  } catch (error) {
+    console.error(
+      "Erreur lors du chargement des catégories du menu :",
+      error
+    );
+
+    conteneur.textContent =
+      "Les catégories ne peuvent pas être chargées pour le moment.";
+  }
+}
 
     /* =====================================================
        MENU PRINCIPAL
@@ -10361,6 +10416,8 @@ chargerMessagesSitePublic();
 
     console.log("TEST : afficherPanier terminé");
 
+    chargerCategoriesMenu();
+    
     chargerBoutique();
 
     afficherPanier();
