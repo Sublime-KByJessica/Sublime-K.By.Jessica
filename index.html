@@ -6332,7 +6332,13 @@ const prix =
        * on l'ouvre obligatoirement pour permettre
        * le choix de la variante.
        */
+      
+      const ficheProduitOverlay =
+        document.getElementById("ficheProduitOverlay");
+
       if (
+        !ficheProduitOverlay ||
+        !ficheProduitOverlay.classList.contains("active") ||
         !produitFicheActuel ||
         String(produitFicheActuel.id) !==
           String(produit.id)
