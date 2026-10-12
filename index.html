@@ -6468,9 +6468,6 @@ const prix =
    VARIANTE / COULEUR SÉLECTIONNÉE
 ================================================= */
 
-const varianteSelectionnee =
-  produit._variantSelectionnee || null;
-
 
 /*
  * Un même produit avec deux variantes différentes
@@ -8366,11 +8363,21 @@ photosProduit.forEach(
             : ""
         }
 
+        
         ${
-(prix || variantesActives.length)
-? "<div id="prixFicheProduit" class="product-price" style="margin:20px 0;" > ${prix} </div>"
-: ""
-}
+          (prix || variantesActives.length)
+            ? `
+              <div
+                id="prixFicheProduit"
+                class="product-price"
+                style="margin:20px 0;"
+              >
+                ${prix}
+              </div>
+            `
+            : ""
+        }
+
 
         ${
           variantesActives.length
