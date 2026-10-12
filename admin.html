@@ -1681,19 +1681,28 @@ button{cursor:pointer}
 
         <div class="champ">
 
-          <label for="categorie">
+          
+<label for="categorie">
   Catégories *
 </label>
 
 <select
   id="categorie"
   multiple
-  required
   size="5"
+  aria-hidden="true"
+  tabindex="-1"
+  style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;"
 ></select>
 
+<div
+  id="categoriesCases"
+  class="categories-cases"
+  aria-label="Choisir une ou plusieurs catégories"
+></div>
+
 <small class="categorie-aide">
-  💡 Tu peux sélectionner une ou plusieurs catégories.
+  💡 Coche une ou plusieurs catégories. Un même produit pourra apparaître dans plusieurs rubriques.
 </small>
           
         </div>
@@ -4252,70 +4261,120 @@ async function verifierAdmin(){
 }
 
 
+
 /* =====================================================
    CATÉGORIES
 ===================================================== */
+
+function actualiserCasesCategories(){
+
+  const select = document.getElementById("categorie");
+  const zone = document.getElementById("categoriesCases");
+
+  if(!select || !zone) return;
+
+  zone.innerHTML = "";
+
+  Array.from(select.options).forEach(function(option, index){
+
+    const label = document.createElement("label");
+    label.className = "categorie-case";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = option.value;
+    checkbox.id = "categorieCase_" + index;
+    checkbox.checked = option.selected;
+
+    checkbox.addEventListener("change", function(){
+
+      option.selected = checkbox.checked;
+
+    });
+
+    const texte = document.createElement("span");
+    texte.textContent = option.textContent;
+
+    label.appendChild(checkbox);
+    label.appendChild(texte);
+
+    zone.appendChild(label);
+
+  });
+
+}
+
+
+function synchroniserCasesCategories(){
+
+  const select = document.getElementById("categorie");
+  const zone = document.getElementById("categoriesCases");
+
+  if(!select || !zone) return;
+
+  const cases = zone.querySelectorAll('input[type="checkbox"]');
+
+  cases.forEach(function(checkbox){
+
+    const option = Array.from(select.options).find(function(item){
+
+      return item.value === checkbox.value;
+
+    });
+
+    checkbox.checked = !!(option && option.selected);
+
+  });
+
+}
+
 
 async function chargerCategories(){
 
   const {
     data,
     error
-  } =
-    await client
-      .from("categories")
-      .select("*")
-      .order(
-        "Ordre",
-        {ascending:true}
-      );
+  } = await client
+    .from("categories")
+    .select("*")
+    .order("Ordre", {ascending:true});
 
 
   if(error){
 
     console.error(error);
-
     return;
 
   }
 
 
-  const select =
-    document.getElementById(
-      "categorie"
-    );
+  const select = document.getElementById("categorie");
 
+  if(!select) return;
 
-  select.innerHTML="";
+  select.innerHTML = "";
 
 
   data.forEach(function(categorie){
 
-    const option =
-      document.createElement(
-        "option"
-      );
+    const option = document.createElement("option");
 
-
-    option.value =
-      categorie.id;
-
+    option.value = categorie.id;
 
     option.textContent =
-      (
-        categorie.Emoji || "📁"
-      ) +
+      (categorie.Emoji || "📁") +
       " " +
       categorie.Nom;
 
-
-    select.appendChild(
-      option
-    );
+    select.appendChild(option);
 
   });
 
+
+  actualiserCasesCategories();
+
 }
+
 
 /* =====================================================
    FORMULAIRE PRODUIT
