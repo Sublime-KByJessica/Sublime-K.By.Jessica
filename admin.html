@@ -15035,157 +15035,279 @@ async function chargerVariantesProduit(productId){
 ----------------------------------------------------- */
 
 function afficherListeVariantes(
-  variantes
+variantes
 ){
 
-  const liste =
-    document.getElementById(
-      "listeVariantesProduit"
-    );
+const liste =
+document.getElementById(
+"listeVariantesProduit"
+);
 
-  if(!liste){
-    return;
-  }
+if(!liste){
+return;
+}
 
+liste.innerHTML = "";
 
-  liste.innerHTML = "";
+if(!variantes.length){
 
+liste.innerHTML = `
+  <div
+    style="
+      padding:14px;
+      border:1px dashed var(--bordure);
+      border-radius:12px;
+      color:#766B6D;
+    "
+  >
+    Aucune variante ajoutée pour le moment.
+  </div>
+`;
 
-  if(!variantes.length){
-
-    liste.innerHTML = `
-      <div
-        style="
-          padding:14px;
-          border:1px dashed var(--bordure);
-          border-radius:12px;
-          color:#766B6D;
-        "
-      >
-        Aucune variante ajoutée pour le moment.
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  variantes.forEach(
-    function(variante){
-
-      const element =
-        document.createElement(
-          "div"
-        );
-
-      element.style.cssText = `
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        gap:12px;
-        padding:12px;
-        border:1px solid var(--bordure);
-        border-radius:12px;
-        background:white;
-        flex-wrap:wrap;
-      `;
-
-
-      const image =
-        variante.image_url
-          ? `
-            <img
-              src="${echapperHTML(
-                variante.image_url
-              )}"
-              alt=""
-              style="
-                width:55px;
-                height:55px;
-                object-fit:contain;
-                border-radius:10px;
-                border:1px solid var(--bordure);
-                background:#FAF7F5;
-              "
-            >
-          `
-          : `
-            <div
-              style="
-                width:55px;
-                height:55px;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                border-radius:10px;
-                background:var(--gris-clair);
-              "
-            >
-              📷
-            </div>
-          `;
-
-
-      element.innerHTML = `
-
-        <div
-          style="
-            display:flex;
-            align-items:center;
-            gap:12px;
-          "
-        >
-
-          ${image}
-
-          <div>
-
-            <strong>
-              ${echapperHTML(
-                variante.nom
-              )}
-            </strong>
-
-            <div
-              style="
-                color:#766B6D;
-                margin-top:3px;
-              "
-            >
-              ${echapperHTML(
-                variante.valeur
-              )}
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <button
-          type="button"
-          class="btn btn-supprimer"
-          onclick="
-            supprimerVarianteProduit(
-              '${variante.id}'
-            )
-          "
-        >
-          🗑️ Supprimer
-        </button>
-
-      `;
-
-
-      liste.appendChild(element);
-
-    }
-  );
+return;
 
 }
 
+variantes.forEach(
+function(variante){
 
+  const element =
+    document.createElement("div");
+
+  element.style.cssText = `
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:12px;
+    border:1px solid var(--bordure);
+    border-radius:12px;
+    background:white;
+    flex-wrap:wrap;
+  `;
+
+  const image =
+    variante.image_url
+      ? `
+        <img
+          src="${echapperHTML(variante.image_url)}"
+          alt=""
+          style="
+            width:55px;
+            height:55px;
+            object-fit:contain;
+            border-radius:10px;
+            border:1px solid var(--bordure);
+            background:#FAF7F5;
+          "
+        >
+      `
+      : `
+        <div
+          style="
+            width:55px;
+            height:55px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            border-radius:10px;
+            background:var(--gris-clair);
+          "
+        >
+          📷
+        </div>
+      `;
+
+  const prixActuel =
+    variante.prix !== null &&
+    variante.prix !== undefined
+      ? Number(variante.prix).toFixed(2)
+      : "";
+
+  const textePrix =
+    prixActuel !== ""
+      ? prixActuel.replace(".", ",") + " €"
+      : "Prix du produit par défaut";
+
+  element.innerHTML = `
+
+    <div
+      style="
+        display:flex;
+        align-items:center;
+        gap:12px;
+        flex:1;
+        min-width:200px;
+      "
+    >
+
+      ${image}
+
+      <div>
+
+        <strong>
+          ${echapperHTML(variante.nom)}
+        </strong>
+
+        <div
+          style="
+            color:#766B6D;
+            margin-top:3px;
+          "
+        >
+          ${echapperHTML(variante.valeur)}
+        </div>
+
+        <div
+          style="
+            margin-top:6px;
+            font-size:13px;
+            color:#766B6D;
+          "
+        >
+          Prix actuel :
+          <strong>${textePrix}</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div
+      style="
+        display:flex;
+        flex-wrap:wrap;
+        align-items:end;
+        gap:8px;
+        width:100%;
+      "
+    >
+
+      <div style="flex:1;min-width:150px;">
+
+        <label
+          for="prix-variante-${echapperHTML(variante.id)}"
+          style="
+            display:block;
+            font-size:13px;
+            margin-bottom:5px;
+          "
+        >
+          Nouveau prix (€)
+        </label>
+
+        <input
+          type="number"
+          id="prix-variante-${echapperHTML(variante.id)}"
+          min="0"
+          step="0.01"
+          value="${prixActuel}"
+          placeholder="Vide = prix du produit"
+          style="width:100%;"
+        >
+
+      </div>
+
+      <button
+        type="button"
+        class="btn"
+        onclick="enregistrerPrixVariante('${echapperHTML(variante.id)}')"
+      >
+        💾 Enregistrer le prix
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-supprimer"
+        onclick="supprimerVarianteProduit('${echapperHTML(variante.id)}')"
+      >
+        🗑️ Supprimer
+      </button>
+
+    </div>
+
+  `;
+
+  liste.appendChild(element);
+
+}
+
+);
+
+}
+
+  /* -----------------------------------------------------
+ENREGISTRER LE PRIX D'UNE VARIANTE
+----------------------------------------------------- */
+
+async function enregistrerPrixVariante(id){
+
+if(!(await verifierAdmin())){
+return;
+}
+
+const champ =
+document.getElementById(
+"prix-variante-" + id
+);
+
+if(!champ){
+alert("Impossible de trouver le champ du prix.");
+return;
+}
+
+const prixBrut =
+champ.value.trim();
+
+const prix =
+prixBrut === ""
+? null
+: Number(prixBrut);
+
+if(
+prixBrut !== "" &&
+(
+!Number.isFinite(prix) ||
+prix < 0
+)
+){
+alert("Le prix doit être un nombre positif ou nul.");
+return;
+}
+
+const { error } = await client
+.from("product_variants")
+.update({
+prix: prix
+})
+.eq("id", id)
+.eq("product_id", produitVariantesActuel);
+
+if(error){
+
+console.error(error);
+
+alert(
+  "Impossible d'enregistrer le prix :\n" +
+  error.message
+);
+
+return;
+
+}
+
+await chargerVariantesProduit(
+produitVariantesActuel
+);
+
+alert(
+prix === null
+? "Le prix par défaut du produit sera utilisé pour cette variante."
+: "Le prix de la variante a été enregistré."
+);
+
+}
+  
 /* -----------------------------------------------------
    AJOUTER UNE VARIANTE
 ----------------------------------------------------- */
