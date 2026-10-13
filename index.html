@@ -8979,26 +8979,49 @@ console.log("BOUTIQUE : chargement des photos supplémentaires...");
     /* Produits de la catégorie principale */
 
     const {
-      data: produitsPrincipaux,
-      error: produitsError
-    } = await supabaseClient
-      .from("products")
-      .select(`
-        id,
-        nom,
-        description,
-        prix,
-        categorie_id,
-        statut,
-        image_url,
-        visible,
-        ordre
-      `)
-      .eq("visible", true)
-      .eq("categorie_id", categorie.id)
-      .order("ordre", {
-        ascending: true
-      });
+  data: produitsPrincipaux,
+  error: produitsError
+} = await supabaseClient
+  .from("products")
+  .select(`
+    id,
+    nom,
+    description,
+    prix,
+    categorie_id,
+    statut,
+    image_url,
+    visible,
+    ordre,
+    stock_quantite,
+
+    personnalisation_active,
+    choix_image_active,
+    prenom_active,
+    police_active,
+    couleur_active,
+    message_active,
+    photo_client_active,
+
+    prenom_min_caracteres,
+    prenom_max_caracteres,
+    message_min_caracteres,
+    message_max_caracteres,
+
+    mockup_active,
+    mockup_design_active,
+    mockup_prenom_active,
+    mockup_message_active,
+    mockup_position_x,
+    mockup_position_y,
+    mockup_largeur,
+    mockup_rotation
+  `)
+  .eq("visible", true)
+  .eq("categorie_id", categorie.id)
+  .order("ordre", {
+    ascending: true
+  });
 
     if (produitsError) {
       throw produitsError;
@@ -9033,27 +9056,50 @@ console.log("BOUTIQUE : chargement des photos supplémentaires...");
     if (idsAssocies.length > 0) {
 
       const {
-        data: resultatsAssocies,
-        error: erreurAssocies
-      } = await supabaseClient
-        .from("products")
-        .select(`
-          id,
-          nom,
-          description,
-          prix,
-          categorie_id,
-          statut,
-          image_url,
-          visible,
-          ordre
-        `)
-        .eq("visible", true)
-        .in("id", idsAssocies)
-        .order("ordre", {
-          ascending: true
-        });
+  data: resultatsAssocies,
+  error: erreurAssocies
+} = await supabaseClient
+  .from("products")
+  .select(`
+    id,
+    nom,
+    description,
+    prix,
+    categorie_id,
+    statut,
+    image_url,
+    visible,
+    ordre,
+    stock_quantite,
 
+    personnalisation_active,
+    choix_image_active,
+    prenom_active,
+    police_active,
+    couleur_active,
+    message_active,
+    photo_client_active,
+
+    prenom_min_caracteres,
+    prenom_max_caracteres,
+    message_min_caracteres,
+    message_max_caracteres,
+
+    mockup_active,
+    mockup_design_active,
+    mockup_prenom_active,
+    mockup_message_active,
+    mockup_position_x,
+    mockup_position_y,
+    mockup_largeur,
+    mockup_rotation
+  `)
+  .eq("visible", true)
+  .in("id", idsAssocies)
+  .order("ordre", {
+    ascending: true
+  });
+      
       if (erreurAssocies) {
         throw erreurAssocies;
       }
