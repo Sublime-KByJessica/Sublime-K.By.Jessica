@@ -6435,20 +6435,49 @@ const prix =
    * Produit personnalisable
    */
 
-  if (
-    produit.personnalisation_active === true
-  ) {
+  
+  let personnalisationActive =
+    produit.personnalisation_active === true ||
+    String(produit.personnalisation_active).toLowerCase() === "true";
+
+  /*
+   * Si le réglage manque dans l'objet produit,
+   * on le relit directement dans Supabase.
+   */
+  if (!personnalisationActive) {
+    try {
+      const {
+        data: configurationProduit,
+        error: erreurConfiguration
+      } = await supabaseClient
+        .from("products")
+        .select("personnalisation_active")
+        .eq("id", produit.id)
+        .maybeSingle();
+
+      if (!erreurConfiguration && configurationProduit) {
+        personnalisationActive =
+          configurationProduit.personnalisation_active === true ||
+          String(
+            configurationProduit.personnalisation_active
+          ).toLowerCase() === "true";
+      }
+    } catch (erreur) {
+      console.warn(
+        "Vérification de la personnalisation impossible :",
+        erreur
+      );
+    }
+  }
+
+  if (personnalisationActive) {
+    produit.personnalisation_active = true;
 
     fermerFicheProduit();
-
     fermerPanier();
-
     fermerPersonnalisation();
 
-    await ouvrirPersonnalisation(
-      produit
-    );
-
+    await ouvrirPersonnalisation(produit);
     return;
   }
 
@@ -6965,7 +6994,7 @@ const blocVariante =
       ------------------------------------------- */
 
       const blocPersonnalisation =
-        aUnePersonnalisation
+        article.personnalisation
 
           ? `
 
@@ -7200,6 +7229,17 @@ const blocVariante =
         article.quantite +
         "%0D%0A";
 
+        
+      if (article.variante_valeur) {
+        message +=
+          "  Variante : " +
+          encodeURIComponent(
+            (article.variante_nom || "Variante") +
+            " - " +
+            article.variante_valeur
+          ) +
+          "%0D%0A";
+      }
 
       /* =================================================
          PERSONNALISATION
@@ -8445,6 +8485,7 @@ photosProduit.forEach(
             : ""
         }
 
+        
         <button
           type="button"
           class="product-button"
@@ -8456,6 +8497,24 @@ photosProduit.forEach(
               : "Ajouter au panier"
           }
         </button>
+
+        ${
+          (
+            produit.personnalisation_active === true ||
+            String(produit.personnalisation_active).toLowerCase() === "true"
+          )
+            ? `
+              <button
+                type="button"
+                class="product-button secondary"
+                onclick='ajouterAuPanier(${JSON.stringify(produit).replace(/'/g, "&#39;")})'
+              >
+                ✨ Personnaliser
+              </button>
+            `
+            : ""
+        }
+
 
       </div>
 
@@ -12006,13 +12065,14 @@ async function confirmerCommande() {
         Annuler
       </button>
 
-
+      
       <button
         type="button"
+        id="personnalisationValiderBouton"
         class="personnalisation-valider"
         onclick="validerPersonnalisation()"
       >
-        🛒 Continuer
+        🛒 Ajouter au panier
       </button>
 
     </div>
