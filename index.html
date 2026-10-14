@@ -4507,90 +4507,143 @@ async function afficherZonesPersonnalisationProduit(
   }
 
   async function ajouterChoixPolice(ligne, etat, ancienneValeur) {
-    const label = document.createElement("label");
-    label.textContent = "✍️ Police d’écriture";
-    ligne.appendChild(label);
+const label = document.createElement("label");
+label.textContent = "✍️ Choisis une police";
+ligne.appendChild(label);
 
-    const select = creerSelect("Choisir une police");
-    ligne.appendChild(select);
+const grille = document.createElement("div");
+grille.style.display = "flex";
+grille.style.flexWrap = "wrap";
+grille.style.gap = "8px";
+grille.style.marginTop = "10px";
+ligne.appendChild(grille);
 
-    const { data, error } = await supabaseClient
-      .from("personnalisation_polices")
-      .select("id, nom, famille_css")
-      .eq("actif", true)
-      .order("ordre", { ascending: true });
+const { data, error } = await supabaseClient
+  .from("personnalisation_polices")
+  .select("id, nom, famille_css")
+  .eq("actif", true)
+  .order("ordre", { ascending: true });
 
-    if (error) throw error;
+if (error) throw error;
 
-    (data || []).forEach(police => {
-      const option = document.createElement("option");
-      option.value = police.famille_css;
-      option.textContent = police.nom;
-      select.appendChild(option);
-    });
+(data || []).forEach(function(police) {
+  const bouton = document.createElement("button");
+  bouton.type = "button";
+  bouton.className = "personnalisation-police";
+  bouton.dataset.police = police.famille_css;
+  bouton.style.fontFamily = police.famille_css;
+  bouton.textContent = "Ton prénom";
+  bouton.title = police.nom || "Police";
 
-    select.value = ancienneValeur?.police || "";
-
-    etat.police = select.value;
-    etat.policeNom =
-      select.selectedOptions[0]?.textContent || "";
-
-    select.onchange = function () {
-  etat.police = select.value;
-  etat.policeNom =
-    select.selectedOptions[0]?.textContent || "";
-
-  mettreAJourApercuPersonnalisation();
-};
+  if ((ancienneValeur?.police || "") === police.famille_css) {
+    bouton.classList.add("active");
   }
 
-  async function ajouterChoixCouleur(ligne, etat, ancienneValeur) {
-    const label = document.createElement("label");
-    label.textContent = "🌈 Couleur";
-    ligne.appendChild(label);
-
-    const select = creerSelect("Choisir une couleur");
-    ligne.appendChild(select);
-
-    const { data, error } = await supabaseClient
-      .from("personnalisation_couleurs")
-      .select("id, nom, code_hex, actif, type, code_gradient")
-      .eq("actif", true)
-      .order("ordre", { ascending: true });
-
-    if (error) throw error;
-
-    (data || []).forEach(couleur => {
-      const option = document.createElement("option");
-      option.value = couleur.id;
-      option.textContent = couleur.nom || couleur.code_hex || "Couleur";
-      option.dataset.nom = couleur.nom || "";
-      option.dataset.hex = couleur.code_hex || "";
-      option.dataset.type = couleur.type || "solid";
-      option.dataset.gradient = couleur.code_gradient || "";
-      select.appendChild(option);
+  bouton.addEventListener("click", function() {
+    grille.querySelectorAll(".personnalisation-police").forEach(function(b) {
+      b.classList.remove("active");
     });
 
-    select.value = ancienneValeur?.couleurId || "";
+    bouton.classList.add("active");
+    etat.police = police.famille_css;
+    etat.policeNom = police.nom || "";
+    mettreAJourApercuPersonnalisation();
+  });
 
-    function enregistrerCouleur() {
-      const option = select.selectedOptions[0];
+  grille.appendChild(bouton);
+});
 
-      etat.couleurId = select.value;
-      etat.couleurNom = option?.dataset.nom || "";
-      etat.couleur = option?.dataset.hex || "";
-      etat.couleurType = option?.dataset.type || "solid";
-      etat.couleurGradient = option?.dataset.gradient || "";
-    }
+etat.police = ancienneValeur?.police || "";
+etat.policeNom = ancienneValeur?.policeNom || "";
 
-    enregistrerCouleur();
+}
 
-select.onchange = function () {
-  enregistrerCouleur();
-  mettreAJourApercuPersonnalisation();
-};
+async function ajouterChoixCouleur(ligne, etat, ancienneValeur) {
+const label = document.createElement("label");
+label.textContent = "🎨 Choisis une couleur";
+ligne.appendChild(label);
+
+const grille = document.createElement("div");
+grille.className = "personnalisation-couleurs";
+grille.style.display = "flex";
+grille.style.flexWrap = "wrap";
+grille.style.gap = "10px";
+grille.style.marginTop = "10px";
+ligne.appendChild(grille);
+
+const { data, error } = await supabaseClient
+  .from("personnalisation_couleurs")
+  .select("id, nom, code_hex, actif, type, code_gradient")
+  .eq("actif", true)
+  .order("ordre", { ascending: true });
+
+if (error) throw error;
+
+function estSelectionnee(couleur) {
+  return (
+    (ancienneValeur?.couleurId || "") === couleur.id ||
+    (
+      !ancienneValeur?.couleurId &&
+      (ancienneValeur?.couleur || "") === (couleur.code_hex || "") &&
+      (ancienneValeur?.couleurGradient || "") === (couleur.code_gradient || "")
+    )
+  );
+}
+
+(data || []).forEach(function(couleur) {
+  const bouton = document.createElement("button");
+  bouton.type = "button";
+  bouton.className = "personnalisation-couleur";
+  bouton.dataset.couleur = couleur.code_hex || "";
+  bouton.dataset.couleurNom = couleur.nom || "";
+  bouton.dataset.couleurType = couleur.type || "solid";
+  bouton.dataset.couleurGradient = couleur.code_gradient || "";
+  bouton.title = couleur.nom || "Couleur";
+  bouton.setAttribute("aria-label", couleur.nom || "Couleur");
+
+  if (couleur.type === "gradient" && couleur.code_gradient) {
+    bouton.style.background = "linear-gradient(135deg," + couleur.code_gradient + ")";
+  } else {
+    bouton.style.background = couleur.code_hex || "#FFFFFF";
   }
 
+  if (String(couleur.code_hex || "").toUpperCase() === "#FFFFFF") {
+    bouton.style.borderColor = "#DDD";
+  }
+
+  if (estSelectionnee(couleur)) {
+    bouton.classList.add("active");
+  }
+
+  bouton.addEventListener("click", function() {
+    grille.querySelectorAll(".personnalisation-couleur").forEach(function(b) {
+      b.classList.remove("active");
+    });
+
+    bouton.classList.add("active");
+
+    etat.couleurId = couleur.id;
+    etat.couleurNom = couleur.nom || "";
+    etat.couleur = couleur.code_hex || "";
+    etat.couleurType = couleur.type || "solid";
+    etat.couleurGradient = couleur.code_gradient || "";
+
+    mettreAJourApercuPersonnalisation();
+  });
+
+  grille.appendChild(bouton);
+});
+
+const couleurInitiale = (data || []).find(estSelectionnee);
+
+etat.couleurId = couleurInitiale?.id || ancienneValeur?.couleurId || "";
+etat.couleurNom = couleurInitiale?.nom || ancienneValeur?.couleurNom || "";
+etat.couleur = couleurInitiale?.code_hex || ancienneValeur?.couleur || "";
+etat.couleurType = couleurInitiale?.type || ancienneValeur?.couleurType || "solid";
+etat.couleurGradient = couleurInitiale?.code_gradient || ancienneValeur?.couleurGradient || "";
+
+}
+  
   for (let index = 0; index < zonesValides.length; index++) {
     const zone = zonesValides[index];
     const ancienneValeur = anciennesValeurs[index] || {};
