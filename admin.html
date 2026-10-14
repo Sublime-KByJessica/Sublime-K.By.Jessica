@@ -2367,6 +2367,32 @@ button{cursor:pointer}
 
   <hr style="margin:20px 0;border:0;border-top:1px solid var(--bordure);">
 
+        <hr style="margin:20px 0;border:0;border-top:1px solid var(--bordure);">
+
+  <!-- =====================================================
+       ZONES DE PERSONNALISATION MULTIPLES
+  ===================================================== -->
+
+  <h3>🧩 Zones de personnalisation supplémentaires</h3>
+
+  <p class="personnalisation-aide">
+    Configure ici les différentes parties à personnaliser
+    pour ce produit. Exemple : cercle 1, cercle 2, recto, verso.
+    Laisse cette rubrique vide si le produit n'en a pas besoin.
+  </p>
+
+  <div id="personnalisationZonesAdmin"></div>
+
+  <button
+    type="button"
+    class="btn btn-modifier"
+    id="boutonAjouterZonePersonnalisation"
+    onclick="ajouterZonePersonnalisationAdmin()"
+  >
+    ➕ Ajouter une zone
+  </button>
+
+  <!-- FIN ZONES DE PERSONNALISATION MULTIPLES -->
 
   <h3>
     👀 Aperçu / Mockup
@@ -5013,6 +5039,130 @@ FIN AJOUT D'UNE CATÉGORIE
    FORMULAIRE PRODUIT
 ===================================================== */
 
+  /* =====================================================
+   GESTION DES ZONES DE PERSONNALISATION
+===================================================== */
+
+function ajouterZonePersonnalisationAdmin(zone = {}) {
+
+  const conteneur = document.getElementById(
+    "personnalisationZonesAdmin"
+  );
+
+  if (!conteneur) return;
+
+  const ligne = document.createElement("div");
+
+  ligne.className = "personnalisation-zone-ligne";
+
+  ligne.style.cssText =
+    "border:1px solid var(--bordure);border-radius:12px;padding:14px;margin:12px 0;background:white;";
+
+  ligne.innerHTML = `
+    <div class="champ">
+      <label>Nom de la zone</label>
+      <input
+        type="text"
+        class="zone-personnalisation-nom"
+        maxlength="80"
+        placeholder="Ex : Cercle 1, Recto, Verso"
+        value="${echapperHTML(zone.nom || "")}"
+      >
+    </div>
+
+    <div class="champ" style="margin-top:10px;">
+      <label>Type de personnalisation</label>
+      <select class="zone-personnalisation-type">
+        <option value="texte">Texte libre</option>
+        <option value="prenom">Prénom</option>
+        <option value="message">Message</option>
+        <option value="design">Choix d'un design</option>
+        <option value="photo">Photo du client</option>
+      </select>
+    </div>
+
+    <div class="checkbox-ligne" style="margin-top:10px;">
+      <input
+        type="checkbox"
+        class="zone-personnalisation-obligatoire"
+      >
+      <label>Zone obligatoire</label>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-supprimer"
+      style="margin-top:10px;"
+    >
+      🗑️ Supprimer cette zone
+    </button>
+  `;
+
+  conteneur.appendChild(ligne);
+
+  ligne.querySelector(".zone-personnalisation-type").value =
+    zone.type || "texte";
+
+  ligne.querySelector(".zone-personnalisation-obligatoire").checked =
+    zone.obligatoire === true;
+
+  ligne.querySelector("button").addEventListener("click", function() {
+    ligne.remove();
+  });
+}
+
+
+function lireZonesPersonnalisationAdmin() {
+
+  const conteneur = document.getElementById(
+    "personnalisationZonesAdmin"
+  );
+
+  if (!conteneur) return [];
+
+  return Array.from(
+    conteneur.querySelectorAll(".personnalisation-zone-ligne")
+  )
+  .map(function(ligne) {
+
+    return {
+      nom: ligne.querySelector(
+        ".zone-personnalisation-nom"
+      ).value.trim(),
+
+      type: ligne.querySelector(
+        ".zone-personnalisation-type"
+      ).value,
+
+      obligatoire: ligne.querySelector(
+        ".zone-personnalisation-obligatoire"
+      ).checked
+    };
+
+  })
+  .filter(function(zone) {
+    return zone.nom !== "";
+  });
+
+}
+
+
+function afficherZonesPersonnalisationAdmin(zones = []) {
+
+  const conteneur = document.getElementById(
+    "personnalisationZonesAdmin"
+  );
+
+  if (!conteneur) return;
+
+  conteneur.innerHTML = "";
+
+  (Array.isArray(zones) ? zones : []).forEach(function(zone) {
+    ajouterZonePersonnalisationAdmin(zone);
+  });
+
+}
+  
 document
   .getElementById("formProduit")
   .addEventListener(
@@ -5122,6 +5272,8 @@ document
           document.getElementById(
             "personnalisation_active"
           ).checked,
+
+  personnalisation_zones: lireZonesPersonnalisationAdmin(),
 
         choix_image_active:
           document.getElementById(
@@ -6566,6 +6718,10 @@ async function(id){
 
   produitEnModification=id;
 
+  afficherZonesPersonnalisationAdmin(
+  data.personnalisation_zones || []
+);
+
   await chargerPhotosSupplementairesProduit();
 
   document.getElementById("nom").value=
@@ -6881,6 +7037,8 @@ function reinitialiserFormulaire(){
   document
     .getElementById("formProduit")
     .reset();
+
+  afficherZonesPersonnalisationAdmin([]);
 
   document.getElementById("statut").value=
     "precommande";
