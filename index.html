@@ -6469,8 +6469,7 @@ function mettreAJourApercuPersonnalisation() {
   // Si l'aperçu produit est désactivé, conserver un fond neutre
   if (!mockupActif || !imagePrincipale) {
     conteneurProduit.style.display = "none";
-    if (apercu) apercu.style.display = "";
-
+    if (apercu) apercu.style.display = "none";
     const fondNeutre = document.getElementById("personnalisationApercuNeutre");
 
     if (fondNeutre) {
