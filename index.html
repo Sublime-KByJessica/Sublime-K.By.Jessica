@@ -4421,12 +4421,14 @@ async function afficherZonesPersonnalisationProduit(
     });
 
     select.onchange = function () {
-      const option = select.selectedOptions[0];
+  const option = select.selectedOptions[0];
 
-      etat.designId = select.value;
-      etat.designNom = option?.dataset.nom || "";
-      etat.designImage = option?.dataset.image || "";
-    };
+  etat.designId = select.value;
+  etat.designNom = option?.dataset.nom || "";
+  etat.designImage = option?.dataset.image || "";
+
+  mettreAJourApercuPersonnalisation();
+};
   }
 
   async function ajouterChoixDesign(ligne, etat, ancienneValeur) {
@@ -4534,10 +4536,12 @@ async function afficherZonesPersonnalisationProduit(
       select.selectedOptions[0]?.textContent || "";
 
     select.onchange = function () {
-      etat.police = select.value;
-      etat.policeNom =
-        select.selectedOptions[0]?.textContent || "";
-    };
+  etat.police = select.value;
+  etat.policeNom =
+    select.selectedOptions[0]?.textContent || "";
+
+  mettreAJourApercuPersonnalisation();
+};
   }
 
   async function ajouterChoixCouleur(ligne, etat, ancienneValeur) {
@@ -4580,7 +4584,11 @@ async function afficherZonesPersonnalisationProduit(
     }
 
     enregistrerCouleur();
-    select.onchange = enregistrerCouleur;
+
+select.onchange = function () {
+  enregistrerCouleur();
+  mettreAJourApercuPersonnalisation();
+};
   }
 
   for (let index = 0; index < zonesValides.length; index++) {
@@ -4589,6 +4597,7 @@ async function afficherZonesPersonnalisationProduit(
     const etat = {
       nom: zone.nom,
       type: zone.type || "texte",
+      position: zone.position || ancienneValeur.position || "centre",
       valeur: ancienneValeur.valeur || "",
       obligatoire: zone.obligatoire === true,
       designId: ancienneValeur.designId || "",
@@ -4644,8 +4653,9 @@ async function afficherZonesPersonnalisationProduit(
       zone.obligatoire ? "true" : "false";
 
     champ.addEventListener("input", function () {
-      etat.valeur = champ.value.trim();
-    });
+  etat.valeur = champ.value.trim();
+  mettreAJourApercuPersonnalisation();
+});
 
     ligne.appendChild(champ);
 
@@ -6306,63 +6316,135 @@ async function chargerCouleursPublic() {
 ===================================================== */
 
 function mettreAJourApercuPersonnalisation() {
+  const apercu = document.getElementById("personnalisationTexteApercu");
+  const conteneurProduit = document.getElementById("personnalisationApercuProduit");
+  const imageProduit = document.getElementById("personnalisationApercuImage");
+  const conteneurZones = document.getElementById("personnalisationApercuZones");
 
-  const apercu =
-    document.getElementById(
-      "personnalisationTexteApercu"
-    );
+  // Conserver l'aperçu classique du prénom
+  if (apercu) {
+    apercu.textContent = personnalisationChoix.prenom || "Ton prénom";
+    apercu.style.fontFamily = personnalisationChoix.police || "Arial, sans-serif";
 
-  if (!apercu) {
+    if (
+      personnalisationChoix.couleurType === "gradient" &&
+      personnalisationChoix.couleurGradient
+    ) {
+      apercu.style.color = "transparent";
+      apercu.style.backgroundImage =
+        "linear-gradient(135deg," + personnalisationChoix.couleurGradient + ")";
+      apercu.style.backgroundClip = "text";
+      apercu.style.webkitBackgroundClip = "text";
+    } else {
+      apercu.style.backgroundImage = "none";
+      apercu.style.backgroundClip = "border-box";
+      apercu.style.webkitBackgroundClip = "border-box";
+      apercu.style.color = personnalisationChoix.couleur || "#E6C2BF";
+    }
+  }
+
+  if (!conteneurProduit || !imageProduit || !conteneurZones) {
     return;
   }
 
-  apercu.textContent =
-    personnalisationChoix.prenom ||
-    "Ton prénom";
+  // Utiliser la photo de la variante si elle en possède une
+  const produit = personnalisationProduitActuel;
+  const imageVariante =
+    produit &&
+    produit._variantSelectionnee &&
+    produit._variantSelectionnee.image_url
+      ? produit._variantSelectionnee.image_url
+      : "";
 
-  apercu.style.fontFamily =
-    personnalisationChoix.police ||
-    "Arial, sans-serif";
+  const imagePrincipale = produit
+    ? imageVariante || produit.image_url || ""
+    : "";
 
-  
-if (
-  personnalisationChoix.couleurType ===
-    "gradient" &&
-  personnalisationChoix.couleurGradient
-) {
+  conteneurZones.innerHTML = "";
 
-  apercu.style.color =
-    "transparent";
+  if (!imagePrincipale) {
+    conteneurProduit.style.display = "none";
+    if (apercu) apercu.style.display = "";
+    return;
+  }
 
-  apercu.style.backgroundImage =
-    "linear-gradient(135deg," +
-    personnalisationChoix.couleurGradient +
-    ")";
+  imageProduit.src = imagePrincipale;
+  imageProduit.onerror = function () {
+    conteneurProduit.style.display = "none";
+    if (apercu) apercu.style.display = "";
+  };
 
-  apercu.style.backgroundClip =
-    "text";
+  imageProduit.onload = function () {
+    conteneurProduit.style.display = "block";
+    if (apercu) apercu.style.display = "none";
+  };
 
-  apercu.style.webkitBackgroundClip =
-    "text";
+  conteneurProduit.style.display = "block";
+  if (apercu) apercu.style.display = "none";
 
-} else {
+  // Positionner les textes et motifs des différentes zones
+  const zones = Object.values(personnalisationZonesChoix || {});
 
-  apercu.style.backgroundImage =
-    "none";
+  zones.forEach(function (zone) {
+    const position = zone.position || "centre";
+    const texte = String(zone.valeur || "").trim();
+    const imageMotif = zone.designImage || "";
 
-  apercu.style.backgroundClip =
-    "border-box";
+    if (!texte && !imageMotif) return;
 
-  apercu.style.webkitBackgroundClip =
-    "border-box";
+    const bloc = document.createElement("div");
+    bloc.style.position = "absolute";
+    bloc.style.maxWidth = "80%";
+    bloc.style.padding = "3px 6px";
+    bloc.style.textAlign = "center";
+    bloc.style.overflowWrap = "anywhere";
+    bloc.style.pointerEvents = "none";
+    bloc.style.transform = "translate(-50%, -50%)";
 
-  apercu.style.color =
-    personnalisationChoix.couleur ||
-    "#E6C2BF";
+    const positions = {
+      "centre":       { left: "50%", top: "50%" },
+      "haut":         { left: "50%", top: "15%" },
+      "bas":          { left: "50%", top: "85%" },
+      "gauche":       { left: "15%", top: "50%" },
+      "droite":       { left: "85%", top: "50%" },
+      "haut-gauche":  { left: "20%", top: "20%" },
+      "haut-droite":  { left: "80%", top: "20%" },
+      "bas-gauche":   { left: "20%", top: "80%" },
+      "bas-droite":   { left: "80%", top: "80%" }
+    };
 
+    const ancrage = positions[position] || positions["centre"];
+    bloc.style.left = ancrage.left;
+    bloc.style.top = ancrage.top;
+
+    if (texte) {
+      const texteZone = document.createElement("div");
+      texteZone.textContent = texte;
+      texteZone.style.fontFamily = zone.police || "Arial, sans-serif";
+      texteZone.style.fontSize = "clamp(12px, 3vw, 24px)";
+      texteZone.style.fontWeight = "bold";
+      texteZone.style.color = zone.couleur || "#222222";
+      texteZone.style.textShadow = "0 1px 3px rgba(255,255,255,0.7)";
+      bloc.appendChild(texteZone);
+    }
+
+    if (imageMotif) {
+      const motif = document.createElement("img");
+      motif.src = imageMotif;
+      motif.alt = zone.designNom || "Motif choisi";
+      motif.style.display = "block";
+      motif.style.maxWidth = "90px";
+      motif.style.maxHeight = "90px";
+      motif.style.width = "auto";
+      motif.style.height = "auto";
+      motif.style.objectFit = "contain";
+      motif.style.margin = "4px auto";
+      bloc.appendChild(motif);
+    }
+
+    conteneurZones.appendChild(bloc);
+  });
 }
-}
-
 
 /* =====================================================
    ENREGISTRER LE PRÉNOM EN DIRECT
@@ -12656,31 +12738,70 @@ async function confirmerCommande() {
 
 
       <!-- =================================================
-           5. APERÇU
-      ================================================== -->
+     5. APERÇU
+================================================== -->
 
-      <section class="personnalisation-etape">
+<section class="personnalisation-etape">
 
-        <h3>
-          👀 Aperçu
-        </h3>
+  <h3>👀 Aperçu de ta personnalisation</h3>
 
+  <p style="margin-bottom:12px;color:#777;font-size:14px;">
+    Voici un aperçu indicatif de ton produit personnalisé.
+  </p>
 
-        <div
-          id="personnalisationApercu"
-          class="personnalisation-apercu"
-        >
+  <div
+    id="personnalisationApercu"
+    class="personnalisation-apercu"
+    style="
+      position:relative;
+      min-height:260px;
+      padding:12px;
+      overflow:hidden;
+    "
+  >
 
-          <span
-            id="personnalisationTexteApercu"
-          >
-            Ton prénom
-          </span>
+    <div
+      id="personnalisationApercuProduit"
+      style="
+        position:relative;
+        width:100%;
+        max-width:420px;
+        margin:auto;
+        display:none;
+      "
+    >
 
-        </div>
+      <img
+        id="personnalisationApercuImage"
+        src=""
+        alt="Aperçu du produit personnalisé"
+        style="
+          display:block;
+          width:100%;
+          max-height:420px;
+          object-fit:contain;
+          margin:auto;
+        "
+      >
 
-      </section>
+      <div
+        id="personnalisationApercuZones"
+        style="
+          position:absolute;
+          inset:0;
+          pointer-events:none;
+        "
+      ></div>
 
+    </div>
+
+    <span id="personnalisationTexteApercu">
+      Ton prénom
+    </span>
+
+  </div>
+
+</section>
 
     </div>
 
