@@ -4302,6 +4302,105 @@ let personnalisationChoix = {
 
 };
 
+    
+/* =====================================================
+   ZONES DE PERSONNALISATION DU PRODUIT
+===================================================== */
+
+let personnalisationZonesChoix = {};
+
+function afficherZonesPersonnalisationProduit(
+  zones = [],
+  valeurs = {}
+) {
+  const conteneur = document.getElementById(
+    "personnalisationZonesProduit"
+  );
+
+  if (!conteneur) return;
+
+  conteneur.innerHTML = "";
+  personnalisationZonesChoix = { ...valeurs };
+
+  const zonesValides = Array.isArray(zones)
+    ? zones.filter(zone => zone && zone.nom)
+    : [];
+
+  if (zonesValides.length === 0) {
+    conteneur.style.display = "none";
+    return;
+  }
+
+  conteneur.style.display = "";
+
+  const titre = document.createElement("h3");
+  titre.textContent = "🧩 Personnalise chaque zone";
+  conteneur.appendChild(titre);
+
+  zonesValides.forEach((zone, index) => {
+    const ligne = document.createElement("div");
+    ligne.className = "personnalisation-champ";
+    ligne.style.marginBottom = "16px";
+
+    const identifiant = "zone-personnalisation-" + index;
+
+    const label = document.createElement("label");
+    label.htmlFor = identifiant;
+    label.textContent =
+      zone.nom + (zone.obligatoire ? " *" : "");
+
+    const champ = document.createElement(
+      zone.type === "message" ? "textarea" : "input"
+    );
+
+    champ.id = identifiant;
+    champ.dataset.zoneIndex = String(index);
+    champ.dataset.zoneNom = zone.nom;
+    champ.dataset.zoneType = zone.type || "texte";
+    champ.dataset.zoneObligatoire =
+      zone.obligatoire ? "true" : "false";
+
+    if (champ.tagName === "TEXTAREA") {
+      champ.rows = 3;
+      champ.maxLength = 500;
+      champ.placeholder = "Écris ton message ici…";
+    } else {
+      champ.type = "text";
+      champ.maxLength = 150;
+
+      if (zone.type === "prenom") {
+        champ.placeholder = "Saisis le prénom…";
+      } else if (zone.type === "design") {
+        champ.placeholder = "Précise le design souhaité…";
+      } else if (zone.type === "photo") {
+        champ.placeholder = "Précise la photo à utiliser…";
+      } else {
+        champ.placeholder = "Saisis ta personnalisation…";
+      }
+    }
+
+    champ.value = valeurs[index]?.valeur || "";
+
+    champ.addEventListener("input", function () {
+      personnalisationZonesChoix[index] = {
+        nom: zone.nom,
+        type: zone.type || "texte",
+        valeur: champ.value.trim(),
+        obligatoire: zone.obligatoire === true
+      };
+    });
+
+    ligne.appendChild(label);
+    ligne.appendChild(champ);
+    conteneur.appendChild(ligne);
+  });
+}
+
+/* =====================================================
+   FIN DES ZONES DE PERSONNALISATION
+===================================================== */
+
+
 /* =====================================================
    OUVRIR LA PERSONNALISATION
 ===================================================== */
@@ -4325,6 +4424,15 @@ async function ouvrirPersonnalisation(
 
   personnalisationArticleEnModification =
     articleAModifier;
+
+  // Afficher les zones de personnalisation propres au produit
+afficherZonesPersonnalisationProduit(
+produit.personnalisation_zones || [],
+articleAModifier &&
+articleAModifier.personnalisation
+? articleAModifier.personnalisation.zones || []
+: []
+);
 
   const etapePrenom =
   document.getElementById(
@@ -6031,6 +6139,54 @@ function validerPersonnalisation() {
       ? champPrenom.value.trim()
       : "";
 
+  
+  // Récupérer les réponses des zones personnalisées
+  const conteneurZones = document.getElementById(
+    "personnalisationZonesProduit"
+  );
+
+  const champsZones = conteneurZones
+    ? Array.from(
+        conteneurZones.querySelectorAll(
+          "input, textarea, select"
+        )
+      ).filter(champ => champ.dataset.zoneNom)
+    : [];
+
+  const zonesSaisies = champsZones.map(champ => ({
+    nom: champ.dataset.zoneNom,
+    type: champ.dataset.zoneType || "texte",
+    valeur: champ.value.trim(),
+    obligatoire: champ.dataset.zoneObligatoire === "true"
+  }));
+
+  // Empêcher la validation si une zone obligatoire est vide
+  const zoneManquante = zonesSaisies.find(
+    zone => zone.obligatoire && !zone.valeur
+  );
+
+  if (zoneManquante) {
+    alert(
+      "Merci de compléter la zone obligatoire : " +
+      zoneManquante.nom
+    );
+
+    const champManquant = champsZones.find(
+      champ =>
+        champ.dataset.zoneNom === zoneManquante.nom &&
+        champ.dataset.zoneObligatoire === "true"
+    );
+
+    if (champManquant) {
+      champManquant.focus();
+    }
+
+    return;
+  }
+
+  // Conserver les réponses pour les enregistrer dans le panier
+  personnalisationZonesChoix = zonesSaisies;
+
 
   /*
    * Le prénom / texte et le design sont tous les deux facultatifs.
@@ -6081,6 +6237,8 @@ function validerPersonnalisation() {
         designImage:
           personnalisationChoix.designImage,
 
+        zones: zonesSaisies,
+        
         prenom:
           personnalisationChoix.prenom,
 
@@ -6296,6 +6454,8 @@ const prix =
 
       designImage:
         personnalisationChoix.designImage,
+
+      zones: zonesSaisies,
 
       prenom:
         personnalisationChoix.prenom,
@@ -7093,6 +7253,22 @@ const blocVariante =
                   `
                   : ""
               }
+
+
+${
+  personnalisation &&
+  Array.isArray(personnalisation.zones)
+    ? personnalisation.zones
+        .filter(zone => zone && zone.valeur)
+        .map(zone => `
+          <div>
+            🧩 ${echapperHTML(zone.nom || "Personnalisation")} :
+            ${echapperHTML(zone.valeur)}
+          </div>
+        `)
+        .join("")
+    : ""
+}
 
             </div>
 
@@ -11895,10 +12071,16 @@ async function confirmerCommande() {
 
     <div class="personnalisation-contenu">
 
+<!-- =================================================
+     ZONES DE PERSONNALISATION CONFIGURÉES POUR LE PRODUIT
+================================================== -->
 
-      <!-- =================================================
-           1. DESIGN
-      ================================================== -->
+<div
+  id="personnalisationZonesProduit"
+  style="display:none;"
+></div>
+
+<!-- FIN DES ZONES DE PERSONNALISATION PRODUIT -->
 
      <!-- =================================================
      1. DESIGN
