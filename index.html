@@ -4508,14 +4508,15 @@ async function afficherZonesPersonnalisationProduit(
 
   async function ajouterChoixPolice(ligne, etat, ancienneValeur) {
 const label = document.createElement("label");
-label.textContent = "✍️ Choisis une police";
+label.textContent = "✍️ Police d’écriture";
 ligne.appendChild(label);
 
 const grille = document.createElement("div");
-grille.style.display = "flex";
-grille.style.flexWrap = "wrap";
-grille.style.gap = "8px";
-grille.style.marginTop = "10px";
+grille.style.display = "grid";
+grille.style.gridTemplateColumns = "repeat(auto-fit, minmax(115px, 1fr))";
+grille.style.gap = "6px";
+grille.style.marginTop = "8px";
+grille.style.width = "100%";
 ligne.appendChild(grille);
 
 const { data, error } = await supabaseClient
@@ -4526,16 +4527,26 @@ const { data, error } = await supabaseClient
 
 if (error) throw error;
 
+const policeInitiale = ancienneValeur?.police || "";
+
 (data || []).forEach(function(police) {
   const bouton = document.createElement("button");
   bouton.type = "button";
   bouton.className = "personnalisation-police";
   bouton.dataset.police = police.famille_css;
   bouton.style.fontFamily = police.famille_css;
+  bouton.style.fontSize = "15px";
+  bouton.style.padding = "7px 5px";
+  bouton.style.minWidth = "0";
+  bouton.style.width = "100%";
+  bouton.style.margin = "0";
+  bouton.style.overflow = "hidden";
+  bouton.style.textOverflow = "ellipsis";
+  bouton.style.whiteSpace = "nowrap";
   bouton.textContent = "Ton prénom";
   bouton.title = police.nom || "Police";
 
-  if ((ancienneValeur?.police || "") === police.famille_css) {
+  if (policeInitiale === police.famille_css) {
     bouton.classList.add("active");
   }
 
@@ -4553,85 +4564,122 @@ if (error) throw error;
   grille.appendChild(bouton);
 });
 
-etat.police = ancienneValeur?.police || "";
+etat.police = policeInitiale;
 etat.policeNom = ancienneValeur?.policeNom || "";
 
 }
 
 async function ajouterChoixCouleur(ligne, etat, ancienneValeur) {
 const label = document.createElement("label");
-label.textContent = "🎨 Choisis une couleur";
+label.textContent = "🎨 Couleur";
 ligne.appendChild(label);
-
-const grille = document.createElement("div");
-grille.className = "personnalisation-couleurs";
-grille.style.display = "flex";
-grille.style.flexWrap = "wrap";
-grille.style.gap = "10px";
-grille.style.marginTop = "10px";
-ligne.appendChild(grille);
 
 const { data, error } = await supabaseClient
   .from("personnalisation_couleurs")
-  .select("id, nom, code_hex, actif, type, code_gradient")
+  .select("id, nom, code_hex, actif, type, code_gradient, groupe, ordre, groupe_ordre")
   .eq("actif", true)
+  .order("groupe_ordre", { ascending: true })
   .order("ordre", { ascending: true });
 
 if (error) throw error;
 
+const groupes = {};
+
+(data || []).forEach(function(couleur) {
+  const nomGroupe = couleur.groupe || "Les classiques";
+
+  if (!groupes[nomGroupe]) {
+    groupes[nomGroupe] = [];
+  }
+
+  groupes[nomGroupe].push(couleur);
+});
+
 function estSelectionnee(couleur) {
+  if (ancienneValeur?.couleurId) {
+    return ancienneValeur.couleurId === couleur.id;
+  }
+
   return (
-    (ancienneValeur?.couleurId || "") === couleur.id ||
-    (
-      !ancienneValeur?.couleurId &&
-      (ancienneValeur?.couleur || "") === (couleur.code_hex || "") &&
-      (ancienneValeur?.couleurGradient || "") === (couleur.code_gradient || "")
-    )
+    (ancienneValeur?.couleur || "") === (couleur.code_hex || "") &&
+    (ancienneValeur?.couleurGradient || "") === (couleur.code_gradient || "")
   );
 }
 
-(data || []).forEach(function(couleur) {
-  const bouton = document.createElement("button");
-  bouton.type = "button";
-  bouton.className = "personnalisation-couleur";
-  bouton.dataset.couleur = couleur.code_hex || "";
-  bouton.dataset.couleurNom = couleur.nom || "";
-  bouton.dataset.couleurType = couleur.type || "solid";
-  bouton.dataset.couleurGradient = couleur.code_gradient || "";
-  bouton.title = couleur.nom || "Couleur";
-  bouton.setAttribute("aria-label", couleur.nom || "Couleur");
+Object.keys(groupes).forEach(function(nomGroupe) {
+  const bloc = document.createElement("div");
+  bloc.className = "personnalisation-groupe-couleurs";
+  bloc.style.marginTop = "12px";
+  bloc.style.width = "100%";
 
-  if (couleur.type === "gradient" && couleur.code_gradient) {
-    bouton.style.background = "linear-gradient(135deg," + couleur.code_gradient + ")";
+  const titreGroupe = document.createElement("div");
+  titreGroupe.className = "personnalisation-groupe-titre";
+  titreGroupe.style.marginBottom = "8px";
+
+  if (nomGroupe === "Effets") {
+    titreGroupe.textContent = "✨ Effets";
+  } else if (nomGroupe === "Les signatures Sublime'K") {
+    titreGroupe.textContent = "🌿 Les signatures Sublime'K";
   } else {
-    bouton.style.background = couleur.code_hex || "#FFFFFF";
+    titreGroupe.textContent = "🎨 " + nomGroupe;
   }
 
-  if (String(couleur.code_hex || "").toUpperCase() === "#FFFFFF") {
-    bouton.style.borderColor = "#DDD";
-  }
+  bloc.appendChild(titreGroupe);
 
-  if (estSelectionnee(couleur)) {
-    bouton.classList.add("active");
-  }
+  const grille = document.createElement("div");
+  grille.className = "personnalisation-couleurs";
+  grille.style.display = "grid";
+  grille.style.gridTemplateColumns = "repeat(auto-fill, minmax(38px, 1fr))";
+  grille.style.gap = "10px";
+  grille.style.justifyItems = "center";
+  grille.style.width = "100%";
+  bloc.appendChild(grille);
 
-  bouton.addEventListener("click", function() {
-    grille.querySelectorAll(".personnalisation-couleur").forEach(function(b) {
-      b.classList.remove("active");
+  groupes[nomGroupe].forEach(function(couleur) {
+    const bouton = document.createElement("button");
+    bouton.type = "button";
+    bouton.className = "personnalisation-couleur";
+    bouton.dataset.couleur = couleur.code_hex || "";
+    bouton.dataset.couleurNom = couleur.nom || "";
+    bouton.dataset.couleurType = couleur.type || "solid";
+    bouton.dataset.couleurGradient = couleur.code_gradient || "";
+    bouton.title = couleur.nom || "Couleur";
+    bouton.setAttribute("aria-label", couleur.nom || "Couleur");
+
+    if (couleur.type === "gradient" && couleur.code_gradient) {
+      bouton.style.background = "linear-gradient(135deg," + couleur.code_gradient + ")";
+    } else {
+      bouton.style.background = couleur.code_hex || "#FFFFFF";
+    }
+
+    if (String(couleur.code_hex || "").toUpperCase() === "#FFFFFF") {
+      bouton.style.borderColor = "#DDD";
+    }
+
+    if (estSelectionnee(couleur)) {
+      bouton.classList.add("active");
+    }
+
+    bouton.addEventListener("click", function() {
+      grille.querySelectorAll(".personnalisation-couleur").forEach(function(b) {
+        b.classList.remove("active");
+      });
+
+      bouton.classList.add("active");
+
+      etat.couleurId = couleur.id;
+      etat.couleurNom = couleur.nom || "";
+      etat.couleur = couleur.code_hex || "";
+      etat.couleurType = couleur.type || "solid";
+      etat.couleurGradient = couleur.code_gradient || "";
+
+      mettreAJourApercuPersonnalisation();
     });
 
-    bouton.classList.add("active");
-
-    etat.couleurId = couleur.id;
-    etat.couleurNom = couleur.nom || "";
-    etat.couleur = couleur.code_hex || "";
-    etat.couleurType = couleur.type || "solid";
-    etat.couleurGradient = couleur.code_gradient || "";
-
-    mettreAJourApercuPersonnalisation();
+    grille.appendChild(bouton);
   });
 
-  grille.appendChild(bouton);
+  ligne.appendChild(bloc);
 });
 
 const couleurInitiale = (data || []).find(estSelectionnee);
