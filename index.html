@@ -6609,7 +6609,7 @@ const positionsUtilisees = {};
       const texteZone = document.createElement("div");
       texteZone.textContent = texte;
       texteZone.style.fontFamily = zone.police || "Arial, sans-serif";
-      texteZone.style.fontSize = "clamp(10px, 2vw, 18px)";
+      texteZone.style.fontSize = "clamp(18px, 4vw, 32px)";
       texteZone.style.fontWeight = "bold";
       texteZone.style.color = zone.couleur || "#222222";
       bloc.appendChild(texteZone);
@@ -12939,8 +12939,10 @@ async function confirmerCommande() {
     class="personnalisation-apercu"
     style="
       position:relative;
-      min-height:260px;
-      padding:12px;
+      min-height:380px;
+      padding:20px;
+      width:100%;
+      box-sizing:border-box;
       overflow:hidden;
     "
   >
