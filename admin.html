@@ -5063,7 +5063,7 @@ function ajouterZonePersonnalisationAdmin(zone = {}) {
         type="text"
         class="zone-personnalisation-nom"
         maxlength="80"
-        placeholder="Ex : Prénom 1, Prénom 2, Recto"
+        placeholder="Ex : Prénom, Recto, Verso"
         value="${echapperHTML(zone.nom || "")}"
       >
     </div>
@@ -5076,6 +5076,21 @@ function ajouterZonePersonnalisationAdmin(zone = {}) {
         <option value="message">Message</option>
         <option value="design">Choix d'un design</option>
         <option value="photo">Photo du client</option>
+      </select>
+    </div>
+
+    <div class="champ" style="margin-top:10px;">
+      <label>Position de cette zone sur le produit</label>
+      <select class="zone-personnalisation-position">
+        <option value="centre">Centre</option>
+        <option value="haut">En haut</option>
+        <option value="bas">En bas</option>
+        <option value="gauche">À gauche</option>
+        <option value="droite">À droite</option>
+        <option value="haut-gauche">En haut à gauche</option>
+        <option value="haut-droite">En haut à droite</option>
+        <option value="bas-gauche">En bas à gauche</option>
+        <option value="bas-droite">En bas à droite</option>
       </select>
     </div>
 
@@ -5129,6 +5144,9 @@ function ajouterZonePersonnalisationAdmin(zone = {}) {
   ligne.querySelector(".zone-personnalisation-type").value =
     zone.type || "texte";
 
+  ligne.querySelector(".zone-personnalisation-position").value =
+    zone.position || "centre";
+
   ligne.querySelector(".zone-personnalisation-obligatoire").checked =
     zone.obligatoire === true;
 
@@ -5167,6 +5185,10 @@ function lireZonesPersonnalisationAdmin() {
           ".zone-personnalisation-type"
         ).value,
 
+        position: ligne.querySelector(
+          ".zone-personnalisation-position"
+        ).value,
+
         obligatoire: ligne.querySelector(
           ".zone-personnalisation-obligatoire"
         ).checked,
@@ -5188,7 +5210,6 @@ function lireZonesPersonnalisationAdmin() {
       return zone.nom !== "";
     });
 }
-
 
 function afficherZonesPersonnalisationAdmin(zones = []) {
   const conteneur = document.getElementById(
