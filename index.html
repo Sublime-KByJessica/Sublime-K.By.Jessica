@@ -922,19 +922,24 @@
     }
 
     .boutique-filtre {
-      text-align: center;
-      margin-bottom: 25px;
-    }
+  margin: 0 auto 25px;
+  text-align: center;
+}
 
-    /* =====================================================
-   BOUTON TOUTES LES CRÉATIONS
-===================================================== */
-    
-    .boutique-toutes-creations {
+.boutique-menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px auto;
+}
+
+.boutique-menu-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 22px;
+  padding: 12px 20px;
   border: 2px solid #B9828F;
   border-radius: 12px;
   background: #B9828F;
@@ -946,15 +951,28 @@
   transition: 0.2s ease;
 }
 
-.boutique-toutes-creations:hover {
+.boutique-menu-button:hover {
   background: #8F5967;
   border-color: #8F5967;
   transform: translateY(-1px);
 }
 
-    .boutique-filtre strong {
-      color: #667052;
-    }
+#categories-boutique {
+  margin: 20px auto;
+  padding: 18px;
+  border: 1px solid #E6DADB;
+  border-radius: 16px;
+  background: #FFFDFC;
+}
+
+#categories-boutique .menu-category-button {
+  display: inline-flex;
+  margin: 5px;
+}
+
+.boutique-filtre strong {
+  color: #667052;
+}
 
     .boutique-empty {
       text-align: center;
@@ -2990,7 +3008,7 @@
   🎨 Bibliothèque de designs
 </a>
             
-            <a href="#nouveautes" onclick="fermerMenu()">
+            <a href="#boutique-nouveautes" onclick="afficherNouveautesBoutique()">
               ✨ Nouveautés
             </a>
 
@@ -3170,23 +3188,54 @@
           Découvrez toutes les créations disponibles chez Sublime'K.
         </p>
 
+        <!-- NAVIGATION DE LA BOUTIQUE -->
 
-        <div
-  class="boutique-filtre"
-  id="boutique-filtre"
->
+    <div class="boutique-filtre" id="boutique-filtre">
 
-  <button
-    type="button"
-    class="boutique-toutes-creations"
-    onclick="afficherTousLesProduits()"
-  >
-    🛍️ Toutes les créations
-  </button>
+      <div class="boutique-menu">
 
-</div>
+        <button
+          type="button"
+          class="boutique-menu-button"
+          onclick="afficherNouveautesBoutique()"
+        >
+          ✨ Toutes les nouveautés
+        </button>
 
+        <button
+          type="button"
+          class="boutique-menu-button"
+          onclick="afficherCategoriesBoutique()"
+        >
+          🗂️ Les catégories
+        </button>
 
+        <button
+          type="button"
+          class="boutique-menu-button"
+          onclick="afficherTousLesProduits()"
+        >
+          🛍️ Voir toutes les créations
+        </button>
+
+      </div>
+
+      <p
+        id="boutique-filtre-titre"
+        style="text-align:center; font-weight:bold; color:#667052;"
+      >
+        Toutes les créations
+      </p>
+      
+      <!-- CATÉGORIES AFFICHÉES SUR DEMANDE -->
+
+      <div
+        id="categories-boutique"
+        style="display:none;"
+      ></div>
+
+    </div>
+        
         <div
           id="boutique-produits"
           class="products-grid"
@@ -3196,6 +3245,34 @@
             Chargement de la boutique…
           </div>
 
+          <!-- NOUVEAUTÉS INTÉGRÉES À LA BOUTIQUE -->
+
+        <div
+          id="boutique-nouveautes"
+          style="margin-top:45px;"
+        >
+
+          <h3
+            class="section-title"
+            style="text-align:center;"
+          >
+            ✨ Nos nouveautés
+          </h3>
+
+          <p class="section-intro">
+            Découvrez les dernières créations ajoutées à la boutique.
+          </p>
+
+          <div
+            id="nouveautes-boutique-produits"
+            class="products-grid"
+          >
+            <div class="nouveautes-empty">
+              Chargement des nouveautés…
+            </div>
+          </div>
+
+        </div>
         </div>
 
       </div>
@@ -3372,38 +3449,8 @@
          NOUVEAUTÉS
     ========================= -->
 
-    <section
-      class="section"
-      id="nouveautes"
-    >
-
-      <div class="container">
-
-        <h2 class="section-title">
-          ✨ Nouveautés
-        </h2>
-
-
-        <p class="section-intro">
-          Découvrez les dernières créations ajoutées à la boutique.
-        </p>
-
-
-        <div
-          id="nouveautes-produits"
-          class="products-grid"
-        >
-
-          <div class="nouveautes-empty">
-            Chargement des nouveautés…
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
+    <!-- ANCIEN EMPLACEMENT DES NOUVEAUTÉS : CONSERVÉ POUR LES LIENS EXISTANTS -->
+<div id="nouveautes"></div>
 
     <!-- =========================
          CRÉATIONS
@@ -8980,16 +9027,14 @@ console.log("BOUTIQUE : chargement des photos supplémentaires...");
       "boutique-produits"
     );
 
-  const titreFiltre =
+    const titreFiltre =
     document.getElementById(
-      "boutique-filtre"
+      "boutique-filtre-titre"
     );
 
-  titreFiltre.innerHTML = `
-    <strong>
-      ${nomCategorie}
-    </strong>
-  `;
+  if (titreFiltre) {
+    titreFiltre.textContent = nomCategorie;
+  }
 
   zone.innerHTML = `
     <div class="boutique-empty">
@@ -9280,31 +9325,127 @@ console.log("BOUTIQUE : chargement des photos supplémentaires...");
        TOUS LES PRODUITS
     ===================================================== */
 
-    async function afficherTousLesProduits() {
+        async function afficherTousLesProduits() {
 
       fermerMenu();
 
-
       const titreFiltre =
-        document.getElementById(
-          "boutique-filtre"
-        );
+        document.getElementById("boutique-filtre-titre");
 
+      if (titreFiltre) {
+        titreFiltre.textContent = "Toutes les créations";
+      }
 
-      titreFiltre.innerHTML = `
+      const categories =
+        document.getElementById("categories-boutique");
 
-        <strong>
-          Toutes les créations
-        </strong>
-
-      `;
-
+      if (categories) {
+        categories.style.display = "none";
+      }
 
       await chargerBoutique(true);
 
     }
 
+        /* =====================================================
+       CATÉGORIES DANS LA BOUTIQUE
+    ===================================================== */
 
+    async function afficherCategoriesBoutique() {
+
+      const zone =
+        document.getElementById("categories-boutique");
+
+      const titre =
+        document.getElementById("boutique-filtre-titre");
+
+      if (!zone) return;
+
+      if (zone.style.display === "block") {
+        zone.style.display = "none";
+        return;
+      }
+
+      zone.style.display = "block";
+      zone.innerHTML = "<p>Chargement des catégories…</p>";
+
+      if (titre) {
+        titre.textContent = "Choisissez une catégorie";
+      }
+
+      try {
+
+        const { data, error } = await supabaseClient
+          .from("categories")
+          .select("id, Nom, Emoji, Ordre")
+          .order("Ordre", { ascending: true });
+
+        if (error) throw error;
+
+        zone.innerHTML = "";
+
+        if (!data || data.length === 0) {
+          zone.textContent = "Aucune catégorie disponible.";
+          return;
+        }
+
+        data.forEach(function(categorie) {
+
+          const bouton = document.createElement("button");
+
+          bouton.type = "button";
+          bouton.className = "menu-category-button";
+
+          bouton.textContent =
+            (categorie.Emoji || "📁") + " " + categorie.Nom;
+
+          bouton.addEventListener("click", async function() {
+
+            zone.style.display = "none";
+
+            if (titre) {
+              titre.textContent = categorie.Nom;
+            }
+
+            await filtrerCategorie(categorie.Nom);
+
+          });
+
+          zone.appendChild(bouton);
+
+        });
+
+      } catch (error) {
+
+        console.error("Erreur de chargement des catégories :", error);
+
+        zone.innerHTML =
+          "<p>Impossible de charger les catégories pour le moment.</p>";
+
+      }
+
+    }
+
+        /* =====================================================
+       AFFICHER LES NOUVEAUTÉS DANS LA BOUTIQUE
+    ===================================================== */
+
+    function afficherNouveautesBoutique() {
+
+      fermerMenu();
+
+      const zone =
+        document.getElementById("boutique-nouveautes");
+
+      if (zone) {
+        zone.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      }
+
+    }
+    
     /* =====================================================
        NOUVEAUTÉS
     ===================================================== */
@@ -9312,9 +9453,9 @@ console.log("BOUTIQUE : chargement des photos supplémentaires...");
     async function chargerNouveautes() {
 
       const zone =
-        document.getElementById(
-          "nouveautes-produits"
-        );
+  document.getElementById(
+    "nouveautes-boutique-produits"
+  );
 
 
       try {
