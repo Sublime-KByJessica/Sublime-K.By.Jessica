@@ -6422,7 +6422,7 @@ function mettreAJourApercuPersonnalisation() {
   const imageProduit = document.getElementById("personnalisationApercuImage");
   const conteneurZones = document.getElementById("personnalisationApercuZones");
 
-  // Conserver l'aperçu classique du prénom
+  // Aperçu classique du prénom
   if (apercu) {
     apercu.textContent = personnalisationChoix.prenom || "Ton prénom";
     apercu.style.fontFamily = personnalisationChoix.police || "Arial, sans-serif";
@@ -6448,8 +6448,11 @@ function mettreAJourApercuPersonnalisation() {
     return;
   }
 
-  // Utiliser la photo de la variante si elle en possède une
   const produit = personnalisationProduitActuel;
+
+  // Vérifier si l'aperçu sur la photo est activé pour ce produit
+  const mockupActif = produit && produit.mockup_active === true;
+
   const imageVariante =
     produit &&
     produit._variantSelectionnee &&
@@ -6463,19 +6466,83 @@ function mettreAJourApercuPersonnalisation() {
 
   conteneurZones.innerHTML = "";
 
-  if (!imagePrincipale) {
+  // Si l'aperçu produit est désactivé, conserver un fond neutre
+  if (!mockupActif || !imagePrincipale) {
     conteneurProduit.style.display = "none";
     if (apercu) apercu.style.display = "";
+
+    const fondNeutre = document.getElementById("personnalisationApercuNeutre");
+
+    if (fondNeutre) {
+      fondNeutre.innerHTML = "";
+      fondNeutre.style.display = "block";
+      fondNeutre.style.background = "#F7F4F0";
+      fondNeutre.style.border = "1px solid #E5DED7";
+      fondNeutre.style.borderRadius = "14px";
+      fondNeutre.style.padding = "18px";
+      fondNeutre.style.marginTop = "12px";
+
+      const titre = document.createElement("div");
+      titre.textContent = "Ton aperçu de personnalisation";
+      titre.style.fontWeight = "600";
+      titre.style.marginBottom = "12px";
+      titre.style.color = "#66564F";
+      fondNeutre.appendChild(titre);
+
+      Object.values(personnalisationZonesChoix || {}).forEach(function(zone) {
+        const texte = String(zone.valeur || "").trim();
+        const motif = zone.designImage || "";
+
+        if (!texte && !motif) return;
+
+        const ligne = document.createElement("div");
+        ligne.style.padding = "10px";
+        ligne.style.margin = "8px 0";
+        ligne.style.background = "#FFFFFF";
+        ligne.style.borderRadius = "8px";
+        ligne.style.textAlign = "center";
+        ligne.style.overflowWrap = "anywhere";
+
+        if (texte) {
+          const texteApercu = document.createElement("div");
+          texteApercu.textContent = texte;
+          texteApercu.style.fontFamily = zone.police || "Arial, sans-serif";
+          texteApercu.style.fontSize = "20px";
+          texteApercu.style.fontWeight = "bold";
+          texteApercu.style.color = zone.couleur || "#66564F";
+          ligne.appendChild(texteApercu);
+        }
+
+        if (motif) {
+          const imageMotif = document.createElement("img");
+          imageMotif.src = motif;
+          imageMotif.alt = zone.designNom || "Motif choisi";
+          imageMotif.style.maxWidth = "90px";
+          imageMotif.style.maxHeight = "90px";
+          imageMotif.style.objectFit = "contain";
+          imageMotif.style.display = "block";
+          imageMotif.style.margin = "6px auto 0";
+          ligne.appendChild(imageMotif);
+        }
+
+        fondNeutre.appendChild(ligne);
+      });
+    }
+
     return;
   }
 
+  const fondNeutre = document.getElementById("personnalisationApercuNeutre");
+  if (fondNeutre) fondNeutre.style.display = "none";
+
   imageProduit.src = imagePrincipale;
-  imageProduit.onerror = function () {
+
+  imageProduit.onerror = function() {
     conteneurProduit.style.display = "none";
     if (apercu) apercu.style.display = "";
   };
 
-  imageProduit.onload = function () {
+  imageProduit.onload = function() {
     conteneurProduit.style.display = "block";
     if (apercu) apercu.style.display = "none";
   };
@@ -6483,64 +6550,81 @@ function mettreAJourApercuPersonnalisation() {
   conteneurProduit.style.display = "block";
   if (apercu) apercu.style.display = "none";
 
-  // Positionner les textes et motifs des différentes zones
   const zones = Object.values(personnalisationZonesChoix || {});
 
-  zones.forEach(function (zone) {
-    const position = zone.position || "centre";
-    const texte = String(zone.valeur || "").trim();
-    const imageMotif = zone.designImage || "";
+  const positions = {
+"centre": { left: "50%", top: "50%" },
+"haut": { left: "50%", top: "15%" },
+"bas": { left: "50%", top: "85%" },
+"gauche": { left: "15%", top: "50%" },
+"droite": { left: "85%", top: "50%" },
+"haut-gauche": { left: "20%", top: "20%" },
+"haut-droite": { left: "80%", top: "20%" },
+"bas-gauche": { left: "20%", top: "80%" },
+"bas-droite": { left: "80%", top: "80%" }
+};
 
-    if (!texte && !imageMotif) return;
+const positionsUtilisees = {};
+
+  zones.forEach(function(zone) {
+    const texte = String(zone.valeur || "").trim();
+    const motif = zone.designImage || "";
+
+    if (!texte && !motif) return;
 
     const bloc = document.createElement("div");
+        const positionDemandee = zone.position || "centre";
+    const ancrageBase = positions[positionDemandee] || positions["centre"];
+    const numeroPosition = positionsUtilisees[positionDemandee] || 0;
+    positionsUtilisees[positionDemandee] = numeroPosition + 1;
+
+    const decalages = [
+      { x: 0, y: 0 },
+      { x: 0, y: 12 },
+      { x: 0, y: -12 },
+      { x: 12, y: 0 },
+      { x: -12, y: 0 }
+    ];
+
+    const decalage = decalages[numeroPosition % decalages.length];
+
+    const ancrage = {
+      left: `calc(${ancrageBase.left} + ${decalage.x}%)`,
+      top: `calc(${ancrageBase.top} + ${decalage.y}%)`
+    };
+
     bloc.style.position = "absolute";
-    bloc.style.maxWidth = "80%";
-    bloc.style.padding = "3px 6px";
+    bloc.style.left = ancrage.left;
+    bloc.style.top = ancrage.top;
+    bloc.style.maxWidth = "35%";
+    bloc.style.padding = "2px 4px";
     bloc.style.textAlign = "center";
     bloc.style.overflowWrap = "anywhere";
     bloc.style.pointerEvents = "none";
     bloc.style.transform = "translate(-50%, -50%)";
-
-    const positions = {
-      "centre":       { left: "50%", top: "50%" },
-      "haut":         { left: "50%", top: "15%" },
-      "bas":          { left: "50%", top: "85%" },
-      "gauche":       { left: "15%", top: "50%" },
-      "droite":       { left: "85%", top: "50%" },
-      "haut-gauche":  { left: "20%", top: "20%" },
-      "haut-droite":  { left: "80%", top: "20%" },
-      "bas-gauche":   { left: "20%", top: "80%" },
-      "bas-droite":   { left: "80%", top: "80%" }
-    };
-
-    const ancrage = positions[position] || positions["centre"];
-    bloc.style.left = ancrage.left;
-    bloc.style.top = ancrage.top;
+    bloc.style.background = "rgba(255,255,255,0.65)";
+    bloc.style.borderRadius = "4px";
 
     if (texte) {
       const texteZone = document.createElement("div");
       texteZone.textContent = texte;
       texteZone.style.fontFamily = zone.police || "Arial, sans-serif";
-      texteZone.style.fontSize = "clamp(12px, 3vw, 24px)";
+      texteZone.style.fontSize = "clamp(10px, 2vw, 18px)";
       texteZone.style.fontWeight = "bold";
       texteZone.style.color = zone.couleur || "#222222";
-      texteZone.style.textShadow = "0 1px 3px rgba(255,255,255,0.7)";
       bloc.appendChild(texteZone);
     }
 
-    if (imageMotif) {
-      const motif = document.createElement("img");
-      motif.src = imageMotif;
-      motif.alt = zone.designNom || "Motif choisi";
-      motif.style.display = "block";
-      motif.style.maxWidth = "90px";
-      motif.style.maxHeight = "90px";
-      motif.style.width = "auto";
-      motif.style.height = "auto";
-      motif.style.objectFit = "contain";
-      motif.style.margin = "4px auto";
-      bloc.appendChild(motif);
+    if (motif) {
+      const imageMotif = document.createElement("img");
+      imageMotif.src = motif;
+      imageMotif.alt = zone.designNom || "Motif choisi";
+      imageMotif.style.display = "block";
+      imageMotif.style.maxWidth = "55px";
+      imageMotif.style.maxHeight = "55px";
+      imageMotif.style.objectFit = "contain";
+      imageMotif.style.margin = "3px auto";
+      bloc.appendChild(imageMotif);
     }
 
     conteneurZones.appendChild(bloc);
@@ -12861,6 +12945,11 @@ async function confirmerCommande() {
     "
   >
 
+    <div
+  id="personnalisationApercuNeutre"
+  style="display:none;"
+></div>
+    
     <div
       id="personnalisationApercuProduit"
       style="
