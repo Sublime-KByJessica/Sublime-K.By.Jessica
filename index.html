@@ -4303,15 +4303,16 @@ let personnalisationChoix = {
 };
 
     
+
 /* =====================================================
    ZONES DE PERSONNALISATION DU PRODUIT
 ===================================================== */
 
 let personnalisationZonesChoix = {};
 
-function afficherZonesPersonnalisationProduit(
+async function afficherZonesPersonnalisationProduit(
   zones = [],
-  valeurs = {}
+  valeurs = []
 ) {
   const conteneur = document.getElementById(
     "personnalisationZonesProduit"
@@ -4320,7 +4321,7 @@ function afficherZonesPersonnalisationProduit(
   if (!conteneur) return;
 
   conteneur.innerHTML = "";
-  personnalisationZonesChoix = { ...valeurs };
+  personnalisationZonesChoix = {};
 
   const zonesValides = Array.isArray(zones)
     ? zones.filter(zone => zone && zone.nom)
@@ -4337,28 +4338,290 @@ function afficherZonesPersonnalisationProduit(
   titre.textContent = "🧩 Personnalise chaque zone";
   conteneur.appendChild(titre);
 
-  zonesValides.forEach((zone, index) => {
+  const anciennesValeurs = Array.isArray(valeurs)
+    ? valeurs
+    : [];
+
+  function creerSelect(placeholder) {
+    const select = document.createElement("select");
+    select.style.width = "100%";
+    select.style.padding = "10px";
+    select.style.marginTop = "8px";
+    select.style.marginBottom = "12px";
+
+    const option = document.createElement("option");
+    option.value = "";
+    option.textContent = placeholder;
+    select.appendChild(option);
+
+    return select;
+  }
+
+  async function chargerCategories(select) {
+    const { data, error } = await supabaseClient
+      .from("library_categories")
+      .select("id, nom, emoji")
+      .order("ordre", { ascending: true });
+
+    if (error) throw error;
+
+    (data || []).forEach(categorie => {
+      const option = document.createElement("option");
+      option.value = categorie.id;
+      option.textContent =
+        (categorie.emoji || "📁") + " " + categorie.nom;
+      select.appendChild(option);
+    });
+  }
+
+  async function chargerSousCategories(categorieId, select) {
+    select.innerHTML = "";
+    select.appendChild(new Option("Choisir une sous-catégorie", ""));
+
+    if (!categorieId) return;
+
+    const { data, error } = await supabaseClient
+      .from("library_subcategories")
+      .select("id, nom")
+      .eq("category_id", categorieId)
+      .eq("visible", true)
+      .order("ordre", { ascending: true });
+
+    if (error) throw error;
+
+    (data || []).forEach(sousCategorie => {
+      const option = document.createElement("option");
+      option.value = sousCategorie.id;
+      option.textContent = sousCategorie.nom;
+      select.appendChild(option);
+    });
+  }
+
+  async function chargerDesigns(sousCategorieId, select, etat) {
+    select.innerHTML = "";
+    select.appendChild(new Option("Choisir un design", ""));
+
+    if (!sousCategorieId) return;
+
+    const { data, error } = await supabaseClient
+      .from("library_designs")
+      .select("id, nom, image_url")
+      .eq("subcategory_id", sousCategorieId)
+      .order("ordre", { ascending: true });
+
+    if (error) throw error;
+
+    (data || []).forEach(design => {
+      const option = document.createElement("option");
+      option.value = design.id;
+      option.textContent = design.nom || "Design";
+      option.dataset.nom = design.nom || "";
+      option.dataset.image = design.image_url || "";
+      select.appendChild(option);
+    });
+
+    select.onchange = function () {
+      const option = select.selectedOptions[0];
+
+      etat.designId = select.value;
+      etat.designNom = option?.dataset.nom || "";
+      etat.designImage = option?.dataset.image || "";
+    };
+  }
+
+  async function ajouterChoixDesign(ligne, etat, ancienneValeur) {
+    const label = document.createElement("label");
+    label.textContent = "🎨 Catégorie de designs";
+    ligne.appendChild(label);
+
+    const categorie = creerSelect("Choisir une catégorie");
+    ligne.appendChild(categorie);
+
+    const labelSousCategorie = document.createElement("label");
+    labelSousCategorie.textContent = "Sous-catégorie";
+    ligne.appendChild(labelSousCategorie);
+
+    const sousCategorie = creerSelect("Choisir une sous-catégorie");
+    ligne.appendChild(sousCategorie);
+
+    const labelDesign = document.createElement("label");
+    labelDesign.textContent = "Motif";
+    ligne.appendChild(labelDesign);
+
+    const design = creerSelect("Choisir un design");
+    ligne.appendChild(design);
+
+    await chargerCategories(categorie);
+
+    categorie.onchange = async function () {
+      etat.categorieId = categorie.value;
+      etat.sousCategorieId = "";
+      etat.designId = "";
+      etat.designNom = "";
+      etat.designImage = "";
+
+      try {
+        await chargerSousCategories(categorie.value, sousCategorie);
+        design.innerHTML = "";
+        design.appendChild(new Option("Choisir un design", ""));
+      } catch (error) {
+        console.error("Erreur des sous-catégories :", error);
+        alert("Impossible de charger les sous-catégories.");
+      }
+    };
+
+    sousCategorie.onchange = async function () {
+      etat.sousCategorieId = sousCategorie.value;
+      etat.designId = "";
+      etat.designNom = "";
+      etat.designImage = "";
+
+      try {
+        await chargerDesigns(sousCategorie.value, design, etat);
+      } catch (error) {
+        console.error("Erreur des designs :", error);
+        alert("Impossible de charger les designs.");
+      }
+    };
+
+    if (ancienneValeur?.categorieId) {
+      categorie.value = ancienneValeur.categorieId;
+      etat.categorieId = categorie.value;
+
+      await chargerSousCategories(categorie.value, sousCategorie);
+
+      if (ancienneValeur.sousCategorieId) {
+        sousCategorie.value = ancienneValeur.sousCategorieId;
+        etat.sousCategorieId = sousCategorie.value;
+
+        await chargerDesigns(sousCategorie.value, design, etat);
+
+        if (ancienneValeur.designId) {
+          design.value = ancienneValeur.designId;
+          design.dispatchEvent(new Event("change"));
+        }
+      }
+    }
+  }
+
+  async function ajouterChoixPolice(ligne, etat, ancienneValeur) {
+    const label = document.createElement("label");
+    label.textContent = "✍️ Police d’écriture";
+    ligne.appendChild(label);
+
+    const select = creerSelect("Choisir une police");
+    ligne.appendChild(select);
+
+    const { data, error } = await supabaseClient
+      .from("personnalisation_polices")
+      .select("id, nom, famille_css")
+      .eq("actif", true)
+      .order("ordre", { ascending: true });
+
+    if (error) throw error;
+
+    (data || []).forEach(police => {
+      const option = document.createElement("option");
+      option.value = police.famille_css;
+      option.textContent = police.nom;
+      select.appendChild(option);
+    });
+
+    select.value = ancienneValeur?.police || "";
+
+    etat.police = select.value;
+    etat.policeNom =
+      select.selectedOptions[0]?.textContent || "";
+
+    select.onchange = function () {
+      etat.police = select.value;
+      etat.policeNom =
+        select.selectedOptions[0]?.textContent || "";
+    };
+  }
+
+  async function ajouterChoixCouleur(ligne, etat, ancienneValeur) {
+    const label = document.createElement("label");
+    label.textContent = "🌈 Couleur";
+    ligne.appendChild(label);
+
+    const select = creerSelect("Choisir une couleur");
+    ligne.appendChild(select);
+
+    const { data, error } = await supabaseClient
+      .from("personnalisation_couleurs")
+      .select("id, nom, code_hex, actif, type, code_gradient")
+      .eq("actif", true)
+      .order("ordre", { ascending: true });
+
+    if (error) throw error;
+
+    (data || []).forEach(couleur => {
+      const option = document.createElement("option");
+      option.value = couleur.id;
+      option.textContent = couleur.nom || couleur.code_hex || "Couleur";
+      option.dataset.nom = couleur.nom || "";
+      option.dataset.hex = couleur.code_hex || "";
+      option.dataset.type = couleur.type || "solid";
+      option.dataset.gradient = couleur.code_gradient || "";
+      select.appendChild(option);
+    });
+
+    select.value = ancienneValeur?.couleurId || "";
+
+    function enregistrerCouleur() {
+      const option = select.selectedOptions[0];
+
+      etat.couleurId = select.value;
+      etat.couleurNom = option?.dataset.nom || "";
+      etat.couleur = option?.dataset.hex || "";
+      etat.couleurType = option?.dataset.type || "solid";
+      etat.couleurGradient = option?.dataset.gradient || "";
+    }
+
+    enregistrerCouleur();
+    select.onchange = enregistrerCouleur;
+  }
+
+  for (let index = 0; index < zonesValides.length; index++) {
+    const zone = zonesValides[index];
+    const ancienneValeur = anciennesValeurs[index] || {};
+    const etat = {
+      nom: zone.nom,
+      type: zone.type || "texte",
+      valeur: ancienneValeur.valeur || "",
+      obligatoire: zone.obligatoire === true,
+      designId: ancienneValeur.designId || "",
+      designNom: ancienneValeur.designNom || "",
+      designImage: ancienneValeur.designImage || "",
+      categorieId: ancienneValeur.categorieId || "",
+      sousCategorieId: ancienneValeur.sousCategorieId || "",
+      police: ancienneValeur.police || "",
+      policeNom: ancienneValeur.policeNom || "",
+      couleurId: ancienneValeur.couleurId || "",
+      couleurNom: ancienneValeur.couleurNom || "",
+      couleur: ancienneValeur.couleur || "",
+      couleurType: ancienneValeur.couleurType || "solid",
+      couleurGradient: ancienneValeur.couleurGradient || ""
+    };
+
+    personnalisationZonesChoix[index] = etat;
+
     const ligne = document.createElement("div");
     ligne.className = "personnalisation-champ";
-    ligne.style.marginBottom = "16px";
+    ligne.style.marginBottom = "20px";
+    ligne.style.padding = "12px";
+    ligne.style.border = "1px solid #ddd";
+    ligne.style.borderRadius = "10px";
 
-    const identifiant = "zone-personnalisation-" + index;
-
-    const label = document.createElement("label");
-    label.htmlFor = identifiant;
-    label.textContent =
+    const titreZone = document.createElement("h4");
+    titreZone.textContent =
       zone.nom + (zone.obligatoire ? " *" : "");
+    ligne.appendChild(titreZone);
 
     const champ = document.createElement(
       zone.type === "message" ? "textarea" : "input"
     );
-
-    champ.id = identifiant;
-    champ.dataset.zoneIndex = String(index);
-    champ.dataset.zoneNom = zone.nom;
-    champ.dataset.zoneType = zone.type || "texte";
-    champ.dataset.zoneObligatoire =
-      zone.obligatoire ? "true" : "false";
 
     if (champ.tagName === "TEXTAREA") {
       champ.rows = 3;
@@ -4367,33 +4630,48 @@ function afficherZonesPersonnalisationProduit(
     } else {
       champ.type = "text";
       champ.maxLength = 150;
-
-      if (zone.type === "prenom") {
-        champ.placeholder = "Saisis le prénom…";
-      } else if (zone.type === "design") {
-        champ.placeholder = "Précise le design souhaité…";
-      } else if (zone.type === "photo") {
-        champ.placeholder = "Précise la photo à utiliser…";
-      } else {
-        champ.placeholder = "Saisis ta personnalisation…";
-      }
+      champ.placeholder =
+        zone.type === "prenom"
+          ? "Saisis le prénom…"
+          : "Saisis ta personnalisation…";
     }
 
-    champ.value = valeurs[index]?.valeur || "";
+    champ.value = etat.valeur;
+    champ.dataset.zoneIndex = String(index);
+    champ.dataset.zoneNom = zone.nom;
+    champ.dataset.zoneType = zone.type || "texte";
+    champ.dataset.zoneObligatoire =
+      zone.obligatoire ? "true" : "false";
 
     champ.addEventListener("input", function () {
-      personnalisationZonesChoix[index] = {
-        nom: zone.nom,
-        type: zone.type || "texte",
-        valeur: champ.value.trim(),
-        obligatoire: zone.obligatoire === true
-      };
+      etat.valeur = champ.value.trim();
     });
 
-    ligne.appendChild(label);
     ligne.appendChild(champ);
+
+    try {
+      if (zone.designActive === true) {
+        await ajouterChoixDesign(ligne, etat, ancienneValeur);
+      }
+
+      if (zone.policeActive === true) {
+        await ajouterChoixPolice(ligne, etat, ancienneValeur);
+      }
+
+      if (zone.couleurActive === true) {
+        await ajouterChoixCouleur(ligne, etat, ancienneValeur);
+      }
+    } catch (error) {
+      console.error("Erreur des options de personnalisation :", error);
+
+      const message = document.createElement("p");
+      message.textContent =
+        "Certaines options n’ont pas pu être chargées. Réessaie plus tard.";
+      ligne.appendChild(message);
+    }
+
     conteneur.appendChild(ligne);
-  });
+  }
 }
 
 /* =====================================================
@@ -4426,7 +4704,7 @@ async function ouvrirPersonnalisation(
     articleAModifier;
 
   // Afficher les zones de personnalisation propres au produit
-afficherZonesPersonnalisationProduit(
+await afficherZonesPersonnalisationProduit(
 produit.personnalisation_zones || [],
 articleAModifier &&
 articleAModifier.personnalisation
@@ -6140,27 +6418,16 @@ function validerPersonnalisation() {
       : "";
 
   
-  // Récupérer les réponses des zones personnalisées
-  const conteneurZones = document.getElementById(
-    "personnalisationZonesProduit"
-  );
-
-  const champsZones = conteneurZones
-    ? Array.from(
-        conteneurZones.querySelectorAll(
-          "input, textarea, select"
-        )
-      ).filter(champ => champ.dataset.zoneNom)
-    : [];
-
-  const zonesSaisies = champsZones.map(champ => ({
-    nom: champ.dataset.zoneNom,
-    type: champ.dataset.zoneType || "texte",
-    valeur: champ.value.trim(),
-    obligatoire: champ.dataset.zoneObligatoire === "true"
+  
+  // Récupérer les réponses complètes de chaque zone
+  const zonesSaisies = Object.values(
+    personnalisationZonesChoix || {}
+  ).map(zone => ({
+    ...zone,
+    valeur: String(zone.valeur || "").trim()
   }));
 
-  // Empêcher la validation si une zone obligatoire est vide
+  // Vérifier les zones obligatoires
   const zoneManquante = zonesSaisies.find(
     zone => zone.obligatoire && !zone.valeur
   );
@@ -6171,10 +6438,12 @@ function validerPersonnalisation() {
       zoneManquante.nom
     );
 
-    const champManquant = champsZones.find(
-      champ =>
-        champ.dataset.zoneNom === zoneManquante.nom &&
-        champ.dataset.zoneObligatoire === "true"
+    const champsZones = document.querySelectorAll(
+      "#personnalisationZonesProduit [data-zone-nom]"
+    );
+
+    const champManquant = Array.from(champsZones).find(
+      champ => champ.dataset.zoneNom === zoneManquante.nom
     );
 
     if (champManquant) {
@@ -6184,8 +6453,9 @@ function validerPersonnalisation() {
     return;
   }
 
-  // Conserver les réponses pour les enregistrer dans le panier
+  // Conserver le texte et les choix propres à chaque zone
   personnalisationZonesChoix = zonesSaisies;
+
 
 
   /*
@@ -7255,20 +7525,55 @@ const blocVariante =
               }
 
 
+
 ${
   personnalisation &&
   Array.isArray(personnalisation.zones)
     ? personnalisation.zones
-        .filter(zone => zone && zone.valeur)
+        .filter(zone =>
+          zone &&
+          (
+            zone.valeur ||
+            zone.designNom ||
+            zone.policeNom ||
+            zone.couleurNom
+          )
+        )
         .map(zone => `
-          <div>
-            🧩 ${echapperHTML(zone.nom || "Personnalisation")} :
-            ${echapperHTML(zone.valeur)}
+          <div style="margin-top:8px;">
+            <strong>
+              🧩 ${echapperHTML(zone.nom || "Personnalisation")}
+            </strong>
+
+            ${
+              zone.valeur
+                ? `<div>✏️ Texte : ${echapperHTML(zone.valeur)}</div>`
+                : ""
+            }
+
+            ${
+              zone.designNom
+                ? `<div>🎨 Design : ${echapperHTML(zone.designNom)}</div>`
+                : ""
+            }
+
+            ${
+              zone.policeNom
+                ? `<div>🔤 Police : ${echapperHTML(zone.policeNom)}</div>`
+                : ""
+            }
+
+            ${
+              zone.couleurNom
+                ? `<div>🌈 Couleur : ${echapperHTML(zone.couleurNom)}</div>`
+                : ""
+            }
           </div>
         `)
         .join("")
     : ""
 }
+
 
             </div>
 
