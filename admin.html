@@ -8906,7 +8906,17 @@ async function afficherCommande(commande){
 
       × ${Number(article.quantite)}
       — ${Number(article.total || 0).toFixed(2)} €
-
+<select
+    class="statut-fabrication-article"
+    data-item-id="${article.id}"
+    aria-label="Statut de fabrication de ${echapperHTML(article.nom_produit)}"
+  >
+    <option value="a_faire" ${(article.fabrication_status || "a_faire")==="a_faire"?"selected":""}>📝 À faire</option>
+    <option value="en_cours" ${article.fabrication_status==="en_cours"?"selected":""}>🎨 En cours</option>
+    <option value="fini" ${article.fabrication_status==="fini"?"selected":""}>✅ Fini</option>
+    <option value="emballe" ${article.fabrication_status==="emballe"?"selected":""}>📦 Emballé</option>
+  </select>
+  
       ${
         article.prenom
           ? `<br>✏️ Prénom : ${echapperHTML(article.prenom)}`
