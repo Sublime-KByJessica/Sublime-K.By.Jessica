@@ -8678,6 +8678,98 @@ async function(id){
    COMMANDES
 ===================================================== */
 
+  /* =====================================================
+   COMPTEURS DE FABRICATION
+===================================================== */
+
+async function actualiserCompteursFabrication() {
+
+  const elements = {
+    a_faire: document.getElementById("fabricationAFaire"),
+    en_cours: document.getElementById("fabricationEnCours"),
+    fini: document.getElementById("fabricationFini"),
+    emballe: document.getElementById("fabricationEmballe")
+  };
+
+  const compteurs = {
+    a_faire: 0,
+    en_cours: 0,
+    fini: 0,
+    emballe: 0
+  };
+
+  const { data: commandes, error } = await client
+    .from("orders")
+    .select("id, statut");
+
+  if (error) {
+    console.error("Erreur de chargement des commandes :", error);
+    return;
+  }
+
+  const commandesActives = (commandes || []).filter(
+    commande =>
+      commande.statut !== "test" &&
+      commande.statut !== "annulee"
+  );
+
+  const ids = commandesActives.map(commande => commande.id);
+
+  if (ids.length > 0) {
+    const { data: articles, error: erreurArticles } = await client
+      .from("order_items")
+      .select("fabrication_status")
+      .in("order_id", ids);
+
+    if (erreurArticles) {
+      console.error("Erreur de chargement des articles :", erreurArticles);
+      return;
+    }
+
+    (articles || []).forEach(article => {
+      const statut = article.fabrication_status || "a_faire";
+
+      if (Object.prototype.hasOwnProperty.call(compteurs, statut)) {
+        compteurs[statut]++;
+      } else {
+        compteurs.a_faire++;
+      }
+    });
+  }
+
+  Object.keys(elements).forEach(statut => {
+    if (elements[statut]) {
+      elements[statut].textContent = compteurs[statut];
+    }
+  });
+}
+
+
+/* OUVRIR ET FERMER LES DÉTAILS DES COMMANDES */
+
+document.getElementById("listeCommandes")
+  .addEventListener("click", function(event) {
+
+    const bouton = event.target.closest(".btn-ouvrir-commande");
+    if (!bouton) return;
+
+    const carte = bouton.closest(".commande");
+    const contenu = carte?.querySelector(".commande-contenu");
+
+    if (!contenu) return;
+
+    const ouvrir = contenu.hidden;
+    contenu.hidden = !ouvrir;
+
+    bouton.setAttribute("aria-expanded", String(ouvrir));
+
+    bouton.textContent = ouvrir
+      ? "➖ Masquer les détails de la commande"
+      : "➕ Voir les détails de la commande";
+  });
+
+/* FIN COMPTEURS DE FABRICATION */
+  
 async function chargerCommandes(){
 
   const filtrePaiement =
@@ -8798,7 +8890,7 @@ async function chargerCommandes(){
   }
 
   /* FIN INDICATEURS DU TABLEAU DE BORD */
-
+await actualiserCompteursFabrication();
 
   document.getElementById(
     "nombreCommandes"
