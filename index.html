@@ -3048,6 +3048,16 @@
               🛍️ Boutique
             </a>
 
+            
+<a
+  href="#section-mes-favoris"
+  onclick="ouvrirMesFavoris(); fermerMenu(); return false;"
+>
+  ❤️ Mes favoris
+  <span id="nombreFavorisMenu"></span>
+</a>
+
+
             <a href="#bibliotheque" onclick="fermerMenu()">
   🎨 Bibliothèque de designs
 </a>
@@ -3387,7 +3397,11 @@
          ❤️ MES FAVORIS
     ========================= -->
 
-    <section class="section" id="section-mes-favoris">
+    <section
+  class="section"
+  id="section-mes-favoris"
+  style="display:none;"
+>
       <div class="container">
 
         <h2 class="section-title">
@@ -9551,6 +9565,15 @@ photosProduit.forEach(
         
         <button
           type="button"
+          class="product-button secondary bouton-favori"
+          onclick='event.stopPropagation(); basculerFavori(${JSON.stringify(produit).replace(/'/g, "&#39;")})'
+        >
+          ${estFavori(produit.id) ? "❤️ Favoris" : "🤍 Ajouter aux favoris"}
+        </button>
+
+        
+        <button
+          type="button"
           class="product-button"
           onclick='ajouterAuPanier(${JSON.stringify(produit).replace(/'/g, "&#39;")})'
         >
@@ -10234,7 +10257,7 @@ produit => String(produit.id) === String(idProduit)
 );
 }
 
-function basculerFavori(produit) {
+function basculerFavori(produit, boutonClique = null) {
 if (!produit || produit.id === undefined || produit.id === null) {
 return;
 }
@@ -10261,19 +10284,21 @@ alert("Impossible d'enregistrer les favoris sur cet appareil.");
 return;
 }
 
-const bouton = Array.from(
-document.querySelectorAll(".bouton-favori")
-).find(element =>
-element.getAttribute("onclick")?.includes(
-String(produit.id)
-)
+
+const boutons = Array.from(
+  document.querySelectorAll(".bouton-favori")
+).filter(element =>
+  element.getAttribute("onclick")?.includes(
+    String(produit.id)
+  )
 );
 
-if (bouton) {
-bouton.innerHTML = estFavori(produit.id)
-? "❤️ Favoris"
-: "🤍 Favoris";
-}
+boutons.forEach(function(bouton) {
+  bouton.innerHTML = estFavori(produit.id)
+    ? "❤️ Favoris"
+    : "🤍 Favoris";
+});
+
     afficherMesFavoris();
 }
 
@@ -10312,6 +10337,32 @@ function afficherMesFavoris() {
 }
 
 /* FIN DE L'AFFICHAGE DES FAVORIS */
+
+    
+/* OUVRIR LA RUBRIQUE MES FAVORIS */
+
+function ouvrirMesFavoris() {
+  const section = document.getElementById("section-mes-favoris");
+
+  if (!section) return;
+
+  section.style.display = "block";
+
+  afficherMesFavoris();
+
+  section.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+  const menu = document.getElementById("siteMenu");
+
+  if (menu) {
+    menu.classList.remove("active");
+  }
+}
+
+/* FIN OUVERTURE MES FAVORIS */
 
     
     /* =====================================================
