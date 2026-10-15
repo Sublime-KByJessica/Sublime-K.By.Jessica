@@ -4303,7 +4303,6 @@ let personnalisationChoix = {
 };
 
     
-
 /* =====================================================
    ZONES DE PERSONNALISATION DU PRODUIT
 ===================================================== */
@@ -4700,6 +4699,8 @@ etat.couleurGradient = couleurInitiale?.code_gradient || ancienneValeur?.couleur
       type: zone.type || "texte",
       position: zone.position || ancienneValeur.position || "centre",
       valeur: ancienneValeur.valeur || "",
+      customerImagePath: ancienneValeur.customerImagePath || "",
+      customerImageName: ancienneValeur.customerImageName || "",
       obligatoire: zone.obligatoire === true,
       designId: ancienneValeur.designId || "",
       designNom: ancienneValeur.designNom || "",
@@ -4760,8 +4761,133 @@ etat.couleurGradient = couleurInitiale?.code_gradient || ancienneValeur?.couleur
 
     ligne.appendChild(champ);
 
+// PHOTO PERSONNELLE DU CLIENT DANS LA MÊME ZONE
+if (
+  personnalisationProduitActuel &&
+  personnalisationProduitActuel.photo_client_active === true
+) {
+  const labelPhoto = document.createElement("label");
+  labelPhoto.textContent = "📸 Ajouter une photo personnelle";
+  labelPhoto.style.display = "block";
+  labelPhoto.style.marginTop = "12px";
+  labelPhoto.style.fontWeight = "600";
+  ligne.appendChild(labelPhoto);
+
+  const aidePhoto = document.createElement("p");
+  aidePhoto.textContent =
+    "Formats acceptés : JPG, PNG, WebP ou GIF. Taille maximale : 5 Mo.";
+  aidePhoto.style.fontSize = "13px";
+  ligne.appendChild(aidePhoto);
+
+  const champPhoto = document.createElement("input");
+  champPhoto.type = "file";
+  champPhoto.accept = "image/jpeg,image/png,image/webp,image/gif";
+  champPhoto.style.display = "block";
+  champPhoto.style.width = "100%";
+  champPhoto.style.marginTop = "8px";
+
+  const apercuPhoto = document.createElement("img");
+  apercuPhoto.alt = "Aperçu de la photo choisie";
+  apercuPhoto.style.display = "none";
+  apercuPhoto.style.maxWidth = "160px";
+  apercuPhoto.style.maxHeight = "160px";
+  apercuPhoto.style.objectFit = "contain";
+  apercuPhoto.style.marginTop = "10px";
+  apercuPhoto.style.borderRadius = "8px";
+
+  const nomPhoto = document.createElement("p");
+  nomPhoto.style.fontSize = "13px";
+
+  if (etat.customerImageName) {
+    nomPhoto.textContent = "Photo enregistrée : " + etat.customerImageName;
+  }
+
+  champPhoto.addEventListener("change", async function () {
+    const fichier = champPhoto.files && champPhoto.files[0];
+
+    if (!fichier) return;
+
+    const typesAutorises = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/gif"
+    ];
+
+    if (!typesAutorises.includes(fichier.type)) {
+      alert("Choisis une image JPG, PNG, WebP ou GIF.");
+      champPhoto.value = "";
+      return;
+    }
+
+    if (fichier.size > 5 * 1024 * 1024) {
+      alert("La photo ne doit pas dépasser 5 Mo.");
+      champPhoto.value = "";
+      return;
+    }
+
+    champPhoto.disabled = true;
+    nomPhoto.textContent = "Envoi de la photo en cours…";
+
     try {
-      if (zone.designActive === true) {
+      const extension = fichier.name.split(".").pop().toLowerCase();
+      const nomFichier =
+        Date.now() + "-" +
+        Math.random().toString(36).slice(2) +
+        "." + extension;
+
+      const chemin =
+        String(personnalisationProduitActuel.id) +
+        "/" + nomFichier;
+
+      const { data, error } = await supabaseClient
+        .storage
+        .from("customer-uploads")
+        .upload(chemin, fichier, {
+          cacheControl: "3600",
+          upsert: false,
+          contentType: fichier.type
+        });
+
+      if (error) throw error;
+
+      etat.customerImagePath = data.path;
+      etat.customerImageName = fichier.name;
+
+      const ancienneUrl = apercuPhoto.dataset.objectUrl;
+      if (ancienneUrl) URL.revokeObjectURL(ancienneUrl);
+
+      const urlLocale = URL.createObjectURL(fichier);
+      apercuPhoto.src = urlLocale;
+      apercuPhoto.dataset.objectUrl = urlLocale;
+      apercuPhoto.style.display = "block";
+
+      nomPhoto.textContent = "Photo ajoutée : " + fichier.name;
+
+      mettreAJourApercuPersonnalisation();
+
+    } catch (error) {
+      console.error("Erreur lors de l'envoi de la photo :", error);
+      alert(
+        "La photo n'a pas pu être envoyée. Réessaie. " +
+        (error.message || "")
+      );
+      etat.customerImagePath = "";
+      etat.customerImageName = "";
+      nomPhoto.textContent = "Échec de l'envoi de la photo.";
+      champPhoto.value = "";
+    } finally {
+      champPhoto.disabled = false;
+    }
+  });
+
+  ligne.appendChild(champPhoto);
+  ligne.appendChild(nomPhoto);
+  ligne.appendChild(apercuPhoto);
+}
+
+try {
+  if (zone.designActive === true) {
         await ajouterChoixDesign(ligne, etat, ancienneValeur);
       }
 
