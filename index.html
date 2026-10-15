@@ -5032,7 +5032,7 @@ if (
 
       if (error) throw error;
 
-      etat.customerImagePath = data.path;
+      etat.customerImagePath = data.path || chemin;
       etat.customerImageName = fichier.name;
 
       const ancienneUrl = apercuPhoto.dataset.objectUrl;
