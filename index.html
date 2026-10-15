@@ -300,6 +300,36 @@
       background: #E9D9D5;
     }
 
+    .recherche-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 8px;
+  padding: 4px 6px;
+  border: 1px solid #D8B6BC;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.recherche-header input {
+  width: 180px;
+  max-width: 22vw;
+  min-width: 90px;
+  padding: 8px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #4A4143;
+}
+
+.recherche-header button {
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  background: #667052;
+  color: white;
+  cursor: pointer;
+}
 
     /* =========================
        BOUTON PANIER HEADER
@@ -2952,8 +2982,19 @@
           Boutique
         </a>
 
+        <form class="recherche-header" onsubmit="return rechercherProduitsSite(event)">
+  <input
+    type="search"
+    id="rechercheProduitsSite"
+    placeholder="Rechercher un produit..."
+    aria-label="Rechercher un produit"
+  >
+  <button type="submit" aria-label="Lancer la recherche">
+    🔍
+  </button>
+</form>
+        
       </nav>
-
 
       <div class="header-actions">
 
@@ -9719,6 +9760,168 @@ function initialiserSwipeFicheProduit() {
   initialiserCarrouselsProduits();
 
 }
+
+        /* =====================================================
+   RECHERCHE DES PRODUITS DEPUIS LE MENU DU HAUT
+===================================================== */
+
+async function rechercherProduitsSite(event) {
+  event.preventDefault();
+
+  const champ = document.getElementById("rechercheProduitsSite");
+  const recherche = champ ? champ.value.trim() : "";
+
+  const zone = document.getElementById("boutique-produits");
+  const titre = document.getElementById("boutique-filtre-titre");
+  const categories = document.getElementById("categories-boutique");
+
+  if (!zone) return false;
+
+  if (!recherche) {
+    if (champ) champ.focus();
+    return false;
+  }
+
+  zone.innerHTML = `
+    <div class="boutique-empty">
+      <p>🔎 Recherche en cours...</p>
+    </div>
+  `;
+
+  if (titre) {
+    titre.textContent = "Résultats de recherche";
+  }
+
+  if (categories) {
+    categories.style.display = "none";
+  }
+
+  document.getElementById("boutique")?.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+  try {
+    const { data, error } = await supabaseClient
+      .from("products")
+      .select(`
+        id,
+        nom,
+        description,
+        prix,
+        categorie_id,
+        statut,
+        image_url,
+        visible,
+        ordre,
+        stock_quantite,
+        personnalisation_active,
+        personnalisation_zones,
+        choix_image_active,
+        prenom_active,
+        police_active,
+        couleur_active,
+        message_active,
+        photo_client_active,
+        prenom_min_caracteres,
+        prenom_max_caracteres,
+        message_min_caracteres,
+        message_max_caracteres,
+        mockup_active,
+        mockup_design_active,
+        mockup_prenom_active,
+        mockup_message_active,
+        mockup_position_x,
+        mockup_position_y,
+        mockup_largeur,
+        mockup_rotation
+      `)
+      .eq("visible", true)
+      .order("ordre", { ascending: true })
+      .limit(1000);
+
+    if (error) throw error;
+
+    function normaliserTexte(texte) {
+      return String(texte || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+    }
+
+    const motsRecherche = normaliserTexte(recherche)
+      .split(/\s+/)
+      .filter(Boolean);
+
+    const resultats = (data || []).filter(function(produit) {
+      const texteProduit = normaliserTexte(
+        (produit.nom || "") + " " + (produit.description || "")
+      );
+
+      return motsRecherche.every(function(mot) {
+        return texteProduit.includes(mot);
+      });
+    });
+
+    if (resultats.length === 0) {
+      zone.innerHTML = `
+        <div class="boutique-empty">
+          <p>🔎 Aucun produit trouvé pour « ${
+            recherche.replace(/[&<>"']/g, function(caractere) {
+              return {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+              }[caractere];
+            })
+          } ».</p>
+          <p>Essaie avec un autre mot-clé.</p>
+          <button type="button" class="btn-primary"
+            onclick="afficherTousLesProduits()">
+            Voir toutes les créations
+          </button>
+        </div>
+      `;
+
+      return false;
+    }
+
+    const photosParProduit =
+      await chargerPhotosSupplementairesProduits(resultats);
+
+    zone.innerHTML = "";
+
+    resultats.forEach(function(produit) {
+      zone.innerHTML += creerCarteProduit(
+        produit,
+        photosParProduit[produit.id] || []
+      );
+    });
+
+    activerCarrouselsProduits();
+
+    if (titre) {
+      titre.textContent =
+        "Résultats de recherche (" + resultats.length + ")";
+    }
+
+  } catch (error) {
+    console.error("Erreur lors de la recherche :", error);
+
+    zone.innerHTML = `
+      <div class="boutique-empty">
+        <p>Impossible d'effectuer la recherche pour le moment.</p>
+        <p>Réessaie dans quelques instants.</p>
+      </div>
+    `;
+  }
+
+  return false;
+}
+
+/* FIN RECHERCHE DES PRODUITS */
     
     /* =====================================================
        CHARGER LA BOUTIQUE
