@@ -3264,6 +3264,48 @@
 
       </div>
 
+      
+      <!-- FILTRE PAR PRIX -->
+      <div class="filtre-prix-boutique" style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:10px; margin:15px 0;">
+
+        <label for="prixMinimumBoutique">Prix min. (€)</label>
+        <input
+          type="number"
+          id="prixMinimumBoutique"
+          min="0"
+          step="0.01"
+          placeholder="0"
+          style="width:90px; padding:10px; border:1px solid #D8B6BC; border-radius:10px;"
+        >
+
+        <label for="prixMaximumBoutique">Prix max. (€)</label>
+        <input
+          type="number"
+          id="prixMaximumBoutique"
+          min="0"
+          step="0.01"
+          placeholder="Ex. 25"
+          style="width:100px; padding:10px; border:1px solid #D8B6BC; border-radius:10px;"
+        >
+
+        <button
+          type="button"
+          class="boutique-menu-button"
+          onclick="filtrerProduitsParPrix()"
+        >
+          💶 Filtrer
+        </button>
+
+        <button
+          type="button"
+          class="boutique-menu-button"
+          onclick="reinitialiserFiltrePrix()"
+        >
+          ↺ Réinitialiser
+        </button>
+
+      </div>
+
       <p
         id="boutique-filtre-titre"
         style="text-align:center; font-weight:bold; color:#667052;"
@@ -9925,6 +9967,135 @@ async function rechercherProduitsSite(event) {
 }
 
 /* FIN RECHERCHE DES PRODUITS */
+    /* =====================================================
+   FILTRE DES PRODUITS PAR PRIX
+===================================================== */
+
+function filtrerProduitsParPrix() {
+
+  const champMinimum = document.getElementById("prixMinimumBoutique");
+  const champMaximum = document.getElementById("prixMaximumBoutique");
+  const zone = document.getElementById("boutique-produits");
+
+  if (!zone || !champMinimum || !champMaximum) {
+    return;
+  }
+
+  const minimum = champMinimum.value.trim() !== ""
+    ? Number(champMinimum.value)
+    : null;
+
+  const maximum = champMaximum.value.trim() !== ""
+    ? Number(champMaximum.value)
+    : null;
+
+  if (
+    (minimum !== null && (!Number.isFinite(minimum) || minimum < 0)) ||
+    (maximum !== null && (!Number.isFinite(maximum) || maximum < 0))
+  ) {
+    alert("Veuillez saisir des prix valides et positifs.");
+    return;
+  }
+
+  if (
+    minimum !== null &&
+    maximum !== null &&
+    minimum > maximum
+  ) {
+    alert("Le prix minimum ne peut pas être supérieur au prix maximum.");
+    return;
+  }
+
+  const anciennesMessages = zone.querySelectorAll(
+    ".message-filtre-prix"
+  );
+
+  anciennesMessages.forEach(message => message.remove());
+
+  const cartes = zone.querySelectorAll(".product-card");
+  let nombreVisible = 0;
+
+  cartes.forEach(carte => {
+
+    const elementPrix = carte.querySelector(".product-price");
+
+    const textePrix = elementPrix
+      ? elementPrix.textContent.replace(/\s/g, "").replace(",", ".")
+      : "";
+
+    const correspondance = textePrix.match(/\d+(?:\.\d+)?/);
+    const prix = correspondance
+      ? Number(correspondance[0])
+      : null;
+
+    let afficher = prix !== null;
+
+    if (minimum !== null && prix !== null && prix < minimum) {
+      afficher = false;
+    }
+
+    if (maximum !== null && prix !== null && prix > maximum) {
+      afficher = false;
+    }
+
+    carte.style.display = afficher ? "" : "none";
+
+    if (afficher) {
+      nombreVisible++;
+    }
+
+  });
+
+  if (cartes.length > 0 && nombreVisible === 0) {
+
+    const message = document.createElement("div");
+
+    message.className = "boutique-empty message-filtre-prix";
+    message.innerHTML = `
+      <p>🔎 Aucun produit ne correspond à cette tranche de prix.</p>
+      <p>Essaie de modifier les montants ou de réinitialiser le filtre.</p>
+    `;
+
+    zone.appendChild(message);
+
+  }
+
+}
+
+
+/* =====================================================
+   RÉINITIALISER LE FILTRE DE PRIX
+===================================================== */
+
+function reinitialiserFiltrePrix() {
+
+  const champMinimum = document.getElementById("prixMinimumBoutique");
+  const champMaximum = document.getElementById("prixMaximumBoutique");
+  const zone = document.getElementById("boutique-produits");
+
+  if (champMinimum) {
+    champMinimum.value = "";
+  }
+
+  if (champMaximum) {
+    champMaximum.value = "";
+  }
+
+  if (!zone) {
+    return;
+  }
+
+  zone.querySelectorAll(".product-card").forEach(carte => {
+    carte.style.display = "";
+  });
+
+  zone.querySelectorAll(".message-filtre-prix").forEach(message => {
+    message.remove();
+  });
+
+}
+
+/* FIN DU FILTRE DES PRODUITS PAR PRIX */
     
     /* =====================================================
        CHARGER LA BOUTIQUE
