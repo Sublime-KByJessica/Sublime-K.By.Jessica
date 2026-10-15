@@ -773,6 +773,22 @@ button{cursor:pointer}
   align-items:center;
 }
 
+  
+.btn-ouvrir-commande{
+  padding:8px 12px;
+  border:1px solid var(--bordure);
+  border-radius:10px;
+  background:var(--vert-clair);
+  color:var(--sauge-fonce);
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:12px;
+}
+
+.commande-contenu[hidden]{
+  display:none !important;
+}
+
 .commande-numero{
   color:var(--rose-fonce);
   font-size:18px;
@@ -1968,6 +1984,45 @@ button{cursor:pointer}
 </div>
 
 <!-- FIN SUIVI DES COMMANDES -->
+
+  
+<!-- TABLEAU DE BORD DE FABRICATION -->
+<div class="suivi-commandes-dashboard suivi-fabrication-dashboard">
+
+  <div class="suivi-carte">
+    <div class="suivi-icone">📝</div>
+    <div class="suivi-infos">
+      <div class="suivi-titre">Articles à faire</div>
+      <div class="suivi-nombre" id="fabricationAFaire">—</div>
+    </div>
+  </div>
+
+  <div class="suivi-carte">
+    <div class="suivi-icone">🎨</div>
+    <div class="suivi-infos">
+      <div class="suivi-titre">Articles en cours</div>
+      <div class="suivi-nombre" id="fabricationEnCours">—</div>
+    </div>
+  </div>
+
+  <div class="suivi-carte">
+    <div class="suivi-icone">✅</div>
+    <div class="suivi-infos">
+      <div class="suivi-titre">Articles finis</div>
+      <div class="suivi-nombre" id="fabricationFini">—</div>
+    </div>
+  </div>
+
+  <div class="suivi-carte">
+    <div class="suivi-icone">📦</div>
+    <div class="suivi-infos">
+      <div class="suivi-titre">Articles emballés</div>
+      <div class="suivi-nombre" id="fabricationEmballe">—</div>
+    </div>
+  </div>
+
+</div>
+<!-- FIN TABLEAU DE BORD DE FABRICATION -->
 
 
   <div class="bloc">
@@ -9057,6 +9112,15 @@ async function afficherCommande(commande){
 
 </div>
 
+<button
+  type="button"
+  class="btn-ouvrir-commande"
+  aria-expanded="false"
+>
+  ➕ Voir les détails de la commande
+</button>
+
+<div class="commande-contenu" hidden>
 
 <div class="commande-details">
 
@@ -9180,7 +9244,7 @@ async function afficherCommande(commande){
 
     </div>
 
-  `;
+</div>`;
 
 
   document
@@ -9323,18 +9387,20 @@ document
 
     if(error){
 
-      console.error(error);
+  console.error(error);
 
-      alert(
-        "❌ Impossible d'enregistrer le statut de fabrication : " +
-        error.message
-      );
+  alert(
+    "❌ Impossible d'enregistrer le statut de fabrication : " +
+    error.message
+  );
 
-      return;
+  return;
 
-    }
+}
 
-    return;
+await actualiserCompteursFabrication();
+
+return;
   }
       
       /*
