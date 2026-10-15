@@ -8445,67 +8445,135 @@ async function afficherCommande(commande){
   let articlesHTML="";
 
 
-  (articles||[]).forEach(
-    function(article){
+  for (const article of (articles || [])) {
 
-      articlesHTML+=`
+  let photosHTML = "";
 
-        <div class="article-commande">
+  const zones = Array.isArray(article.personnalisation_zones)
+    ? article.personnalisation_zones
+    : [];
 
-          <strong>
-            ${echapperHTML(
-              article.nom_produit
-            )}
-          </strong>
+  const cheminsPhotos = [
+    ...zones
+      .filter(zone => zone && zone.customerImagePath)
+      .map(zone => ({
+        chemin: zone.customerImagePath,
+        nom: zone.customerImageName || "Photo du client"
+      }))
+  ];
 
-          ×
-          ${Number(article.quantite)}
+  if (
+    article.customer_image_path &&
+    !cheminsPhotos.some(
+      photo => photo.chemin === article.customer_image_path
+    )
+  ) {
+    cheminsPhotos.push({
+      chemin: article.customer_image_path,
+      nom: "Photo du client"
+    });
+  }
 
-          —
+  for (const photo of cheminsPhotos) {
+    try {
+      const { data, error } = await client
+        .storage
+        .from("customer-uploads")
+        .createSignedUrl(photo.chemin, 3600);
 
-          ${Number(
-            article.total||0
-          ).toFixed(2)}
-          €
+      if (error) throw error;
 
-                    ${
-            article.prenom
-              ? `<br>✏️ Prénom : ${echapperHTML(
-                  article.prenom
-                )}`
-              : ""
-          }
+      if (data && data.signedUrl) {
+        photosHTML += `
+          <div style="margin-top:12px;">
+            <p>📸 ${echapperHTML(photo.nom)}</p>
+            <a
+              href="${echapperHTML(data.signedUrl)}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src="${echapperHTML(data.signedUrl)}"
+                alt="Photo fournie par le client"
+                style="
+                  max-width:220px;
+                  max-height:220px;
+                  object-fit:contain;
+                  border-radius:8px;
+                  border:1px solid #ddd;
+                "
+              >
+            </a>
+          </div>
+        `;
+      }
+    } catch (error) {
+      console.error(
+        "Impossible d'afficher la photo du client :",
+        error
+      );
 
-          ${
-            article.couleur
-              ? `<br>🎨 Couleur : ${echapperHTML(
-                  article.couleur
-                )}`
-              : ""
-          }
-
-          ${
-            article.police
-              ? `<br>🔤 Police : ${echapperHTML(
-                  article.police
-                )}`
-              : ""
-          }
-
-          ${
-            article.message
-              ? `<br>💬 Message : ${echapperHTML(
-                  article.message
-                )}`
-              : ""
-          }
-
-        </div>
-
+      photosHTML += `
+        <p>📸 Photo enregistrée, mais aperçu indisponible.</p>
       `;
-
     }
-  );
+  }
+
+  let zonesHTML = "";
+
+  zones.forEach(zone => {
+    if (!zone) return;
+
+    if (zone.nom && zone.valeur) {
+      zonesHTML += `
+        <p>
+          ✏️ ${echapperHTML(zone.nom)} :
+          ${echapperHTML(zone.valeur)}
+        </p>
+      `;
+    }
+  });
+
+  articlesHTML += `
+    <div class="article-commande">
+
+      <strong>
+        ${echapperHTML(article.nom_produit)}
+      </strong>
+
+      × ${Number(article.quantite)}
+      — ${Number(article.total || 0).toFixed(2)} €
+
+      ${
+        article.prenom
+          ? `<br>✏️ Prénom : ${echapperHTML(article.prenom)}`
+          : ""
+      }
+
+      ${
+        article.couleur
+          ? `<br>🎨 Couleur : ${echapperHTML(article.couleur)}`
+          : ""
+      }
+
+      ${
+        article.police
+          ? `<br>🔤 Police : ${echapperHTML(article.police)}`
+          : ""
+      }
+
+      ${
+        article.message
+          ? `<br>💬 Message : ${echapperHTML(article.message)}`
+          : ""
+      }
+
+      ${zonesHTML}
+      ${photosHTML}
+
+    </div>
+  `;
+}
 
 
   element.innerHTML=`
