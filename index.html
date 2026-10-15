@@ -3266,6 +3266,23 @@
 
       
       <!-- FILTRE PAR PRIX -->
+      <!-- TRI DES PRODUITS PAR PRIX -->
+  <div class="tri-prix-boutique" style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:10px; margin:15px 0;">
+
+    <label for="triPrixBoutique">Trier les produits :</label>
+
+    <select
+      id="triPrixBoutique"
+      onchange="trierProduitsParPrix(this.value)"
+      style="padding:10px; border:1px solid #D8B6BC; border-radius:10px; background:white; max-width:100%;"
+    >
+      <option value="">Ordre par défaut</option>
+      <option value="croissant">Prix croissant : du moins cher au plus cher</option>
+      <option value="decroissant">Prix décroissant : du plus cher au moins cher</option>
+    </select>
+
+  </div>
+  <!-- FIN TRI DES PRODUITS PAR PRIX -->
       <div class="filtre-prix-boutique" style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:10px; margin:15px 0;">
 
         <label for="prixMinimumBoutique">Prix min. (€)</label>
@@ -10096,6 +10113,66 @@ function reinitialiserFiltrePrix() {
 }
 
 /* FIN DU FILTRE DES PRODUITS PAR PRIX */
+
+    /* =====================================================
+TRI DES PRODUITS PAR PRIX
+===================================================== */
+
+function trierProduitsParPrix(ordre) {
+
+const zone = document.getElementById("boutique-produits");
+
+if (!zone) {
+return;
+}
+
+const cartes = Array.from(
+zone.querySelectorAll(".product-card")
+);
+
+cartes.sort((carteA, carteB) => {
+
+function obtenirPrix(carte) {
+
+  const elementPrix = carte.querySelector(".product-price");
+
+  if (!elementPrix) {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  const textePrix = elementPrix.textContent
+    .replace(/\s/g, "")
+    .replace(",", ".");
+
+  const correspondance = textePrix.match(/\d+(?:\.\d+)?/);
+
+  return correspondance
+    ? Number(correspondance[0])
+    : Number.POSITIVE_INFINITY;
+}
+
+const prixA = obtenirPrix(carteA);
+const prixB = obtenirPrix(carteB);
+
+if (ordre === "croissant") {
+  return prixA - prixB;
+}
+
+if (ordre === "decroissant") {
+  return prixB - prixA;
+}
+
+return 0;
+
+});
+
+cartes.forEach(carte => {
+zone.appendChild(carte);
+});
+
+}
+
+/* FIN DU TRI DES PRODUITS PAR PRIX */
     
     /* =====================================================
        CHARGER LA BOUTIQUE
