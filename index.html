@@ -4947,6 +4947,29 @@ if (
     nomPhoto.textContent = "Photo enregistrée : " + etat.customerImageName;
   }
 
+    
+  if (etat.customerImagePath) {
+    try {
+      const { data, error } = await supabaseClient
+        .storage
+        .from("customer-uploads")
+        .createSignedUrl(etat.customerImagePath, 3600);
+
+      if (!error && data && data.signedUrl) {
+        apercuPhoto.src = data.signedUrl;
+        apercuPhoto.style.display = "block";
+        nomPhoto.textContent =
+          "Photo déjà enregistrée : " +
+          (etat.customerImageName || "photo du client");
+      }
+    } catch (erreur) {
+      console.error(
+        "Impossible de réafficher la photo enregistrée :",
+        erreur
+      );
+    }
+  }
+
   champPhoto.addEventListener("change", async function () {
     const fichier = champPhoto.files && champPhoto.files[0];
 
@@ -7643,51 +7666,32 @@ async function modifierPersonnalisation(
   }
 
  
+const produitId =
+  article.produit_id || article.id;
+
+const { data: produitOriginal, error } =
+  await supabaseClient
+    .from("products")
+    .select("*")
+    .eq("id", produitId)
+    .maybeSingle();
+
+if (error || !produitOriginal) {
+  alert(
+    "Impossible de retrouver les réglages de ce produit. Réessaie dans un instant."
+  );
+  return;
+}
+
 const produit = {
-
-  id:
-    article.produit_id ||
-    article.id,
-
-  nom:
-    article.nom,
-
-  prix:
-    article.prix,
-
-  image_url:
-    article.image_url,
-
-  statut:
-    article.statut,
-
-    stock_quantite:
-    Number.isFinite(Number(article.stock_quantite))
-      ? Number(article.stock_quantite)
-      : null,
-
-  personnalisation_active:
-    true,
-
-  choix_image_active:
-    true,
-
-  prenom_active:
-    true,
-
-  police_active:
-    true,
-
-  couleur_active:
-    true,
-
-  message_active:
-    false,
-
-  photo_client_active:
-    false
-
+  ...produitOriginal,
+  nom: article.nom || produitOriginal.nom,
+  prix: article.prix ?? produitOriginal.prix,
+  statut: article.statut || produitOriginal.statut,
+  stock_quantite:
+    article.stock_quantite ?? produitOriginal.stock_quantite
 };
+
 
   fermerPanier();
 
