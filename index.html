@@ -6821,8 +6821,11 @@ function validerPersonnalisation() {
 
   // Vérifier les zones obligatoires
   const zoneManquante = zonesSaisies.find(
-    zone => zone.obligatoire && !zone.valeur
-  );
+  zone =>
+    zone.obligatoire &&
+    !zone.valeur &&
+    !zone.customerImagePath
+);
 
   if (zoneManquante) {
     alert(
@@ -12521,8 +12524,11 @@ async function confirmerCommande() {
       null,
 
     police_nom:
-      personnalisation.policeNom ||
-      null
+  personnalisation.policeNom ||
+  null,
+
+personnalisation_zones:
+  personnalisation.zones || []
   };
 
 });
