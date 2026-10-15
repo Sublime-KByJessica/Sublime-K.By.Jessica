@@ -246,30 +246,142 @@ button{cursor:pointer}
    STATS
 ========================= */
 
+
+/* =========================
+   STATS — TABLEAU DE BORD
+========================= */
+
 .stats{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:16px;
   margin:25px 0;
 }
 
 .stat-card{
+  position:relative;
+  overflow:hidden;
   background:white;
   border:1px solid var(--bordure);
-  border-radius:18px;
-  padding:20px;
+  border-radius:20px;
+  padding:22px 20px;
+  box-shadow:0 5px 16px rgba(74,65,67,.05);
+  transition:transform .2s, box-shadow .2s;
+}
+
+.stat-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 9px 22px rgba(74,65,67,.09);
+}
+
+.stat-card::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:5px;
+}
+
+.stat-card:nth-child(1){
+  background:#FBF0F2;
+  border-color:#EAD1D8;
+}
+
+.stat-card:nth-child(1)::before{
+  background:#B9828F;
+}
+
+.stat-card:nth-child(2){
+  background:#F0F4EB;
+  border-color:#D6E0CB;
+}
+
+.stat-card:nth-child(2)::before{
+  background:#8F9B78;
+}
+
+.stat-card:nth-child(3){
+  background:#FBF4E8;
+  border-color:#EDE0C8;
+}
+
+.stat-card:nth-child(3)::before{
+  background:#C5A16A;
+}
+
+.stat-card:nth-child(4){
+  background:#EEF1F9;
+  border-color:#D8DEEF;
+}
+
+.stat-card:nth-child(4)::before{
+  background:#8193BE;
 }
 
 .stat-card .nombre{
-  font-size:30px;
-  font-weight:bold;
+  font-size:34px;
+  line-height:1.2;
+  font-weight:800;
   color:var(--rose-fonce);
+  margin-top:5px;
+}
+
+.stat-card:nth-child(2) .nombre{
+  color:var(--sauge-fonce);
+}
+
+.stat-card:nth-child(3) .nombre{
+  color:#956B36;
+}
+
+.stat-card:nth-child(4) .nombre{
+  color:#526A9B;
 }
 
 .stat-card .label{
-  color:#766B6D;
-  margin-top:5px;
+  color:var(--texte);
+  font-size:14px;
+  font-weight:600;
+  line-height:1.4;
+  margin-top:9px;
 }
+
+/* Adaptation tablette */
+
+@media (max-width:1000px){
+  .stats{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+  }
+
+  .stat-card{
+    padding:19px 16px;
+  }
+}
+
+/* Adaptation petit écran */
+
+@media (max-width:420px){
+  .stats{
+    gap:9px;
+    margin:18px 0;
+  }
+
+  .stat-card{
+    padding:17px 13px;
+    border-radius:15px;
+  }
+
+  .stat-card .nombre{
+    font-size:28px;
+  }
+
+  .stat-card .label{
+    font-size:12px;
+  }
+}
+
 
 /* =========================
    BLOCS
