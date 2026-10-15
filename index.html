@@ -4955,13 +4955,26 @@ if (
         .from("customer-uploads")
         .createSignedUrl(etat.customerImagePath, 3600);
 
-      if (!error && data && data.signedUrl) {
-        apercuPhoto.src = data.signedUrl;
-        apercuPhoto.style.display = "block";
-        nomPhoto.textContent =
-          "Photo déjà enregistrée : " +
-          (etat.customerImageName || "photo du client");
-      }
+      if (error) {
+  console.error("Erreur de récupération de la photo :", error);
+} else if (data && data.signedUrl) {
+  apercuPhoto.onload = function () {
+    apercuPhoto.style.display = "block";
+  };
+
+  apercuPhoto.onerror = function () {
+    console.error("Le lien existe, mais l'image ne peut pas être affichée.");
+    nomPhoto.textContent =
+      "Photo enregistrée, mais aperçu indisponible.";
+  };
+
+  apercuPhoto.src = data.signedUrl;
+
+  nomPhoto.textContent =
+    "Photo déjà enregistrée : " +
+    (etat.customerImageName || "photo du client");
+}
+      
     } catch (erreur) {
       console.error(
         "Impossible de réafficher la photo enregistrée :",
