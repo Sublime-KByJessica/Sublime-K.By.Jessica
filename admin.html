@@ -5420,29 +5420,18 @@ function ajouterZonePersonnalisationAdmin(zone = {}) {
 
   ligne.innerHTML = `
     <div class="champ">
-      <label>Nom de la zone</label>
+      <label>Nom de cette personnalisation</label>
       <input
         type="text"
         class="zone-personnalisation-nom"
         maxlength="80"
-        placeholder="Ex : Prénom, Recto, Verso"
+        placeholder="Ex : Recto, Verso, Prénom"
         value="${echapperHTML(zone.nom || "")}"
       >
     </div>
 
     <div class="champ" style="margin-top:10px;">
-      <label>Type de personnalisation</label>
-      <select class="zone-personnalisation-type">
-        <option value="texte">Texte libre</option>
-        <option value="prenom">Prénom</option>
-        <option value="message">Message</option>
-        <option value="design">Choix d'un design</option>
-        <option value="photo">Photo du client</option>
-      </select>
-    </div>
-
-    <div class="champ" style="margin-top:10px;">
-      <label>Position de cette zone sur le produit</label>
+      <label>Position sur le produit</label>
       <select class="zone-personnalisation-position">
         <option value="centre">Centre</option>
         <option value="haut">En haut</option>
@@ -5461,35 +5450,46 @@ function ajouterZonePersonnalisationAdmin(zone = {}) {
         type="checkbox"
         class="zone-personnalisation-obligatoire"
       >
-      <label>Zone obligatoire</label>
+      <label>Personnalisation obligatoire</label>
     </div>
 
     <hr style="margin:14px 0;border:0;border-top:1px solid var(--bordure);">
 
-    <p><strong>Options propres à cette zone</strong></p>
+    <p><strong>Options disponibles pour cette personnalisation</strong></p>
 
     <div class="checkbox-ligne">
-      <input
-        type="checkbox"
-        class="zone-personnalisation-design"
-      >
-      <label>Permettre de choisir un design</label>
+      <input type="checkbox" class="zone-personnalisation-texte">
+      <label>Le client peut ajouter un texte libre</label>
     </div>
 
     <div class="checkbox-ligne">
-      <input
-        type="checkbox"
-        class="zone-personnalisation-police"
-      >
-      <label>Permettre de choisir une police</label>
+      <input type="checkbox" class="zone-personnalisation-prenom">
+      <label>Le client peut ajouter un prénom</label>
     </div>
 
     <div class="checkbox-ligne">
-      <input
-        type="checkbox"
-        class="zone-personnalisation-couleur"
-      >
-      <label>Permettre de choisir une couleur</label>
+      <input type="checkbox" class="zone-personnalisation-message">
+      <label>Le client peut ajouter un message</label>
+    </div>
+
+    <div class="checkbox-ligne">
+      <input type="checkbox" class="zone-personnalisation-design">
+      <label>Le client peut choisir un design</label>
+    </div>
+
+    <div class="checkbox-ligne">
+      <input type="checkbox" class="zone-personnalisation-police">
+      <label>Le client peut choisir une police</label>
+    </div>
+
+    <div class="checkbox-ligne">
+      <input type="checkbox" class="zone-personnalisation-couleur">
+      <label>Le client peut choisir une couleur</label>
+    </div>
+
+    <div class="checkbox-ligne">
+      <input type="checkbox" class="zone-personnalisation-photo">
+      <label>Le client peut envoyer sa propre photo</label>
     </div>
 
     <button
@@ -5497,14 +5497,11 @@ function ajouterZonePersonnalisationAdmin(zone = {}) {
       class="btn btn-supprimer"
       style="margin-top:10px;"
     >
-      🗑️ Supprimer cette zone
+      🗑️ Supprimer cette personnalisation
     </button>
   `;
 
   conteneur.appendChild(ligne);
-
-  ligne.querySelector(".zone-personnalisation-type").value =
-    zone.type || "texte";
 
   ligne.querySelector(".zone-personnalisation-position").value =
     zone.position || "centre";
@@ -5512,8 +5509,20 @@ function ajouterZonePersonnalisationAdmin(zone = {}) {
   ligne.querySelector(".zone-personnalisation-obligatoire").checked =
     zone.obligatoire === true;
 
+  // Compatibilité avec les anciennes zones déjà enregistrées.
+  const ancienType = zone.type || "";
+
+  ligne.querySelector(".zone-personnalisation-texte").checked =
+    zone.texteActive === true || ancienType === "texte";
+
+  ligne.querySelector(".zone-personnalisation-prenom").checked =
+    zone.prenomActive === true || ancienType === "prenom";
+
+  ligne.querySelector(".zone-personnalisation-message").checked =
+    zone.messageActive === true || ancienType === "message";
+
   ligne.querySelector(".zone-personnalisation-design").checked =
-    zone.designActive === true;
+    zone.designActive === true || ancienType === "design";
 
   ligne.querySelector(".zone-personnalisation-police").checked =
     zone.policeActive === true;
@@ -5521,11 +5530,13 @@ function ajouterZonePersonnalisationAdmin(zone = {}) {
   ligne.querySelector(".zone-personnalisation-couleur").checked =
     zone.couleurActive === true;
 
+  ligne.querySelector(".zone-personnalisation-photo").checked =
+    zone.photoActive === true || ancienType === "photo";
+
   ligne.querySelector("button").addEventListener("click", function() {
     ligne.remove();
   });
 }
-
 
 function lireZonesPersonnalisationAdmin() {
   const conteneur = document.getElementById(
@@ -5543,16 +5554,24 @@ function lireZonesPersonnalisationAdmin() {
           ".zone-personnalisation-nom"
         ).value.trim(),
 
-        type: ligne.querySelector(
-          ".zone-personnalisation-type"
-        ).value,
-
         position: ligne.querySelector(
           ".zone-personnalisation-position"
         ).value,
 
         obligatoire: ligne.querySelector(
           ".zone-personnalisation-obligatoire"
+        ).checked,
+
+        texteActive: ligne.querySelector(
+          ".zone-personnalisation-texte"
+        ).checked,
+
+        prenomActive: ligne.querySelector(
+          ".zone-personnalisation-prenom"
+        ).checked,
+
+        messageActive: ligne.querySelector(
+          ".zone-personnalisation-message"
         ).checked,
 
         designActive: ligne.querySelector(
@@ -5565,6 +5584,10 @@ function lireZonesPersonnalisationAdmin() {
 
         couleurActive: ligne.querySelector(
           ".zone-personnalisation-couleur"
+        ).checked,
+
+        photoActive: ligne.querySelector(
+          ".zone-personnalisation-photo"
         ).checked
       };
     })
