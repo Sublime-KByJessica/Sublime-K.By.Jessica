@@ -216,6 +216,19 @@ button{cursor:pointer}
   color:#766B6D;
 }
 
+  .carte-fabrication-cliquable {
+  cursor: pointer;
+  transition: transform .18s, box-shadow .18s;
+}
+
+.carte-fabrication-cliquable:hover,
+.carte-fabrication-cliquable:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 18px rgba(74,65,67,.12);
+  outline: 2px solid var(--sauge-fonce);
+  outline-offset: 2px;
+}
+  
 /* =========================
    SECTIONS MENU
 ========================= */
@@ -1989,7 +2002,8 @@ button{cursor:pointer}
 <!-- TABLEAU DE BORD DE FABRICATION -->
 <div class="suivi-commandes-dashboard suivi-fabrication-dashboard">
 
-  <div class="suivi-carte">
+  <!-- Articles à faire -->
+<div class="suivi-carte carte-fabrication-cliquable" data-fabrication-filtre="a_faire" role="button" tabindex="0">
     <div class="suivi-icone">📝</div>
     <div class="suivi-infos">
       <div class="suivi-titre">Articles à faire</div>
@@ -1997,7 +2011,8 @@ button{cursor:pointer}
     </div>
   </div>
 
-  <div class="suivi-carte">
+  <!-- Articles en cours -->
+<div class="suivi-carte carte-fabrication-cliquable" data-fabrication-filtre="en_cours" role="button" tabindex="0">
     <div class="suivi-icone">🎨</div>
     <div class="suivi-infos">
       <div class="suivi-titre">Articles en cours</div>
@@ -2005,7 +2020,8 @@ button{cursor:pointer}
     </div>
   </div>
 
-  <div class="suivi-carte">
+  <!-- Articles finis -->
+<div class="suivi-carte carte-fabrication-cliquable" data-fabrication-filtre="fini" role="button" tabindex="0">
     <div class="suivi-icone">✅</div>
     <div class="suivi-infos">
       <div class="suivi-titre">Articles finis</div>
@@ -2013,7 +2029,8 @@ button{cursor:pointer}
     </div>
   </div>
 
-  <div class="suivi-carte">
+  <!-- Articles emballés -->
+<div class="suivi-carte carte-fabrication-cliquable" data-fabrication-filtre="emballe" role="button" tabindex="0">
     <div class="suivi-icone">📦</div>
     <div class="suivi-infos">
       <div class="suivi-titre">Articles emballés</div>
@@ -4666,6 +4683,10 @@ document
 
         const section =
           bouton.dataset.section;
+
+        if (section === "commandes" && typeof reinitialiserFiltreFabrication === "function") {
+  reinitialiserFiltreFabrication();
+}
 
         document
           .querySelectorAll(".menu-bouton")
@@ -8780,6 +8801,131 @@ document.addEventListener("click", function(event) {
 }, true);
 
 /* FIN COMPTEURS DE FABRICATION */
+
+  /* FILTRER LES ARTICLES DEPUIS LE TABLEAU DE BORD */
+
+function reinitialiserFiltreFabrication() {
+  document.querySelectorAll("#listeCommandes .commande").forEach(function(commande) {
+    commande.style.display = "";
+    commande.querySelectorAll(".article-commande").forEach(function(article) {
+      article.style.display = "";
+    });
+
+    const contenu = commande.querySelector(".commande-contenu");
+    const bouton = commande.querySelector(".btn-ouvrir-commande");
+
+    if (contenu) contenu.setAttribute("hidden", "");
+    if (bouton) {
+      bouton.setAttribute("aria-expanded", "false");
+      bouton.textContent = "➕ Voir les détails de la commande";
+    }
+  });
+
+  const message = document.getElementById("messageFiltreFabrication");
+  if (message) message.remove();
+}
+
+async function ouvrirFabricationDepuisDashboard(statut) {
+  const boutonMenu = document.querySelector('.menu-bouton[data-section="commandes"]');
+
+  if (boutonMenu) {
+    document.querySelectorAll(".menu-bouton").forEach(function(item) {
+      item.classList.remove("actif");
+    });
+    boutonMenu.classList.add("actif");
+  }
+
+  document.querySelectorAll(".section-admin").forEach(function(section) {
+    section.classList.remove("active");
+  });
+
+  const sectionCommandes = document.getElementById("section-commandes");
+  if (sectionCommandes) sectionCommandes.classList.add("active");
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  const recherche = document.getElementById("rechercheCommandes");
+  const filtreStatut = document.getElementById("filtreStatutCommande");
+  const filtrePaiement = document.getElementById("filtrePaiement");
+
+  if (recherche) recherche.value = "";
+  if (filtreStatut) filtreStatut.value = "tous";
+  if (filtrePaiement) filtrePaiement.value = "tous";
+
+  await chargerCommandes();
+  reinitialiserFiltreFabrication();
+
+  let nombreArticles = 0;
+
+  document.querySelectorAll("#listeCommandes .commande").forEach(function(commande) {
+    let nombreDansCommande = 0;
+
+    commande.querySelectorAll(".article-commande").forEach(function(article) {
+      const select = article.querySelector(".statut-fabrication-article");
+      const statutArticle = select ? select.value : "a_faire";
+      const correspond = statutArticle === statut;
+
+      article.style.display = correspond ? "" : "none";
+
+      if (correspond) {
+        nombreDansCommande++;
+        nombreArticles++;
+      }
+    });
+
+    commande.style.display = nombreDansCommande > 0 ? "" : "none";
+
+    if (nombreDansCommande > 0) {
+      const contenu = commande.querySelector(".commande-contenu");
+      const bouton = commande.querySelector(".btn-ouvrir-commande");
+
+      if (contenu) contenu.removeAttribute("hidden");
+
+      if (bouton) {
+        bouton.setAttribute("aria-expanded", "true");
+        bouton.textContent = "➖ Masquer les détails de la commande";
+      }
+    }
+  });
+
+  const liste = document.getElementById("listeCommandes");
+  const message = document.createElement("p");
+
+  message.id = "messageFiltreFabrication";
+  message.style.cssText = "padding:12px;background:var(--fond);border-radius:10px;margin-top:12px;";
+
+  const libelles = {
+    a_faire: "à faire",
+    en_cours: "en cours",
+    fini: "finis",
+    emballe: "emballés"
+  };
+
+  message.textContent = nombreArticles
+    ? "🎯 " + nombreArticles + " article(s) " + libelles[statut] + " affiché(s). Les références de commande et les informations de personnalisation sont conservées."
+    : "Aucun article au statut « " + libelles[statut] + " » pour le moment.";
+
+  if (liste) liste.prepend(message);
+}
+
+document.addEventListener("click", function(event) {
+  const carte = event.target.closest(".carte-fabrication-cliquable");
+  if (!carte) return;
+
+  ouvrirFabricationDepuisDashboard(carte.dataset.fabricationFiltre);
+});
+
+document.addEventListener("keydown", function(event) {
+  if (event.key !== "Enter" && event.key !== " ") return;
+
+  const carte = event.target.closest(".carte-fabrication-cliquable");
+  if (!carte) return;
+
+  event.preventDefault();
+  ouvrirFabricationDepuisDashboard(carte.dataset.fabricationFiltre);
+});
+
+/* FIN FILTRAGE DES ARTICLES DEPUIS LE TABLEAU DE BORD */
   
 async function chargerCommandes(){
 
