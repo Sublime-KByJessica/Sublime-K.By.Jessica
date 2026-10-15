@@ -9292,6 +9292,52 @@ document
     async function(event){
 
       /*
+   * ================================
+   * STATUT DE FABRICATION DE L'ARTICLE
+   * ================================
+   */
+
+  if(
+    event.target.classList.contains(
+      "statut-fabrication-article"
+    )
+  ){
+
+    const itemId =
+      event.target.dataset.itemId;
+
+    const nouveauStatut =
+      event.target.value;
+
+    if(!(await verifierAdmin())){
+      return;
+    }
+
+    const { error } =
+      await client
+        .from("order_items")
+        .update({
+          fabrication_status: nouveauStatut
+        })
+        .eq("id", itemId);
+
+    if(error){
+
+      console.error(error);
+
+      alert(
+        "❌ Impossible d'enregistrer le statut de fabrication : " +
+        error.message
+      );
+
+      return;
+
+    }
+
+    return;
+  }
+      
+      /*
        * ================================
        * STATUT DE LA COMMANDE
        * ================================
