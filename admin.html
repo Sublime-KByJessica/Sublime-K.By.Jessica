@@ -8744,29 +8744,40 @@ async function actualiserCompteursFabrication() {
   });
 }
 
-
 /* OUVRIR ET FERMER LES DÉTAILS DES COMMANDES */
 
-document.getElementById("listeCommandes")
-  .addEventListener("click", function(event) {
+document.addEventListener("click", function(event) {
 
-    const bouton = event.target.closest(".btn-ouvrir-commande");
-    if (!bouton) return;
+  const bouton = event.target.closest(".btn-ouvrir-commande");
 
-    const carte = bouton.closest(".commande");
-    const contenu = carte?.querySelector(".commande-contenu");
+  if (!bouton) return;
 
-    if (!contenu) return;
+  const carte = bouton.closest(".commande");
 
-    const ouvrir = contenu.hidden;
-    contenu.hidden = !ouvrir;
+  if (!carte) return;
 
-    bouton.setAttribute("aria-expanded", String(ouvrir));
+  const contenu = carte.querySelector(".commande-contenu");
 
-    bouton.textContent = ouvrir
-      ? "➖ Masquer les détails de la commande"
-      : "➕ Voir les détails de la commande";
-  });
+  if (!contenu) {
+    console.error("Zone des détails de commande introuvable.");
+    return;
+  }
+
+  const ouvrir = contenu.hasAttribute("hidden");
+
+  if (ouvrir) {
+    contenu.removeAttribute("hidden");
+  } else {
+    contenu.setAttribute("hidden", "");
+  }
+
+  bouton.setAttribute("aria-expanded", String(ouvrir));
+
+  bouton.textContent = ouvrir
+    ? "➖ Masquer les détails de la commande"
+    : "➕ Voir les détails de la commande";
+
+}, true);
 
 /* FIN COMPTEURS DE FABRICATION */
   
