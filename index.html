@@ -4957,6 +4957,8 @@ if (
 
       if (error) {
   console.error("Erreur de récupération de la photo :", error);
+  nomPhoto.textContent =
+    "Erreur de chargement : " + error.message;
 } else if (data && data.signedUrl) {
   apercuPhoto.onload = function () {
     apercuPhoto.style.display = "block";
