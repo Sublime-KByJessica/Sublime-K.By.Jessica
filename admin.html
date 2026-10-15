@@ -8649,6 +8649,84 @@ async function chargerCommandes(){
 
   }
 
+  
+  /* =====================================================
+     📊 INDICATEURS DU TABLEAU DE BORD
+  ===================================================== */
+
+  const {
+    data: commandesDashboard,
+    error: erreurDashboard
+  } = await client
+    .from("orders")
+    .select("statut, payment_status");
+
+  if(erreurDashboard){
+
+    console.error(
+      "Erreur de chargement des indicateurs :",
+      erreurDashboard
+    );
+
+  }else{
+
+    const commandesActives =
+      (commandesDashboard || []).filter(
+        function(commande){
+
+          return (
+            commande.statut !== "test" &&
+            commande.statut !== "annulee"
+          );
+
+        }
+      );
+
+    const aTraiter =
+      commandesActives.filter(
+        function(commande){
+
+          const statut = commande.statut || "nouvelle";
+
+          return (
+            statut === "nouvelle" ||
+            statut === "en_preparation"
+          );
+
+        }
+      ).length;
+
+    const paiementsAttente =
+      commandesActives.filter(
+        function(commande){
+
+          return commande.payment_status === "en_attente";
+
+        }
+      ).length;
+
+    const indicateurATraiter =
+      document.getElementById("commandesATraiter");
+
+    const indicateurPaiements =
+      document.getElementById("paiementsEnAttente");
+
+    if(indicateurATraiter){
+
+      indicateurATraiter.textContent = aTraiter;
+
+    }
+
+    if(indicateurPaiements){
+
+      indicateurPaiements.textContent = paiementsAttente;
+
+    }
+
+  }
+
+  /* FIN INDICATEURS DU TABLEAU DE BORD */
+
 
   document.getElementById(
     "nombreCommandes"
