@@ -382,6 +382,85 @@ button{cursor:pointer}
   }
 }
 
+  
+/* =========================
+   SUIVI DES COMMANDES
+========================= */
+
+.suivi-commandes-dashboard{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+  margin:0 0 25px;
+}
+
+.suivi-carte{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:20px;
+  border-radius:18px;
+  border:1px solid var(--bordure);
+  background:white;
+  box-shadow:0 4px 14px rgba(74,65,67,.04);
+}
+
+.suivi-a-traiter{
+  background:#F0F4EB;
+  border-color:#D6E0CB;
+}
+
+.suivi-paiements{
+  background:#FBF0F2;
+  border-color:#EAD1D8;
+}
+
+.suivi-icone{
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:52px;
+  height:52px;
+  border-radius:15px;
+  background:rgba(255,255,255,.75);
+  font-size:26px;
+}
+
+.suivi-titre{
+  font-size:14px;
+  font-weight:bold;
+  color:var(--texte);
+}
+
+.suivi-nombre{
+  font-size:32px;
+  font-weight:800;
+  line-height:1.3;
+  color:var(--sauge-fonce);
+}
+
+.suivi-paiements .suivi-nombre{
+  color:var(--rose-fonce);
+}
+
+.suivi-description{
+  font-size:12px;
+  line-height:1.5;
+  color:#766B6D;
+}
+
+@media(max-width:650px){
+  .suivi-commandes-dashboard{
+    grid-template-columns:1fr;
+    gap:10px;
+  }
+
+  .suivi-carte{
+    padding:16px;
+  }
+}
+
 
 /* =========================
    BLOCS
@@ -1839,6 +1918,39 @@ button{cursor:pointer}
     </div>
 
   </div>
+
+  
+<!-- =====================================================
+     SUIVI DES COMMANDES
+===================================================== -->
+
+<div class="suivi-commandes-dashboard">
+
+  <div class="suivi-carte suivi-a-traiter">
+    <div class="suivi-icone">📦</div>
+    <div class="suivi-infos">
+      <div class="suivi-titre">Commandes à traiter</div>
+      <div class="suivi-nombre" id="commandesATraiter">—</div>
+      <div class="suivi-description">
+        Nouvelles et en préparation
+      </div>
+    </div>
+  </div>
+
+  <div class="suivi-carte suivi-paiements">
+    <div class="suivi-icone">💳</div>
+    <div class="suivi-infos">
+      <div class="suivi-titre">Paiements en attente</div>
+      <div class="suivi-nombre" id="paiementsEnAttente">—</div>
+      <div class="suivi-description">
+        À vérifier avant traitement
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FIN SUIVI DES COMMANDES -->
 
 
   <div class="bloc">
