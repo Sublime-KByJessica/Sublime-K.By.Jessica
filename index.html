@@ -3380,6 +3380,34 @@
 
       </div>
 
+    
+    </section>
+
+    <!-- =========================
+         ❤️ MES FAVORIS
+    ========================= -->
+
+    <section class="section" id="section-mes-favoris">
+      <div class="container">
+
+        <h2 class="section-title">
+          ❤️ Mes favoris
+        </h2>
+
+        <p class="section-intro">
+          Retrouvez ici les créations que vous avez aimées.
+        </p>
+
+        <div
+          id="mes-favoris-produits"
+          class="products-grid"
+        >
+          <p>
+            Vos favoris apparaîtront ici.
+          </p>
+        </div>
+
+      </div>
     </section>
 
     <!-- =========================
@@ -8655,6 +8683,15 @@ const image =
 
             <div class="product-actions">
 
+            <button
+            type="button"
+            class="product-button secondary bouton-favori"
+            aria-label="Ajouter aux favoris"
+            onclick='event.stopPropagation(); basculerFavori(${JSON.stringify(produit).replace(/'/g, "&#39;")})'
+          >
+            ${estFavori(produit.id) ? "❤️" : "🤍"} Favoris
+          </button>
+
               <button
                 type="button"
                 class="product-button"
@@ -10173,6 +10210,109 @@ zone.appendChild(carte);
 }
 
 /* FIN DU TRI DES PRODUITS PAR PRIX */
+
+    /* =====================================================
+❤️ GESTION DES FAVORIS SUBLIME'K
+===================================================== */
+
+function recupererFavoris() {
+try {
+const favoris = JSON.parse(
+localStorage.getItem("sublimeK_favoris") || "[]"
+);
+
+return Array.isArray(favoris) ? favoris : [];
+
+} catch (erreur) {
+return [];
+}
+}
+
+function estFavori(idProduit) {
+return recupererFavoris().some(
+produit => String(produit.id) === String(idProduit)
+);
+}
+
+function basculerFavori(produit) {
+if (!produit || produit.id === undefined || produit.id === null) {
+return;
+}
+
+let favoris = recupererFavoris();
+
+const index = favoris.findIndex(
+element => String(element.id) === String(produit.id)
+);
+
+if (index !== -1) {
+favoris.splice(index, 1);
+} else {
+favoris.push(produit);
+}
+
+try {
+localStorage.setItem(
+"sublimeK_favoris",
+JSON.stringify(favoris)
+);
+} catch (erreur) {
+alert("Impossible d'enregistrer les favoris sur cet appareil.");
+return;
+}
+
+const bouton = Array.from(
+document.querySelectorAll(".bouton-favori")
+).find(element =>
+element.getAttribute("onclick")?.includes(
+String(produit.id)
+)
+);
+
+if (bouton) {
+bouton.innerHTML = estFavori(produit.id)
+? "❤️ Favoris"
+: "🤍 Favoris";
+}
+    afficherMesFavoris();
+}
+
+/* FIN DE LA GESTION DES FAVORIS */
+
+  
+/* =====================================================
+   AFFICHER LA LISTE DES FAVORIS
+===================================================== */
+
+function afficherMesFavoris() {
+  const zone = document.getElementById("mes-favoris-produits");
+
+  if (!zone) return;
+
+  const favoris = recupererFavoris();
+
+  if (favoris.length === 0) {
+    zone.innerHTML = `
+      <p class="boutique-empty">
+        🤍 Vous n'avez pas encore de favoris.
+        Cliquez sur le cœur d'un produit pour l'ajouter ici.
+      </p>
+    `;
+    return;
+  }
+
+  zone.innerHTML = "";
+
+  favoris.forEach(function(produit) {
+    const carte = document.createElement("div");
+
+    carte.innerHTML = creerCarteProduit(produit);
+    zone.appendChild(carte.firstElementChild);
+  });
+}
+
+/* FIN DE L'AFFICHAGE DES FAVORIS */
+
     
     /* =====================================================
        CHARGER LA BOUTIQUE
@@ -13644,6 +13784,12 @@ personnalisation_zones:
   </div>
 
 </div>
+
+  <script>
+  if (typeof afficherMesFavoris === "function") {
+    afficherMesFavoris();
+  }
+</script>
   
 </body>
 
