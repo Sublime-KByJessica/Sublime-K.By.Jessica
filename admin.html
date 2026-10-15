@@ -2944,6 +2944,50 @@ button{cursor:pointer}
 
     </div>
 
+    
+<!-- =====================================================
+     🔎 RECHERCHE ET FILTRE DES COMMANDES
+===================================================== -->
+
+<div style="
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:12px;
+  margin-bottom:20px;
+">
+
+  <div class="champ">
+    <label for="rechercheCommandes">
+      🔎 Rechercher une commande
+    </label>
+
+    <input
+      type="search"
+      id="rechercheCommandes"
+      placeholder="N° commande, nom, prénom, e-mail..."
+    >
+  </div>
+
+  <div class="champ">
+    <label for="filtreStatutCommande">
+      📦 Statut de la commande
+    </label>
+
+    <select id="filtreStatutCommande">
+      <option value="tous">Tous les statuts</option>
+      <option value="nouvelle">🆕 Nouvelle</option>
+      <option value="en_preparation">🔨 En préparation</option>
+      <option value="expediee">🚚 Expédiée</option>
+      <option value="livree">📬 Livrée</option>
+      <option value="annulee">❌ Annulée</option>
+      <option value="test">🧪 Test</option>
+    </select>
+  </div>
+
+</div>
+
+<!-- FIN RECHERCHE ET FILTRE DES COMMANDES -->
+
 
     <div id="listeCommandes">
       <p>
@@ -8410,7 +8454,7 @@ async function chargerCommandes(){
     await afficherCommande(commande);
 
   }
-
+appliquerFiltresCommandes();
 }
 
 
@@ -8835,6 +8879,80 @@ document
     "change",
     chargerCommandes
   );
+
+  
+/* =====================================================
+   🔎 RECHERCHE ET FILTRE DES COMMANDES
+===================================================== */
+
+function appliquerFiltresCommandes() {
+
+  const champRecherche =
+    document.getElementById("rechercheCommandes");
+
+  const filtreStatut =
+    document.getElementById("filtreStatutCommande");
+
+  const recherche =
+    (champRecherche?.value || "")
+      .trim()
+      .toLocaleLowerCase("fr");
+
+  const statutChoisi =
+    filtreStatut?.value || "tous";
+
+  const commandes =
+    document.querySelectorAll("#listeCommandes .commande");
+
+  commandes.forEach(function(commande) {
+
+    const texteCommande =
+      commande.textContent.toLocaleLowerCase("fr");
+
+    const selectStatut =
+      commande.querySelector(".statut-commande-select");
+
+    const statutActuel =
+      selectStatut?.value || "nouvelle";
+
+    const correspondRecherche =
+      !recherche || texteCommande.includes(recherche);
+
+    const correspondStatut =
+      statutChoisi === "tous" ||
+      statutActuel === statutChoisi;
+
+    commande.style.display =
+      correspondRecherche && correspondStatut
+        ? ""
+        : "none";
+
+  });
+
+}
+
+
+/* Recherche en temps réel */
+
+document
+  .getElementById("rechercheCommandes")
+  ?.addEventListener(
+    "input",
+    appliquerFiltresCommandes
+  );
+
+
+/* Filtre par statut */
+
+document
+  .getElementById("filtreStatutCommande")
+  ?.addEventListener(
+    "change",
+    appliquerFiltresCommandes
+  );
+
+/* FIN RECHERCHE ET FILTRE DES COMMANDES */
+
 
 document
   .getElementById(
