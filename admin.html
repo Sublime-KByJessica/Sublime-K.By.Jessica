@@ -5267,6 +5267,54 @@ function ajouterZonePersonnalisationAdmin(zone = {}) {
       <label>Message</label>
     </div>
 
+    <div class="form-grid" style="margin-top:10px;">
+
+  <div class="champ">
+    <label>Prénom — minimum de caractères</label>
+    <input
+      type="number"
+      class="zone-prenom-min"
+      min="0"
+      max="150"
+      value="0"
+    >
+  </div>
+
+  <div class="champ">
+    <label>Prénom — maximum de caractères</label>
+    <input
+      type="number"
+      class="zone-prenom-max"
+      min="0"
+      max="150"
+      value="30"
+    >
+  </div>
+
+  <div class="champ">
+    <label>Message — minimum de caractères</label>
+    <input
+      type="number"
+      class="zone-message-min"
+      min="0"
+      max="500"
+      value="0"
+    >
+  </div>
+
+  <div class="champ">
+    <label>Message — maximum de caractères</label>
+    <input
+      type="number"
+      class="zone-message-max"
+      min="0"
+      max="500"
+      value="100"
+    >
+  </div>
+
+</div>
+
     <div class="checkbox-ligne">
       <input type="checkbox" class="zone-personnalisation-design">
       <label>Choix d'un design</label>
@@ -5325,6 +5373,18 @@ function ajouterZonePersonnalisationAdmin(zone = {}) {
   ligne.querySelector(".zone-personnalisation-photo").checked =
     zone.photoActive === true;
 
+  ligne.querySelector(".zone-prenom-min").value =
+  Number(zone.prenomMinCaracteres ?? 0);
+
+ligne.querySelector(".zone-prenom-max").value =
+  Number(zone.prenomMaxCaracteres ?? 30);
+
+ligne.querySelector(".zone-message-min").value =
+  Number(zone.messageMinCaracteres ?? 0);
+
+ligne.querySelector(".zone-message-max").value =
+  Number(zone.messageMaxCaracteres ?? 100);
+
   ligne.querySelector("button").addEventListener("click", function() {
   const conteneur = document.getElementById("personnalisationZonesAdmin");
 
@@ -5372,6 +5432,22 @@ function lireZonesPersonnalisationAdmin() {
         messageActive: ligne.querySelector(
           ".zone-personnalisation-message"
         ).checked,
+
+        prenomMinCaracteres: Number(
+  ligne.querySelector(".zone-prenom-min").value
+),
+
+prenomMaxCaracteres: Number(
+  ligne.querySelector(".zone-prenom-max").value
+),
+
+messageMinCaracteres: Number(
+  ligne.querySelector(".zone-message-min").value
+),
+
+messageMaxCaracteres: Number(
+  ligne.querySelector(".zone-message-max").value
+),
 
         designActive: ligne.querySelector(
           ".zone-personnalisation-design"
