@@ -9212,15 +9212,57 @@ async function afficherCommande(commande){
 
   let zonesHTML = "";
 
+  
   zones.forEach(zone => {
     if (!zone) return;
 
-    if (zone.nom && zone.valeur) {
+    if (
+      zone.nom ||
+      zone.valeur ||
+      zone.texte ||
+      zone.prenom ||
+      zone.message ||
+      zone.policeNom ||
+      zone.couleurNom
+    ) {
       zonesHTML += `
-        <p>
-          ✏️ ${echapperHTML(zone.nom)} :
-          ${echapperHTML(zone.valeur)}
-        </p>
+        <div style="margin-top:10px; padding:10px; background:#FAF7F5; border-radius:10px;">
+          ${
+            zone.nom
+              ? `<p><strong>📍 Zone : ${echapperHTML(zone.nom)}</strong></p>`
+              : ""
+          }
+
+          ${
+            zone.texte || zone.valeur
+              ? `<p>✏️ Texte : ${echapperHTML(zone.texte || zone.valeur)}</p>`
+              : ""
+          }
+
+          ${
+            zone.prenom
+              ? `<p>👤 Prénom : ${echapperHTML(zone.prenom)}</p>`
+              : ""
+          }
+
+          ${
+            zone.message
+              ? `<p>💬 Message : ${echapperHTML(zone.message)}</p>`
+              : ""
+          }
+
+          ${
+            zone.policeNom
+              ? `<p>🔤 Police : ${echapperHTML(zone.policeNom)}</p>`
+              : ""
+          }
+
+          ${
+            zone.couleurNom
+              ? `<p>🎨 Couleur : ${echapperHTML(zone.couleurNom)}</p>`
+              : ""
+          }
+        </div>
       `;
     }
   });
