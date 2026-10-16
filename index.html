@@ -4943,11 +4943,31 @@ champ.dataset.minimumCaracteres = String(champ.minLength);
 champ.dataset.maximumCaracteres = String(champ.maxLength);
 
 
-  champ.placeholder = placeholder;
-  champ.style.width = "100%";
-  champ.style.boxSizing = "border-box";
-  champ.style.padding = "10px";
-  champ.style.marginTop = "6px";
+  
+champ.placeholder = placeholder;
+champ.style.width = "100%";
+champ.style.boxSizing = "border-box";
+champ.style.padding = "12px 14px";
+champ.style.marginTop = "8px";
+champ.style.border = "1px solid #D8B6BC";
+champ.style.borderRadius = "12px";
+champ.style.backgroundColor = "#FFFCFB";
+champ.style.color = "#4A4143";
+champ.style.fontFamily = "inherit";
+champ.style.fontSize = "15px";
+champ.style.lineHeight = "1.5";
+champ.style.outline = "none";
+champ.style.transition = "border-color 0.2s, box-shadow 0.2s";
+
+champ.addEventListener("focus", function () {
+  champ.style.borderColor = "#8F5967";
+  champ.style.boxShadow = "0 0 0 3px rgba(143, 89, 103, 0.12)";
+});
+
+champ.addEventListener("blur", function () {
+  champ.style.borderColor = "#D8B6BC";
+  champ.style.boxShadow = "none";
+});
 
   const ancienneValeur =
     typeChamp === "texte"
