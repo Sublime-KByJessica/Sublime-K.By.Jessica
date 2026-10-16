@@ -4989,10 +4989,7 @@ if (messageActif) {
 }
 
 // PHOTO PERSONNELLE DU CLIENT DANS LA MÊME ZONE
-if (
-  personnalisationProduitActuel &&
-  personnalisationProduitActuel.photo_client_active === true
-) {
+if (zone.photoActive === true) {
   const labelPhoto = document.createElement("label");
   labelPhoto.textContent = "📸 Ajouter une photo personnelle";
   labelPhoto.style.display = "block";
@@ -5214,61 +5211,22 @@ articleAModifier.personnalisation
 : []
 );
 
-  const etapePrenom =
-  document.getElementById(
-    "etapePersonnalisationPrenom"
-  );
+    // Masquer les anciens champs généraux.
+  // Les personnalisations sont désormais gérées
+  // individuellement dans chaque zone du produit.
 
-if (etapePrenom) {
-
-  etapePrenom.style.display =
-    produit.prenom_active === true
-      ? ""
-      : "none";
-
-}
-
-  const etapePolice =
-  document.getElementById(
-    "etapePersonnalisationPolice"
-  );
-
-if (etapePolice) {
-
-  etapePolice.style.display =
-    produit.police_active === true
-      ? ""
-      : "none";
-
-}
-
-  const etapeCouleur =
-  document.getElementById(
-    "etapePersonnalisationCouleur"
-  );
-
-if (etapeCouleur) {
-
-  etapeCouleur.style.display =
-    produit.couleur_active === true
-      ? ""
-      : "none";
-
-}
-
-  const etapeDesign =
-  document.getElementById(
+  [
+    "etapePersonnalisationPrenom",
+    "etapePersonnalisationPolice",
+    "etapePersonnalisationCouleur",
     "etapePersonnalisationDesign"
-  );
+  ].forEach(function(id) {
+    const element = document.getElementById(id);
 
-if (etapeDesign) {
-
-  etapeDesign.style.display =
-    produit.choix_image_active === true
-      ? ""
-      : "none";
-
-}
+    if (element) {
+      element.style.display = "none";
+    }
+  });
   
    /* ---------------------------------------------
      CHOIX DE DÉPART
@@ -5473,9 +5431,6 @@ initialiserChoixBibliothequePersonnalisation();
   await chargerPolicesPublic();
 
   await chargerCouleursPublic();
-
-  initialiserChampPrenomPersonnalisation();
-
 
   /* ---------------------------------------------
      SI MODIFICATION :
@@ -7022,33 +6977,6 @@ const positionsUtilisees = {};
 }
 
 /* =====================================================
-   ENREGISTRER LE PRÉNOM EN DIRECT
-===================================================== */
-
-function initialiserChampPrenomPersonnalisation() {
-
-  const champPrenom =
-    document.getElementById(
-      "personnalisationPrenom"
-    );
-
-  if (!champPrenom) {
-    return;
-  }
-
-  champPrenom.oninput =
-    function() {
-
-      personnalisationChoix.prenom =
-        this.value.trim();
-
-      mettreAJourApercuPersonnalisation();
-
-    };
-
-}
-
-/* =====================================================
    BOUTON CONTINUER
 ===================================================== */
 
@@ -7062,20 +6990,6 @@ function validerPersonnalisation() {
     return;
   }
 
-
-  const champPrenom =
-    document.getElementById(
-      "personnalisationPrenom"
-    );
-
-
-  personnalisationChoix.prenom =
-    champPrenom
-      ? champPrenom.value.trim()
-      : "";
-
-  
-  
   // Récupérer les réponses complètes de chaque zone
   const zonesSaisies = Object.values(
     personnalisationZonesChoix || {}
@@ -7157,51 +7071,8 @@ function validerPersonnalisation() {
     if (article) {
 
       article.personnalisation = {
-
-        categorieId:
-          personnalisationChoix.categorieId,
-
-        sousCategorieId:
-          personnalisationChoix.sousCategorieId,
-
-        designId:
-          personnalisationChoix.designId,
-
-        designNom:
-          personnalisationChoix.designNom,
-
-        designImage:
-          personnalisationChoix.designImage,
-
-        zones: zonesSaisies,
-        
-        prenom:
-          personnalisationChoix.prenom,
-
-        police:
-          personnalisationChoix.police,
-
-        policeNom:
-          personnalisationChoix.policeNom ||
-          personnalisationChoix.police,
-
-        couleur:
-          personnalisationChoix.couleur,
-
-        couleurNom:
-          personnalisationChoix.couleurNom ||
-          "",
-
-        couleurType:
-          personnalisationChoix.couleurType ||
-          "solid",
-
-        couleurGradient:
-          personnalisationChoix.couleurGradient ||
-          ""
-
-      };
-
+  zones: zonesSaisies
+};
 
       /*
        * Si un design est choisi,
@@ -7374,52 +7245,9 @@ const prix =
     quantite:
       1,
 
-    personnalisation: {
-
-      categorieId:
-        personnalisationChoix.categorieId,
-
-      sousCategorieId:
-        personnalisationChoix.sousCategorieId,
-
-      designId:
-        personnalisationChoix.designId,
-
-      designNom:
-        personnalisationChoix.designNom,
-
-      designImage:
-        personnalisationChoix.designImage,
-
-      zones: zonesSaisies,
-
-      prenom:
-        personnalisationChoix.prenom,
-
-      police:
-        personnalisationChoix.police,
-
-      policeNom:
-        personnalisationChoix.policeNom ||
-        personnalisationChoix.police,
-
-      couleur:
-        personnalisationChoix.couleur,
-
-      couleurNom:
-        personnalisationChoix.couleurNom ||
-        "",
-
-      couleurType:
-        personnalisationChoix.couleurType ||
-        "solid",
-
-      couleurGradient:
-        personnalisationChoix.couleurGradient ||
-        ""
-
+        personnalisation: {
+      zones: zonesSaisies
     }
-
   });
 
 
