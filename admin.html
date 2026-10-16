@@ -5326,8 +5326,15 @@ function ajouterZonePersonnalisationAdmin(zone = {}) {
     zone.photoActive === true;
 
   ligne.querySelector("button").addEventListener("click", function() {
-    ligne.remove();
-  });
+  const conteneur = document.getElementById("personnalisationZonesAdmin");
+
+  if (conteneur && conteneur.firstElementChild === ligne) {
+    alert("La personnalisation principale ne peut pas être supprimée.");
+    return;
+  }
+
+  ligne.remove();
+});
 }
 
 function lireZonesPersonnalisationAdmin() {
@@ -5388,6 +5395,7 @@ function lireZonesPersonnalisationAdmin() {
     });
 }
 
+
 function afficherZonesPersonnalisationAdmin(zones = []) {
   const conteneur = document.getElementById(
     "personnalisationZonesAdmin"
@@ -5397,12 +5405,34 @@ function afficherZonesPersonnalisationAdmin(zones = []) {
 
   conteneur.innerHTML = "";
 
-  if (!Array.isArray(zones)) return;
+  const zonesExistantes = Array.isArray(zones)
+    ? zones.filter(zone => zone && zone.nom)
+    : [];
 
-  zones.forEach(function(zone) {
+  // Toujours créer une zone principale si aucune zone n'existe.
+  if (zonesExistantes.length === 0) {
+    ajouterZonePersonnalisationAdmin({
+      nom: "Personnalisation principale",
+      position: "centre",
+      obligatoire: false,
+      texteActive: true,
+      prenomActive: true,
+      messageActive: true,
+      designActive: true,
+      policeActive: true,
+      couleurActive: true,
+      photoActive: true
+    });
+
+    return;
+  }
+
+  // Conserver les zones déjà enregistrées.
+  zonesExistantes.forEach(function(zone) {
     ajouterZonePersonnalisationAdmin(zone);
   });
 }
+
   
 document
   .getElementById("formProduit")
