@@ -2481,232 +2481,19 @@ button{cursor:pointer}
 
       <div class="personnalisation-admin">
 
-  <h3>
-    ✨ Personnalisation du produit
-  </h3>
-
-  <p class="personnalisation-aide">
-    Active uniquement les options nécessaires à ce produit.
-  </p>
-
-
-  <div class="checkbox-ligne">
-
-    <input
-      type="checkbox"
-      id="personnalisation_active"
-    >
-
-    <label for="personnalisation_active">
-      ✨ Produit personnalisable
-    </label>
-
-  </div>
-
-
-  <div class="checkbox-ligne">
-
-    <input
-      type="checkbox"
-      id="choix_image_active"
-    >
-
-    <label for="choix_image_active">
-      🎨 Le client peut choisir un design
-    </label>
-
-  </div>
-
-
-  <div class="checkbox-ligne">
-
-    <input
-      type="checkbox"
-      id="prenom_active"
-    >
-
-    <label for="prenom_active">
-      ✏️ Le client peut ajouter un prénom
-    </label>
-
-  </div>
-
-
-  <div class="checkbox-ligne">
-
-    <input
-      type="checkbox"
-      id="police_active"
-    >
-
-    <label for="police_active">
-      🔤 Le client peut choisir la police
-    </label>
-
-  </div>
-
-
-  <div class="checkbox-ligne">
-
-    <input
-      type="checkbox"
-      id="couleur_active"
-    >
-
-    <label for="couleur_active">
-      🌈 Le client peut choisir la couleur
-    </label>
-
-  </div>
-
-
-  <div class="checkbox-ligne">
-
-    <input
-      type="checkbox"
-      id="message_active"
-    >
-
-    <label for="message_active">
-      💬 Le client peut ajouter un message
-    </label>
-
-  </div>
-
-
-  <div class="checkbox-ligne">
-
-    <input
-      type="checkbox"
-      id="photo_client_active"
-    >
-
-    <label for="photo_client_active">
-      📸 Le client peut envoyer sa propre photo
-    </label>
-
-  </div>
-
-
-  <hr style="margin:20px 0;border:0;border-top:1px solid var(--bordure);">
-
-
-  <h3>
-    🔤 Limites du prénom
-  </h3>
-
-  <div class="form-grid">
-
-    <div class="champ">
-
-      <label for="prenom_min_caracteres">
-        Minimum de caractères
-      </label>
-
-      <input
-        type="number"
-        id="prenom_min_caracteres"
-        min="0"
-        max="100"
-        value="1"
-      >
-
-    </div>
-
-
-    <div class="champ">
-
-      <label for="prenom_max_caracteres">
-        Maximum de caractères
-      </label>
-
-      <input
-        type="number"
-        id="prenom_max_caracteres"
-        min="1"
-        max="100"
-        value="20"
-      >
-
-    </div>
-
-  </div>
-
-
-  <hr style="margin:20px 0;border:0;border-top:1px solid var(--bordure);">
-
-
-  <h3>
-    💬 Limites du message
-  </h3>
-
-  <div class="form-grid">
-
-    <div class="champ">
-
-      <label for="message_min_caracteres">
-        Minimum de caractères
-      </label>
-
-      <input
-        type="number"
-        id="message_min_caracteres"
-        min="0"
-        max="500"
-        value="1"
-      >
-
-    </div>
-
-
-    <div class="champ">
-
-      <label for="message_max_caracteres">
-        Maximum de caractères
-      </label>
-
-      <input
-        type="number"
-        id="message_max_caracteres"
-        min="1"
-        max="500"
-        value="100"
-      >
-
-    </div>
-
-  </div>
-
-
-  <hr style="margin:20px 0;border:0;border-top:1px solid var(--bordure);">
-
-        <hr style="margin:20px 0;border:0;border-top:1px solid var(--bordure);">
-
-  <!-- =====================================================
-       ZONES DE PERSONNALISATION MULTIPLES
-  ===================================================== -->
-
-  <h3>🧩 Zones de personnalisation supplémentaires</h3>
-
-  <p class="personnalisation-aide">
-  La personnalisation principale configurée plus haut reste active.
-  Ajoute ici les zones complémentaires du produit : recto, verso,
-  cercle 1, cercle 2, etc. Tu n'as pas besoin de désactiver la
-  personnalisation principale pour utiliser plusieurs zones.
-</p>
-
-  <div id="personnalisationZonesAdmin"></div>
-
-  <button
-    type="button"
-    class="btn btn-modifier"
-    id="boutonAjouterZonePersonnalisation"
-    onclick="ajouterZonePersonnalisationAdmin()"
-  >
-    ➕ Ajouter une zone
-  </button>
-
-  <!-- FIN ZONES DE PERSONNALISATION MULTIPLES -->
+  <h3>✨ Personnalisations du produit</h3>  <p class="personnalisation-aide">
+    Crée une personnalisation indépendante pour chaque partie du produit. Chaque personnalisation possède ses propres options.
+  </p>  <div id="personnalisationZonesAdmin"></div><button
+type="button"
+class="btn btn-modifier"
+id="boutonAjouterZonePersonnalisation"
+onclick="ajouterZonePersonnalisationAdmin()"
+
+«»
+
+➕ Ajouter une personnalisation
+
+  </button>  <!-- FIN PERSONNALISATIONS AUTONOMES -->
 
   <h3>
     👀 Aperçu / Mockup
@@ -5420,7 +5207,7 @@ function ajouterZonePersonnalisationAdmin(zone = {}) {
 
   ligne.innerHTML = `
     <div class="champ">
-      <label>Nom de cette personnalisation</label>
+      <label>Nom de la personnalisation</label>
       <input
         type="text"
         class="zone-personnalisation-nom"
@@ -5455,41 +5242,41 @@ function ajouterZonePersonnalisationAdmin(zone = {}) {
 
     <hr style="margin:14px 0;border:0;border-top:1px solid var(--bordure);">
 
-    <p><strong>Options disponibles pour cette personnalisation</strong></p>
+    <p><strong>Options propres à cette personnalisation</strong></p>
 
     <div class="checkbox-ligne">
       <input type="checkbox" class="zone-personnalisation-texte">
-      <label>Le client peut ajouter un texte libre</label>
+      <label>Texte libre</label>
     </div>
 
     <div class="checkbox-ligne">
       <input type="checkbox" class="zone-personnalisation-prenom">
-      <label>Le client peut ajouter un prénom</label>
+      <label>Prénom</label>
     </div>
 
     <div class="checkbox-ligne">
       <input type="checkbox" class="zone-personnalisation-message">
-      <label>Le client peut ajouter un message</label>
+      <label>Message</label>
     </div>
 
     <div class="checkbox-ligne">
       <input type="checkbox" class="zone-personnalisation-design">
-      <label>Le client peut choisir un design</label>
+      <label>Choix d'un design</label>
     </div>
 
     <div class="checkbox-ligne">
       <input type="checkbox" class="zone-personnalisation-police">
-      <label>Le client peut choisir une police</label>
+      <label>Choix d'une police</label>
     </div>
 
     <div class="checkbox-ligne">
       <input type="checkbox" class="zone-personnalisation-couleur">
-      <label>Le client peut choisir une couleur</label>
+      <label>Choix d'une couleur</label>
     </div>
 
     <div class="checkbox-ligne">
       <input type="checkbox" class="zone-personnalisation-photo">
-      <label>Le client peut envoyer sa propre photo</label>
+      <label>Envoi d'une photo personnelle</label>
     </div>
 
     <button
@@ -5509,20 +5296,17 @@ function ajouterZonePersonnalisationAdmin(zone = {}) {
   ligne.querySelector(".zone-personnalisation-obligatoire").checked =
     zone.obligatoire === true;
 
-  // Compatibilité avec les anciennes zones déjà enregistrées.
-  const ancienType = zone.type || "";
-
   ligne.querySelector(".zone-personnalisation-texte").checked =
-    zone.texteActive === true || ancienType === "texte";
+    zone.texteActive === true;
 
   ligne.querySelector(".zone-personnalisation-prenom").checked =
-    zone.prenomActive === true || ancienType === "prenom";
+    zone.prenomActive === true;
 
   ligne.querySelector(".zone-personnalisation-message").checked =
-    zone.messageActive === true || ancienType === "message";
+    zone.messageActive === true;
 
   ligne.querySelector(".zone-personnalisation-design").checked =
-    zone.designActive === true || ancienType === "design";
+    zone.designActive === true;
 
   ligne.querySelector(".zone-personnalisation-police").checked =
     zone.policeActive === true;
@@ -5531,7 +5315,7 @@ function ajouterZonePersonnalisationAdmin(zone = {}) {
     zone.couleurActive === true;
 
   ligne.querySelector(".zone-personnalisation-photo").checked =
-    zone.photoActive === true || ancienType === "photo";
+    zone.photoActive === true;
 
   ligne.querySelector("button").addEventListener("click", function() {
     ligne.remove();
@@ -5605,11 +5389,13 @@ function afficherZonesPersonnalisationAdmin(zones = []) {
 
   conteneur.innerHTML = "";
 
-  (Array.isArray(zones) ? zones : []).forEach(function(zone) {
+  if (!Array.isArray(zones)) return;
+
+  zones.forEach(function(zone) {
     ajouterZonePersonnalisationAdmin(zone);
   });
 }
-
+  
 document
   .getElementById("formProduit")
   .addEventListener(
@@ -5715,83 +5501,24 @@ document
         delai_precommande_max:
           delaiMax,
 
-        personnalisation_active:
-          document.getElementById(
-            "personnalisation_active"
-          ).checked,
+personnalisation_active:
+          lireZonesPersonnalisationAdmin().length > 0,
 
-  personnalisation_zones: lireZonesPersonnalisationAdmin(),
+        personnalisation_zones:
+          lireZonesPersonnalisationAdmin(),
 
-        choix_image_active:
-          document.getElementById(
-            "choix_image_active"
-          ).checked,
+        choix_image_active: false,
+        photo_client_active: false,
+        prenom_active: false,
+        message_active: false,
+        police_active: false,
+        couleur_active: false,
 
-        photo_client_active:
-          document.getElementById(
-            "photo_client_active"
-          ).checked,
-
-        prenom_active:
-          document.getElementById(
-            "prenom_active"
-          ).checked,
-
-        message_active:
-  document.getElementById(
-    "message_active"
-  ).checked,
-
-police_active:
-  document.getElementById(
-    "police_active"
-  ).checked,
-
-couleur_active:
-  document.getElementById(
-    "couleur_active"
-  ).checked,
-
-prenom_min_caracteres:
-  Math.max(
-    0,
-    parseInt(
-      document.getElementById(
-        "prenom_min_caracteres"
-      ).value
-    ) || 0
-  ),
-
-prenom_max_caracteres:
-  Math.max(
-    1,
-    parseInt(
-      document.getElementById(
-        "prenom_max_caracteres"
-      ).value
-    ) || 20
-  ),
-
-message_min_caracteres:
-  Math.max(
-    0,
-    parseInt(
-      document.getElementById(
-        "message_min_caracteres"
-      ).value
-    ) || 0
-  ),
-
-message_max_caracteres:
-  Math.max(
-    1,
-    parseInt(
-      document.getElementById(
-        "message_max_caracteres"
-      ).value
-    ) || 100
-  ),
-
+        prenom_min_caracteres: 0,
+        prenom_max_caracteres: 20,
+        message_min_caracteres: 0,
+        message_max_caracteres: 100,
+        
 mockup_active:
   document.getElementById(
     "mockup_active"
@@ -7266,64 +6993,11 @@ Array.from(
   document.getElementById("delaiMax").value=
     Number(data.delai_precommande_max||5);
 
-  document.getElementById("personnalisation_active").checked=
-    data.personnalisation_active===true;
-
-  document.getElementById("choix_image_active").checked=
-    data.choix_image_active===true;
-
-  document.getElementById("photo_client_active").checked=
-    data.photo_client_active===true;
-
-  document.getElementById("prenom_active").checked=
-    data.prenom_active===true;
-
-  document.getElementById("message_active").checked=
-    data.message_active===true;
-
-  document.getElementById(
-  "police_active"
-).checked =
-  data.police_active === true;
-
-
-document.getElementById(
-  "couleur_active"
-).checked =
-  data.couleur_active === true;
-
-
-document.getElementById(
-  "prenom_min_caracteres"
-).value =
-  Number(
-    data.prenom_min_caracteres ?? 1
+  afficherZonesPersonnalisationAdmin(
+    Array.isArray(data.personnalisation_zones)
+      ? data.personnalisation_zones
+      : []
   );
-
-
-document.getElementById(
-  "prenom_max_caracteres"
-).value =
-  Number(
-    data.prenom_max_caracteres ?? 20
-  );
-
-
-document.getElementById(
-  "message_min_caracteres"
-).value =
-  Number(
-    data.message_min_caracteres ?? 1
-  );
-
-
-document.getElementById(
-  "message_max_caracteres"
-).value =
-  Number(
-    data.message_max_caracteres ?? 100
-  );
-
 
 document.getElementById(
   "mockup_active"
@@ -7498,60 +7172,7 @@ function reinitialiserFormulaire(){
 
   document.getElementById("delaiMax").value=5;
 
-  document.getElementById(
-  "personnalisation_active"
-).checked = false;
-
-
-document.getElementById(
-  "choix_image_active"
-).checked = false;
-
-
-document.getElementById(
-  "photo_client_active"
-).checked = false;
-
-
-document.getElementById(
-  "prenom_active"
-).checked = false;
-
-
-document.getElementById(
-  "message_active"
-).checked = false;
-
-
-document.getElementById(
-  "police_active"
-).checked = false;
-
-
-document.getElementById(
-  "couleur_active"
-).checked = false;
-
-
-document.getElementById(
-  "prenom_min_caracteres"
-).value = 1;
-
-
-document.getElementById(
-  "prenom_max_caracteres"
-).value = 20;
-
-
-document.getElementById(
-  "message_min_caracteres"
-).value = 1;
-
-
-document.getElementById(
-  "message_max_caracteres"
-).value = 100;
-
+  afficherZonesPersonnalisationAdmin([]);
 
 document.getElementById(
   "mockup_active"
