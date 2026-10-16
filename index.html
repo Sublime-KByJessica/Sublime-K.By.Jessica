@@ -4843,6 +4843,12 @@ etat.couleurGradient = couleurInitiale?.code_gradient || ancienneValeur?.couleur
       nom: zone.nom,
       type: zone.type || "texte",
       position: zone.position || ancienneValeur.position || "centre",
+      texte: ancienneValeur.texte ||
+      (zone.type === "texte" ? ancienneValeur.valeur : "") || "",
+      prenom: ancienneValeur.prenom ||
+       (zone.type === "prenom" ? ancienneValeur.valeur : "") || "",
+      message: ancienneValeur.message ||
+      (zone.type === "message" ? ancienneValeur.valeur : "") || "",
       valeur: ancienneValeur.valeur || "",
       customerImagePath: ancienneValeur.customerImagePath || "",
       customerImageName: ancienneValeur.customerImageName || "",
@@ -4875,36 +4881,112 @@ etat.couleurGradient = couleurInitiale?.code_gradient || ancienneValeur?.couleur
       zone.nom + (zone.obligatoire ? " *" : "");
     ligne.appendChild(titreZone);
 
-    const champ = document.createElement(
-      zone.type === "message" ? "textarea" : "input"
-    );
+    // DÉTECTER LES CHAMPS TEXTE ACTIVÉS
+const configurationTexteModerne =
+  typeof zone.texteActive === "boolean" ||
+  typeof zone.prenomActive === "boolean" ||
+  typeof zone.messageActive === "boolean";
 
-    if (champ.tagName === "TEXTAREA") {
-      champ.rows = 3;
-      champ.maxLength = 500;
-      champ.placeholder = "Écris ton message ici…";
+// Compatibilité avec les anciennes zones
+const texteActif = configurationTexteModerne
+  ? zone.texteActive === true
+  : zone.type === "texte";
+
+const prenomActif = configurationTexteModerne
+  ? zone.prenomActive === true
+  : zone.type === "prenom";
+
+const messageActif = configurationTexteModerne
+  ? zone.messageActive === true
+  : zone.type === "message";
+
+// Créer chaque champ indépendamment
+function ajouterChampTexte(typeChamp, libelle, placeholder) {
+  const label = document.createElement("label");
+  label.textContent = libelle;
+  label.style.display = "block";
+  label.style.marginTop = "12px";
+  label.style.fontWeight = "600";
+
+  const champ = document.createElement(
+    typeChamp === "message" ? "textarea" : "input"
+  );
+
+  if (typeChamp === "message") {
+    champ.rows = 3;
+    champ.maxLength = 500;
+  } else {
+    champ.type = "text";
+    champ.maxLength = 150;
+  }
+
+  champ.placeholder = placeholder;
+  champ.style.width = "100%";
+  champ.style.boxSizing = "border-box";
+  champ.style.padding = "10px";
+  champ.style.marginTop = "6px";
+
+  const ancienneValeur =
+    typeChamp === "texte"
+      ? etat.texte || (zone.type === "texte" ? etat.valeur : "")
+      : typeChamp === "prenom"
+        ? etat.prenom || (zone.type === "prenom" ? etat.valeur : "")
+        : etat.message || (zone.type === "message" ? etat.valeur : "");
+
+  champ.value = ancienneValeur;
+
+  champ.dataset.zoneIndex = String(index);
+  champ.dataset.zoneNom = zone.nom;
+  champ.dataset.zoneType = typeChamp;
+  champ.dataset.zoneObligatoire =
+    zone.obligatoire ? "true" : "false";
+
+  champ.addEventListener("input", function () {
+    if (typeChamp === "texte") {
+      etat.texte = champ.value.trim();
+    } else if (typeChamp === "prenom") {
+      etat.prenom = champ.value.trim();
     } else {
-      champ.type = "text";
-      champ.maxLength = 150;
-      champ.placeholder =
-        zone.type === "prenom"
-          ? "Saisis le prénom…"
-          : "Saisis ta personnalisation…";
+      etat.message = champ.value.trim();
     }
 
-    champ.value = etat.valeur;
-    champ.dataset.zoneIndex = String(index);
-    champ.dataset.zoneNom = zone.nom;
-    champ.dataset.zoneType = zone.type || "texte";
-    champ.dataset.zoneObligatoire =
-      zone.obligatoire ? "true" : "false";
+    // Conserver une valeur commune pour la validation existante
+    etat.valeur = [
+      etat.texte,
+      etat.prenom,
+      etat.message
+    ].filter(Boolean).join(" / ");
 
-    champ.addEventListener("input", function () {
-  etat.valeur = champ.value.trim();
-  mettreAJourApercuPersonnalisation();
-});
+    mettreAJourApercuPersonnalisation();
+  });
 
-    ligne.appendChild(champ);
+  ligne.appendChild(label);
+  ligne.appendChild(champ);
+}
+
+if (texteActif) {
+  ajouterChampTexte(
+    "texte",
+    "✏️ Texte personnalisé",
+    "Saisis ton texte…"
+  );
+}
+
+if (prenomActif) {
+  ajouterChampTexte(
+    "prenom",
+    "👤 Prénom",
+    "Saisis le prénom…"
+  );
+}
+
+if (messageActif) {
+  ajouterChampTexte(
+    "message",
+    "💬 Message",
+    "Écris ton message ici…"
+  );
+}
 
 // PHOTO PERSONNELLE DU CLIENT DANS LA MÊME ZONE
 if (
@@ -5034,7 +5116,7 @@ if (
 
       if (error) throw error;
 
-      etat.customerImagePath = data.path || chemin;
+      etat.customerImagePath = chemin;
       etat.customerImageName = fichier.name;
 
       const ancienneUrl = apercuPhoto.dataset.objectUrl;
@@ -7007,6 +7089,12 @@ function validerPersonnalisation() {
   zone =>
     zone.obligatoire &&
     !zone.valeur &&
+    !zone.texte &&
+    !zone.prenom &&
+    !zone.message &&
+    !zone.designNom &&
+    !zone.policeNom &&
+    !zone.couleurNom &&
     !zone.customerImagePath
 );
 
@@ -8090,14 +8178,19 @@ ${
   Array.isArray(personnalisation.zones)
     ? personnalisation.zones
         .filter(zone =>
-          zone &&
-          (
-            zone.valeur ||
-            zone.designNom ||
-            zone.policeNom ||
-            zone.couleurNom
-          )
-        )
+zone &&
+(
+zone.valeur ||
+zone.texte ||
+zone.prenom ||
+zone.message ||
+zone.designNom ||
+zone.policeNom ||
+zone.couleurNom ||
+zone.customerImagePath ||
+zone.customerImageName
+)
+)
         .map(zone => `
           <div style="margin-top:8px;">
             <strong>
@@ -8105,16 +8198,40 @@ ${
             </strong>
 
             ${
-              zone.valeur
-                ? `<div>✏️ Texte : ${echapperHTML(zone.valeur)}</div>`
-                : ""
-            }
+zone.texte
+? "<div>✏️ Texte personnalisé : ${echapperHTML(zone.texte)}</div>"
+: ""
+}
+
+${
+zone.prenom
+? "<div>👤 Prénom : ${echapperHTML(zone.prenom)}</div>"
+: ""
+}
+
+${
+zone.message
+? "<div>💬 Message : ${echapperHTML(zone.message)}</div>"
+: ""
+}
+
+${
+!zone.texte && !zone.prenom && !zone.message && zone.valeur
+? "<div>✏️ Texte : ${echapperHTML(zone.valeur)}</div>"
+: ""
+}
 
             ${
               zone.designNom
                 ? `<div>🎨 Design : ${echapperHTML(zone.designNom)}</div>`
                 : ""
             }
+
+            ${
+zone.customerImageName
+? "<div>📷 Photo envoyée : ${echapperHTML(zone.customerImageName)}</div>"
+: ""
+}
 
             ${
               zone.policeNom
@@ -8337,78 +8454,89 @@ ${
         const p =
           article.personnalisation;
 
+// DÉTAILS DES PERSONNALISATIONS PAR ZONE
+if (Array.isArray(p.zones)) {
+p.zones.forEach(zone => {
+if (!zone) return;
 
-        if (p.designNom) {
+const champs = [
+  ["✏️ Texte personnalisé", zone.texte],
+  ["👤 Prénom de la zone", zone.prenom],
+  ["💬 Message de la zone", zone.message],
+  ["📝 Texte", zone.valeur],
+  ["🎨 Design de la zone", zone.designNom],
+  ["🔤 Police de la zone", zone.policeNom],
+  ["🌈 Couleur de la zone", zone.couleurNom],
+  ["📷 Photo envoyée", zone.customerImageName],
+  ["🔗 Chemin de la photo", zone.customerImagePath]
+];
 
-          message +=
-            "  🎨 Design : " +
-            encodeURIComponent(
-              p.designNom
-            ) +
-            "%0D%0A";
+champs.forEach(([libelle, valeur]) => {
+  if (valeur) {
+    message +=
+      "  " +
+      encodeURIComponent(
+        (zone.nom || "Personnalisation") +
+        " - " +
+        libelle +
+        " : " +
+        valeur
+      ) +
+      "%0D%0A";
+  }
+});
 
-        }
+});
+}
 
+        // ANCIENNES PERSONNALISATIONS
+// Conservées pour les articles sans détails par zone
+if (!Array.isArray(p.zones) || p.zones.length === 0) {
 
-        if (p.prenom) {
+  if (p.designNom) {
+    message +=
+      "  🎨 Design : " +
+      encodeURIComponent(p.designNom) +
+      "%0D%0A";
+  }
 
-          message +=
-            "  ✏️ Prénom : " +
-            encodeURIComponent(
-              p.prenom
-            ) +
-            "%0D%0A";
+  if (p.prenom) {
+    message +=
+      "  ✏️ Prénom : " +
+      encodeURIComponent(p.prenom) +
+      "%0D%0A";
+  }
 
-        }
+  if (p.police) {
+    message +=
+      "  🔤 Police : " +
+      encodeURIComponent(p.police) +
+      "%0D%0A";
+  }
 
+  if (p.couleur) {
+    message +=
+      "  🎨 Couleur : " +
+      encodeURIComponent(p.couleur) +
+      "%0D%0A";
+  }
 
-        if (p.police) {
+  if (p.message) {
+    message +=
+      "  💬 Message : " +
+      encodeURIComponent(p.message) +
+      "%0D%0A";
+  }
 
-          message +=
-            "  🔤 Police : " +
-            encodeURIComponent(
-              p.police
-            ) +
-            "%0D%0A";
+  if (p.photoUrl) {
+    message +=
+      "  📷 Photo client : " +
+      encodeURIComponent(p.photoUrl) +
+      "%0D%0A";
+  }
 
-        }
-
-
-        if (p.couleur) {
-
-          message +=
-            "  🎨 Couleur : " +
-            encodeURIComponent(
-              p.couleur
-            ) +
-            "%0D%0A";
-
-        }
-
-
-        if (p.message) {
-
-          message +=
-            "  💬 Message : " +
-            encodeURIComponent(
-              p.message
-            ) +
-            "%0D%0A";
-
-        }
-
-
-        if (p.photoUrl) {
-
-          message +=
-            "  📷 Photo client : " +
-            encodeURIComponent(
-              p.photoUrl
-            ) +
-            "%0D%0A";
-
-        }
-
+}
+       
       }
 
 
