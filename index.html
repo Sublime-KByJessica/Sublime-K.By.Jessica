@@ -4467,16 +4467,26 @@ async function afficherZonesPersonnalisationProduit(
   conteneur.innerHTML = "";
   personnalisationZonesChoix = {};
 
-  const zonesValides = Array.isArray(zones)
-    ? zones.filter(zone => zone && zone.nom)
-    : [];
+  let zonesValides = Array.isArray(zones)
+  ? zones.filter(zone => zone && zone.nom)
+  : [];
 
-  if (zonesValides.length === 0) {
-    conteneur.style.display = "none";
-    return;
-  }
+if (zonesValides.length === 0) {
+  zonesValides = [{
+    nom: "Personnalisation principale",
+    position: "centre",
+    obligatoire: false,
+    texteActive: true,
+    prenomActive: true,
+    messageActive: true,
+    designActive: true,
+    policeActive: true,
+    couleurActive: true,
+    photoActive: true
+  }];
+}
 
-  conteneur.style.display = "";
+conteneur.style.display = "";
 
   const titre = document.createElement("h3");
   titre.textContent = "🧩 Personnalise chaque zone";
