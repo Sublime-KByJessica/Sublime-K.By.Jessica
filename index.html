@@ -8197,53 +8197,54 @@ zone.customerImageName
               🧩 ${echapperHTML(zone.nom || "Personnalisation")}
             </strong>
 
-            ${
-zone.texte
-? "<div>✏️ Texte personnalisé : ${echapperHTML(zone.texte)}</div>"
-: ""
+${
+  zone.texte
+    ? `<div>✏️ Texte personnalisé : ${echapperHTML(zone.texte)}</div>`
+    : ""
 }
 
 ${
-zone.prenom
-? "<div>👤 Prénom : ${echapperHTML(zone.prenom)}</div>"
-: ""
+  zone.prenom
+    ? `<div>👤 Prénom : ${echapperHTML(zone.prenom)}</div>`
+    : ""
 }
 
 ${
-zone.message
-? "<div>💬 Message : ${echapperHTML(zone.message)}</div>"
-: ""
+  zone.message
+    ? `<div>💬 Message : ${echapperHTML(zone.message)}</div>`
+    : ""
 }
 
 ${
-!zone.texte && !zone.prenom && !zone.message && zone.valeur
-? "<div>✏️ Texte : ${echapperHTML(zone.valeur)}</div>"
-: ""
+  !zone.texte && !zone.prenom && !zone.message && zone.valeur
+    ? `<div>✏️ Texte : ${echapperHTML(zone.valeur)}</div>`
+    : ""
 }
 
-            ${
-              zone.designNom
-                ? `<div>🎨 Design : ${echapperHTML(zone.designNom)}</div>`
-                : ""
-            }
-
-            ${
-zone.customerImageName
-? "<div>📷 Photo envoyée : ${echapperHTML(zone.customerImageName)}</div>"
-: ""
+${
+  zone.designNom
+    ? `<div>🎨 Design : ${echapperHTML(zone.designNom)}</div>`
+    : ""
 }
 
-            ${
-              zone.policeNom
-                ? `<div>🔤 Police : ${echapperHTML(zone.policeNom)}</div>`
-                : ""
-            }
+${
+  zone.customerImageName
+    ? `<div>📷 Photo envoyée : ${echapperHTML(zone.customerImageName)}</div>`
+    : ""
+}
 
-            ${
-              zone.couleurNom
-                ? `<div>🌈 Couleur : ${echapperHTML(zone.couleurNom)}</div>`
-                : ""
-            }
+${
+  zone.policeNom
+    ? `<div>🔤 Police : ${echapperHTML(zone.policeNom)}</div>`
+    : ""
+}
+
+${
+  zone.couleurNom
+    ? `<div>🌈 Couleur : ${echapperHTML(zone.couleurNom)}</div>`
+    : ""
+}
+            
           </div>
         `)
         .join("")
