@@ -4922,13 +4922,26 @@ function ajouterChampTexte(typeChamp, libelle, placeholder) {
     typeChamp === "message" ? "textarea" : "input"
   );
 
-  if (typeChamp === "message") {
-    champ.rows = 3;
-    champ.maxLength = 500;
+  
+if (typeChamp === "message") {
+  champ.rows = 3;
+  champ.minLength = Number(zone.messageMinCaracteres ?? 0);
+  champ.maxLength = Number(zone.messageMaxCaracteres ?? 100);
+} else {
+  champ.type = "text";
+
+  if (typeChamp === "prenom") {
+    champ.minLength = Number(zone.prenomMinCaracteres ?? 0);
+    champ.maxLength = Number(zone.prenomMaxCaracteres ?? 30);
   } else {
-    champ.type = "text";
+    champ.minLength = 0;
     champ.maxLength = 150;
   }
+}
+
+champ.dataset.minimumCaracteres = String(champ.minLength);
+champ.dataset.maximumCaracteres = String(champ.maxLength);
+
 
   champ.placeholder = placeholder;
   champ.style.width = "100%";
@@ -7007,6 +7020,36 @@ function validerPersonnalisation() {
     ...zone,
     valeur: String(zone.valeur || "").trim()
   }));
+
+    
+  // Vérifier le nombre minimum de caractères
+  const champsTexte = document.querySelectorAll(
+    "#personnalisationZonesProduit [data-zone-type]"
+  );
+
+  for (const champ of champsTexte) {
+    const valeur = champ.value.trim();
+    const minimum = Number(
+      champ.dataset.minimumCaracteres || 0
+    );
+
+    if (valeur.length > 0 && valeur.length < minimum) {
+      const type = champ.dataset.zoneType;
+
+      const libelle =
+        type === "prenom" ? "Le prénom" :
+        type === "message" ? "Le message" :
+        "Le texte personnalisé";
+
+      alert(
+        libelle + " doit contenir au moins " +
+        minimum + " caractère(s)."
+      );
+
+      champ.focus();
+      return;
+    }
+  }
 
   // Vérifier les zones obligatoires
   const zoneManquante = zonesSaisies.find(
