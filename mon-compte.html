@@ -475,6 +475,47 @@
       </section>
       <!-- FIN MES FAVORIS -->
 
+<!-- MON PROGRAMME FIDÉLITÉ -->
+<section id="sectionFidelite">
+  <h2>🎁 Mon programme fidélité</h2>
+
+  <p class="intro">
+    Chaque euro dépensé vous rapporte 1 point.
+    À 200 points, choisissez votre récompense :
+    une réduction ou un cadeau personnalisé.
+  </p>
+
+  <div class="carte" id="carteFidelite">
+    <p>✨ Votre solde de points</p>
+
+    <p id="fideliteSolde" aria-live="polite">
+      Chargement de vos points…
+    </p>
+
+    <div
+      id="fideliteBarreFond"
+      style="height:12px;background:#e8ebe4;border-radius:99px;overflow:hidden"
+      role="progressbar"
+      aria-label="Progression vers la récompense"
+      aria-valuemin="0"
+      aria-valuemax="200"
+      aria-valuenow="0"
+    >
+      <div
+        id="fideliteBarre"
+        style="height:100%;width:0%;background:#71846b;border-radius:99px;transition:width .3s"
+      ></div>
+    </div>
+
+    <p id="fideliteProgression">
+      Vos points seront affichés ici.
+    </p>
+
+    <p id="fideliteMessage" class="message" role="status" aria-live="polite"></p>
+  </div>
+</section>
+<!-- FIN MON PROGRAMME FIDÉLITÉ -->
+
       <div class="encart">
         <strong>Votre espace se construit progressivement.</strong>
         <br>
