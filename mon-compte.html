@@ -649,6 +649,7 @@
           effacerMessage("messageCompte");
           chargerProfil();
           chargerCommandes();
+          chargerFidelite();
         }
       }
 
@@ -780,6 +781,109 @@
         }
       });
 
+      // PROGRAMME FIDÉLITÉ : CALCUL DU SOLDE DE POINTS
+      async function chargerFidelite() {
+        const soldeElement = $("fideliteSolde");
+        const progressionElement = $("fideliteProgression");
+        const barreElement = $("fideliteBarre");
+        const fondBarreElement = $("fideliteBarreFond");
+
+        soldeElement.textContent = "Chargement de vos points…";
+        progressionElement.textContent = "";
+        $("fideliteMessage").textContent = "";
+        $("fideliteMessage").className = "message";
+
+        try {
+          const { data: resultatUtilisateur, error: erreurUtilisateur } =
+            await supabaseClient.auth.getUser();
+
+          if (erreurUtilisateur) throw erreurUtilisateur;
+
+          const utilisateur = resultatUtilisateur.user;
+
+          if (!utilisateur) {
+            soldeElement.textContent = "Connectez-vous pour voir vos points.";
+            return;
+          }
+
+          const { data: operations, error } = await supabaseClient
+            .from("loyalty_ledger")
+            .select("type_operation, points, expire_at")
+            .eq("user_id", utilisateur.id);
+
+          if (error) throw error;
+
+          const maintenant = Date.now();
+          let solde = 0;
+
+          for (const operation of operations || []) {
+            const points = Number(operation.points) || 0;
+
+            if (operation.type_operation === "gain") {
+              const expire = operation.expire_at
+                ? new Date(operation.expire_at).getTime()
+                : Infinity;
+
+              if (expire > maintenant) {
+                solde += points;
+              }
+            } else if (
+              operation.type_operation === "utilisation"
+            ) {
+              solde -= Math.abs(points);
+            } else if (
+              operation.type_operation === "ajustement"
+            ) {
+              solde += points;
+            }
+
+            // Les gains expirés sont déjà exclus du solde.
+            // On ne soustrait donc pas une seconde fois
+            // les opérations d'expiration.
+          }
+
+          solde = Math.max(0, solde);
+
+          soldeElement.textContent =
+            solde.toLocaleString("fr-FR") +
+            (solde > 1 ? " points" : " point");
+
+          const progression = Math.min(solde, 200);
+          const pourcentage = (progression / 200) * 100;
+
+          barreElement.style.width = pourcentage + "%";
+          fondBarreElement.setAttribute(
+            "aria-valuenow",
+            String(progression)
+          );
+
+          if (solde >= 200) {
+            progressionElement.textContent =
+              "🎉 Vous avez atteint les 200 points ! " +
+              "Votre récompense fidélité est débloquée.";
+          } else {
+            progressionElement.textContent =
+              "Encore " +
+              (200 - solde).toLocaleString("fr-FR") +
+              " points avant de pouvoir choisir votre récompense.";
+          }
+        } catch (erreur) {
+          console.error(
+            "Erreur de chargement de la fidélité :",
+            erreur
+          );
+
+          soldeElement.textContent = "Solde indisponible";
+          progressionElement.textContent =
+            "Impossible de récupérer vos points pour le moment.";
+
+          afficherMessage(
+            "fideliteMessage",
+            "Le chargement des points a échoué. Réessayez plus tard.",
+            "erreur"
+          );
+        }
+      }
       
       // PROFIL CLIENT : CHARGEMENT ET ENREGISTREMENT
       async function chargerProfil() {
