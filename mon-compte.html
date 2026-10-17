@@ -321,6 +321,54 @@
       }
     }
 
+    /* BOUTONS ACCORDÉON DU COMPTE CLIENT */
+    .navigation-compte .bouton-rubrique {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      width: 100%;
+      min-height: 58px;
+      padding: 12px;
+      border: 1px solid var(--bordure);
+      border-radius: 14px;
+      background: #f8f8f3;
+      color: var(--texte);
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+    }
+
+    .navigation-compte .bouton-rubrique:hover,
+    .navigation-compte .bouton-rubrique[aria-expanded="true"] {
+      background: var(--vert);
+    }
+
+    .navigation-compte .bouton-rubrique:focus-visible {
+      outline: 2px solid var(--vert-fonce);
+      outline-offset: 3px;
+    }
+
+    .navigation-compte .bouton-rubrique > span:nth-child(2) {
+      flex: 1;
+    }
+
+    .navigation-compte .fleche-rubrique {
+      margin-left: auto;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    @media (max-width: 360px) {
+      .navigation-compte .bouton-rubrique {
+        gap: 7px;
+        padding: 10px 8px;
+        font-size: 13px;
+      }
+    }
+
     [hidden] { display: none !important; }
   </style>
 </head>
@@ -491,33 +539,40 @@
       </p>
 
       
-      <!-- MENU RAPIDE DE L'ESPACE CLIENT -->
+      <!-- MENU ACCORDÉON DE L'ESPACE CLIENT -->
       <nav class="navigation-compte" aria-label="Navigation de mon compte">
-        <a href="#sectionProfil">
+        <button type="button" class="bouton-rubrique"
+                aria-expanded="false" aria-controls="sectionProfil">
           <span aria-hidden="true">👤</span>
           <span>Mes informations</span>
-        </a>
+          <span class="fleche-rubrique" aria-hidden="true">＋</span>
+        </button>
 
-        <a href="#sectionMesCommandes">
+        <button type="button" class="bouton-rubrique"
+                aria-expanded="false" aria-controls="sectionMesCommandes">
           <span aria-hidden="true">📦</span>
           <span>Mes commandes</span>
-        </a>
+          <span class="fleche-rubrique" aria-hidden="true">＋</span>
+        </button>
 
-        <a href="#sectionMesFavoris">
+        <button type="button" class="bouton-rubrique"
+                aria-expanded="false" aria-controls="sectionMesFavoris">
           <span aria-hidden="true">❤️</span>
           <span>Mes favoris</span>
-        </a>
+          <span class="fleche-rubrique" aria-hidden="true">＋</span>
+        </button>
 
-        <a href="#sectionFidelite">
+        <button type="button" class="bouton-rubrique"
+                aria-expanded="false" aria-controls="sectionFidelite">
           <span aria-hidden="true">🎁</span>
           <span>Ma fidélité</span>
-        </a>
+          <span class="fleche-rubrique" aria-hidden="true">＋</span>
+        </button>
       </nav>
-      <!-- FIN MENU RAPIDE -->
-
+      <!-- FIN MENU ACCORDÉON -->
       
       <!-- PROFIL CLIENT -->
-      <section id="sectionProfil">
+      <section id="sectionProfil" hidden>
         <h2>👤 Mes informations personnelles</h2>
 
         <p class="intro">
@@ -573,7 +628,7 @@
 
       
       <!-- MES COMMANDES -->
-      <section id="sectionMesCommandes">
+      <section id="sectionMesCommandes" hidden>
         <h2>📦 Mes commandes</h2>
         <p class="intro">
           Retrouvez vos commandes et suivez leur avancement.
@@ -593,7 +648,7 @@
       
       
       <!-- MES FAVORIS -->
-      <section id="sectionMesFavoris">
+      <section id="sectionMesFavoris" hidden>
         <h2>❤️ Mes favoris</h2>
         <p class="intro">
           Retrouvez les créations que vous avez enregistrées
@@ -610,7 +665,7 @@
       <!-- FIN MES FAVORIS -->
 
 <!-- MON PROGRAMME FIDÉLITÉ -->
-<section id="sectionFidelite">
+<section id="sectionFidelite" hidden>
   <h2>🎁 Mon programme fidélité</h2>
 
   <p class="intro">
@@ -1637,6 +1692,53 @@
           occuppe = false;
           $("boutonDeconnexion").disabled = false;
         }
+      });
+
+      // OUVERTURE ET FERMETURE DES RUBRIQUES DU COMPTE
+      document.querySelectorAll(".bouton-rubrique").forEach((bouton) => {
+        bouton.addEventListener("click", () => {
+          const cible = $(bouton.getAttribute("aria-controls"));
+          if (!cible) return;
+
+          const ouvrir = cible.hidden;
+
+          // Fermer toutes les rubriques
+          document.querySelectorAll(".bouton-rubrique").forEach((autreBouton) => {
+            const autreCible = $(
+              autreBouton.getAttribute("aria-controls")
+            );
+
+            if (autreCible) {
+              autreCible.hidden = true;
+            }
+
+            autreBouton.setAttribute("aria-expanded", "false");
+
+            const autreFleche =
+              autreBouton.querySelector(".fleche-rubrique");
+
+            if (autreFleche) {
+              autreFleche.textContent = "＋";
+            }
+          });
+
+          // Ouvrir la rubrique choisie si elle était fermée
+          if (ouvrir) {
+            cible.hidden = false;
+            bouton.setAttribute("aria-expanded", "true");
+
+            const fleche = bouton.querySelector(".fleche-rubrique");
+
+            if (fleche) {
+              fleche.textContent = "−";
+            }
+
+            cible.scrollIntoView({
+              behavior: "smooth",
+              block: "start"
+            });
+          }
+        });
       });
 
       // INITIALISATION ET LIEN DE RÉCUPÉRATION
