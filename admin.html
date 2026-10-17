@@ -4029,6 +4029,151 @@ button{cursor:pointer}
     <h2>🛒 Mes achats fournisseurs</h2>
     <p>Consulte tes achats et leurs frais associés.</p>
 
+<form id="skFormAchat" class="bloc">
+  <h3>➕ Enregistrer un achat fournisseur</h3>
+
+  <input type="hidden" name="id" value="">
+
+  <label for="skAchatFournisseur">Fournisseur</label>
+  <select id="skAchatFournisseur" name="fournisseur_id">
+    <option value="">Choisir un fournisseur</option>
+  </select>
+
+  <label for="skAchatReference">Référence de commande</label>
+  <input
+    id="skAchatReference"
+    type="text"
+    name="reference"
+    placeholder="Numéro de commande fournisseur"
+  >
+
+  <label for="skAchatDate">Date de commande</label>
+  <input
+    id="skAchatDate"
+    type="date"
+    name="date_commande"
+  >
+
+  <label for="skAchatReception">Date de réception</label>
+  <input
+    id="skAchatReception"
+    type="date"
+    name="date_reception"
+  >
+
+  <label for="skAchatStatut">Statut de l’achat</label>
+  <select id="skAchatStatut" name="statut">
+    <option value="a_commander">À commander</option>
+    <option value="commande">Commandé</option>
+    <option value="partiellement_recu">Partiellement reçu</option>
+    <option value="recu">Reçu</option>
+    <option value="annule">Annulé</option>
+  </select>
+
+  <label for="skAchatPaiement">Statut du paiement</label>
+  <select id="skAchatPaiement" name="statut_paiement">
+    <option value="a_payer">À payer</option>
+    <option value="partiellement_paye">Partiellement payé</option>
+    <option value="paye">Payé</option>
+  </select>
+
+  <label for="skAchatLivraison">Frais de livraison (€)</label>
+  <input
+    id="skAchatLivraison"
+    type="number"
+    name="frais_livraison"
+    min="0"
+    step="0.01"
+    value="0"
+  >
+
+  <label for="skAchatAutresFrais">Autres frais (€)</label>
+  <input
+    id="skAchatAutresFrais"
+    type="number"
+    name="frais_autres"
+    min="0"
+    step="0.01"
+    value="0"
+  >
+
+  <hr>
+
+  <h4>📦 Premier article acheté (facultatif)</h4>
+
+  <label for="skAchatArticle">Nom de l’article</label>
+  <input
+    id="skAchatArticle"
+    type="text"
+    name="nom_article"
+    placeholder="Ex. : porte-clés sublimable"
+  >
+
+  <label for="skAchatArticleUrl">Lien de l’article</label>
+  <input
+    id="skAchatArticleUrl"
+    type="url"
+    name="url_article"
+    placeholder="https://..."
+  >
+
+  <label for="skAchatTypeArticle">Type d’article</label>
+  <select id="skAchatTypeArticle" name="type_article">
+    <option value="support">Support à personnaliser</option>
+    <option value="consommable">Consommable</option>
+    <option value="emballage">Emballage</option>
+    <option value="autre">Autre</option>
+  </select>
+
+  <label for="skAchatQuantite">Quantité commandée</label>
+  <input
+    id="skAchatQuantite"
+    type="number"
+    name="quantite"
+    min="0.01"
+    step="0.01"
+    value="1"
+  >
+
+  <label for="skAchatPrixUnitaire">Prix unitaire (€)</label>
+  <input
+    id="skAchatPrixUnitaire"
+    type="number"
+    name="prix_unitaire"
+    min="0"
+    step="0.0001"
+    value="0"
+  >
+
+  <label for="skAchatQuantiteRecue">Quantité déjà reçue</label>
+  <input
+    id="skAchatQuantiteRecue"
+    type="number"
+    name="quantite_recue"
+    min="0"
+    step="0.01"
+    value="0"
+  >
+
+  <label for="skAchatNotesArticle">Notes sur l’article</label>
+  <textarea
+    id="skAchatNotesArticle"
+    name="notes_article"
+    rows="2"
+  ></textarea>
+
+  <label for="skAchatNotes">Notes générales sur l’achat</label>
+  <textarea
+    id="skAchatNotes"
+    name="notes"
+    rows="3"
+  ></textarea>
+
+  <button type="submit" class="btn btn-modifier">
+    💾 Enregistrer l’achat
+  </button>
+</form>
+
     <div id="skAchatsListe">
       Les achats fournisseurs seront affichés ici.
     </div>
