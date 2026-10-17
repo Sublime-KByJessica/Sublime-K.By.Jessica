@@ -13691,10 +13691,14 @@ async function confirmerCommande() {
 
   return {
 
+    
     product_id:
       article.produit_id ||
       article.id ||
       null,
+
+    variante_id:
+      article.variante_id || null,
 
     quantite:
       Number(article.quantite || 1),
