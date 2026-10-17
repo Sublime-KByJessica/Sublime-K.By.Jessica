@@ -880,6 +880,7 @@
               (200 - solde).toLocaleString("fr-FR") +
               " points avant de pouvoir choisir votre récompense.";
           }
+                    await chargerRecompensesFidelite(utilisateur.id, solde);
         } catch (erreur) {
           console.error(
             "Erreur de chargement de la fidélité :",
@@ -893,6 +894,213 @@
           afficherMessage(
             "fideliteMessage",
             "Le chargement des points a échoué. Réessayez plus tard.",
+            "erreur"
+          );
+        }
+      }
+            // PROGRAMME FIDÉLITÉ : RÉCOMPENSES DISPONIBLES ET OBTENUES
+      async function chargerRecompensesFidelite(utilisateurId, solde) {
+        const zoneChoix = $("fideliteRecompenses");
+        const zoneObtenues = $("fideliteMesRecompenses");
+
+        zoneChoix.replaceChildren();
+        zoneObtenues.replaceChildren();
+
+        try {
+          const [
+            { data: recompenses, error: erreurRecompenses },
+            { data: obtenues, error: erreurObtenues }
+          ] = await Promise.all([
+            supabaseClient
+              .from("loyalty_rewards")
+              .select(
+                "id, nom, description, points_cout, type_recompense, valeur, actif, ordre"
+              )
+              .order("ordre", { ascending: true }),
+
+            supabaseClient
+              .from("loyalty_redemptions")
+              .select(
+                "id, reward_id, points_utilises, code_recompense, statut, created_at, expire_at"
+              )
+              .eq("user_id", utilisateurId)
+              .order("created_at", { ascending: false })
+          ]);
+
+          if (erreurRecompenses) throw erreurRecompenses;
+          if (erreurObtenues) throw erreurObtenues;
+
+          const toutesRecompenses = recompenses || [];
+          const disponibles = toutesRecompenses.filter(
+            recompense => recompense.actif === true
+          );
+
+          const titreChoix = document.createElement("h3");
+          titreChoix.textContent = "🎁 Choisir ma récompense";
+          zoneChoix.appendChild(titreChoix);
+
+          if (disponibles.length === 0) {
+            const message = document.createElement("p");
+            message.textContent =
+              "Aucune récompense n'est disponible pour le moment. Revenez bientôt !";
+            zoneChoix.appendChild(message);
+          }
+
+          for (const recompense of disponibles) {
+            const carte = document.createElement("div");
+            carte.style.cssText =
+              "padding:16px;margin:12px 0;border:1px solid #e4e6df;" +
+              "border-radius:14px;background:#fffdf9;";
+
+            const titre = document.createElement("h4");
+            titre.textContent = recompense.nom;
+            titre.style.margin = "0 0 8px";
+            carte.appendChild(titre);
+
+            if (recompense.description) {
+              const description = document.createElement("p");
+              description.textContent = recompense.description;
+              carte.appendChild(description);
+            }
+
+            const cout = Number(recompense.points_cout) || 0;
+            const points = document.createElement("p");
+            points.textContent = cout + " points nécessaires";
+            carte.appendChild(points);
+
+            const bouton = document.createElement("button");
+            bouton.type = "button";
+            bouton.className = "bouton";
+            bouton.textContent = "Choisir cette récompense";
+            bouton.disabled = solde < cout;
+            bouton.style.marginTop = "8px";
+
+            if (solde < cout) {
+              const manque = document.createElement("p");
+              manque.textContent =
+                "Il vous manque " + (cout - solde) + " points.";
+              carte.appendChild(manque);
+            }
+
+            bouton.addEventListener("click", async () => {
+              if (solde < cout) return;
+
+              const confirmer = window.confirm(
+                "Confirmer le choix de « " + recompense.nom +
+                " » pour " + cout + " points ? Cette opération est définitive."
+              );
+
+              if (!confirmer) return;
+
+              bouton.disabled = true;
+              bouton.textContent = "Traitement en cours…";
+
+              try {
+                const { data, error } = await supabaseClient.rpc(
+                  "reclamer_recompense_fidelite",
+                  { p_reward_id: recompense.id }
+                );
+
+                if (error) throw error;
+
+                if (!data || data.success !== true) {
+                  throw new Error(
+                    data?.message ||
+                    data?.error ||
+                    "La récompense n'a pas pu être obtenue."
+                  );
+                }
+
+                await chargerFidelite();
+
+                afficherMessage(
+                  "fideliteMessage",
+                  "🎉 Récompense obtenue : " + data.nom +
+                  ". Votre code : " + data.code_recompense +
+                  ". Retrouvez-le dans « Mes récompenses ».",
+                  "succes"
+                );
+              } catch (erreur) {
+                afficherMessage(
+                  "fideliteMessage",
+                  erreur.message ||
+                  "Impossible d'obtenir cette récompense. Réessayez.",
+                  "erreur"
+                );
+
+                bouton.disabled = false;
+                bouton.textContent = "Choisir cette récompense";
+              }
+            });
+
+            carte.appendChild(bouton);
+            zoneChoix.appendChild(carte);
+          }
+
+          const titreObtenues = document.createElement("h3");
+          titreObtenues.textContent = "🎀 Mes récompenses";
+          zoneObtenues.appendChild(titreObtenues);
+
+          if (!obtenues || obtenues.length === 0) {
+            const message = document.createElement("p");
+            message.textContent =
+              "Vous n'avez pas encore obtenu de récompense.";
+            zoneObtenues.appendChild(message);
+          } else {
+            for (const obtenue of obtenues) {
+              const carte = document.createElement("div");
+              carte.style.cssText =
+                "padding:14px;margin:10px 0;border:1px solid #e4e6df;" +
+                "border-radius:12px;background:#fffdf9;";
+
+              const recompense = toutesRecompenses.find(
+                element => element.id === obtenue.reward_id
+              );
+
+              const nom = document.createElement("h4");
+              nom.textContent =
+                recompense?.nom || "Récompense fidélité";
+              carte.appendChild(nom);
+
+              const statut = document.createElement("p");
+              const libelles = {
+                disponible: "Disponible",
+                utilisee: "Utilisée",
+                annulee: "Annulée",
+                expiree: "Expirée"
+              };
+              statut.textContent =
+                "Statut : " +
+                (libelles[obtenue.statut] || obtenue.statut);
+              carte.appendChild(statut);
+
+              if (obtenue.statut === "disponible") {
+                const code = document.createElement("p");
+                code.textContent =
+                  "Code de récompense : " + obtenue.code_recompense;
+                code.style.cssText =
+                  "font-weight:bold;overflow-wrap:anywhere;";
+                carte.appendChild(code);
+              }
+
+              const depenses = document.createElement("p");
+              depenses.textContent =
+                Number(obtenue.points_utilises) +
+                " points utilisés";
+              carte.appendChild(depenses);
+
+              zoneObtenues.appendChild(carte);
+            }
+          }
+        } catch (erreur) {
+          console.error(
+            "Erreur de chargement des récompenses :",
+            erreur
+          );
+
+          afficherMessage(
+            "fideliteMessage",
+            "Impossible de charger les récompenses pour le moment.",
             "erreur"
           );
         }
