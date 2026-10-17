@@ -3336,6 +3336,42 @@ button{cursor:pointer}
 
     <div id="listeLivraisons"></div>
 
+    
+    <!-- =====================================================
+         SUIVI DES TRANSPORTEURS
+    ===================================================== -->
+
+    <div style="
+      margin-top:28px;
+      padding:18px;
+      border:1px solid #dce3d4;
+      border-radius:12px;
+      background:#f8faf5;
+    ">
+
+      <h3>📦 Suivi des colis et transporteurs</h3>
+
+      <p>
+        Active uniquement les transporteurs que tu souhaites utiliser.
+        Le suivi automatique reste désactivé tant que son intégration
+        n'est pas configurée.
+      </p>
+
+      <div id="listeTransporteursSuivi">
+        <p>Chargement des réglages des transporteurs…</p>
+      </div>
+
+      <div
+        id="messageTransporteursSuivi"
+        class="message"
+        role="status"
+        aria-live="polite"
+      ></div>
+
+    </div>
+
+    <!-- FIN SUIVI DES TRANSPORTEURS -->
+
   </div>
 
 </section>
@@ -4931,6 +4967,7 @@ async function afficherAdmin(){
   await chargerBibliotheque();
   await chargerReglagesLivraison();
   await chargerLivraisons();
+  await chargerTransporteursSuivi();
   await chargerCommandes();
   await chargerPagesLegales();
   await chargerPolicesPersonnalisation();
@@ -7834,6 +7871,237 @@ async function sauvegarderReglagesLivraison(){
 
 }
 
+
+/* =====================================================
+   RÉGLAGES DES TRANSPORTEURS POUR LE SUIVI
+===================================================== */
+
+async function chargerTransporteursSuivi(){
+
+  const liste = document.getElementById(
+    "listeTransporteursSuivi"
+  );
+
+  if(!liste) return;
+
+  liste.innerHTML =
+    "<p>Chargement des transporteurs…</p>";
+
+  const { data, error } = await client
+    .from("shipping_tracking_settings")
+    .select("*")
+    .order("nom", { ascending: true });
+
+  if(error){
+
+    console.error(
+      "Erreur chargement transporteurs :",
+      error
+    );
+
+    liste.innerHTML =
+      "<p>❌ Impossible de charger les transporteurs.</p>";
+
+    return;
+  }
+
+  liste.innerHTML = "";
+
+  if(!data || data.length === 0){
+
+    liste.innerHTML =
+      "<p>Aucun transporteur configuré.</p>";
+
+    return;
+  }
+
+  data.forEach(afficherTransporteurSuivi);
+}
+
+
+function afficherTransporteurSuivi(transporteur){
+
+  const element = document.createElement("div");
+
+  element.style.cssText = `
+    margin:14px 0;
+    padding:16px;
+    border:1px solid #dce3d4;
+    border-radius:10px;
+    background:#ffffff;
+  `;
+
+  const code = String(
+    transporteur.code || ""
+  ).replace(/[^a-zA-Z0-9_-]/g, "");
+
+  const nom = echapperHTML(
+    transporteur.nom || code
+  );
+
+  const modeleUrl = echapperHTML(
+    transporteur.modele_url_suivi || ""
+  );
+
+  element.innerHTML = `
+
+    <h4 style="margin-top:0;">
+      📦 ${nom}
+    </h4>
+
+    <label style="
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin:12px 0;
+    ">
+      <input
+        type="checkbox"
+        id="suivi-actif-${code}"
+        ${transporteur.actif ? "checked" : ""}
+      >
+      <strong>Transporteur activé</strong>
+    </label>
+
+    <label style="
+      display:flex;
+      align-items:flex-start;
+      gap:8px;
+      margin:12px 0;
+    ">
+      <input
+        type="checkbox"
+        id="suivi-auto-${code}"
+        ${transporteur.suivi_automatique_actif ? "checked" : ""}
+      >
+      <span>
+        <strong>Suivi automatique souhaité</strong>
+        <br>
+        <small>
+          Nécessite une intégration compatible avant de fonctionner.
+        </small>
+      </span>
+    </label>
+
+    <label
+      for="suivi-url-${code}"
+      style="display:block;margin-top:14px;"
+    >
+      Modèle de lien de suivi (facultatif)
+    </label>
+
+    <input
+      type="url"
+      id="suivi-url-${code}"
+      value="${modeleUrl}"
+      placeholder="https://..."
+      style="
+        width:100%;
+        box-sizing:border-box;
+        padding:10px;
+        margin:6px 0 12px;
+      "
+    >
+
+    <button
+      type="button"
+      class="btn btn-modifier"
+      onclick="enregistrerTransporteurSuivi('${code}')"
+    >
+      💾 Enregistrer les réglages
+    </button>
+
+  `;
+
+  document
+    .getElementById("listeTransporteursSuivi")
+    .appendChild(element);
+}
+
+
+async function enregistrerTransporteurSuivi(code){
+
+  const message = document.getElementById(
+    "messageTransporteursSuivi"
+  );
+
+  if(!(await verifierAdmin())){
+    return;
+  }
+
+  const actif = document.getElementById(
+    "suivi-actif-" + code
+  ).checked;
+
+  const automatique = document.getElementById(
+    "suivi-auto-" + code
+  ).checked;
+
+  const modeleUrl = document.getElementById(
+    "suivi-url-" + code
+  ).value.trim();
+
+  if(modeleUrl){
+
+    try{
+
+      const urlTest = new URL(modeleUrl);
+
+      if(
+        urlTest.protocol !== "https:" &&
+        urlTest.protocol !== "http:"
+      ){
+        throw new Error("URL invalide");
+      }
+
+    }catch(error){
+
+      message.textContent =
+        "❌ Vérifie le lien de suivi saisi.";
+
+      return;
+    }
+  }
+
+  message.textContent =
+    "Enregistrement en cours…";
+
+  const { error } = await client
+    .from("shipping_tracking_settings")
+    .update({
+
+      actif: actif,
+
+      suivi_automatique_actif:
+        automatique,
+
+      modele_url_suivi:
+        modeleUrl || null,
+
+      updated_at:
+        new Date().toISOString()
+
+    })
+    .eq("code", code);
+
+  if(error){
+
+    console.error(
+      "Erreur enregistrement transporteur :",
+      error
+    );
+
+    message.textContent =
+      "❌ Erreur : " + error.message;
+
+    return;
+  }
+
+  message.textContent =
+    "✅ Réglages enregistrés. Le suivi automatique nécessite toujours son intégration.";
+
+  await chargerTransporteursSuivi();
+}
 
 /* =====================================================
    LIVRAISONS
