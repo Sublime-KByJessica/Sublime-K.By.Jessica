@@ -1,0 +1,843 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#dce5d5">
+  <title>Mon compte | Sublime’K</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --vert: #dce5d5;
+      --vert-fonce: #71846b;
+      --rose: #f5e4e5;
+      --texte: #343a33;
+      --secondaire: #697067;
+      --fond: #fffdf9;
+      --bordure: #e4e6df;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--texte);
+      background: linear-gradient(145deg, #f8f4ef, var(--vert) 72%, #f4e8e7);
+    }
+
+    header {
+      padding: 26px 16px 18px;
+      text-align: center;
+    }
+
+    .logo {
+      margin: 0;
+      font-family: Georgia, serif;
+      font-size: clamp(34px, 7vw, 46px);
+      letter-spacing: 2px;
+    }
+
+    .signature {
+      margin: 8px 0 0;
+      color: var(--secondaire);
+      font-size: 14px;
+    }
+
+    main {
+      width: min(100% - 28px, 540px);
+      margin: 12px auto 40px;
+    }
+
+    .carte {
+      padding: clamp(20px, 5vw, 34px);
+      background: var(--fond);
+      border: 1px solid #ffffff;
+      border-radius: 22px;
+      box-shadow: 0 12px 38px #34402d12;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      text-align: center;
+      font-size: 25px;
+      font-weight: 600;
+    }
+
+    .intro {
+      margin: 0 0 24px;
+      color: var(--secondaire);
+      line-height: 1.6;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .onglets {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 5px;
+      margin-bottom: 22px;
+      background: #f0f1eb;
+      border-radius: 13px;
+    }
+
+    .onglet {
+      padding: 12px 8px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--secondaire);
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .onglet.actif {
+      background: white;
+      color: var(--texte);
+      font-weight: 700;
+      box-shadow: 0 2px 8px #0000000b;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 7px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      min-height: 46px;
+      padding: 12px 14px;
+      border: 1px solid #d9ddd4;
+      border-radius: 11px;
+      background: white;
+      color: var(--texte);
+      font: inherit;
+    }
+
+    input:focus {
+      outline: 2px solid #a9b99e;
+      outline-offset: 1px;
+    }
+
+    .bouton {
+      width: 100%;
+      min-height: 48px;
+      margin-top: 20px;
+      padding: 14px 16px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--vert-fonce);
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .bouton:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .lien {
+      padding: 12px 0;
+      border: 0;
+      background: transparent;
+      color: #596c53;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .centre { text-align: center; }
+
+    .message {
+      display: none;
+      margin: 16px 0 0;
+      padding: 12px 14px;
+      border-radius: 11px;
+      font-size: 14px;
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    .message.visible { display: block; }
+    .message.erreur { background: #fbe9e7; color: #8b2e28; }
+    .message.succes { background: #e8f2e4; color: #355d31; }
+    .message.info { background: #edf1f4; color: #394f60; }
+
+    .retour {
+      display: inline-block;
+      margin-top: 20px;
+      color: #53674e;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .email-connecte {
+      padding: 14px;
+      border-radius: 12px;
+      background: #f1f3ed;
+      overflow-wrap: anywhere;
+    }
+
+    .encart {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 14px;
+      background: #f7eded;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .petit {
+      margin-top: 18px;
+      color: var(--secondaire);
+      font-size: 12px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    footer {
+      padding: 0 16px 24px;
+      color: var(--secondaire);
+      text-align: center;
+      font-size: 12px;
+    }
+
+    [hidden] { display: none !important; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <p class="logo">Sublime’K</p>
+    <p class="signature">
+      Des créations personnalisées, rien que pour vous
+    </p>
+  </header>
+
+  <main>
+    <!-- CONNEXION ET INSCRIPTION -->
+    <section class="carte" id="panneauAuthentification">
+      <h1>Mon espace client</h1>
+
+      <p class="intro">
+        Retrouvez prochainement vos commandes, vos favoris
+        et vos points fidélité au même endroit.
+      </p>
+
+      <div class="onglets" id="onglets">
+        <button
+          type="button"
+          class="onglet actif"
+          id="ongletConnexion"
+          aria-selected="true"
+        >
+          Connexion
+        </button>
+
+        <button
+          type="button"
+          class="onglet"
+          id="ongletInscription"
+          aria-selected="false"
+        >
+          Créer un compte
+        </button>
+      </div>
+
+      <form id="formulaireCompte">
+        <div id="champsNom" hidden>
+          <label for="prenom">Prénom</label>
+          <input
+            id="prenom"
+            name="given-name"
+            autocomplete="given-name"
+            maxlength="80"
+          >
+
+          <label for="nom">Nom</label>
+          <input
+            id="nom"
+            name="family-name"
+            autocomplete="family-name"
+            maxlength="80"
+          >
+        </div>
+
+        <label for="email">Adresse e-mail</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          maxlength="254"
+          placeholder="vous@exemple.fr"
+          required
+        >
+
+        <label for="motDePasse">Mot de passe</label>
+        <input
+          id="motDePasse"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          minlength="8"
+          placeholder="8 caractères minimum"
+          required
+        >
+
+        <div id="confirmationMotDePasse" hidden>
+          <label for="confirmerMotDePasse">
+            Confirmer le mot de passe
+          </label>
+
+          <input
+            id="confirmerMotDePasse"
+            name="new-password"
+            type="password"
+            autocomplete="new-password"
+            minlength="8"
+          >
+        </div>
+
+        <button class="bouton" id="boutonPrincipal" type="submit">
+          Se connecter
+        </button>
+      </form>
+
+      <div class="centre" id="zoneMotDePasseOublie">
+        <button type="button" class="lien" id="boutonOublie">
+          Mot de passe oublié ?
+        </button>
+      </div>
+
+      <p class="message" id="messageAuthentification"
+         role="status" aria-live="polite"></p>
+
+      <div class="centre">
+        <a class="retour" href="./index.html">
+          ← Retour à la boutique
+        </a>
+      </div>
+    </section>
+
+    <!-- CHANGEMENT DE MOT DE PASSE APRÈS RÉCUPÉRATION -->
+    <section class="carte" id="panneauNouveauMotDePasse" hidden>
+      <h1>Choisir un nouveau mot de passe</h1>
+
+      <p class="intro">
+        Choisissez un nouveau mot de passe pour votre compte Sublime’K.
+      </p>
+
+      <form id="formulaireNouveauMotDePasse">
+        <label for="nouveauMotDePasse">Nouveau mot de passe</label>
+        <input
+          id="nouveauMotDePasse"
+          type="password"
+          minlength="8"
+          autocomplete="new-password"
+          required
+        >
+
+        <label for="confirmationNouveauMotDePasse">
+          Confirmer le nouveau mot de passe
+        </label>
+        <input
+          id="confirmationNouveauMotDePasse"
+          type="password"
+          minlength="8"
+          autocomplete="new-password"
+          required
+        >
+
+        <button class="bouton" id="boutonEnregistrerMotDePasse" type="submit">
+          Enregistrer le nouveau mot de passe
+        </button>
+      </form>
+
+      <p class="message" id="messageNouveauMotDePasse"
+         role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- ESPACE APRÈS CONNEXION -->
+    <section class="carte" id="panneauConnecte" hidden>
+      <h1>Bienvenue chez Sublime’K</h1>
+
+      <p class="intro">
+        Vous êtes connecté à votre espace client.
+      </p>
+
+      <p class="email-connecte">
+        <strong>Votre adresse e-mail :</strong><br>
+        <span id="emailConnecte"></span>
+      </p>
+
+      <div class="encart">
+        <strong>Votre espace se construit progressivement.</strong>
+        <br>
+        Les commandes, les favoris et le programme de fidélité
+        seront affichés ici après leur raccordement et leurs tests.
+      </div>
+
+      <button class="bouton" id="boutonDeconnexion" type="button">
+        Me déconnecter
+      </button>
+
+      <p class="message" id="messageCompte"
+         role="status" aria-live="polite"></p>
+
+      <div class="centre">
+        <a class="retour" href="./index.html">
+          ← Retour à la boutique
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © Sublime’K — Espace client
+  </footer>
+
+  <script>
+    (() => {
+      "use strict";
+
+      // CONFIGURATION SUPABASE
+      const SUPABASE_URL =
+        "https://buputlhpgaenlwwbrwwf.supabase.co";
+
+      const SUPABASE_PUBLISHABLE_KEY =
+        "sb_publishable_mjzAOL92PWfc3v59ZxdSUw_69xCaInq";
+
+      const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
+
+      const $ = (id) => document.getElementById(id);
+
+      let mode = "connexion";
+      let occuppe = false;
+      let traitementInitialTermine = false;
+      let modeRecuperation = false;
+
+      function afficherMessage(id, texte, type = "info") {
+        const element = $(id);
+        element.textContent = texte;
+        element.className = "message visible " + type;
+      }
+
+      function effacerMessage(id) {
+        const element = $(id);
+        element.textContent = "";
+        element.className = "message";
+      }
+
+      function traduireErreur(erreur) {
+        const texte = erreur?.message || "";
+
+        if (/invalid login credentials/i.test(texte)) {
+          return "Adresse e-mail ou mot de passe incorrect.";
+        }
+
+        if (/email not confirmed/i.test(texte)) {
+          return "Confirmez votre adresse e-mail grâce au message reçu.";
+        }
+
+        if (/user already registered/i.test(texte)) {
+          return "Un compte existe déjà avec cette adresse e-mail. Essayez de vous connecter.";
+        }
+
+        if (/password should be at least/i.test(texte)) {
+          return "Le mot de passe doit contenir au moins 8 caractères.";
+        }
+
+        if (/rate limit/i.test(texte)) {
+          return "Trop de tentatives. Attendez un peu avant de réessayer.";
+        }
+
+        if (/expired|invalid.*token|token.*invalid/i.test(texte)) {
+          return "Ce lien est invalide ou expiré. Demandez un nouvel e-mail de récupération.";
+        }
+
+        return texte || "Une erreur est survenue. Réessayez.";
+      }
+
+      function changerMode(nouveauMode) {
+        mode = nouveauMode;
+
+        const inscription = mode === "inscription";
+
+        $("ongletConnexion").classList.toggle("actif", !inscription);
+        $("ongletInscription").classList.toggle("actif", inscription);
+
+        $("ongletConnexion").setAttribute(
+          "aria-selected", String(!inscription)
+        );
+        $("ongletInscription").setAttribute(
+          "aria-selected", String(inscription)
+        );
+
+        $("champsNom").hidden = !inscription;
+        $("confirmationMotDePasse").hidden = !inscription;
+        $("zoneMotDePasseOublie").hidden = inscription;
+
+        $("prenom").required = inscription;
+        $("nom").required = inscription;
+        $("confirmerMotDePasse").required = inscription;
+
+        $("motDePasse").autocomplete =
+          inscription ? "new-password" : "current-password";
+
+        $("boutonPrincipal").textContent =
+          inscription ? "Créer mon compte" : "Se connecter";
+
+        effacerMessage("messageAuthentification");
+      }
+
+      function afficherEcranConnecte(connecte, email = "") {
+        $("panneauAuthentification").hidden = connecte;
+        $("panneauNouveauMotDePasse").hidden = true;
+        $("panneauConnecte").hidden = !connecte;
+
+        if (connecte) {
+          $("emailConnecte").textContent = email;
+          effacerMessage("messageCompte");
+        }
+      }
+
+      function afficherEcranRecuperation() {
+        modeRecuperation = true;
+        $("panneauAuthentification").hidden = true;
+        $("panneauConnecte").hidden = true;
+        $("panneauNouveauMotDePasse").hidden = false;
+      }
+
+      async function terminerInscription(data) {
+        const utilisateur = data?.user;
+
+        if (utilisateur && data.session) {
+          // Le profil sera créé ou complété dans la prochaine étape.
+          // Aucun changement n'est effectué sur les commandes existantes.
+          try {
+            const { error } = await supabaseClient
+              .from("customer_profiles")
+              .upsert({
+                user_id: utilisateur.id,
+                prenom: $("prenom").value.trim(),
+                nom: $("nom").value.trim()
+              }, {
+                onConflict: "user_id"
+              });
+
+            if (error) {
+              console.warn(
+                "Le profil pourra être complété ultérieurement :",
+                error.message
+              );
+            }
+          } catch (erreur) {
+            console.warn("Profil initial non complété.", erreur);
+          }
+
+          afficherEcranConnecte(true, utilisateur.email || "");
+          afficherMessage(
+            "messageCompte",
+            "Votre compte est prêt. Les prochaines rubriques seront activées progressivement.",
+            "succes"
+          );
+        } else {
+          $("formulaireCompte").reset();
+
+          afficherMessage(
+            "messageAuthentification",
+            "Votre inscription est enregistrée. Consultez votre boîte e-mail pour confirmer votre adresse avant de vous connecter.",
+            "succes"
+          );
+        }
+      }
+
+      $("ongletConnexion").addEventListener("click", () => {
+        if (!occuppe) changerMode("connexion");
+      });
+
+      $("ongletInscription").addEventListener("click", () => {
+        if (!occuppe) changerMode("inscription");
+      });
+
+      $("formulaireCompte").addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (occuppe) return;
+
+        const email = $("email").value.trim();
+        const password = $("motDePasse").value;
+
+        occuppe = true;
+        $("boutonPrincipal").disabled = true;
+        $("boutonPrincipal").textContent = "Veuillez patienter…";
+        effacerMessage("messageAuthentification");
+
+        try {
+          if (mode === "inscription") {
+            if (password !== $("confirmerMotDePasse").value) {
+              afficherMessage(
+                "messageAuthentification",
+                "Les deux mots de passe ne correspondent pas.",
+                "erreur"
+              );
+              return;
+            }
+
+            const { data, error } = await supabaseClient.auth.signUp({
+              email,
+              password,
+              options: {
+                emailRedirectTo: window.location.origin +
+                  window.location.pathname,
+                data: {
+                  prenom: $("prenom").value.trim(),
+                  nom: $("nom").value.trim()
+                }
+              }
+            });
+
+            if (error) throw error;
+
+            await terminerInscription(data);
+
+          } else {
+            const { data, error } =
+              await supabaseClient.auth.signInWithPassword({
+                email,
+                password
+              });
+
+            if (error) throw error;
+
+            afficherEcranConnecte(
+              true,
+              data.user?.email || email
+            );
+          }
+        } catch (erreur) {
+          afficherMessage(
+            "messageAuthentification",
+            traduireErreur(erreur),
+            "erreur"
+          );
+        } finally {
+          occuppe = false;
+          $("boutonPrincipal").disabled = false;
+          $("boutonPrincipal").textContent =
+            mode === "inscription" ? "Créer mon compte" : "Se connecter";
+        }
+      });
+
+      // DEMANDE DE RÉINITIALISATION
+      $("boutonOublie").addEventListener("click", async () => {
+        if (occuppe) return;
+
+        const email = $("email").value.trim();
+
+        if (!email) {
+          afficherMessage(
+            "messageAuthentification",
+            "Saisissez d'abord votre adresse e-mail.",
+            "info"
+          );
+          $("email").focus();
+          return;
+        }
+
+        occuppe = true;
+        $("boutonOublie").disabled = true;
+
+        try {
+          const { error } =
+            await supabaseClient.auth.resetPasswordForEmail(email, {
+              redirectTo: window.location.origin +
+                window.location.pathname
+            });
+
+          if (error) throw error;
+
+          afficherMessage(
+            "messageAuthentification",
+            "Si cette adresse correspond à un compte, un e-mail de récupération sera envoyé. Vérifiez également vos courriers indésirables.",
+            "succes"
+          );
+        } catch (erreur) {
+          afficherMessage(
+            "messageAuthentification",
+            traduireErreur(erreur),
+            "erreur"
+          );
+        } finally {
+          occuppe = false;
+          $("boutonOublie").disabled = false;
+        }
+      });
+
+      // ENREGISTREMENT DU NOUVEAU MOT DE PASSE
+      $("formulaireNouveauMotDePasse").addEventListener(
+        "submit",
+        async (event) => {
+          event.preventDefault();
+
+          if (occuppe) return;
+
+          const nouveau = $("nouveauMotDePasse").value;
+          const confirmation = $("confirmationNouveauMotDePasse").value;
+
+          if (nouveau !== confirmation) {
+            afficherMessage(
+              "messageNouveauMotDePasse",
+              "Les deux mots de passe ne correspondent pas.",
+              "erreur"
+            );
+            return;
+          }
+
+          occuppe = true;
+          $("boutonEnregistrerMotDePasse").disabled = true;
+
+          try {
+            const { error } = await supabaseClient.auth.updateUser({
+              password: nouveau
+            });
+
+            if (error) throw error;
+
+            modeRecuperation = false;
+
+            afficherMessage(
+              "messageNouveauMotDePasse",
+              "Votre mot de passe a été modifié. Vous êtes maintenant connecté(e).",
+              "succes"
+            );
+
+            $("formulaireNouveauMotDePasse").hidden = true;
+
+            setTimeout(() => {
+              afficherEcranConnecte(
+                true,
+                $("email").value.trim()
+              );
+              $("formulaireNouveauMotDePasse").hidden = false;
+            }, 1600);
+
+          } catch (erreur) {
+            afficherMessage(
+              "messageNouveauMotDePasse",
+              traduireErreur(erreur),
+              "erreur"
+            );
+          } finally {
+            occuppe = false;
+            $("boutonEnregistrerMotDePasse").disabled = false;
+          }
+        }
+      );
+
+      // DÉCONNEXION
+      $("boutonDeconnexion").addEventListener("click", async () => {
+        if (occuppe) return;
+
+        occuppe = true;
+        $("boutonDeconnexion").disabled = true;
+
+        try {
+          const { error } = await supabaseClient.auth.signOut();
+          if (error) throw error;
+
+          afficherEcranConnecte(false);
+          $("motDePasse").value = "";
+          changerMode("connexion");
+
+          afficherMessage(
+            "messageAuthentification",
+            "Vous êtes déconnecté(e).",
+            "succes"
+          );
+        } catch (erreur) {
+          afficherMessage(
+            "messageCompte",
+            traduireErreur(erreur),
+            "erreur"
+          );
+        } finally {
+          occuppe = false;
+          $("boutonDeconnexion").disabled = false;
+        }
+      });
+
+      // INITIALISATION ET LIEN DE RÉCUPÉRATION
+      supabaseClient.auth.onAuthStateChange((evenement, session) => {
+        if (evenement === "PASSWORD_RECOVERY") {
+          afficherEcranRecuperation();
+          return;
+        }
+
+        if (!modeRecuperation && session?.user) {
+          afficherEcranConnecte(true, session.user.email || "");
+        } else if (!modeRecuperation && traitementInitialTermine) {
+          afficherEcranConnecte(false);
+        }
+      });
+
+      async function initialiser() {
+        try {
+          const { data, error } = await supabaseClient.auth.getSession();
+          if (error) throw error;
+
+          const hash = window.location.hash || "";
+          const params = new URLSearchParams(hash.replace(/^#/, ""));
+
+          if (
+            params.get("type") === "recovery" ||
+            params.has("error_description") &&
+              /recovery|expired|invalid/i.test(
+                params.get("error_description") || ""
+              )
+          ) {
+            afficherEcranRecuperation();
+
+            if (params.has("error_description")) {
+              afficherMessage(
+                "messageNouveauMotDePasse",
+                "Le lien de récupération est invalide ou expiré. Demandez un nouvel e-mail.",
+                "erreur"
+              );
+            }
+          } else if (data.session?.user) {
+            afficherEcranConnecte(true, data.session.user.email || "");
+          } else {
+            afficherEcranConnecte(false);
+          }
+
+          traitementInitialTermine = true;
+        } catch (erreur) {
+          afficherMessage(
+            "messageAuthentification",
+            "Impossible de vérifier votre connexion. Rechargez la page et réessayez.",
+            "erreur"
+          );
+        }
+      }
+
+      changerMode("connexion");
+      initialiser();
+    })();
+  </script>
+</body>
+</html>
