@@ -48,10 +48,16 @@
       font-size: 14px;
     }
 
-    main {
-      width: min(100% - 28px, 540px);
-      margin: 12px auto 40px;
-    }
+    
+
+main {
+  width: calc(100% - 40px);
+  max-width: 1100px;
+  margin: 12px auto 40px;
+  box-sizing: border-box;
+}
+
+
 
     .carte {
       padding: clamp(20px, 5vw, 34px);
@@ -643,9 +649,24 @@
         <p class="message" id="messageCommandes"
            role="status" aria-live="polite"></p>
       </section>
+      
       <!-- FIN MES COMMANDES -->
 
-      
+            <!-- MES FAVORIS -->
+      <section id="sectionMesFavoris">
+        <h2>❤️ Mes favoris</h2>
+        <p class="intro">
+          Retrouvez les créations que vous avez ajoutées à vos favoris.
+        </p>
+
+        <div id="listeMesFavoris">
+          <p>Chargement de vos favoris…</p>
+        </div>
+
+        <p class="message" id="messageFavoris"
+           role="status" aria-live="polite"></p>
+      </section>
+      <!-- FIN MES FAVORIS -->
       
       <!-- MES FAVORIS -->
       <section id="sectionMesFavoris" hidden>
@@ -844,6 +865,7 @@
           effacerMessage("messageCompte");
           chargerProfil();
           chargerCommandes();
+          chargerFavoris();
           chargerFidelite();
         }
       }
@@ -1343,6 +1365,103 @@
         }
       }
 
+      // MES FAVORIS : CHARGEMENT DEPUIS SUPABASE
+async function chargerFavoris() {
+  const zone = $("listeMesFavoris");
+  const message = $("messageFavoris");
+
+  if (!zone) return;
+
+  zone.innerHTML = "<p>Chargement de vos favoris…</p>";
+
+  const { data: utilisateurData } =
+    await supabaseClient.auth.getUser();
+
+  const utilisateur = utilisateurData?.user;
+
+  if (!utilisateur) {
+    zone.innerHTML = "<p>Connectez-vous pour retrouver vos favoris.</p>";
+    return;
+  }
+
+  const { data: favoris, error } = await supabaseClient
+    .from("customer_favorites")
+    .select("product_id, created_at")
+    .eq("user_id", utilisateur.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    zone.innerHTML = "";
+    if (message) {
+      message.textContent =
+        "Impossible de charger vos favoris pour le moment.";
+    }
+    console.error("Erreur de chargement des favoris :", error);
+    return;
+  }
+
+  if (!favoris || favoris.length === 0) {
+    zone.innerHTML =
+      "<p>🤍 Vous n’avez pas encore de favoris enregistrés dans votre compte.</p>";
+    return;
+  }
+
+  const idsProduits = favoris.map(favori => favori.product_id);
+
+  const { data: produits, error: erreurProduits } = await supabaseClient
+    .from("products")
+    .select("*")
+    .in("id", idsProduits);
+
+  if (erreurProduits) {
+    zone.innerHTML = "";
+    if (message) {
+      message.textContent =
+        "Impossible de récupérer les créations associées à vos favoris.";
+    }
+    console.error("Erreur de chargement des produits favoris :", erreurProduits);
+    return;
+  }
+
+  zone.innerHTML = "";
+
+  favoris.forEach(favori => {
+    const produit = produits.find(
+      element => String(element.id) === String(favori.product_id)
+    );
+
+    if (!produit) return;
+
+    const carte = document.createElement("article");
+    carte.className = "carte-favori-compte";
+
+    const titre =
+      produit.nom ||
+      produit.Nom ||
+      produit.name ||
+      "Création Sublime’K";
+
+    const nom = document.createElement("h3");
+    nom.textContent = titre;
+    carte.appendChild(nom);
+
+    const prix = produit.prix ?? produit.Prix ?? produit.price;
+
+    if (prix !== undefined && prix !== null && prix !== "") {
+      const prixElement = document.createElement("p");
+      prixElement.textContent = `${prix} €`;
+      carte.appendChild(prixElement);
+    }
+
+    zone.appendChild(carte);
+  });
+
+  if (!zone.children.length) {
+    zone.innerHTML =
+      "<p>Les produits associés à vos favoris ne sont plus disponibles.</p>";
+  }
+}
+// FIN DU CHARGEMENT DES FAVORIS
       
       // MES COMMANDES : CHARGEMENT DU COMPTE CLIENT
       async function chargerCommandes() {
@@ -1645,6 +1764,190 @@
         }
       }
       // FIN MES COMMANDES
+
+    
+      // MES FAVORIS : SYNCHRONISATION AVEC LE COMPTE CLIENT
+      async function chargerFavoris() {
+        const conteneur = $("listeMesFavoris");
+        conteneur.textContent = "Chargement de vos favoris…";
+
+        try {
+          const { data: resultatUtilisateur, error: erreurUtilisateur } =
+            await supabaseClient.auth.getUser();
+
+          if (erreurUtilisateur) throw erreurUtilisateur;
+
+          const utilisateur = resultatUtilisateur.user;
+
+          if (!utilisateur) {
+            conteneur.textContent =
+              "Connectez-vous pour retrouver vos favoris.";
+            return;
+          }
+
+          // Récupérer les favoris déjà enregistrés sur cet appareil.
+          let favorisLocaux = [];
+
+          try {
+            const sauvegarde = JSON.parse(
+              localStorage.getItem("sublimeK_favoris") || "[]"
+            );
+
+            if (Array.isArray(sauvegarde)) {
+              favorisLocaux = sauvegarde.filter(
+                produit => produit && produit.id
+              );
+            }
+          } catch (erreurLocale) {
+            console.warn("Lecture des favoris locaux impossible.");
+          }
+
+          // Synchroniser les favoris locaux avec le compte client.
+          if (favorisLocaux.length > 0) {
+            const lignes = favorisLocaux.map(produit => ({
+              user_id: utilisateur.id,
+              product_id: produit.id
+            }));
+
+            const { error: erreurSynchronisation } =
+              await supabaseClient
+                .from("customer_favorites")
+                .upsert(lignes, {
+                  onConflict: "user_id,product_id",
+                  ignoreDuplicates: true
+                });
+
+            if (erreurSynchronisation) {
+              console.warn(
+                "Synchronisation des favoris à vérifier :",
+                erreurSynchronisation.message
+              );
+            }
+          }
+
+          // Lire les favoris associés au compte connecté.
+          const { data: favorisCompte, error: erreurFavoris } =
+            await supabaseClient
+              .from("customer_favorites")
+              .select("product_id, created_at")
+              .eq("user_id", utilisateur.id)
+              .order("created_at", { ascending: false });
+
+          if (erreurFavoris) throw erreurFavoris;
+
+          conteneur.replaceChildren();
+
+          if (!favorisCompte || favorisCompte.length === 0) {
+            const vide = document.createElement("p");
+            vide.textContent =
+              "Vous n’avez pas encore de favoris. Ajoutez des créations depuis la boutique.";
+            conteneur.appendChild(vide);
+            return;
+          }
+
+          const identifiants = favorisCompte.map(
+            favori => favori.product_id
+          );
+
+          const { data: produits, error: erreurProduits } =
+            await supabaseClient
+              .from("products")
+              .select("id, nom, description, prix, image_url")
+              .in("id", identifiants)
+              .eq("visible", true);
+
+          if (erreurProduits) throw erreurProduits;
+
+          const produitsParId = new Map(
+            (produits || []).map(produit => [
+              String(produit.id),
+              produit
+            ])
+          );
+
+          for (const favori of favorisCompte) {
+            const produit = produitsParId.get(String(favori.product_id));
+            if (!produit) continue;
+
+            const carte = document.createElement("article");
+            carte.className = "encart";
+
+            if (produit.image_url) {
+              const image = document.createElement("img");
+              image.src = produit.image_url;
+              image.alt = produit.nom || "Création Sublime’K";
+              image.loading = "lazy";
+              image.style.cssText =
+                "display:block;width:100%;max-width:240px;max-height:240px;object-fit:contain;margin:0 auto 12px;";
+              carte.appendChild(image);
+            }
+
+            const titre = document.createElement("h3");
+            titre.textContent = produit.nom || "Création Sublime’K";
+            carte.appendChild(titre);
+
+            const prix = document.createElement("p");
+            prix.textContent = Number(produit.prix || 0).toLocaleString(
+              "fr-FR",
+              { style: "currency", currency: "EUR" }
+            );
+            carte.appendChild(prix);
+
+            if (produit.description) {
+              const description = document.createElement("p");
+              description.textContent = produit.description;
+              carte.appendChild(description);
+            }
+
+            const bouton = document.createElement("button");
+            bouton.type = "button";
+            bouton.className = "bouton";
+            bouton.textContent = "Retirer des favoris";
+
+            bouton.addEventListener("click", async () => {
+              bouton.disabled = true;
+
+              const { error } = await supabaseClient
+                .from("customer_favorites")
+                .delete()
+                .eq("user_id", utilisateur.id)
+                .eq("product_id", produit.id);
+
+              if (error) {
+                console.error("Erreur de suppression du favori :", error);
+                bouton.disabled = false;
+                $("messageFavoris").textContent =
+                  "Impossible de retirer ce favori pour le moment.";
+                return;
+              }
+
+              // Garder aussi la liste locale à jour.
+              const restants = favorisLocaux.filter(
+                element => String(element.id) !== String(produit.id)
+              );
+
+              try {
+                localStorage.setItem(
+                  "sublimeK_favoris",
+                  JSON.stringify(restants)
+                );
+              } catch (erreurLocale) {
+                console.warn("Mise à jour des favoris locaux impossible.");
+              }
+
+              await chargerFavoris();
+            });
+
+            carte.appendChild(bouton);
+            conteneur.appendChild(carte);
+          }
+        } catch (erreur) {
+          console.error("Erreur de chargement des favoris :", erreur);
+          conteneur.textContent =
+            "Impossible de charger vos favoris pour le moment. Réessayez plus tard.";
+        }
+      }
+      // FIN CHARGEMENT DES FAVORIS
 
       $("formulaireProfil").addEventListener("submit", async (event) => {
         event.preventDefault();
