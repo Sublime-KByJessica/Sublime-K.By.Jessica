@@ -355,36 +355,103 @@
     return achats;
   }
 
-  async function sauvegarderAchat(formulaire) {
-    const donnees = new FormData(formulaire);
-    const id = donnees.get("id") || null;
+  
+async function sauvegarderAchat(formulaire) {
+  const donnees = new FormData(formulaire);
+  const id = donnees.get("id") || null;
 
-    const livraison = nombre(donnees.get("frais_livraison"));
-    const autres = nombre(donnees.get("frais_autres"));
+  const livraison = nombre(donnees.get("frais_livraison"));
+  const autres = nombre(donnees.get("frais_autres"));
 
-    if (livraison < 0 || autres < 0) {
-      throw new Error("Les frais ne peuvent pas être négatifs.");
+  if (livraison < 0 || autres < 0) {
+    throw new Error("Les frais ne peuvent pas être négatifs.");
+  }
+
+  const achat = {
+    fournisseur_id: donnees.get("fournisseur_id") || null,
+    reference: String(donnees.get("reference") || "").trim() || null,
+    date_commande: donnees.get("date_commande") || null,
+    date_reception: donnees.get("date_reception") || null,
+    statut: donnees.get("statut") || "a_commander",
+    statut_paiement: donnees.get("statut_paiement") || "a_payer",
+    frais_livraison: livraison,
+    frais_autres: autres,
+    notes: String(donnees.get("notes") || "").trim() || null
+  };
+
+  const resultat = await enregistrer(
+    TABLES.achats,
+    achat,
+    id
+  );
+
+  const achatId = id || resultat?.[0]?.id;
+
+  if (!achatId) {
+    throw new Error(
+      "L'achat a été enregistré, mais son identifiant est introuvable."
+    );
+  }
+
+  const nomArticle = String(
+    donnees.get("nom_article") || ""
+  ).trim();
+
+  if (nomArticle) {
+    const quantite = nombre(donnees.get("quantite"));
+    const prixUnitaire = nombre(donnees.get("prix_unitaire"));
+    const quantiteRecue = nombre(donnees.get("quantite_recue"));
+
+    if (quantite <= 0) {
+      throw new Error(
+        "La quantité de l'article doit être supérieure à zéro."
+      );
     }
 
-    await enregistrer(TABLES.achats, {
-      fournisseur_id: donnees.get("fournisseur_id") || null,
-      reference: String(donnees.get("reference") || "").trim() || null,
-      date_commande: donnees.get("date_commande") || null,
-      date_reception: donnees.get("date_reception") || null,
-      statut: donnees.get("statut") || "a_commander",
-      statut_paiement: donnees.get("statut_paiement") || "a_payer",
-      frais_livraison: livraison,
-      frais_autres: autres,
-      notes: String(donnees.get("notes") || "").trim() || null
-    }, id);
+    if (prixUnitaire < 0 || quantiteRecue < 0) {
+      throw new Error(
+        "Le prix et la quantité reçue ne peuvent pas être négatifs."
+      );
+    }
 
-    formulaire.reset();
-    const champId = formulaire.querySelector('[name="id"]');
-    if (champId) champId.value = "";
+    const { error } = await obtenirClient()
+      .from(TABLES.lignesAchats)
+      .insert({
+        achat_id: achatId,
+        nom_article: nomArticle,
+        url_article: verifierUrl(
+          String(donnees.get("url_article") || "").trim()
+        ),
+        type_article: donnees.get("type_article") || "autre",
+        quantite,
+        prix_unitaire: prixUnitaire,
+        quantite_recue: quantiteRecue,
+        notes: String(
+          donnees.get("notes_article") || ""
+        ).trim() || null
+      });
 
-    afficherMessage("Achat fournisseur enregistré.");
-    await chargerAchats();
+    if (error) {
+      throw new Error(
+        "L'achat est enregistré, mais l'article n'a pas pu être ajouté : " +
+        error.message
+      );
+    }
   }
+
+  formulaire.reset();
+
+  const champId = formulaire.querySelector('[name="id"]');
+  if (champId) champId.value = "";
+
+  afficherMessage(
+    nomArticle
+      ? "Achat fournisseur et article enregistrés."
+      : "Achat fournisseur enregistré."
+  );
+
+  await chargerAchats();
+}
 
   /* ---------------- COÛT DE REVIENT ---------------- */
 
