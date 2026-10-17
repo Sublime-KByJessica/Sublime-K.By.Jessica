@@ -119,33 +119,33 @@
 
   /* ---------------- FOURNISSEURS ---------------- */
 
+  
   async function chargerFournisseurs() {
-     
-const selectAchat = document.getElementById("skAchatFournisseur");
-
-if (selectAchat) {
-  const valeurActuelle = selectAchat.value;
-
-  selectAchat.innerHTML =
-    '<option value="">Choisir un fournisseur</option>' +
-    fournisseurs
-      .filter(f => f.actif)
-      .map(f => `
-        <option value="${echapper(f.id)}">
-          ${echapper(f.nom)}
-        </option>
-      `)
-      .join("");
-
-  if (valeurActuelle) {
-    selectAchat.value = valeurActuelle;
-  }
-}
-
     const fournisseurs = await lire(
       TABLES.fournisseurs,
       "id,nom,site_url,contact,notes,actif"
     );
+
+    const selectAchat = document.getElementById("skAchatFournisseur");
+
+    if (selectAchat) {
+      const valeurActuelle = selectAchat.value;
+
+      selectAchat.innerHTML =
+        '<option value="">Choisir un fournisseur</option>' +
+        fournisseurs
+          .filter(f => f.actif)
+          .map(f => `
+            <option value="${echapper(f.id)}">
+              ${echapper(f.nom)}
+            </option>
+          `)
+          .join("");
+
+      if (valeurActuelle) {
+        selectAchat.value = valeurActuelle;
+      }
+    }
 
     const zone = document.getElementById("skFournisseursListe");
     if (!zone) return fournisseurs;
@@ -163,9 +163,11 @@ if (selectAchat) {
               : ""}
             ${f.notes ? `<p>${echapper(f.notes)}</p>` : ""}
             <p>${f.actif ? "Actif" : "Inactif"}</p>
-            <button type="button" data-sk-action="modifier-fournisseur"
+            <button type="button"
+              data-sk-action="modifier-fournisseur"
               data-id="${f.id}">Modifier</button>
-            <button type="button" data-sk-action="supprimer-fournisseur"
+            <button type="button"
+              data-sk-action="supprimer-fournisseur"
               data-id="${f.id}">Supprimer</button>
           </article>
         `).join("")
@@ -173,6 +175,7 @@ if (selectAchat) {
 
     return fournisseurs;
   }
+
 
   async function sauvegarderFournisseur(formulaire) {
     const donnees = new FormData(formulaire);
