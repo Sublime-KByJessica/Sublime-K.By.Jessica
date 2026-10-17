@@ -1847,6 +1847,15 @@ button{cursor:pointer}
     🚚 Livraison
   </button>
 
+  
+<button
+  class="menu-bouton"
+  data-section="promotions"
+>
+  🎟️ Promotions & Offres
+</button>
+
+
   <div class="menu-sous-titre">
     GESTION
   </div>
@@ -3324,6 +3333,172 @@ button{cursor:pointer}
 
 </section>
 
+  
+<!-- =====================================================
+     PROMOTIONS & OFFRES
+===================================================== -->
+
+<section
+  class="section-admin"
+  id="section-promotions"
+>
+
+  <div class="section-titre">
+    <h1>🎟️ Promotions & Offres</h1>
+    <p>
+      Crée et gère tes codes promo et tes promotions automatiques.
+    </p>
+  </div>
+
+  <div class="bloc">
+    <div class="livraison-intro">
+      <strong>🌸 Gestion des offres Sublime’K</strong>
+      <p>
+        Les offres seront reliées au panier et aux commandes
+        après la mise en place de leur validation sécurisée.
+      </p>
+      <p>
+        Une promotion reste inactive tant que tu ne l’actives pas.
+      </p>
+    </div>
+
+    <h3>➕ Créer une promotion</h3>
+
+    <div class="form-grid">
+
+      <div class="champ full">
+        <label for="promotionNom">Nom de la promotion</label>
+        <input
+          type="text"
+          id="promotionNom"
+          placeholder="Ex. Offre de lancement"
+        >
+      </div>
+
+      <div class="champ full">
+        <label for="promotionDescription">Description (facultative)</label>
+        <textarea
+          id="promotionDescription"
+          placeholder="Décris ton offre..."
+        ></textarea>
+      </div>
+
+      <div class="champ">
+        <label for="promotionMode">Mode d’application</label>
+        <select id="promotionMode">
+          <option value="code">🎟️ Code promo</option>
+          <option value="automatique">✨ Automatique</option>
+        </select>
+      </div>
+
+      <div class="champ" id="promotionCodeChamp">
+        <label for="promotionCode">Code promo</label>
+        <input
+          type="text"
+          id="promotionCode"
+          placeholder="Ex. SUBLIME10"
+          maxlength="50"
+        >
+      </div>
+
+      <div class="champ">
+        <label for="promotionType">Type de réduction</label>
+        <select id="promotionType">
+          <option value="pourcentage">Pourcentage (%)</option>
+          <option value="montant">Montant fixe (€)</option>
+        </select>
+      </div>
+
+      <div class="champ">
+        <label for="promotionValeur">Valeur de la réduction</label>
+        <input
+          type="number"
+          id="promotionValeur"
+          min="0.01"
+          step="0.01"
+          placeholder="Ex. 10"
+        >
+      </div>
+
+      <div class="champ">
+        <label for="promotionMinimum">Montant minimum du panier (€)</label>
+        <input
+          type="number"
+          id="promotionMinimum"
+          min="0"
+          step="0.01"
+          value="0"
+        >
+      </div>
+
+      <div class="champ">
+        <label for="promotionLimite">Nombre maximal d’utilisations</label>
+        <input
+          type="number"
+          id="promotionLimite"
+          min="1"
+          step="1"
+          placeholder="Illimité si vide"
+        >
+      </div>
+
+      <div class="champ">
+        <label for="promotionDebut">Date de début (facultative)</label>
+        <input type="datetime-local" id="promotionDebut">
+      </div>
+
+      <div class="champ">
+        <label for="promotionFin">Date de fin (facultative)</label>
+        <input type="datetime-local" id="promotionFin">
+      </div>
+
+    </div>
+
+    <div class="checkbox-ligne">
+      <input type="checkbox" id="promotionActive">
+      <label for="promotionActive">
+        ✅ Activer cette promotion
+      </label>
+    </div>
+
+    <div class="actions-formulaire">
+      <button
+        type="button"
+        class="btn btn-enregistrer"
+        id="boutonEnregistrerPromotion"
+      >
+        💾 Enregistrer la promotion
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-annuler"
+        id="boutonAnnulerPromotion"
+      >
+        Annuler la modification
+      </button>
+    </div>
+
+    <div
+      id="messagePromotions"
+      role="status"
+      aria-live="polite"
+    ></div>
+  </div>
+
+  <div class="bloc">
+    <h2>📋 Mes promotions</h2>
+    <p>
+      Tu retrouveras ici tes offres, leur statut et leur nombre
+      d’utilisations.
+    </p>
+
+    <div id="listePromotions">
+      Chargement des promotions...
+    </div>
+  </div>
+
+</section>
 
 <!-- =====================================================
      FINANCES
@@ -16785,6 +16960,400 @@ async function(id){
   );
 
 };
+
+  
+/* =====================================================
+   PROMOTIONS & OFFRES — ADMINISTRATION
+===================================================== */
+
+let promotionEnModification = null;
+
+function afficherMessagePromotion(texte, erreur = false) {
+  const zone = document.getElementById("messagePromotions");
+  if (!zone) return;
+
+  zone.textContent = texte;
+  zone.style.color = erreur ? "#8B4F4F" : "#526044";
+  zone.style.marginTop = "15px";
+  zone.style.fontWeight = "bold";
+}
+
+function datePourChampPromotion(date) {
+  if (!date) return "";
+
+  const d = new Date(date);
+  if (Number.isNaN(d.getTime())) return "";
+
+  const decalage = d.getTimezoneOffset() * 60000;
+  return new Date(d.getTime() - decalage)
+    .toISOString()
+    .slice(0, 16);
+}
+
+function reinitialiserFormulairePromotion() {
+  promotionEnModification = null;
+
+  document.getElementById("promotionNom").value = "";
+  document.getElementById("promotionDescription").value = "";
+  document.getElementById("promotionMode").value = "code";
+  document.getElementById("promotionCode").value = "";
+  document.getElementById("promotionType").value = "pourcentage";
+  document.getElementById("promotionValeur").value = "";
+  document.getElementById("promotionMinimum").value = "0";
+  document.getElementById("promotionLimite").value = "";
+  document.getElementById("promotionDebut").value = "";
+  document.getElementById("promotionFin").value = "";
+  document.getElementById("promotionActive").checked = false;
+
+  document.getElementById("boutonEnregistrerPromotion").textContent =
+    "💾 Enregistrer la promotion";
+
+  document.getElementById("boutonAnnulerPromotion").style.display = "none";
+
+  mettreAJourChampsModePromotion();
+}
+
+function mettreAJourChampsModePromotion() {
+  const mode = document.getElementById("promotionMode")?.value;
+  const champ = document.getElementById("promotionCodeChamp");
+  const code = document.getElementById("promotionCode");
+
+  if (!champ || !code) return;
+
+  champ.style.display = mode === "code" ? "" : "none";
+  code.required = mode === "code";
+
+  if (mode === "automatique") {
+    code.value = "";
+  }
+}
+
+async function chargerPromotions() {
+  const liste = document.getElementById("listePromotions");
+  if (!liste) return;
+
+  if (!(await verifierAdmin())) {
+    liste.textContent = "Connecte-toi avec ton compte administrateur pour consulter les promotions.";
+    return;
+  }
+
+  liste.textContent = "⏳ Chargement des promotions...";
+
+  const { data, error } = await client
+    .from("promotions")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Erreur chargement promotions :", error);
+    liste.textContent = "❌ Impossible de charger les promotions : " + error.message;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    liste.textContent = "Aucune promotion créée pour le moment.";
+    return;
+  }
+
+  liste.innerHTML = "";
+
+  data.forEach(function(promotion) {
+    const carte = document.createElement("div");
+    carte.className = "commande";
+
+    const statut = promotion.actif ? "✅ Active" : "⏸️ Inactive";
+    const mode = promotion.mode_application === "code"
+      ? "🎟️ Code : " + (promotion.code || "—")
+      : "✨ Promotion automatique";
+
+    const reduction = promotion.type_reduction === "pourcentage"
+      ? Number(promotion.valeur) + " %"
+      : Number(promotion.valeur).toLocaleString("fr-FR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }) + " €";
+
+    const limite = promotion.limite_utilisations
+      ? promotion.utilisations + " / " + promotion.limite_utilisations
+      : promotion.utilisations + " utilisation(s), sans limite définie";
+
+    const debut = promotion.date_debut
+      ? new Date(promotion.date_debut).toLocaleString("fr-FR")
+      : "Immédiat";
+
+    const fin = promotion.date_fin
+      ? new Date(promotion.date_fin).toLocaleString("fr-FR")
+      : "Aucune date de fin";
+
+    const titre = document.createElement("h3");
+    titre.textContent = promotion.nom;
+    carte.appendChild(titre);
+
+    const details = document.createElement("div");
+    details.style.lineHeight = "1.8";
+
+    [
+      mode,
+      "Réduction : " + reduction,
+      "Panier minimum : " + Number(promotion.montant_minimum || 0).toLocaleString("fr-FR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }) + " €",
+      "Utilisations : " + limite,
+      "Début : " + debut,
+      "Fin : " + fin,
+      "Statut : " + statut
+    ].forEach(function(ligne) {
+      const p = document.createElement("p");
+      p.textContent = ligne;
+      p.style.margin = "4px 0";
+      details.appendChild(p);
+    });
+
+    if (promotion.description) {
+      const description = document.createElement("p");
+      description.textContent = promotion.description;
+      details.appendChild(description);
+    }
+
+    carte.appendChild(details);
+
+    const actions = document.createElement("div");
+    actions.className = "actions-formulaire";
+
+    const modifier = document.createElement("button");
+    modifier.type = "button";
+    modifier.className = "btn btn-modifier";
+    modifier.textContent = "✏️ Modifier";
+    modifier.addEventListener("click", function() {
+      modifierPromotion(promotion);
+    });
+
+    const activer = document.createElement("button");
+    activer.type = "button";
+    activer.className = "btn " + (promotion.actif ? "btn-annuler" : "btn-enregistrer");
+    activer.style.display = "inline-block";
+    activer.textContent = promotion.actif ? "⏸️ Désactiver" : "✅ Activer";
+    activer.addEventListener("click", function() {
+      changerStatutPromotion(promotion.id, !promotion.actif);
+    });
+
+    const supprimer = document.createElement("button");
+    supprimer.type = "button";
+    supprimer.className = "btn btn-supprimer";
+    supprimer.textContent = "🗑️ Supprimer";
+    supprimer.addEventListener("click", function() {
+      supprimerPromotion(promotion.id, promotion.nom);
+    });
+
+    actions.append(modifier, activer, supprimer);
+    carte.appendChild(actions);
+    liste.appendChild(carte);
+  });
+}
+
+function modifierPromotion(promotion) {
+  promotionEnModification = promotion.id;
+
+  document.getElementById("promotionNom").value = promotion.nom || "";
+  document.getElementById("promotionDescription").value = promotion.description || "";
+  document.getElementById("promotionMode").value = promotion.mode_application;
+  document.getElementById("promotionCode").value = promotion.code || "";
+  document.getElementById("promotionType").value = promotion.type_reduction;
+  document.getElementById("promotionValeur").value = promotion.valeur;
+  document.getElementById("promotionMinimum").value = promotion.montant_minimum || 0;
+  document.getElementById("promotionLimite").value = promotion.limite_utilisations || "";
+  document.getElementById("promotionDebut").value = datePourChampPromotion(promotion.date_debut);
+  document.getElementById("promotionFin").value = datePourChampPromotion(promotion.date_fin);
+  document.getElementById("promotionActive").checked = !!promotion.actif;
+
+  mettreAJourChampsModePromotion();
+
+  document.getElementById("boutonEnregistrerPromotion").textContent =
+    "💾 Enregistrer les modifications";
+
+  document.getElementById("boutonAnnulerPromotion").style.display = "inline-block";
+
+  document.getElementById("section-promotions").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+  afficherMessagePromotion("Modification de « " + promotion.nom + " ».");
+}
+
+async function enregistrerPromotion() {
+  if (!(await verifierAdmin())) return;
+
+  const nom = document.getElementById("promotionNom").value.trim();
+  const mode = document.getElementById("promotionMode").value;
+  const codeSaisi = document.getElementById("promotionCode").value.trim();
+  const type = document.getElementById("promotionType").value;
+  const valeur = Number(document.getElementById("promotionValeur").value);
+  const minimum = Number(document.getElementById("promotionMinimum").value || 0);
+  const limiteTexte = document.getElementById("promotionLimite").value.trim();
+  const limite = limiteTexte ? Number(limiteTexte) : null;
+  const debutTexte = document.getElementById("promotionDebut").value;
+  const finTexte = document.getElementById("promotionFin").value;
+
+  if (!nom) {
+    afficherMessagePromotion("Indique le nom de la promotion.", true);
+    return;
+  }
+
+  if (mode === "code" && !codeSaisi) {
+    afficherMessagePromotion("Indique le code promo.", true);
+    return;
+  }
+
+  if (!Number.isFinite(valeur) || valeur <= 0) {
+    afficherMessagePromotion("La valeur de la réduction doit être supérieure à zéro.", true);
+    return;
+  }
+
+  if (type === "pourcentage" && valeur > 100) {
+    afficherMessagePromotion("Une réduction en pourcentage ne peut pas dépasser 100 %.", true);
+    return;
+  }
+
+  if (!Number.isFinite(minimum) || minimum < 0) {
+    afficherMessagePromotion("Le montant minimum doit être positif ou nul.", true);
+    return;
+  }
+
+  if (limite !== null && (!Number.isInteger(limite) || limite < 1)) {
+    afficherMessagePromotion("La limite d'utilisations doit être un nombre entier supérieur à zéro.", true);
+    return;
+  }
+
+  const debut = debutTexte ? new Date(debutTexte) : null;
+  const fin = finTexte ? new Date(finTexte) : null;
+
+  if (debut && Number.isNaN(debut.getTime())) {
+    afficherMessagePromotion("La date de début est invalide.", true);
+    return;
+  }
+
+  if (fin && Number.isNaN(fin.getTime())) {
+    afficherMessagePromotion("La date de fin est invalide.", true);
+    return;
+  }
+
+  if (debut && fin && fin <= debut) {
+    afficherMessagePromotion("La date de fin doit être après la date de début.", true);
+    return;
+  }
+
+  const bouton = document.getElementById("boutonEnregistrerPromotion");
+  bouton.disabled = true;
+
+  afficherMessagePromotion("⏳ Enregistrement en cours...");
+
+  const donnees = {
+    nom: nom,
+    description: document.getElementById("promotionDescription").value.trim() || null,
+    mode_application: mode,
+    code: mode === "code" ? codeSaisi.toUpperCase() : null,
+    type_reduction: type,
+    valeur: valeur,
+    montant_minimum: minimum,
+    limite_utilisations: limite,
+    date_debut: debut ? debut.toISOString() : null,
+    date_fin: fin ? fin.toISOString() : null,
+    actif: document.getElementById("promotionActive").checked,
+    updated_at: new Date().toISOString()
+  };
+
+  let resultat;
+
+  if (promotionEnModification) {
+    resultat = await client
+      .from("promotions")
+      .update(donnees)
+      .eq("id", promotionEnModification);
+  } else {
+    resultat = await client
+      .from("promotions")
+      .insert([donnees]);
+  }
+
+  bouton.disabled = false;
+
+  if (resultat.error) {
+    console.error("Erreur enregistrement promotion :", resultat.error);
+    afficherMessagePromotion(
+      "❌ Enregistrement impossible : " + resultat.error.message,
+      true
+    );
+    return;
+  }
+
+  reinitialiserFormulairePromotion();
+  afficherMessagePromotion("✅ Promotion enregistrée dans Supabase.");
+  await chargerPromotions();
+}
+
+async function changerStatutPromotion(id, actif) {
+  if (!(await verifierAdmin())) return;
+
+  const { error } = await client
+    .from("promotions")
+    .update({
+      actif: actif,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", id);
+
+  if (error) {
+    console.error(error);
+    afficherMessagePromotion("❌ Impossible de modifier le statut : " + error.message, true);
+    return;
+  }
+
+  afficherMessagePromotion(actif ? "✅ Promotion activée." : "⏸️ Promotion désactivée.");
+  await chargerPromotions();
+}
+
+async function supprimerPromotion(id, nom) {
+  if (!(await verifierAdmin())) return;
+
+  if (!confirm("Supprimer définitivement la promotion « " + nom + " » ?")) {
+    return;
+  }
+
+  const { error } = await client
+    .from("promotions")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error(error);
+    afficherMessagePromotion("❌ Suppression impossible : " + error.message, true);
+    return;
+  }
+
+  if (promotionEnModification === id) {
+    reinitialiserFormulairePromotion();
+  }
+
+  afficherMessagePromotion("🗑️ Promotion supprimée.");
+  await chargerPromotions();
+}
+
+document.getElementById("promotionMode")
+  ?.addEventListener("change", mettreAJourChampsModePromotion);
+
+document.getElementById("boutonEnregistrerPromotion")
+  ?.addEventListener("click", enregistrerPromotion);
+
+document.getElementById("boutonAnnulerPromotion")
+  ?.addEventListener("click", function() {
+    reinitialiserFormulairePromotion();
+    afficherMessagePromotion("Modification annulée.");
+  });
+
+document.querySelector('.menu-bouton[data-section="promotions"]')
+  ?.addEventListener("click", chargerPromotions);
   
 </script>
 
