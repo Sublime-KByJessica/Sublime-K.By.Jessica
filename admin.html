@@ -9475,6 +9475,27 @@ async function afficherCommande(commande){
         ).toFixed(2)} €
       </p>
 
+      ${
+        Number(commande.montant_reduction || 0) > 0
+          ? `
+            <p style="
+              padding:10px;
+              margin:10px 0;
+              background:#F1F3EA;
+              border-radius:8px;
+              color:#536044;
+            ">
+              🎟️ <strong>Promotion appliquée</strong><br>
+              Code : <strong>${echapperHTML(commande.code_promo || "")}</strong><br>
+              Réduction :
+              <strong>
+                - ${Number(commande.montant_reduction).toFixed(2).replace(".", ",")} €
+              </strong>
+            </p>
+          `
+          : ""
+      }
+
       <p>
         💰
         <strong>
