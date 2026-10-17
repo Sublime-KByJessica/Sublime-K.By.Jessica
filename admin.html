@@ -1855,6 +1855,13 @@ button{cursor:pointer}
   🎟️ Promotions & Offres
 </button>
 
+  
+<button
+  class="menu-bouton"
+  data-section="fidelite"
+>
+  🎁 Programme fidélité
+</button>
 
   <div class="menu-sous-titre">
     GESTION
@@ -3495,6 +3502,158 @@ button{cursor:pointer}
 
     <div id="listePromotions">
       Chargement des promotions...
+    </div>
+  </div>
+
+</section>
+
+  
+<!-- =====================================================
+     PROGRAMME FIDÉLITÉ SUBLIME’K
+===================================================== -->
+
+<section
+  class="section-admin"
+  id="section-fidelite"
+>
+
+  <div class="section-titre">
+    <h1>🎁 Programme fidélité</h1>
+    <p>
+      Configure les points et les récompenses proposées
+      aux clientes de Sublime’K.
+    </p>
+  </div>
+
+  <div class="bloc">
+    <h2>⚙️ Paramètres de la récompense</h2>
+
+    <p>
+      Une cliente cumule 1 point par euro dépensé.
+      À 200 points, elle peut choisir une récompense.
+    </p>
+
+    <form id="formulaireRecompenseFidelite">
+
+      <input type="hidden" id="fideliteRecompenseId">
+
+      <div class="form-grid">
+
+        <div class="champ full">
+          <label for="fideliteNom">Nom de la récompense</label>
+          <input
+            type="text"
+            id="fideliteNom"
+            placeholder="Ex. Réduction fidélité"
+            required
+          >
+        </div>
+
+        <div class="champ full">
+          <label for="fideliteDescription">Description</label>
+          <textarea
+            id="fideliteDescription"
+            placeholder="Décris la récompense proposée"
+          ></textarea>
+        </div>
+
+        <div class="champ">
+          <label for="fideliteType">Type de récompense</label>
+          <select id="fideliteType" required>
+            <option value="montant">Réduction en euros (€)</option>
+            <option value="pourcentage">Réduction en pourcentage (%)</option>
+            <option value="bon_achat">Cadeau personnalisé</option>
+          </select>
+        </div>
+
+        <div class="champ">
+          <label for="fideliteValeur">Valeur de la récompense</label>
+          <input
+            type="number"
+            id="fideliteValeur"
+            min="0"
+            step="0.01"
+            value="5"
+            required
+          >
+          <small>
+            Pour un cadeau, la valeur pourra servir de référence.
+          </small>
+        </div>
+
+        <div class="champ">
+          <label for="fidelitePoints">Points nécessaires</label>
+          <input
+            type="number"
+            id="fidelitePoints"
+            min="1"
+            step="1"
+            value="200"
+            required
+          >
+        </div>
+
+        <div class="champ">
+          <label for="fideliteOrdre">Ordre d’affichage</label>
+          <input
+            type="number"
+            id="fideliteOrdre"
+            min="1"
+            step="1"
+            value="1"
+            required
+          >
+        </div>
+
+      </div>
+
+      <div class="checkbox-ligne">
+        <input
+          type="checkbox"
+          id="fideliteActive"
+          checked
+        >
+        <label for="fideliteActive">
+          Récompense active
+        </label>
+      </div>
+
+      <div class="actions-formulaire">
+        <button
+          type="submit"
+          class="btn btn-enregistrer"
+        >
+          💾 Enregistrer la récompense
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-annuler"
+          id="boutonAnnulerRecompenseFidelite"
+        >
+          Annuler
+        </button>
+      </div>
+
+      <div
+        id="messageFidelite"
+        class="message"
+        role="status"
+        aria-live="polite"
+      ></div>
+
+    </form>
+  </div>
+
+  <div class="bloc">
+    <h2>📋 Mes récompenses</h2>
+    <p>
+      Modifie les montants, les points nécessaires ou
+      l’activation de tes récompenses.
+    </p>
+
+    <div id="listeRecompensesFidelite">
+      Les récompenses seront chargées ici.
     </div>
   </div>
 
@@ -17375,7 +17534,302 @@ document.getElementById("boutonAnnulerPromotion")
 
 document.querySelector('.menu-bouton[data-section="promotions"]')
   ?.addEventListener("click", chargerPromotions);
+
   
+/* =====================================================
+   PROGRAMME FIDÉLITÉ SUBLIME’K
+===================================================== */
+
+let recompenseFideliteEnModification = null;
+
+function afficherMessageFidelite(texte, erreur = false) {
+  const zone = document.getElementById("messageFidelite");
+  if (!zone) return;
+
+  zone.textContent = texte;
+  zone.style.color = erreur ? "#b42318" : "#287a46";
+}
+
+function echapperHtmlFidelite(texte) {
+  return String(texte ?? "").replace(/[&<>"']/g, function(caractere) {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[caractere];
+  });
+}
+
+function reinitialiserFormulaireFidelite() {
+  recompenseFideliteEnModification = null;
+
+  document.getElementById("formulaireRecompenseFidelite").reset();
+  document.getElementById("fideliteRecompenseId").value = "";
+  document.getElementById("fideliteNom").value = "";
+  document.getElementById("fideliteDescription").value = "";
+  document.getElementById("fideliteType").value = "montant";
+  document.getElementById("fideliteValeur").value = "5";
+  document.getElementById("fidelitePoints").value = "200";
+  document.getElementById("fideliteOrdre").value = "1";
+  document.getElementById("fideliteActive").checked = true;
+
+  const bouton = document.querySelector(
+    "#formulaireRecompenseFidelite button[type='submit']"
+  );
+
+  if (bouton) bouton.textContent = "💾 Enregistrer la récompense";
+}
+
+async function chargerRecompensesFidelite() {
+  const liste = document.getElementById("listeRecompensesFidelite");
+  if (!liste) return;
+
+  if (!(await verifierAdmin())) {
+    liste.textContent = "Connecte-toi avec ton compte administrateur.";
+    return;
+  }
+
+  liste.textContent = "⏳ Chargement des récompenses...";
+
+  const { data, error } = await client
+    .from("loyalty_rewards")
+    .select("*")
+    .order("ordre", { ascending: true });
+
+  if (error) {
+    console.error("Erreur fidélité :", error);
+    liste.textContent = "Impossible de charger les récompenses : " + error.message;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    liste.textContent = "Aucune récompense enregistrée pour le moment.";
+    return;
+  }
+
+  liste.innerHTML = data.map(function(recompense) {
+    const type = recompense.type_recompense;
+    let valeur = "";
+
+    if (type === "montant") {
+      valeur = Number(recompense.valeur).toLocaleString("fr-FR") + " €";
+    } else if (type === "pourcentage") {
+      valeur = Number(recompense.valeur).toLocaleString("fr-FR") + " %";
+    } else {
+      valeur = "Cadeau personnalisé";
+    }
+
+    return `
+      <div class="bloc" style="margin-top:14px">
+        <h3>${echapperHtmlFidelite(recompense.nom)}</h3>
+        <p>${echapperHtmlFidelite(recompense.description || "Aucune description")}</p>
+        <p>
+          <strong>Récompense :</strong> ${echapperHtmlFidelite(valeur)}<br>
+          <strong>Seuil :</strong> ${Number(recompense.points_cout)} points<br>
+          <strong>Statut :</strong> ${recompense.actif ? "✅ Active" : "⏸️ Inactive"}
+        </p>
+        <div class="actions-formulaire">
+          <button
+            type="button"
+            class="btn btn-modifier"
+            data-fidelite-action="modifier"
+            data-fidelite-id="${echapperHtmlFidelite(recompense.id)}"
+          >✏️ Modifier</button>
+          <button
+            type="button"
+            class="btn btn-annuler"
+            data-fidelite-action="statut"
+            data-fidelite-id="${echapperHtmlFidelite(recompense.id)}"
+            data-fidelite-actif="${recompense.actif ? "true" : "false"}"
+          >${recompense.actif ? "⏸️ Désactiver" : "✅ Activer"}</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  liste.dataset.recompenses = JSON.stringify(data);
+}
+
+async function enregistrerRecompenseFidelite(evenement) {
+  evenement.preventDefault();
+
+  if (!(await verifierAdmin())) return;
+
+  const nom = document.getElementById("fideliteNom").value.trim();
+  const description = document.getElementById("fideliteDescription").value.trim();
+  const type = document.getElementById("fideliteType").value;
+  const valeur = Number(document.getElementById("fideliteValeur").value);
+  const points = Number(document.getElementById("fidelitePoints").value);
+  const ordre = Number(document.getElementById("fideliteOrdre").value);
+  const actif = document.getElementById("fideliteActive").checked;
+
+  if (!nom || !["montant", "pourcentage", "bon_achat"].includes(type)) {
+    afficherMessageFidelite("Vérifie le nom et le type de récompense.", true);
+    return;
+  }
+
+  if (!Number.isFinite(valeur) || valeur < 0 ||
+      !Number.isInteger(points) || points < 1 ||
+      !Number.isInteger(ordre) || ordre < 1) {
+    afficherMessageFidelite("Vérifie la valeur, les points et l'ordre.", true);
+    return;
+  }
+
+  if (type !== "bon_achat" && valeur <= 0) {
+    afficherMessageFidelite("La réduction doit être supérieure à zéro.", true);
+    return;
+  }
+
+  if (type === "pourcentage" && valeur > 100) {
+    afficherMessageFidelite("Le pourcentage ne peut pas dépasser 100 %.", true);
+    return;
+  }
+
+  const bouton = document.querySelector(
+    "#formulaireRecompenseFidelite button[type='submit']"
+  );
+
+  if (bouton) bouton.disabled = true;
+
+  afficherMessageFidelite("⏳ Enregistrement en cours...");
+
+  const donnees = {
+    nom: nom,
+    description: description || null,
+    type_recompense: type,
+    valeur: valeur,
+    points_cout: points,
+    ordre: ordre,
+    actif: actif,
+    updated_at: new Date().toISOString()
+  };
+
+  let resultat;
+
+  if (recompenseFideliteEnModification) {
+    resultat = await client
+      .from("loyalty_rewards")
+      .update(donnees)
+      .eq("id", recompenseFideliteEnModification);
+  } else {
+    resultat = await client
+      .from("loyalty_rewards")
+      .insert(donnees);
+  }
+
+  if (bouton) bouton.disabled = false;
+
+  if (resultat.error) {
+    console.error("Enregistrement fidélité :", resultat.error);
+    afficherMessageFidelite(
+      "❌ Enregistrement impossible : " + resultat.error.message,
+      true
+    );
+    return;
+  }
+
+  reinitialiserFormulaireFidelite();
+  afficherMessageFidelite("✅ Récompense enregistrée dans Supabase.");
+  await chargerRecompensesFidelite();
+}
+
+async function modifierRecompenseFidelite(id) {
+  const liste = document.getElementById("listeRecompensesFidelite");
+  let recompenses = [];
+
+  try {
+    recompenses = JSON.parse(liste.dataset.recompenses || "[]");
+  } catch (erreur) {
+    afficherMessageFidelite("Impossible de retrouver cette récompense.", true);
+    return;
+  }
+
+  const recompense = recompenses.find(function(item) {
+    return String(item.id) === String(id);
+  });
+
+  if (!recompense) {
+    afficherMessageFidelite("Récompense introuvable. Recharge la liste.", true);
+    return;
+  }
+
+  recompenseFideliteEnModification = recompense.id;
+
+  document.getElementById("fideliteRecompenseId").value = recompense.id;
+  document.getElementById("fideliteNom").value = recompense.nom || "";
+  document.getElementById("fideliteDescription").value = recompense.description || "";
+  document.getElementById("fideliteType").value = recompense.type_recompense;
+  document.getElementById("fideliteValeur").value = recompense.valeur ?? 1;
+  document.getElementById("fidelitePoints").value = recompense.points_cout ?? 200;
+  document.getElementById("fideliteOrdre").value = recompense.ordre ?? 1;
+  document.getElementById("fideliteActive").checked = !!recompense.actif;
+
+  const bouton = document.querySelector(
+    "#formulaireRecompenseFidelite button[type='submit']"
+  );
+
+  if (bouton) bouton.textContent = "💾 Enregistrer les modifications";
+
+  document.getElementById("section-fidelite").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+  afficherMessageFidelite("Modification de « " + recompense.nom + " ».");
+}
+
+async function changerStatutRecompenseFidelite(id, actif) {
+  if (!(await verifierAdmin())) return;
+
+  const { error } = await client
+    .from("loyalty_rewards")
+    .update({
+      actif: !actif,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", id);
+
+  if (error) {
+    console.error("Statut récompense :", error);
+    afficherMessageFidelite("Impossible de modifier le statut : " + error.message, true);
+    return;
+  }
+
+  afficherMessageFidelite(actif ? "⏸️ Récompense désactivée." : "✅ Récompense activée.");
+  await chargerRecompensesFidelite();
+}
+
+document.getElementById("formulaireRecompenseFidelite")
+  ?.addEventListener("submit", enregistrerRecompenseFidelite);
+
+document.getElementById("boutonAnnulerRecompenseFidelite")
+  ?.addEventListener("click", function() {
+    reinitialiserFormulaireFidelite();
+    afficherMessageFidelite("Modification annulée.");
+  });
+
+document.getElementById("listeRecompensesFidelite")
+  ?.addEventListener("click", function(evenement) {
+    const bouton = evenement.target.closest("button[data-fidelite-action]");
+    if (!bouton) return;
+
+    const id = bouton.dataset.fideliteId;
+
+    if (bouton.dataset.fideliteAction === "modifier") {
+      modifierRecompenseFidelite(id);
+    } else if (bouton.dataset.fideliteAction === "statut") {
+      changerStatutRecompenseFidelite(
+        id,
+        bouton.dataset.fideliteActif === "true"
+      );
+    }
+  });
+
+document.querySelector('.menu-bouton[data-section="fidelite"]')
+  ?.addEventListener("click", chargerRecompensesFidelite);
+
 </script>
 
 
