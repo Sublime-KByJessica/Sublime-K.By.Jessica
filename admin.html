@@ -228,6 +228,20 @@ button{cursor:pointer}
   outline: 2px solid var(--sauge-fonce);
   outline-offset: 2px;
 }
+
+  /* CARTES RÉSUMÉ CLIQUABLES */
+.carte-resume-cliquable {
+  cursor: pointer;
+  transition: transform .18s, box-shadow .18s;
+}
+
+.carte-resume-cliquable:hover,
+.carte-resume-cliquable:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 18px rgba(74, 65, 67, .12);
+  outline: 2px solid var(--sauge-fonce);
+  outline-offset: 2px;
+}
   
 /* =========================
    SECTIONS MENU
@@ -1972,7 +1986,7 @@ button{cursor:pointer}
 
 <div class="suivi-commandes-dashboard">
 
-  <div class="suivi-carte suivi-a-traiter">
+  <div class="suivi-carte suivi-a-traiter carte-resume-cliquable" role="button" tabindex="0" data-action-resume="commandes" aria-label="Ouvrir les commandes à traiter">
     <div class="suivi-icone">📦</div>
     <div class="suivi-infos">
       <div class="suivi-titre">Commandes à traiter</div>
@@ -1983,7 +1997,7 @@ button{cursor:pointer}
     </div>
   </div>
 
-  <div class="suivi-carte suivi-paiements">
+  <div class="suivi-carte suivi-paiements carte-resume-cliquable" role="button" tabindex="0" data-action-resume="paiements" aria-label="Ouvrir les paiements en attente">
     <div class="suivi-icone">💳</div>
     <div class="suivi-infos">
       <div class="suivi-titre">Paiements en attente</div>
@@ -8685,6 +8699,69 @@ document.addEventListener("keydown", function(event) {
 });
 
 /* FIN FILTRAGE DES ARTICLES DEPUIS LE TABLEAU DE BORD */
+
+  /* OUVRIR LES RUBRIQUES DEPUIS LES CARTES RÉSUMÉ */
+
+async function ouvrirResumeCommandes(type) {
+  const boutonMenu = document.querySelector(
+    '.menu-bouton[data-section="commandes"]'
+  );
+
+  if (boutonMenu) {
+    document.querySelectorAll(".menu-bouton").forEach(function(item) {
+      item.classList.remove("actif");
+    });
+    boutonMenu.classList.add("actif");
+  }
+
+  document.querySelectorAll(".section-admin").forEach(function(section) {
+    section.classList.remove("active");
+  });
+
+  const section = document.getElementById("section-commandes");
+  if (section) section.classList.add("active");
+
+  const recherche = document.getElementById("rechercheCommandes");
+  const filtreStatut = document.getElementById("filtreStatutCommande");
+  const filtrePaiement = document.getElementById("filtrePaiement");
+
+  if (recherche) recherche.value = "";
+  if (filtreStatut) filtreStatut.value = "tous";
+  if (filtrePaiement) {
+    filtrePaiement.value = type === "paiements" ? "en_attente" : "tous";
+  }
+
+  await chargerCommandes();
+
+  if (type === "commandes") {
+    document.querySelectorAll("#listeCommandes .commande").forEach(function(commande) {
+      const statut = commande.querySelector(".statut-commande-select")?.value || "nouvelle";
+      commande.style.display =
+        statut === "nouvelle" || statut === "en_preparation" ? "" : "none";
+    });
+  }
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+document.addEventListener("click", function(event) {
+  const carte = event.target.closest(".carte-resume-cliquable");
+  if (!carte) return;
+
+  ouvrirResumeCommandes(carte.dataset.actionResume);
+});
+
+document.addEventListener("keydown", function(event) {
+  if (event.key !== "Enter" && event.key !== " ") return;
+
+  const carte = event.target.closest(".carte-resume-cliquable");
+  if (!carte) return;
+
+  event.preventDefault();
+  ouvrirResumeCommandes(carte.dataset.actionResume);
+});
+
+/* FIN OUVERTURE DES RUBRIQUES DEPUIS LES CARTES RÉSUMÉ */
   
 async function chargerCommandes(){
 
