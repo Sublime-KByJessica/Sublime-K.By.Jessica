@@ -1441,11 +1441,159 @@
             total.textContent = "Total : " + afficherPrix(commande.total);
             carte.appendChild(total);
 
-            if (commande.numero_suivi) {
-              const suivi = document.createElement("p");
-              suivi.textContent = "Numéro de suivi : " + commande.numero_suivi;
-              carte.appendChild(suivi);
+            
+            const blocSuivi = document.createElement("section");
+            blocSuivi.style.cssText =
+              "margin:16px 0;padding:16px;border:1px solid #dce3d4;border-radius:12px;background:#f8faf5;";
+
+            const titreSuivi = document.createElement("h4");
+            titreSuivi.textContent = "📦 Suivi de livraison";
+            titreSuivi.style.marginTop = "0";
+            blocSuivi.appendChild(titreSuivi);
+
+            const statutsLivraison = {
+              non_expediee: "📦 Pas encore expédiée",
+              expediee: "🚚 Expédiée",
+              en_transit: "🚛 En transit",
+              en_livraison: "📍 En cours de livraison",
+              livree: "✅ Livrée",
+              incident: "⚠️ Incident de livraison",
+              retour_expediteur: "↩️ Retour à l'expéditeur"
+            };
+
+            const statutLivraison =
+              commande.suivi_livraison_statut || "non_expediee";
+
+            const progression = [
+              { code: "non_expediee", texte: "Commande confirmée" },
+              { code: "expediee", texte: "Expédition" },
+              { code: "en_transit", texte: "En transit" },
+              { code: "en_livraison", texte: "En cours de livraison" },
+              { code: "livree", texte: "Livraison terminée" }
+            ];
+
+            const etat = document.createElement("p");
+            etat.style.cssText = "font-weight:600;margin:8px 0;";
+            etat.textContent =
+              statutsLivraison[statutLivraison] || statutLivraison;
+            blocSuivi.appendChild(etat);
+
+            const listeProgression = document.createElement("ol");
+            listeProgression.style.cssText =
+              "padding-left:24px;margin:12px 0;";
+
+            const ordreStatut = progression.findIndex(
+              etape => etape.code === statutLivraison
+            );
+
+            progression.forEach((etape, index) => {
+              const element = document.createElement("li");
+              element.textContent =
+                (ordreStatut >= 0 && index <= ordreStatut ? "✓ " : "○ ") +
+                etape.texte;
+              element.style.margin = "6px 0";
+              if (ordreStatut >= 0 && index === ordreStatut) {
+                element.style.fontWeight = "700";
+              }
+              listeProgression.appendChild(element);
+            });
+
+            blocSuivi.appendChild(listeProgression);
+
+            if (statutLivraison === "incident" ||
+                statutLivraison === "retour_expediteur") {
+              const alerte = document.createElement("p");
+              alerte.textContent =
+                statutLivraison === "incident"
+                  ? "Un incident de livraison a été signalé. Consultez les informations ci-dessous."
+                  : "Le colis est en retour vers l'expéditeur.";
+              blocSuivi.appendChild(alerte);
             }
+
+            if (commande.transporteur_suivi) {
+              const transporteur = document.createElement("p");
+              transporteur.textContent =
+                "Transporteur : " + commande.transporteur_suivi;
+              blocSuivi.appendChild(transporteur);
+            }
+
+            if (commande.numero_suivi) {
+              const numero = document.createElement("p");
+              numero.textContent =
+                "Numéro de suivi : " + commande.numero_suivi;
+              blocSuivi.appendChild(numero);
+            }
+
+            if (commande.lien_suivi) {
+              try {
+                const urlSuivi = new URL(commande.lien_suivi);
+                if (urlSuivi.protocol === "https:" ||
+                    urlSuivi.protocol === "http:") {
+                  const lien = document.createElement("a");
+                  lien.href = urlSuivi.href;
+                  lien.target = "_blank";
+                  lien.rel = "noopener noreferrer";
+                  lien.textContent = "🔎 Suivre mon colis";
+                  lien.style.cssText =
+                    "display:inline-block;margin:6px 0;padding:10px 14px;border-radius:8px;background:#e4eadc;color:#263525;font-weight:600;text-decoration:none;";
+                  blocSuivi.appendChild(lien);
+                }
+              } catch (erreurLien) {
+                console.warn("Lien de suivi invalide.", erreurLien);
+              }
+            }
+
+            const historique = Array.isArray(
+              commande.suivi_livraison_historique
+            )
+              ? commande.suivi_livraison_historique
+              : [];
+
+            const titreHistorique = document.createElement("h5");
+            titreHistorique.textContent = "🕘 Historique de livraison";
+            blocSuivi.appendChild(titreHistorique);
+
+            if (historique.length === 0) {
+              const vide = document.createElement("p");
+              vide.textContent =
+                "Les mises à jour de livraison apparaîtront ici.";
+              blocSuivi.appendChild(vide);
+            } else {
+              [...historique].reverse().forEach(entree => {
+                const ligne = document.createElement("div");
+                ligne.style.cssText =
+                  "padding:10px 0;border-bottom:1px solid #e5e9df;";
+
+                const statutHistorique = document.createElement("strong");
+                statutHistorique.textContent =
+                  statutsLivraison[entree.statut] ||
+                  entree.statut ||
+                  "Mise à jour";
+                ligne.appendChild(statutHistorique);
+
+                if (entree.date) {
+                  const dateHistorique = document.createElement("p");
+                  const date = new Date(entree.date);
+                  dateHistorique.textContent = Number.isNaN(date.getTime())
+                    ? entree.date
+                    : date.toLocaleString("fr-FR");
+                  dateHistorique.style.margin = "4px 0";
+                  ligne.appendChild(dateHistorique);
+                }
+
+                if (entree.note) {
+                  const noteHistorique = document.createElement("p");
+                  noteHistorique.textContent = entree.note;
+                  noteHistorique.style.margin = "4px 0";
+                  ligne.appendChild(noteHistorique);
+                }
+
+                blocSuivi.appendChild(ligne);
+              });
+            }
+
+            carte.appendChild(blocSuivi);
+
 
             const titreArticles = document.createElement("h4");
             titreArticles.textContent = "Articles commandés";
