@@ -9651,6 +9651,96 @@ await actualiserCompteursFabrication();
 appliquerFiltresCommandes();
 }
 
+  
+async function enregistrerSuiviLivraisonCommande(id) {
+  if (!(await verifierAdmin())) {
+    return;
+  }
+
+  const champTransporteur = document.getElementById("transporteur-" + id);
+  const champNumero = document.getElementById("numero-suivi-" + id);
+  const champLien = document.getElementById("lien-suivi-" + id);
+  const champStatut = document.getElementById("statut-livraison-" + id);
+  const champNote = document.getElementById("note-suivi-" + id);
+
+  if (!champTransporteur || !champNumero || !champLien || !champStatut || !champNote) {
+    alert("❌ Impossible de retrouver les champs de suivi.");
+    return;
+  }
+
+  const transporteur = champTransporteur.value.trim();
+  const numero = champNumero.value.trim();
+  const lien = champLien.value.trim();
+  const statut = champStatut.value;
+  const note = champNote.value.trim();
+
+  if (lien) {
+    try {
+      const url = new URL(lien);
+      if (url.protocol !== "https:" && url.protocol !== "http:") {
+        throw new Error("URL invalide");
+      }
+    } catch (error) {
+      alert("❌ Vérifie le lien de suivi saisi.");
+      return;
+    }
+  }
+
+  const { data: commande, error: erreurLecture } = await client
+    .from("orders")
+    .select("numero_suivi, transporteur_suivi, lien_suivi, suivi_livraison_statut, suivi_livraison_historique")
+    .eq("id", id)
+    .single();
+
+  if (erreurLecture || !commande) {
+    console.error("Erreur de lecture du suivi :", erreurLecture);
+    alert("❌ Impossible de lire le suivi actuel de cette commande.");
+    return;
+  }
+
+  const ancienStatut = commande.suivi_livraison_statut || "non_expediee";
+  const historique = Array.isArray(commande.suivi_livraison_historique)
+    ? [...commande.suivi_livraison_historique]
+    : [];
+
+  const changement =
+    ancienStatut !== statut ||
+    (commande.numero_suivi || "") !== numero ||
+    (commande.transporteur_suivi || "") !== transporteur ||
+    (commande.lien_suivi || "") !== lien ||
+    note !== "";
+
+  if (changement) {
+    historique.push({
+      statut: statut,
+      date: new Date().toISOString(),
+      transporteur: transporteur,
+      numero_suivi: numero,
+      note: note
+    });
+  }
+
+  const { error } = await client
+    .from("orders")
+    .update({
+      transporteur_suivi: transporteur || null,
+      numero_suivi: numero || null,
+      lien_suivi: lien || null,
+      suivi_livraison_statut: statut,
+      suivi_livraison_mis_a_jour_le: new Date().toISOString(),
+      suivi_livraison_historique: historique
+    })
+    .eq("id", id);
+
+  if (error) {
+    console.error("Erreur enregistrement du suivi :", error);
+    alert("❌ Impossible d'enregistrer le suivi : " + error.message);
+    return;
+  }
+
+  alert("✅ Suivi de livraison enregistré !");
+  await chargerCommandes();
+}
 
 async function afficherCommande(commande){
 
@@ -10066,22 +10156,96 @@ async function afficherCommande(commande){
         </strong>
       </p>
 
-      ${
-        commande.numero_suivi
-          ? `
-            <p>
-              🔎 Suivi :
-              <strong>
-                ${echapperHTML(
-                  commande.numero_suivi
-                )}
-              </strong>
-            </p>
-          `
-          : ""
-      }
+     
+      <div style="
+        margin-top:16px;
+        padding:16px;
+        border:1px solid #dce3d4;
+        border-radius:12px;
+        background:#f8faf5;
+      ">
+        <h3>📦 Suivi de livraison</h3>
 
-    </div>
+        <label for="transporteur-${commande.id}">
+          Transporteur
+        </label>
+        <select id="transporteur-${commande.id}" style="width:100%;padding:10px;margin:5px 0 12px;">
+          <option value="" ${!commande.transporteur_suivi ? "selected" : ""}>À définir</option>
+          <option value="Mondial Relay" ${commande.transporteur_suivi === "Mondial Relay" ? "selected" : ""}>Mondial Relay</option>
+          <option value="Colissimo" ${commande.transporteur_suivi === "Colissimo" ? "selected" : ""}>Colissimo</option>
+          <option value="Relais Colis" ${commande.transporteur_suivi === "Relais Colis" ? "selected" : ""}>Relais Colis</option>
+          <option value="Chronopost" ${commande.transporteur_suivi === "Chronopost" ? "selected" : ""}>Chronopost</option>
+          <option value="Autre" ${commande.transporteur_suivi === "Autre" ? "selected" : ""}>Autre</option>
+          <option value="Remise en main propre" ${commande.transporteur_suivi === "Remise en main propre" ? "selected" : ""}>Remise en main propre</option>
+        </select>
+
+        <label for="numero-suivi-${commande.id}">
+          Numéro de suivi du colis
+        </label>
+        <input
+          id="numero-suivi-${commande.id}"
+          type="text"
+          value="${echapperHTML(commande.numero_suivi || "")}"
+          placeholder="Saisir le numéro de suivi"
+          style="width:100%;box-sizing:border-box;padding:10px;margin:5px 0 12px;"
+        >
+
+        <label for="lien-suivi-${commande.id}">
+          Lien de suivi
+        </label>
+        <input
+          id="lien-suivi-${commande.id}"
+          type="url"
+          value="${echapperHTML(commande.lien_suivi || "")}"
+          placeholder="https://..."
+          style="width:100%;box-sizing:border-box;padding:10px;margin:5px 0 12px;"
+        >
+
+        <label for="statut-livraison-${commande.id}">
+          Statut de livraison
+        </label>
+        <select id="statut-livraison-${commande.id}" style="width:100%;padding:10px;margin:5px 0 12px;">
+          <option value="non_expediee" ${(commande.suivi_livraison_statut || "non_expediee") === "non_expediee" ? "selected" : ""}>📦 Pas encore expédiée</option>
+          <option value="expediee" ${commande.suivi_livraison_statut === "expediee" ? "selected" : ""}>🚚 Expédiée</option>
+          <option value="en_transit" ${commande.suivi_livraison_statut === "en_transit" ? "selected" : ""}>🚛 En transit</option>
+          <option value="en_livraison" ${commande.suivi_livraison_statut === "en_livraison" ? "selected" : ""}>📍 En cours de livraison</option>
+          <option value="livree" ${commande.suivi_livraison_statut === "livree" ? "selected" : ""}>✅ Livrée</option>
+          <option value="incident" ${commande.suivi_livraison_statut === "incident" ? "selected" : ""}>⚠️ Incident de livraison</option>
+          <option value="retour_expediteur" ${commande.suivi_livraison_statut === "retour_expediteur" ? "selected" : ""}>↩️ Retour à l'expéditeur</option>
+        </select>
+
+        <label for="note-suivi-${commande.id}">
+          Note pour l'historique (facultatif)
+        </label>
+        <textarea
+          id="note-suivi-${commande.id}"
+          rows="2"
+          placeholder="Ex. : colis déposé au point relais"
+          style="width:100%;box-sizing:border-box;padding:10px;margin:5px 0 12px;"
+        ></textarea>
+
+        <button
+          type="button"
+          class="btn btn-modifier"
+          onclick="enregistrerSuiviLivraisonCommande('${commande.id}')"
+        >
+          💾 Enregistrer le suivi
+        </button>
+
+        <h4>🕘 Historique de livraison</h4>
+        ${
+          (Array.isArray(commande.suivi_livraison_historique)
+            ? commande.suivi_livraison_historique
+            : []
+          ).map(entree => `
+            <p style="padding:8px;border-bottom:1px solid #e5e9df;">
+              <strong>${echapperHTML(entree.statut || "")}</strong><br>
+              <small>${echapperHTML(entree.date || "")}</small>
+              ${entree.note ? `<br>${echapperHTML(entree.note)}` : ""}
+            </p>
+          `).join("") || "<p>Aucun historique pour le moment.</p>"
+        }
+      </div>
 
 
     ${
