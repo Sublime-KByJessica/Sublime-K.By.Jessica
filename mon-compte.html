@@ -1014,12 +1014,14 @@
                 await chargerFidelite();
 
                 afficherMessage(
-                  "fideliteMessage",
-                  "🎉 Récompense obtenue : " + data.nom +
-                  ". Votre code : " + data.code_recompense +
-                  ". Retrouvez-le dans « Mes récompenses ».",
-                  "succes"
-                );
+  "fideliteMessage",
+  data.code_recompense
+    ? "🎉 Récompense obtenue : " + data.nom +
+      ". Votre code de réduction : " + data.code_recompense +
+      ". Retrouvez-le dans « Mes récompenses »."
+    : "🎁 Votre demande de cadeau personnalisé est enregistrée. Sublime’K vous contactera pour convenir des détails.",
+  "succes"
+);
               } catch (erreur) {
                 afficherMessage(
                   "fideliteMessage",
@@ -1075,13 +1077,20 @@
               carte.appendChild(statut);
 
               if (obtenue.statut === "disponible") {
-                const code = document.createElement("p");
-                code.textContent =
-                  "Code de récompense : " + obtenue.code_recompense;
-                code.style.cssText =
-                  "font-weight:bold;overflow-wrap:anywhere;";
-                carte.appendChild(code);
-              }
+  const code = document.createElement("p");
+
+  if (obtenue.code_recompense) {
+    code.textContent =
+      "Code de réduction : " + obtenue.code_recompense;
+    code.style.cssText =
+      "font-weight:bold;overflow-wrap:anywhere;";
+  } else {
+    code.textContent =
+      "🎁 Cadeau personnalisé demandé : Sublime’K conviendra avec vous des détails.";
+  }
+
+  carte.appendChild(code);
+}
 
               const depenses = document.createElement("p");
               depenses.textContent =
