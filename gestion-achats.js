@@ -1,5 +1,3 @@
-JavaScript
-
 /* =========================================================
    Sublime’K — Gestion des achats, fournisseurs et coûts
    Ce fichier utilise uniquement les tables dédiées sk_.
