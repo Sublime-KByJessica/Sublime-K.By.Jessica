@@ -381,6 +381,62 @@
         <span id="emailConnecte"></span>
       </p>
 
+      
+      <!-- PROFIL CLIENT -->
+      <section id="sectionProfil">
+        <h2>👤 Mes informations personnelles</h2>
+
+        <p class="intro">
+          Retrouvez et modifiez vos coordonnées et votre adresse de livraison.
+        </p>
+
+        <form id="formulaireProfil">
+          <label for="profilPrenom">Prénom</label>
+          <input id="profilPrenom" name="given-name"
+                 autocomplete="given-name" maxlength="80" required>
+
+          <label for="profilNom">Nom</label>
+          <input id="profilNom" name="family-name"
+                 autocomplete="family-name" maxlength="80" required>
+
+          <label for="profilTelephone">Téléphone</label>
+          <input id="profilTelephone" name="tel" type="tel"
+                 autocomplete="tel" maxlength="30"
+                 placeholder="06 00 00 00 00">
+
+          <label for="profilAdresse">Adresse</label>
+          <input id="profilAdresse" name="address-line1"
+                 autocomplete="address-line1" maxlength="200"
+                 placeholder="Numéro et nom de rue">
+
+          <label for="profilComplement">Complément d’adresse</label>
+          <input id="profilComplement" name="address-line2"
+                 autocomplete="address-line2" maxlength="200"
+                 placeholder="Bâtiment, appartement…">
+
+          <label for="profilCodePostal">Code postal</label>
+          <input id="profilCodePostal" name="postal-code"
+                 autocomplete="postal-code" maxlength="15">
+
+          <label for="profilVille">Ville</label>
+          <input id="profilVille" name="address-level2"
+                 autocomplete="address-level2" maxlength="100">
+
+          <label for="profilPays">Pays</label>
+          <input id="profilPays" name="country-name"
+                 autocomplete="country-name" maxlength="80"
+                 value="France">
+
+          <button class="bouton" id="boutonEnregistrerProfil" type="submit">
+            Enregistrer mes informations
+          </button>
+        </form>
+
+        <p class="message" id="messageProfil"
+           role="status" aria-live="polite"></p>
+      </section>
+      <!-- FIN PROFIL CLIENT -->
+
       <div class="encart">
         <strong>Votre espace se construit progressivement.</strong>
         <br>
@@ -509,9 +565,10 @@
         $("panneauNouveauMotDePasse").hidden = true;
         $("panneauConnecte").hidden = !connecte;
 
-        if (connecte) {
+                if (connecte) {
           $("emailConnecte").textContent = email;
           effacerMessage("messageCompte");
+          chargerProfil();
         }
       }
 
@@ -640,6 +697,113 @@
           $("boutonPrincipal").disabled = false;
           $("boutonPrincipal").textContent =
             mode === "inscription" ? "Créer mon compte" : "Se connecter";
+        }
+      });
+
+      
+      // PROFIL CLIENT : CHARGEMENT ET ENREGISTREMENT
+      async function chargerProfil() {
+        try {
+          const { data: resultatUtilisateur, error: erreurUtilisateur } =
+            await supabaseClient.auth.getUser();
+
+          if (erreurUtilisateur) throw erreurUtilisateur;
+
+          const utilisateur = resultatUtilisateur.user;
+          if (!utilisateur) return;
+
+          const { data: profil, error } = await supabaseClient
+            .from("customer_profiles")
+            .select(
+              "prenom, nom, telephone, adresse, complement_adresse, code_postal, ville, pays"
+            )
+            .eq("user_id", utilisateur.id)
+            .maybeSingle();
+
+          if (error) throw error;
+
+          const meta = utilisateur.user_metadata || {};
+
+          $("profilPrenom").value =
+            profil?.prenom || meta.prenom || "";
+
+          $("profilNom").value =
+            profil?.nom || meta.nom || "";
+
+          $("profilTelephone").value = profil?.telephone || "";
+          $("profilAdresse").value = profil?.adresse || "";
+          $("profilComplement").value = profil?.complement_adresse || "";
+          $("profilCodePostal").value = profil?.code_postal || "";
+          $("profilVille").value = profil?.ville || "";
+          $("profilPays").value = profil?.pays || "France";
+
+        } catch (erreur) {
+          console.error("Erreur de chargement du profil :", erreur);
+          afficherMessage(
+            "messageProfil",
+            "Impossible de charger vos informations. Vérifiez votre connexion puis réessayez.",
+            "erreur"
+          );
+        }
+      }
+
+      $("formulaireProfil").addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const bouton = $("boutonEnregistrerProfil");
+        if (bouton.disabled) return;
+
+        bouton.disabled = true;
+        bouton.textContent = "Enregistrement…";
+        effacerMessage("messageProfil");
+
+        try {
+          const { data: resultatUtilisateur, error: erreurUtilisateur } =
+            await supabaseClient.auth.getUser();
+
+          if (erreurUtilisateur) throw erreurUtilisateur;
+
+          const utilisateur = resultatUtilisateur.user;
+
+          if (!utilisateur) {
+            throw new Error("Vous devez être connecté pour enregistrer votre profil.");
+          }
+
+          const profil = {
+            user_id: utilisateur.id,
+            prenom: $("profilPrenom").value.trim(),
+            nom: $("profilNom").value.trim(),
+            telephone: $("profilTelephone").value.trim(),
+            adresse: $("profilAdresse").value.trim(),
+            complement_adresse: $("profilComplement").value.trim(),
+            code_postal: $("profilCodePostal").value.trim(),
+            ville: $("profilVille").value.trim(),
+            pays: $("profilPays").value.trim() || "France",
+            updated_at: new Date().toISOString()
+          };
+
+          const { error } = await supabaseClient
+            .from("customer_profiles")
+            .upsert(profil, { onConflict: "user_id" });
+
+          if (error) throw error;
+
+          afficherMessage(
+            "messageProfil",
+            "Vos informations ont bien été enregistrées.",
+            "succes"
+          );
+
+        } catch (erreur) {
+          console.error("Erreur d’enregistrement du profil :", erreur);
+          afficherMessage(
+            "messageProfil",
+            "L’enregistrement a échoué. Vérifiez la connexion et les autorisations Supabase, puis réessayez.",
+            "erreur"
+          );
+        } finally {
+          bouton.disabled = false;
+          bouton.textContent = "Enregistrer mes informations";
         }
       });
 
