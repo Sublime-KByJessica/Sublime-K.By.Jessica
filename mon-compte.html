@@ -437,6 +437,25 @@
       </section>
       <!-- FIN PROFIL CLIENT -->
 
+      
+      <!-- MES COMMANDES -->
+      <section id="sectionMesCommandes">
+        <h2>📦 Mes commandes</h2>
+        <p class="intro">
+          Retrouvez vos commandes et suivez leur avancement.
+        </p>
+
+        <div id="listeMesCommandes">
+          <p class="message visible info">
+            Chargement de vos commandes…
+          </p>
+        </div>
+
+        <p class="message" id="messageCommandes"
+           role="status" aria-live="polite"></p>
+      </section>
+      <!-- FIN MES COMMANDES -->
+
       <div class="encart">
         <strong>Votre espace se construit progressivement.</strong>
         <br>
@@ -569,6 +588,7 @@
           $("emailConnecte").textContent = email;
           effacerMessage("messageCompte");
           chargerProfil();
+          chargerCommandes();
         }
       }
 
@@ -746,6 +766,159 @@
           );
         }
       }
+
+      
+      // MES COMMANDES : CHARGEMENT DU COMPTE CLIENT
+      async function chargerCommandes() {
+        const conteneur = $("listeMesCommandes");
+
+        conteneur.textContent = "Chargement de vos commandes…";
+
+        try {
+          const { data: resultatUtilisateur, error: erreurUtilisateur } =
+            await supabaseClient.auth.getUser();
+
+          if (erreurUtilisateur) throw erreurUtilisateur;
+
+          const utilisateur = resultatUtilisateur.user;
+
+          if (!utilisateur) {
+            conteneur.textContent = "Connectez-vous pour consulter vos commandes.";
+            return;
+          }
+
+          const { data: commandes, error: erreurCommandes } =
+            await supabaseClient
+              .from("orders")
+              .select(
+                "id, numero_commande, created_at, statut, payment_status, sous_total, total, montant_reduction, livraison_prix, numero_suivi"
+              )
+              .eq("user_id", utilisateur.id)
+              .order("created_at", { ascending: false });
+
+          if (erreurCommandes) throw erreurCommandes;
+
+          conteneur.replaceChildren();
+
+          if (!commandes || commandes.length === 0) {
+            const vide = document.createElement("p");
+            vide.textContent =
+              "Vous n’avez pas encore de commande associée à ce compte.";
+            conteneur.appendChild(vide);
+            return;
+          }
+
+          const identifiants = commandes.map(commande => commande.id);
+
+          const { data: articles, error: erreurArticles } =
+            await supabaseClient
+              .from("order_items")
+              .select(
+                "id, order_id, nom_produit, quantite, prix_unitaire, total, variant_nom, variant_valeur, fabrication_status"
+              )
+              .in("order_id", identifiants)
+              .order("created_at", { ascending: true });
+
+          if (erreurArticles) throw erreurArticles;
+
+          const afficherValeur = valeur =>
+            valeur === null || valeur === undefined || valeur === ""
+              ? "Non renseigné"
+              : String(valeur);
+
+          const afficherPrix = valeur =>
+            Number(valeur || 0).toLocaleString("fr-FR", {
+              style: "currency",
+              currency: "EUR"
+            });
+
+          for (const commande of commandes) {
+            const carte = document.createElement("article");
+            carte.className = "encart";
+
+            const titre = document.createElement("h3");
+            titre.textContent =
+              "Commande " +
+              afficherValeur(commande.numero_commande || commande.id.slice(0, 8));
+            carte.appendChild(titre);
+
+            const date = document.createElement("p");
+            date.textContent =
+              "Date : " +
+              new Date(commande.created_at).toLocaleDateString("fr-FR");
+            carte.appendChild(date);
+
+            const statut = document.createElement("p");
+            statut.textContent =
+              "État de la commande : " +
+              afficherValeur(commande.statut);
+            carte.appendChild(statut);
+
+            const paiement = document.createElement("p");
+            paiement.textContent =
+              "Paiement : " + afficherValeur(commande.payment_status);
+            carte.appendChild(paiement);
+
+            const total = document.createElement("p");
+            total.textContent = "Total : " + afficherPrix(commande.total);
+            carte.appendChild(total);
+
+            if (commande.numero_suivi) {
+              const suivi = document.createElement("p");
+              suivi.textContent = "Numéro de suivi : " + commande.numero_suivi;
+              carte.appendChild(suivi);
+            }
+
+            const titreArticles = document.createElement("h4");
+            titreArticles.textContent = "Articles commandés";
+            carte.appendChild(titreArticles);
+
+            const liste = document.createElement("ul");
+            const articlesCommande = (articles || []).filter(
+              article => article.order_id === commande.id
+            );
+
+            if (articlesCommande.length === 0) {
+              const element = document.createElement("li");
+              element.textContent = "Détail des articles indisponible.";
+              liste.appendChild(element);
+            } else {
+              for (const article of articlesCommande) {
+                const element = document.createElement("li");
+                let texte =
+                  afficherValeur(article.nom_produit) +
+                  " × " + afficherValeur(article.quantite) +
+                  " — " + afficherPrix(article.total);
+
+                if (article.variant_nom || article.variant_valeur) {
+                  texte +=
+                    " (variante : " +
+                    [article.variant_nom, article.variant_valeur]
+                      .filter(Boolean)
+                      .join(" — ") +
+                    ")";
+                }
+
+                if (article.fabrication_status) {
+                  texte +=
+                    " — Fabrication : " + article.fabrication_status;
+                }
+
+                element.textContent = texte;
+                liste.appendChild(element);
+              }
+            }
+
+            carte.appendChild(liste);
+            conteneur.appendChild(carte);
+          }
+        } catch (erreur) {
+          console.error("Erreur de chargement des commandes :", erreur);
+          conteneur.textContent =
+            "Impossible de charger vos commandes pour le moment. Réessayez plus tard.";
+        }
+      }
+      // FIN MES COMMANDES
 
       $("formulaireProfil").addEventListener("submit", async (event) => {
         event.preventDefault();
