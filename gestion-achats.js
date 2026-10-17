@@ -120,6 +120,28 @@
   /* ---------------- FOURNISSEURS ---------------- */
 
   async function chargerFournisseurs() {
+     
+const selectAchat = document.getElementById("skAchatFournisseur");
+
+if (selectAchat) {
+  const valeurActuelle = selectAchat.value;
+
+  selectAchat.innerHTML =
+    '<option value="">Choisir un fournisseur</option>' +
+    fournisseurs
+      .filter(f => f.actif)
+      .map(f => `
+        <option value="${echapper(f.id)}">
+          ${echapper(f.nom)}
+        </option>
+      `)
+      .join("");
+
+  if (valeurActuelle) {
+    selectAchat.value = valeurActuelle;
+  }
+}
+
     const fournisseurs = await lire(
       TABLES.fournisseurs,
       "id,nom,site_url,contact,notes,actif"
@@ -642,6 +664,15 @@ async function sauvegarderAchat(formulaire) {
       }
     });
   });
+
+  // Chargement des données à l'ouverture de la section Achats & coûts.
+  document
+    .querySelectorAll('.menu-bouton[data-section="achats-couts"]')
+    .forEach(bouton => {
+      bouton.addEventListener("click", () => {
+        void chargerGestion();
+      });
+    });
 
   // Fonctions accessibles pour le branchement dans l'administration.
   window.skChargerGestion = chargerGestion;
