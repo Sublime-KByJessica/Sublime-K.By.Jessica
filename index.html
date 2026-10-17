@@ -3745,6 +3745,132 @@
 
     <div class="panier-footer">
 
+      
+<div
+  class="panier-promo"
+  style="
+    margin-bottom: 16px;
+    padding: 14px;
+    border: 1px solid #D8B6BC;
+    border-radius: 12px;
+    background: #FFFDFC;
+  "
+>
+  <label
+    for="codePromoPanier"
+    style="
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #667052;
+    "
+  >
+    🎟️ Vous avez un code promo ?
+  </label>
+
+  <div style="display:flex; gap:8px;">
+    <input
+      type="text"
+      id="codePromoPanier"
+      placeholder="Saisir votre code"
+      autocomplete="off"
+      style="
+        flex:1;
+        min-width:0;
+        padding:10px;
+        border:1px solid #D8B6BC;
+        border-radius:8px;
+        text-transform:uppercase;
+      "
+    >
+
+    <button
+      type="button"
+      id="boutonAppliquerCodePromo"
+      onclick="appliquerCodePromo()"
+      style="
+        padding:10px 12px;
+        border:0;
+        border-radius:8px;
+        background:#667052;
+        color:white;
+        font-weight:bold;
+        cursor:pointer;
+      "
+    >
+      Appliquer
+    </button>
+  </div>
+
+  <p
+    id="messageCodePromo"
+    aria-live="polite"
+    style="margin-top:8px; font-size:0.9rem;"
+  ></p>
+
+  <div
+    id="panierReductionLigne"
+    style="
+      display:none;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:10px;
+      color:#667052;
+    "
+  >
+    <span>🎉 Réduction</span>
+    <strong id="panierReductionMontant">- 0,00 €</strong>
+  </div>
+</div>
+
+      
+<div
+  class="panier-promo"
+  style="margin-bottom:16px; padding:14px; background:#FAF7F5; border-radius:12px;"
+>
+  <label
+    for="codePromoPanier"
+    style="display:block; margin-bottom:8px; font-weight:600;"
+  >
+    🎟️ Vous avez un code promo ?
+  </label>
+
+  <div style="display:flex; gap:8px;">
+    <input
+      type="text"
+      id="codePromoPanier"
+      placeholder="Votre code promo"
+      autocomplete="off"
+      style="min-width:0; flex:1; padding:11px; border:1px solid #D8B6BC; border-radius:8px;"
+    >
+
+    <button
+      type="button"
+      id="boutonAppliquerCodePromo"
+      onclick="appliquerCodePromo()"
+      style="padding:10px 12px; border:0; border-radius:8px; background:#667052; color:white; cursor:pointer;"
+    >
+      Appliquer
+    </button>
+  </div>
+
+  <p
+    id="messageCodePromo"
+    role="status"
+    aria-live="polite"
+    style="margin:8px 0 0; font-size:0.9em;"
+  ></p>
+
+  <div
+    id="panierReductionLigne"
+    style="display:none; justify-content:space-between; gap:12px; margin-top:12px; color:#667052;"
+  >
+    <span>Réduction promo</span>
+    <strong id="panierReductionMontant">- 0,00 €</strong>
+  </div>
+</div>
+
+
       <div class="panier-total">
 
         <strong>
@@ -7797,6 +7923,122 @@ const produit = {
 
     }
 
+    
+/* =====================================================
+   PROMOTIONS — CODE PROMO DU PANIER
+===================================================== */
+
+let promotionPanierAppliquee = null;
+
+function obtenirReductionPromo(sousTotal) {
+  const promo = promotionPanierAppliquee;
+
+  if (!promo || sousTotal < Number(promo.montant_minimum || 0)) {
+    return 0;
+  }
+
+  let reduction = promo.type_reduction === "pourcentage"
+    ? Math.round(sousTotal * Number(promo.valeur) ) / 100
+    : Number(promo.valeur);
+
+  // Arrondir le pourcentage au centime.
+  if (promo.type_reduction === "pourcentage") {
+    reduction = Math.round(sousTotal * Number(promo.valeur) ) / 100;
+    reduction = Math.round(reduction * 100) / 100;
+  }
+
+  return Math.min(Math.max(reduction, 0), sousTotal);
+}
+
+function actualiserAffichagePromo() {
+  const ligne = document.getElementById("panierReductionLigne");
+  const montant = document.getElementById("panierReductionMontant");
+  const message = document.getElementById("messageCodePromo");
+  const total = document.getElementById("panierTotal");
+  const sousTotal = calculerTotalPanier();
+  const reduction = obtenirReductionPromo(sousTotal);
+
+  if (ligne) {
+    ligne.style.display = reduction > 0 ? "flex" : "none";
+  }
+
+  if (montant) {
+    montant.textContent = "- " + formaterPrix(reduction);
+  }
+
+  if (total) {
+    total.textContent = formaterPrix(sousTotal - reduction);
+  }
+
+  if (message && promotionPanierAppliquee) {
+    if (sousTotal < Number(promotionPanierAppliquee.montant_minimum || 0)) {
+      message.textContent =
+        "Le panier ne respecte plus le montant minimum de cette offre.";
+      message.style.color = "#B42318";
+    } else {
+      message.textContent =
+        "Code " + promotionPanierAppliquee.code + " appliqué.";
+      message.style.color = "#667052";
+    }
+  }
+}
+
+async function appliquerCodePromo() {
+  const champ = document.getElementById("codePromoPanier");
+  const message = document.getElementById("messageCodePromo");
+  const bouton = document.getElementById("boutonAppliquerCodePromo");
+
+  if (!champ || !message || !bouton) return;
+
+  const code = champ.value.trim().toUpperCase();
+
+  if (!code) {
+    message.textContent = "Saisissez un code promo.";
+    message.style.color = "#B42318";
+    return;
+  }
+
+  bouton.disabled = true;
+  bouton.textContent = "Vérification…";
+  message.textContent = "";
+
+  try {
+    const { data, error } = await supabaseClient.rpc(
+      "verifier_code_promo",
+      {
+        p_code: code,
+        p_sous_total: calculerTotalPanier()
+      }
+    );
+
+    if (error) throw error;
+
+    const promo = Array.isArray(data) ? data[0] : data;
+
+    if (!promo) {
+      throw new Error("Ce code promo n’est pas valide.");
+    }
+
+    promotionPanierAppliquee = promo;
+    champ.value = promo.code || code;
+
+    actualiserAffichagePromo();
+
+    if (typeof mettreAJourTotalCommande === "function") {
+      await mettreAJourTotalCommande();
+    }
+  } catch (erreur) {
+    promotionPanierAppliquee = null;
+    actualiserAffichagePromo();
+
+    message.textContent =
+      erreur.message || "Impossible de vérifier ce code promo.";
+    message.style.color = "#B42318";
+  } finally {
+    bouton.disabled = false;
+    bouton.textContent = "Appliquer";
+  }
+}
 
     function calculerTotalPanier() {
 
@@ -7861,6 +8103,29 @@ const produit = {
     total.textContent =
       "0,00 €";
 
+        promotionPanierAppliquee = null;
+
+    const lignePromo =
+      document.getElementById("panierReductionLigne");
+
+    const messagePromo =
+      document.getElementById("messageCodePromo");
+
+    const champPromo =
+      document.getElementById("codePromoPanier");
+
+    if (lignePromo) {
+      lignePromo.style.display = "none";
+    }
+
+    if (messagePromo) {
+      messagePromo.textContent = "";
+    }
+
+    if (champPromo) {
+      champPromo.value = "";
+    }
+    
     return;
 
   }
@@ -8246,10 +8511,7 @@ ${
      TOTAL DU PANIER
   --------------------------------------------- */
 
-  total.textContent =
-    formaterPrix(
-      calculerTotalPanier()
-    );
+  actualiserAffichagePromo();
 
 }
 
@@ -12488,6 +12750,32 @@ function afficherRecapCommande() {
       "
     >
 
+        ${
+      typeof obtenirReductionPromo === "function" &&
+      promotionPanierAppliquee &&
+      obtenirReductionPromo(sousTotal) > 0
+        ? `
+          <div
+            style="
+              display:flex;
+              justify-content:space-between;
+              gap:12px;
+              margin-top:8px;
+              color:#667052;
+            "
+          >
+            <strong>
+              Réduction (${promotionPanierAppliquee.code})
+            </strong>
+
+            <strong>
+              - ${formaterPrix(obtenirReductionPromo(sousTotal))}
+            </strong>
+          </div>
+        `
+        : ""
+    }
+
       <strong>
         Livraison
       </strong>
@@ -12693,13 +12981,21 @@ async function mettreAJourTotalCommande() {
       ? calculerTotalPanier()
       : 0;
 
+    const reductionPromo =
+    typeof obtenirReductionPromo === "function"
+      ? obtenirReductionPromo(sousTotal)
+      : 0;
+
+  const sousTotalApresReduction =
+    sousTotal - reductionPromo;
+
   if (!select.value) {
 
     recapLivraison.textContent =
       "Sélectionnez un mode";
 
-    recapTotal.textContent =
-      formaterPrix(sousTotal);
+        recapTotal.textContent =
+      formaterPrix(sousTotalApresReduction);
 
     return;
   }
@@ -12757,8 +13053,8 @@ async function mettreAJourTotalCommande() {
 
     }
 
-    const total =
-      sousTotal + prixLivraison;
+        const total =
+      sousTotalApresReduction + prixLivraison;
 
     recapTotal.textContent =
       formaterPrix(total);
@@ -12773,8 +13069,8 @@ async function mettreAJourTotalCommande() {
     recapLivraison.textContent =
       "Erreur";
 
-    recapTotal.textContent =
-      formaterPrix(sousTotal);
+        recapTotal.textContent =
+      formaterPrix(sousTotalApresReduction);
 
   }
 
@@ -13284,8 +13580,13 @@ personnalisation_zones:
             note,
 
 
-          p_articles:
-            articlesCommande
+                    p_articles:
+            articlesCommande,
+
+          p_code_promo:
+            promotionPanierAppliquee
+              ? promotionPanierAppliquee.code
+              : null
 
         }
       )
