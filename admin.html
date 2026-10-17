@@ -1874,6 +1874,13 @@ button{cursor:pointer}
     💰 Gestion financière
   </button>
 
+  <button
+  class="menu-bouton"
+  data-section="achats-couts"
+>
+  🧾 Achats & coûts
+</button>
+  
    <button
     class="menu-bouton"
     data-section="bibliotheque"
@@ -3855,6 +3862,192 @@ button{cursor:pointer}
 
 </section>
 
+
+<!-- =====================================================
+     ACHATS ET COÛTS
+===================================================== -->
+
+<section
+  class="section-admin"
+  id="section-achats-couts"
+>
+
+  <div class="section-titre">
+    <h1>🧾 Achats & coûts</h1>
+    <p>
+      Gère tes fournisseurs, tes achats de matériel,
+      tes consommables et le coût de revient de tes créations.
+    </p>
+  </div>
+
+  <div id="skMessageGestion" role="status" aria-live="polite"></div>
+
+  <div class="bloc">
+    <h2>🏭 Mes fournisseurs</h2>
+    <p>Retrouve ici les fournisseurs de Sublime’K.</p>
+
+<form id="skFormFournisseur" class="bloc">
+  <h3>➕ Ajouter un fournisseur</h3>
+
+  <input type="hidden" name="id" value="">
+
+  <label for="skFournisseurNom">Nom du fournisseur *</label>
+  <input
+    id="skFournisseurNom"
+    type="text"
+    name="nom"
+    required
+    placeholder="Ex. : fournisseur de sublimation"
+  >
+
+  <label for="skFournisseurSite">Site internet</label>
+  <input
+    id="skFournisseurSite"
+    type="url"
+    name="site_url"
+    placeholder="https://..."
+  >
+
+  <label for="skFournisseurContact">Contact</label>
+  <input
+    id="skFournisseurContact"
+    type="text"
+    name="contact"
+    placeholder="E-mail ou téléphone"
+  >
+
+  <label for="skFournisseurNotes">Notes</label>
+  <textarea
+    id="skFournisseurNotes"
+    name="notes"
+    rows="3"
+    placeholder="Informations utiles sur le fournisseur"
+  ></textarea>
+
+  <input type="hidden" name="actif" value="true">
+
+  <button type="submit" class="btn btn-modifier">
+    💾 Enregistrer le fournisseur
+  </button>
+</form>
+
+    <div id="skFournisseursListe">
+      Les fournisseurs seront affichés ici.
+    </div>
+  </div>
+
+  <div class="bloc">
+    <h2>📦 Mes consommables</h2>
+    <p>
+      Suis tes stocks de papier de sublimation,
+      d’encre, d’emballages et d’autres fournitures.
+    </p>
+
+<form id="skFormConsommable" class="bloc">
+  <h3>➕ Ajouter un consommable</h3>
+
+  <input type="hidden" name="id" value="">
+
+  <label for="skConsommableNom">Nom de l’article *</label>
+  <input
+    id="skConsommableNom"
+    type="text"
+    name="nom"
+    required
+    placeholder="Ex. : papier de sublimation A4"
+  >
+
+  <label for="skConsommableUnite">Unité de mesure</label>
+  <select id="skConsommableUnite" name="unite">
+    <option value="piece">Pièce</option>
+    <option value="feuille">Feuille</option>
+    <option value="ml">Millilitre (ml)</option>
+    <option value="g">Gramme (g)</option>
+    <option value="m">Mètre (m)</option>
+    <option value="rouleau">Rouleau</option>
+    <option value="paquet">Paquet</option>
+    <option value="lot">Lot</option>
+  </select>
+
+  <label for="skConsommableStock">Stock actuel</label>
+  <input
+    id="skConsommableStock"
+    type="number"
+    name="stock_actuel"
+    min="0"
+    step="0.01"
+    value="0"
+  >
+
+  <label for="skConsommableSeuil">Seuil d’alerte du stock</label>
+  <input
+    id="skConsommableSeuil"
+    type="number"
+    name="seuil_alerte"
+    min="0"
+    step="0.01"
+    value="0"
+  >
+
+  <label for="skConsommablePrix">Coût unitaire (€)</label>
+  <input
+    id="skConsommablePrix"
+    type="number"
+    name="prix_unitaire"
+    min="0"
+    step="0.0001"
+    value="0"
+  >
+
+  <label for="skConsommableUrl">Lien d’achat</label>
+  <input
+    id="skConsommableUrl"
+    type="url"
+    name="url_achat"
+    placeholder="https://..."
+  >
+
+  <label for="skConsommableNotes">Notes</label>
+  <textarea
+    id="skConsommableNotes"
+    name="notes"
+    rows="3"
+    placeholder="Référence, format, informations utiles..."
+  ></textarea>
+
+  <button type="submit" class="btn btn-modifier">
+    💾 Enregistrer le consommable
+  </button>
+</form>
+
+    <div id="skConsommablesListe">
+      Les consommables seront affichés ici.
+    </div>
+  </div>
+
+  <div class="bloc">
+    <h2>🛒 Mes achats fournisseurs</h2>
+    <p>Consulte tes achats et leurs frais associés.</p>
+
+    <div id="skAchatsListe">
+      Les achats fournisseurs seront affichés ici.
+    </div>
+  </div>
+
+  <div class="bloc">
+    <h2>🧮 Coût de revient de mes créations</h2>
+    <p>
+      Estime le coût de fabrication et un prix de vente conseillé.
+      Le prix conseillé ne modifiera pas automatiquement
+      le prix affiché dans ta boutique.
+    </p>
+
+    <div id="skCoutsProduitsListe">
+      Les coûts de revient seront affichés ici.
+    </div>
+  </div>
+
+</section>
 
 <!-- =====================================================
      MESSAGES DU SITE
