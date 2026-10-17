@@ -212,6 +212,115 @@
       font-size: 12px;
     }
 
+    
+    /* MENU RAPIDE DE L'ESPACE CLIENT */
+    .navigation-compte {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin: 22px 0 28px;
+    }
+
+    .navigation-compte a {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 58px;
+      padding: 12px;
+      border: 1px solid var(--bordure);
+      border-radius: 14px;
+      background: #f8f8f3;
+      color: var(--texte);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background .2s, transform .2s;
+    }
+
+    .navigation-compte a:hover {
+      background: var(--vert);
+      transform: translateY(-1px);
+    }
+
+    .navigation-compte a:focus-visible {
+      outline: 2px solid var(--vert-fonce);
+      outline-offset: 3px;
+    }
+
+    #sectionProfil,
+    #sectionMesCommandes,
+    #sectionMesFavoris,
+    #sectionFidelite {
+      scroll-margin-top: 20px;
+    }
+
+    @media (max-width: 360px) {
+      .navigation-compte {
+        gap: 7px;
+      }
+
+      .navigation-compte a {
+        padding: 10px 8px;
+        font-size: 13px;
+      }
+    }
+
+    /* RUBRIQUES DE L'ESPACE CLIENT */
+    #sectionProfil,
+    #sectionMesCommandes,
+    #sectionMesFavoris,
+    #sectionFidelite {
+      margin-top: 24px;
+      padding: 18px;
+      border: 1px solid var(--bordure);
+      border-radius: 17px;
+      background: #ffffff;
+    }
+
+    #panneauConnecte h2 {
+      margin: 0 0 12px;
+      color: var(--texte);
+      font-size: 19px;
+      line-height: 1.4;
+      font-weight: 700;
+    }
+
+    #panneauConnecte .intro {
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    #sectionFidelite #carteFidelite {
+      margin-top: 12px;
+      padding: 16px;
+      border-color: #e4e9df;
+      background: #f8faf5;
+      box-shadow: none;
+    }
+
+    #sectionProfil form label:first-child {
+      margin-top: 8px;
+    }
+
+    @media (max-width: 480px) {
+      #sectionProfil,
+      #sectionMesCommandes,
+      #sectionMesFavoris,
+      #sectionFidelite {
+        padding: 14px;
+        margin-top: 18px;
+        border-radius: 14px;
+      }
+
+      #panneauConnecte h2 {
+        font-size: 18px;
+      }
+
+      #sectionFidelite #carteFidelite {
+        padding: 12px;
+      }
+    }
+
     [hidden] { display: none !important; }
   </style>
 </head>
@@ -382,6 +491,31 @@
       </p>
 
       
+      <!-- MENU RAPIDE DE L'ESPACE CLIENT -->
+      <nav class="navigation-compte" aria-label="Navigation de mon compte">
+        <a href="#sectionProfil">
+          <span aria-hidden="true">👤</span>
+          <span>Mes informations</span>
+        </a>
+
+        <a href="#sectionMesCommandes">
+          <span aria-hidden="true">📦</span>
+          <span>Mes commandes</span>
+        </a>
+
+        <a href="#sectionMesFavoris">
+          <span aria-hidden="true">❤️</span>
+          <span>Mes favoris</span>
+        </a>
+
+        <a href="#sectionFidelite">
+          <span aria-hidden="true">🎁</span>
+          <span>Ma fidélité</span>
+        </a>
+      </nav>
+      <!-- FIN MENU RAPIDE -->
+
+      
       <!-- PROFIL CLIENT -->
       <section id="sectionProfil">
         <h2>👤 Mes informations personnelles</h2>
@@ -528,13 +662,6 @@
   </div>
 </section>
 <!-- FIN MON PROGRAMME FIDÉLITÉ -->
-
-      <div class="encart">
-        <strong>Votre espace se construit progressivement.</strong>
-        <br>
-        Les commandes, les favoris et le programme de fidélité
-        seront affichés ici après leur raccordement et leurs tests.
-      </div>
 
       <button class="bouton" id="boutonDeconnexion" type="button">
         Me déconnecter
