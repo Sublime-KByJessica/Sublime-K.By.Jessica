@@ -3337,41 +3337,7 @@ button{cursor:pointer}
     <div id="listeLivraisons"></div>
 
     
-    <!-- =====================================================
-         SUIVI DES TRANSPORTEURS
-    ===================================================== -->
-
-    <div style="
-      margin-top:28px;
-      padding:18px;
-      border:1px solid #dce3d4;
-      border-radius:12px;
-      background:#f8faf5;
-    ">
-
-      <h3>📦 Suivi des colis et transporteurs</h3>
-
-      <p>
-        Active uniquement les transporteurs que tu souhaites utiliser.
-        Le suivi automatique reste désactivé tant que son intégration
-        n'est pas configurée.
-      </p>
-
-      <div id="listeTransporteursSuivi">
-        <p>Chargement des réglages des transporteurs…</p>
-      </div>
-
-      <div
-        id="messageTransporteursSuivi"
-        class="message"
-        role="status"
-        aria-live="polite"
-      ></div>
-
-    </div>
-
-    <!-- FIN SUIVI DES TRANSPORTEURS -->
-
+    
   </div>
 
 </section>
@@ -4967,7 +4933,6 @@ async function afficherAdmin(){
   await chargerBibliotheque();
   await chargerReglagesLivraison();
   await chargerLivraisons();
-  await chargerTransporteursSuivi();
   await chargerCommandes();
   await chargerPagesLegales();
   await chargerPolicesPersonnalisation();
@@ -8107,6 +8072,78 @@ async function enregistrerTransporteurSuivi(code){
    LIVRAISONS
 ===================================================== */
 
+  
+async function enregistrerSuiviModeLivraison(id){
+
+  if(!(await verifierAdmin())){
+    return;
+  }
+
+  const code = document.getElementById(
+    "code-suivi-" + id
+  ).value;
+
+  const url = document.getElementById(
+    "url-suivi-" + id
+  ).value.trim();
+
+  const automatique = document.getElementById(
+    "auto-suivi-" + id
+  ).checked;
+
+  if(url){
+
+    try{
+
+      const urlTest = new URL(url);
+
+      if(
+        urlTest.protocol !== "https:" &&
+        urlTest.protocol !== "http:"
+      ){
+        throw new Error("URL invalide");
+      }
+
+    }catch(error){
+
+      alert("❌ Vérifie le lien de suivi saisi.");
+      return;
+    }
+  }
+
+  const { error } = await client
+    .from("shipping_methods")
+    .update({
+
+      suivi_code: code || null,
+
+      modele_url_suivi: url || null,
+
+      suivi_automatique_actif: automatique
+
+    })
+    .eq("id", id);
+
+  if(error){
+
+    console.error(
+      "Erreur enregistrement du suivi :",
+      error
+    );
+
+    alert(
+      "❌ Impossible d'enregistrer le suivi : " +
+      error.message
+    );
+
+    return;
+  }
+
+  alert("✅ Réglages du suivi enregistrés !");
+
+  await chargerLivraisons();
+}
+
 async function chargerLivraisons(){
 
   const {
@@ -8267,13 +8304,109 @@ function afficherLivraison(livraison){
 
       ${gratuit}
 
+      
       <p>
         ${
           livraison.actif
-            ? "🟢 Actif"
-            : "⚫ Inactif"
+            ? "🟢 Disponible sur la boutique"
+            : "⚫ Masqué de la boutique"
         }
       </p>
+
+      <hr style="margin:16px 0;border:0;border-top:1px solid #dce3d4;">
+
+      <h4>📦 Réglages du suivi colis</h4>
+
+      <label
+        for="code-suivi-${livraison.id}"
+        style="display:block;margin:10px 0 5px;"
+      >
+        Transporteur associé
+      </label>
+
+      <select
+        id="code-suivi-${livraison.id}"
+        style="width:100%;padding:10px;box-sizing:border-box;"
+      >
+        <option value="" ${
+          !livraison.suivi_code ? "selected" : ""
+        }>
+          Aucun suivi colis
+        </option>
+
+        <option value="mondial_relay" ${
+          livraison.suivi_code === "mondial_relay" ? "selected" : ""
+        }>
+          Mondial Relay
+        </option>
+
+        <option value="colissimo" ${
+          livraison.suivi_code === "colissimo" ? "selected" : ""
+        }>
+          Colissimo
+        </option>
+
+        <option value="relais_colis" ${
+          livraison.suivi_code === "relais_colis" ? "selected" : ""
+        }>
+          Relais Colis
+        </option>
+
+        <option value="chronopost" ${
+          livraison.suivi_code === "chronopost" ? "selected" : ""
+        }>
+          Chronopost
+        </option>
+
+        <option value="autre" ${
+          livraison.suivi_code === "autre" ? "selected" : ""
+        }>
+          Autre transporteur
+        </option>
+      </select>
+
+      <label
+        for="url-suivi-${livraison.id}"
+        style="display:block;margin:12px 0 5px;"
+      >
+        Modèle de lien de suivi (facultatif)
+      </label>
+
+      <input
+        type="url"
+        id="url-suivi-${livraison.id}"
+        value="${echapperHTML(livraison.modele_url_suivi || "")}"
+        placeholder="https://... (utilise {numero} si nécessaire)"
+        style="width:100%;padding:10px;box-sizing:border-box;"
+      >
+
+      <label style="
+        display:flex;
+        align-items:flex-start;
+        gap:8px;
+        margin:12px 0;
+      ">
+        <input
+          type="checkbox"
+          id="auto-suivi-${livraison.id}"
+          ${livraison.suivi_automatique_actif ? "checked" : ""}
+        >
+        <span>
+          <strong>Prévoir le suivi automatique</strong>
+          <br>
+          <small>
+            Cette option ne remplace pas une intégration réelle avec le transporteur.
+          </small>
+        </span>
+      </label>
+
+      <button
+        type="button"
+        class="btn btn-modifier"
+        onclick="enregistrerSuiviModeLivraison('${livraison.id}')"
+      >
+        💾 Enregistrer le suivi
+      </button>
 
     </div>
 
