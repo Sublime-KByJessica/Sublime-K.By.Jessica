@@ -10578,6 +10578,10 @@ return;
 
 let favoris = recupererFavoris();
 
+  const ajouterAuCompte = !favoris.some(
+  element => String(element.id) === String(produit.id)
+);
+
 const index = favoris.findIndex(
 element => String(element.id) === String(produit.id)
 );
@@ -10597,7 +10601,7 @@ JSON.stringify(favoris)
 alert("Impossible d'enregistrer les favoris sur cet appareil.");
 return;
 }
-
+synchroniserFavoriAvecCompte(produit, ajouterAuCompte);
 
 const boutons = Array.from(
   document.querySelectorAll(".bouton-favori")
@@ -10619,6 +10623,185 @@ boutons.forEach(function(bouton) {
 /* FIN DE LA GESTION DES FAVORIS */
 
   
+/* =====================================================
+   SYNCHRONISATION DES FAVORIS AVEC LE COMPTE CLIENT
+===================================================== */
+
+async function synchroniserFavoriAvecCompte(produit, ajouter) {
+  try {
+    const { data: { user }, error: erreurUtilisateur } =
+      await supabaseClient.auth.getUser();
+
+    if (erreurUtilisateur || !user) return;
+
+    if (ajouter) {
+      const { error } = await supabaseClient
+        .from("customer_favorites")
+        .upsert(
+          {
+            user_id: user.id,
+            product_id: produit.id
+          },
+          {
+            onConflict: "user_id,product_id",
+            ignoreDuplicates: true
+          }
+        );
+
+      if (error) {
+        console.error(
+          "Erreur de synchronisation du favori :",
+          error
+        );
+      }
+    } else {
+      const { error } = await supabaseClient
+        .from("customer_favorites")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("product_id", produit.id);
+
+      if (error) {
+        console.error(
+          "Erreur de suppression du favori :",
+          error
+        );
+      }
+    }
+  } catch (erreur) {
+    console.error(
+      "Impossible de synchroniser les favoris :",
+      erreur
+    );
+  }
+}
+
+/* FIN DE LA SYNCHRONISATION DES FAVORIS */
+
+    
+/* =====================================================
+   CHARGER LES FAVORIS DU COMPTE CLIENT
+===================================================== */
+
+async function chargerFavorisDuCompte() {
+  try {
+    const { data: { user }, error: erreurUtilisateur } =
+      await supabaseClient.auth.getUser();
+
+    if (erreurUtilisateur || !user) return;
+
+    const { data: favorisCompte, error: erreurFavoris } =
+      await supabaseClient
+        .from("customer_favorites")
+        .select("product_id, created_at")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+    if (erreurFavoris) {
+      console.error(
+        "Erreur de chargement des favoris :",
+        erreurFavoris
+      );
+      return;
+    }
+
+    const favorisLocaux = recupererFavoris();
+
+    /* Premier transfert : favoris locaux vers le compte */
+    if (!favorisCompte || favorisCompte.length === 0) {
+      if (favorisLocaux.length > 0) {
+        const idsLocaux = favorisLocaux
+          .map(produit => produit.id)
+          .filter(Boolean);
+
+        if (idsLocaux.length > 0) {
+          const { data: produitsValides, error: erreurProduits } =
+            await supabaseClient
+              .from("products")
+              .select("id")
+              .in("id", idsLocaux)
+              .eq("visible", true);
+
+          if (!erreurProduits && produitsValides) {
+            for (const produit of produitsValides) {
+              const { error } = await supabaseClient
+                .from("customer_favorites")
+                .upsert(
+                  {
+                    user_id: user.id,
+                    product_id: produit.id
+                  },
+                  {
+                    onConflict: "user_id,product_id",
+                    ignoreDuplicates: true
+                  }
+                );
+
+              if (error) {
+                console.error(
+                  "Erreur de transfert d'un favori :",
+                  error
+                );
+              }
+            }
+          }
+        }
+      }
+
+      return;
+    }
+
+    /* Le compte devient la référence si des favoris y existent */
+    const idsCompte = favorisCompte
+      .map(favori => favori.product_id)
+      .filter(Boolean);
+
+    if (idsCompte.length === 0) return;
+
+    const { data: produitsCompte, error: erreurChargementProduits } =
+      await supabaseClient
+        .from("products")
+        .select("*")
+        .in("id", idsCompte);
+
+    if (erreurChargementProduits) {
+      console.error(
+        "Erreur de chargement des produits favoris :",
+        erreurChargementProduits
+      );
+      return;
+    }
+
+    localStorage.setItem(
+      "sublimeK_favoris",
+      JSON.stringify(produitsCompte || [])
+    );
+
+    /* Actualiser les cœurs déjà affichés */
+    document.querySelectorAll(".bouton-favori").forEach(function(bouton) {
+      const action = bouton.getAttribute("onclick") || "";
+
+      const produitFavori = (produitsCompte || []).some(function(produit) {
+        return action.includes(String(produit.id));
+      });
+
+      bouton.innerHTML = produitFavori
+        ? "❤️ Favoris"
+        : "🤍 Favoris";
+    });
+
+    afficherMesFavoris();
+
+  } catch (erreur) {
+    console.error(
+      "Erreur inattendue lors du chargement des favoris :",
+      erreur
+    );
+  }
+}
+
+/* FIN DU CHARGEMENT DES FAVORIS DU COMPTE */
+
 /* =====================================================
    AFFICHER LA LISTE DES FAVORIS
 ===================================================== */
@@ -12577,7 +12760,9 @@ chargerMessagesSitePublic();
 
     chargerCategoriesMenu();
     
-    chargerBoutique();
+    chargerBoutique().then(() => {
+  return chargerFavorisDuCompte();
+});
 
     afficherPanier();
 
