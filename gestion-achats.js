@@ -765,6 +765,7 @@ async function chargerCoutsProduits() {
     const existants = await lire(TABLES.couts, "id,produit_id");
     const existant = existants.find(c => c.produit_id === produitId);
 
+    valeurs.produit_id = produitId;
     valeurs.prix_vente_conseille = Math.ceil(prix * 100) / 100;
     valeurs.updated_at = new Date().toISOString();
     valeurs.notes = String(donnees.get("notes") || "").trim() || null;
