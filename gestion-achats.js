@@ -509,7 +509,7 @@ async function sauvegarderAchat(formulaire) {
   
 async function chargerCoutsProduits() {
   const [produits, couts] = await Promise.all([
-    lire("products", "id,nom,prix,lien_achat_fournisseur"),
+    lire("products", "id,nom,prix,lien_achat_fournisseur,prix_achat_fournisseur,prix_achat_verifie_le"),
     lire(TABLES.couts, "*")
   ]);
 
