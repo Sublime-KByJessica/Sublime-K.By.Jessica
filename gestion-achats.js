@@ -1038,4 +1038,19 @@ return;
   window.skChargerCoutsProduits = chargerCoutsProduits;
   window.skCalculerPrixConseille = calculerPrixConseillé;
 
+     // Branchement direct du formulaire de coût de revient.
+  const formulaireCoutDirect = document.getElementById("skFormCout");
+
+  if (formulaireCoutDirect && formulaireCoutDirect.dataset.ecouteDirect !== "oui") {
+    formulaireCoutDirect.dataset.ecouteDirect = "oui";
+
+    formulaireCoutDirect.addEventListener("submit", evenement => {
+      evenement.preventDefault();
+      evenement.stopPropagation();
+
+      void securiser(async () => {
+        await sauvegarderCout(formulaireCoutDirect);
+      });
+    });
+  }
 })();
