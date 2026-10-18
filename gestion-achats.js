@@ -596,7 +596,8 @@ for (const [index, ligne] of lignesAvantEnregistrement.entries()) {
   const prixBrut = lireChamp("prix_unitaire");
   const recueBrute = lireChamp("quantite_recue");
   const notesArticle = lireChamp("notes_article");
-
+const ligneId = lireChamp("ligne_id");
+   
   const ligneVide =
     !nomArticle &&
     !urlArticle &&
@@ -605,7 +606,7 @@ for (const [index, ligne] of lignesAvantEnregistrement.entries()) {
     (!prixBrut || nombre(prixBrut) === 0) &&
     (!recueBrute || nombre(recueBrute) === 0);
 
-  if (ligneVide) continue;
+  if (ligneVide && !ligneId) continue;
 
   if (!nomArticle) {
     throw new Error(
