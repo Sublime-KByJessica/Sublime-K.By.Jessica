@@ -54,16 +54,28 @@
     return data || [];
   }
 
-  async function enregistrer(table, valeurs, id = null) {
-    const requete = obtenirClient().from(table);
+  
+async function enregistrer(table, valeurs, id = null) {
+  const requete = obtenirClient().from(table);
 
-    const resultat = id
-      ? await requete.update(valeurs).eq("id", id).select()
-      : await requete.insert(valeurs).select();
+  const resultat = id
+    ? await requete.update(valeurs).eq("id", id).select()
+    : await requete.insert(valeurs).select();
 
-    if (resultat.error) throw resultat.error;
-    return resultat.data;
+  if (resultat.error) {
+    throw resultat.error;
   }
+
+  if (!resultat.data || resultat.data.length === 0) {
+    throw new Error(
+      id
+        ? `Aucune ligne mise à jour dans ${table} : identifiant introuvable ou modification refusée.`
+        : `Aucune ligne créée dans ${table}.`
+    );
+  }
+
+  return resultat.data;
+}
 
   async function supprimer(table, id) {
     const { error } = await obtenirClient()
@@ -444,13 +456,46 @@ function initialiserLignesArticlesAchat() {
     const ligne = bouton.closest(".sk-achat-article");
     const idLigne = ligne?.querySelector('[name="ligne_id"]')?.value;
 
-    if (idLigne) {
-      afficherMessage(
-        "Cette ligne existe déjà dans Supabase. Nous sécuriserons sa suppression lors de l'étape d'enregistrement.",
-        true
-      );
-      return;
+    
+if (idLigne) {
+  const champSuppressions = document.getElementById(
+    "skLignesAchatsSupprimees"
+  );
+
+  if (!champSuppressions) {
+    afficherMessage(
+      "Impossible de sécuriser la suppression : champ de suivi introuvable.",
+      true
+    );
+    return;
+  }
+
+  let idsASupprimer = [];
+
+  try {
+    idsASupprimer = JSON.parse(champSuppressions.value || "[]");
+
+    if (!Array.isArray(idsASupprimer)) {
+      idsASupprimer = [];
     }
+  } catch {
+    idsASupprimer = [];
+  }
+
+  if (!idsASupprimer.includes(idLigne)) {
+    idsASupprimer.push(idLigne);
+  }
+
+  champSuppressions.value = JSON.stringify(idsASupprimer);
+
+  ligne?.remove();
+  actualiserNumeros();
+
+  afficherMessage(
+    "Article marqué pour suppression. La suppression sera appliquée à l'enregistrement."
+  );
+  return;
+}
 
     ligne?.remove();
     actualiserNumeros();
@@ -509,43 +554,101 @@ function initialiserLignesArticlesAchat() {
   }
 
   async function sauvegarderAchat(formulaire) {
-  const donnees = new FormData(formulaire);
-  const id = donnees.get("id") || null;
+const donnees = new FormData(formulaire);
+const id = donnees.get("id") || null;
 
-  const livraison = nombre(donnees.get("frais_livraison"));
-  const autres = nombre(donnees.get("frais_autres"));
+const livraison = nombre(donnees.get("frais_livraison"));
+const autres = nombre(donnees.get("frais_autres"));
 
-  if (livraison < 0 || autres < 0) {
-    throw new Error("Les frais ne peuvent pas être négatifs.");
-  }
+if (livraison < 0 || autres < 0) {
+throw new Error("Les frais ne peuvent pas être négatifs.");
+}
 
-  const achat = {
-    fournisseur_id: donnees.get("fournisseur_id") || null,
-    reference: String(donnees.get("reference") || "").trim() || null,
-    date_commande: donnees.get("date_commande") || null,
-    date_reception: donnees.get("date_reception") || null,
-    statut: donnees.get("statut") || "a_commander",
-    statut_paiement: donnees.get("statut_paiement") || "a_payer",
-    frais_livraison: livraison,
-    frais_autres: autres,
-    notes: String(donnees.get("notes") || "").trim() || null
-  };
+const achat = {
+fournisseur_id: donnees.get("fournisseur_id") || null,
+reference: String(donnees.get("reference") || "").trim() || null,
+date_commande: donnees.get("date_commande") || null,
+date_reception: donnees.get("date_reception") || null,
+statut: donnees.get("statut") || "a_commander",
+statut_paiement: donnees.get("statut_paiement") || "a_payer",
+frais_livraison: livraison,
+frais_autres: autres,
+notes: String(donnees.get("notes") || "").trim() || null
+};
 
-  const resultat = await enregistrer(TABLES.achats, achat, id);
-  const achatId = id || resultat?.[0]?.id;
+const resultat = await enregistrer(TABLES.achats, achat, id);
+const achatId = id || resultat?.[0]?.id;
 
-  if (!achatId) {
+if (!achatId) {
+throw new Error(
+"L'achat est enregistré, mais son identifiant est introuvable."
+);
+}
+
+const conteneur = formulaire.querySelector("#skAchatArticles");
+const lignesFormulaire = conteneur
+? [...conteneur.querySelectorAll(".sk-achat-article")]
+: [];
+
+const client = obtenirClient();
+     
+const champSuppressions = document.getElementById(
+  "skLignesAchatsSupprimees"
+);
+
+let idsASupprimer = [];
+
+if (champSuppressions && champSuppressions.value.trim()) {
+  try {
+    idsASupprimer = JSON.parse(champSuppressions.value);
+
+    if (
+      !Array.isArray(idsASupprimer) ||
+      !idsASupprimer.every(
+        id => typeof id === "string" && id.trim() !== ""
+      )
+    ) {
+      throw new Error("Liste de suppressions invalide.");
+    }
+
+    idsASupprimer = [...new Set(idsASupprimer)];
+  } catch {
     throw new Error(
-      "L'achat est enregistré, mais son identifiant est introuvable."
+      "La liste des articles à supprimer est invalide. Recharge l'achat avant de réessayer."
+    );
+  }
+}
+
+if (idsASupprimer.length > 0) {
+  if (!id) {
+    throw new Error(
+      "Impossible de supprimer des articles : l'achat n'a pas d'identifiant."
     );
   }
 
-  const conteneur = formulaire.querySelector("#skAchatArticles");
-  const lignesFormulaire = conteneur
-    ? [...conteneur.querySelectorAll(".sk-achat-article")]
-    : [];
+  const verificationSuppressions = await client
+    .from(TABLES.lignesAchats)
+    .select("id, achat_id")
+    .in("id", idsASupprimer);
 
-  const client = obtenirClient();
+  if (verificationSuppressions.error) {
+    throw new Error(
+      "Impossible de vérifier les articles à supprimer : " +
+      verificationSuppressions.error.message
+    );
+  }
+
+  const lignesVerifiees = verificationSuppressions.data || [];
+
+  if (
+    lignesVerifiees.length !== idsASupprimer.length ||
+    lignesVerifiees.some(ligne => ligne.achat_id !== achatId)
+  ) {
+    throw new Error(
+      "Sécurité : au moins un article à supprimer est introuvable ou n'appartient pas à cet achat. Aucune suppression effectuée."
+    );
+  }
+}
 
   for (const [index, ligne] of lignesFormulaire.entries()) {
     const lireChamp = nom =>
@@ -611,17 +714,29 @@ function initialiserLignesArticlesAchat() {
 
     let resultatArticle;
 
-    if (ligneId) {
-      resultatArticle = await client
-        .from(TABLES.lignesAchats)
-        .update(valeursArticle)
-        .eq("id", ligneId)
-        .eq("achat_id", achatId);
-    } else {
-      resultatArticle = await client
-        .from(TABLES.lignesAchats)
-        .insert(valeursArticle);
-    }
+    
+if (ligneId) {
+  resultatArticle = await client
+    .from(TABLES.lignesAchats)
+    .update(valeursArticle)
+    .eq("id", ligneId)
+    .eq("achat_id", achatId)
+    .select("id");
+
+  if (
+    !resultatArticle.error &&
+    (!resultatArticle.data || resultatArticle.data.length !== 1)
+  ) {
+    throw new Error(
+      `Sécurité : l'article ${index + 1} n'a pas été modifié. ` +
+      "Il est peut-être introuvable ou la modification est refusée."
+    );
+  }
+} else {
+  resultatArticle = await client
+    .from(TABLES.lignesAchats)
+    .insert(valeursArticle);
+}
 
     if (resultatArticle.error) {
       throw new Error(
@@ -630,6 +745,40 @@ function initialiserLignesArticlesAchat() {
       );
     }
   }
+
+
+if (idsASupprimer.length > 0) {
+  const resultatSuppression = await client
+    .from(TABLES.lignesAchats)
+    .delete()
+    .eq("achat_id", achatId)
+    .in("id", idsASupprimer)
+    .select("id");
+
+  if (resultatSuppression.error) {
+    throw new Error(
+      "Les articles ont été enregistrés, mais la suppression de certaines lignes a échoué : " +
+      resultatSuppression.error.message
+    );
+  }
+
+  const idsSupprimes = (resultatSuppression.data || []).map(
+    ligne => ligne.id
+  );
+
+  if (
+    idsSupprimes.length !== idsASupprimer.length ||
+    idsASupprimer.some(idSupprime => !idsSupprimes.includes(idSupprime))
+  ) {
+    throw new Error(
+      "La suppression n'a pas pu être confirmée pour tous les articles. Recharge l'achat et vérifie les lignes restantes."
+    );
+  }
+}
+
+if (champSuppressions) {
+  champSuppressions.value = "[]";
+}
 
   formulaire.reset();
 
@@ -1284,6 +1433,14 @@ if (action === "modifier-achat") {
     );
   }
 
+   const champSuppressions = document.getElementById(
+  "skLignesAchatsSupprimees"
+);
+
+if (champSuppressions) {
+  champSuppressions.value = "[]";
+}
+   
   const lignesAchat = toutesLesLignes.filter(
     ligne => ligne.achat_id === id
   );
