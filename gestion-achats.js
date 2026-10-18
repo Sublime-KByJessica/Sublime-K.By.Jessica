@@ -909,13 +909,115 @@ return;
         return;
       }
 
-      // Les boutons de modification seront reliés aux formulaires
-      // lors de l'étape d'intégration de l'interface dans admin.html.
-      if (action.startsWith("modifier-") || action === "editer-cout") {
+      
+      if (action === "editer-cout") {
+        const formulaire = document.getElementById("skFormCout");
+        const selectProduit = document.getElementById("skCoutProduit");
+
+        if (!formulaire || !selectProduit) {
+          throw new Error("Le formulaire de coût est introuvable dans admin.html.");
+        }
+
+        const [produits, couts] = await Promise.all([
+          lire("products", "id,nom"),
+          lire(TABLES.couts, "*")
+        ]);
+
+        selectProduit.innerHTML =
+          '<option value="">Choisir un produit</option>' +
+          produits.map(p => `
+            <option value="${echapper(p.id)}">
+              ${echapper(p.nom || "Article sans nom")}
+            </option>
+          `).join("");
+
+        const coutExistant = couts.find(c => c.produit_id === id);
+
+        selectProduit.value = id;
+
+        const champs = [
+          "cout_support",
+          "cout_livraison",
+          "cout_consommables",
+          "cout_emballage",
+          "cout_electricite",
+          "cout_temps_travail",
+          "cout_autres",
+          "taux_frais_paiement",
+          "frais_paiement_fixe",
+          "taux_charges_estime",
+          "taux_marge_cible",
+          "notes"
+        ];
+
+        champs.forEach(nom => {
+          const champ = formulaire.elements.namedItem(nom);
+          if (!champ) return;
+
+          if (coutExistant) {
+            champ.value = coutExistant[nom] ?? (nom === "taux_marge_cible" ? 30 : 0);
+          } else {
+            champ.value = nom === "taux_marge_cible" ? 30 : "";
+          }
+        });
+
+        formulaire.style.display = "block";
+        formulaire.scrollIntoView({ behavior: "smooth", block: "start" });
+        afficherMessage("Renseigne les coûts de ce produit, puis enregistre.");
+        return;
+      }
+
+      if (action.startsWith("modifier-")) {
         afficherMessage(
-          "L'interface de modification sera reliée à cette action lors de l'étape suivante."
+          "La modification de cet élément sera raccordée dans une prochaine étape."
         );
       }
+    });
+  });
+
+  // Fermer le formulaire de coût avec le bouton Annuler.
+  document.getElementById("skAnnulerCout")?.addEventListener("click", () => {
+    const formulaire = document.getElementById("skFormCout");
+    if (formulaire) {
+      formulaire.style.display = "none";
+      formulaire.reset();
+    }
+  });
+
+  // Charger les coûts déjà enregistrés quand le produit change.
+  document.getElementById("skCoutProduit")?.addEventListener("change", async evenement => {
+    const formulaire = document.getElementById("skFormCout");
+    const produitId = evenement.target.value;
+
+    if (!formulaire || !produitId) return;
+
+    await securiser(async () => {
+      const couts = await lire(TABLES.couts, "*");
+      const coutExistant = couts.find(c => c.produit_id === produitId);
+
+      const champs = [
+        "cout_support",
+        "cout_livraison",
+        "cout_consommables",
+        "cout_emballage",
+        "cout_electricite",
+        "cout_temps_travail",
+        "cout_autres",
+        "taux_frais_paiement",
+        "frais_paiement_fixe",
+        "taux_charges_estime",
+        "taux_marge_cible",
+        "notes"
+      ];
+
+      champs.forEach(nom => {
+        const champ = formulaire.elements.namedItem(nom);
+        if (!champ) return;
+
+        champ.value = coutExistant
+          ? (coutExistant[nom] ?? (nom === "taux_marge_cible" ? 30 : 0))
+          : (nom === "taux_marge_cible" ? 30 : 0);
+      });
     });
   });
 
