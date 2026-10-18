@@ -509,7 +509,7 @@ async function sauvegarderAchat(formulaire) {
   
 async function chargerCoutsProduits() {
   const [produits, couts] = await Promise.all([
-    lire("products", "id,nom,prix"),
+    lire("products", "id,nom,prix,lien_achat_fournisseur"),
     lire(TABLES.couts, "*")
   ]);
 
@@ -592,26 +592,57 @@ async function chargerCoutsProduits() {
           style="margin:6px 0;padding:10px 12px;">
           
          
-          <summary style="cursor:pointer;display:block;width:100%;
-            box-sizing:border-box;">
-            <div style="display:grid;
-              grid-template-columns:minmax(0,1fr) 110px;
-              align-items:center;column-gap:12px;width:100%;
-              box-sizing:border-box;">
-              <strong style="min-width:0;overflow-wrap:anywhere;">
-                ${echapper(p.nom || "Article sans nom")}
-              </strong>
-              <span style="display:block;width:110px;text-align:right;
-                white-space:nowrap;font-size:0.95em;font-weight:600;">
-                ${euro(p.prix)}
-              </span>
-            </div>
-            <div style="margin-top:4px;font-size:0.8em;opacity:0.8;">
-              ${statut}
-            </div>
-          </summary>
+          
+<summary style="cursor:pointer;display:block;width:100%;box-sizing:border-box;">
+  <div style="display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px;width:100%;box-sizing:border-box;">
+    <strong style="min-width:0;overflow-wrap:anywhere;">
+      ${echapper(p.nom || "Article sans nom")}
+    </strong>
+
+    <span style="white-space:nowrap;text-align:center;font-size:0.8em;">
+      ${(() => {
+        try {
+          const lien = verifierUrl(p.lien_achat_fournisseur);
+          return lien
+            ? `<a href="${echapper(lien)}" target="_blank" rel="noopener noreferrer">Achat ↗</a>`
+            : `<span style="opacity:0.6;">Sans lien</span>`;
+        } catch {
+          return `<span style="opacity:0.6;">Lien invalide</span>`;
+        }
+      })()}
+    </span>
+
+    <span style="white-space:nowrap;text-align:right;font-size:0.95em;font-weight:600;">
+      ${euro(p.prix)}
+    </span>
+  </div>
+
+  <div style="margin-top:5px;font-size:0.8em;opacity:0.8;">
+    ${statut}
+  </div>
+</summary>
 
           <div style="padding-top:10px;">
+          
+            <div style="margin:10px 0;padding:10px;border:1px solid #ddd;border-radius:8px;">
+              <label for="lienAchat-${p.id}" style="display:block;margin-bottom:6px;font-weight:600;">
+                🔗 Lien d'achat fournisseur
+              </label>
+              <input
+                type="url"
+                id="lienAchat-${p.id}"
+                value="${echapper(p.lien_achat_fournisseur || "")}"
+                placeholder="https://..."
+                style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccc;border-radius:6px;"
+              >
+              <button
+                type="button"
+                data-sk-action="enregistrer-lien-produit"
+                data-id="${p.id}"
+                style="margin-top:8px;">
+                Enregistrer le lien
+              </button>
+            </div>
             <p>Prix actuel de la boutique : ${euro(p.prix)}</p>
             <p>Coût de revient :
               ${coutRenseigne ? euro(cout) : "À compléter"}</p>
@@ -736,6 +767,28 @@ async function chargerCoutsProduits() {
     securiser(async () => {
       if (action === "ajuster-stock") {
         await ajusterStock(id, bouton.dataset.sens);
+        return;
+      }
+       
+
+      if (action === "enregistrer-lien-produit") {
+        const champ = document.getElementById(`lienAchat-${id}`);
+        if (!champ) {
+          throw new Error("Champ du lien fournisseur introuvable.");
+        }
+
+         const lienSaisi = champ.value.trim();
+        const lien = lienSaisi ? verifierUrl(lienSaisi) : null;
+
+        const { error } = await obtenirClient()
+          .from("products")
+          .update({ lien_achat_fournisseur: lien })
+          .eq("id", id);
+
+        if (error) throw error;
+
+        afficherMessage("Lien d'achat fournisseur enregistré.");
+        await chargerCoutsProduits();
         return;
       }
 
