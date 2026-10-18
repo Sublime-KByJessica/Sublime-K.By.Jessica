@@ -815,12 +815,25 @@ async function chargerCoutsProduits() {
 
         affichage.textContent = "Récupération du prix en cours…";
 
-        const { data, error } = await obtenirClient()
-          .functions.invoke("recuperer-prix-fournisseur", {
+        
+        const resultat = await Promise.race([
+          obtenirClient().functions.invoke("recuperer-prix-fournisseur", {
             body: { url: champ.value.trim() }
-          });
+          }),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error(
+              "Délai dépassé : Supabase ne répond pas. Réessaie."
+            )), 15000)
+          )
+        ]);
 
-        if (error) throw error;
+        const { data, error } = resultat;
+
+        if (error) {
+          affichage.textContent =
+            "Erreur Supabase : " + (error.message || "appel impossible");
+          return;
+        }
 
         if (data?.error) {
           affichage.textContent = data.error;
