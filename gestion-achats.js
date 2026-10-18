@@ -834,8 +834,8 @@ async function chargerCoutsProduits() {
           true
         );
       }
-    });
-  });
+        });
+  }, true);
 
   document.addEventListener("click", evenement => {
     const bouton = evenement.target.closest("[data-sk-action]");
