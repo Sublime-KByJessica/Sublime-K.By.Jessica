@@ -799,43 +799,43 @@ async function chargerCoutsProduits() {
   /* ---------------- ACTIONS DE L'INTERFACE ---------------- */
 
   
-  // REPÈRE — ENREGISTREMENT DES FORMULAIRES DE GESTION
-  document.addEventListener("submit", evenement => {
-    const formulaire = evenement.target;
+  
+  // REPÈRE — ENREGISTREMENT DIRECT DES FORMULAIRES DE GESTION
+  const formulairesGestion = {
+    skFormFournisseur: sauvegarderFournisseur,
+    skFormConsommable: sauvegarderConsommable,
+    skFormAchat: sauvegarderAchat,
+    skFormCout: sauvegarderCout
+  };
 
-    if (!formulaire || !formulaire.id) return;
+  Object.entries(formulairesGestion).forEach(([id, action]) => {
+    const formulaire = document.getElementById(id);
 
-    const actions = {
-      skFormFournisseur: sauvegarderFournisseur,
-      skFormConsommable: sauvegarderConsommable,
-      skFormAchat: sauvegarderAchat,
-      skFormCout: sauvegarderCout
-    };
+    if (!formulaire || formulaire.dataset.skEnvoiBranche === "oui") {
+      return;
+    }
 
-    const action = actions[formulaire.id];
-    if (!action) return;
+    formulaire.addEventListener("submit", async evenement => {
+      evenement.preventDefault();
+      evenement.stopPropagation();
 
-    evenement.preventDefault();
+      afficherMessage("Enregistrement en cours…");
 
-    afficherMessage("Enregistrement en cours…");
-
-    securiser(async () => {
       try {
         await action(formulaire);
       } catch (erreur) {
-        console.error(
-          "Erreur enregistrement formulaire :",
-          erreur
-        );
+        console.error("Erreur enregistrement formulaire :", erreur);
 
         afficherMessage(
           erreur?.message ||
-          "L’enregistrement a échoué. Vérifie les champs et les autorisations.",
+            "L’enregistrement a échoué. Vérifie les champs et les autorisations.",
           true
         );
       }
-        });
-  }, true);
+    });
+
+    formulaire.dataset.skEnvoiBranche = "oui";
+  });
 
   document.addEventListener("click", evenement => {
     const bouton = evenement.target.closest("[data-sk-action]");
