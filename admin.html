@@ -4187,6 +4187,26 @@ button{cursor:pointer}
       le prix affiché dans ta boutique.
     </p>
 
+<div class="sk-outils-recherche-couts" style="display:flex;flex-wrap:wrap;gap:10px;margin:12px 0;">
+  <input
+    type="search"
+    id="skRechercheCoutProduit"
+    placeholder="🔎 Rechercher un article..."
+    aria-label="Rechercher un article par son nom"
+    style="flex:1;min-width:180px;padding:10px;border:1px solid #ccc;border-radius:8px;"
+  >
+
+  <select
+    id="skFiltreCoutProduit"
+    aria-label="Filtrer les articles par état du coût"
+    style="flex:1;min-width:160px;padding:10px;border:1px solid #ccc;border-radius:8px;"
+  >
+    <option value="tous">Tous les articles</option>
+    <option value="a-completer">Coût à compléter</option>
+    <option value="renseigne">Coût renseigné</option>
+  </select>
+</div>
+
     <div id="skCoutsProduitsListe">
       Les coûts de revient seront affichés ici.
     </div>
