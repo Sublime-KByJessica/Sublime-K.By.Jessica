@@ -354,36 +354,50 @@ async function enregistrer(table, valeurs, id = null) {
     await chargerConsommables();
   }
 
+  
   async function ajusterStock(id, sens) {
-    const consommables = await lire(TABLES.consommables, "*");
-    const article = consommables.find(c => c.id === id);
-
-    if (!article) throw new Error("Consommable introuvable.");
-
     const saisie = prompt(
-      `Quantité à ${sens === "ajouter" ? "ajouter" : "retirer"} pour ${article.nom} :`,
+      `Quantité à ${sens === "ajouter" ? "ajouter" : "retirer"} :`,
       "1"
     );
 
     if (saisie === null) return;
 
-    const quantite = nombre(saisie);
-    if (quantite <= 0) {
-      throw new Error("Saisis une quantité supérieure à zéro.");
+    const texteQuantite = String(saisie).trim().replace(",", ".");
+    const quantite = Number(texteQuantite);
+
+    if (!Number.isFinite(quantite) || quantite <= 0) {
+      throw new Error(
+        "Saisis une quantité finie supérieure à zéro."
+      );
     }
 
-    const nouveauStock = nombre(article.stock_actuel) +
-      (sens === "ajouter" ? quantite : -quantite);
+    const resultat = await obtenirClient().rpc(
+      "sk_ajuster_stock_consommable",
+      {
+        p_consommable_id: id,
+        p_quantite: quantite,
+        p_sens: sens
+      }
+    );
 
-    if (nouveauStock < 0) {
-      throw new Error("Stock insuffisant : le stock ne peut pas devenir négatif.");
+    if (resultat.error) {
+      throw resultat.error;
     }
 
-    await enregistrer(TABLES.consommables, {
-      stock_actuel: nouveauStock
-    }, id);
+    if (
+      resultat.data === null ||
+      !Number.isFinite(Number(resultat.data))
+    ) {
+      throw new Error(
+        "Le résultat du nouveau stock est invalide. Recharge la liste pour vérifier."
+      );
+    }
 
-    afficherMessage("Stock mis à jour.");
+    afficherMessage(
+      `Stock mis à jour. Nouveau stock : ${nombre(resultat.data)}.`
+    );
+
     await chargerConsommables();
   }
 
