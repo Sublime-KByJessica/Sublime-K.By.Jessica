@@ -957,7 +957,7 @@ return;
           if (coutExistant) {
             champ.value = coutExistant[nom] ?? (nom === "taux_marge_cible" ? 30 : 0);
           } else {
-            champ.value = nom === "taux_marge_cible" ? 30 : "";
+            champ.value = nom === "taux_marge_cible" ? 30 : (nom === "notes" ? "" : 0);
           }
         });
 
