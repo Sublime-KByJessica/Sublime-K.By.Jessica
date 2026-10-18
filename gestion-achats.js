@@ -506,51 +506,138 @@ async function sauvegarderAchat(formulaire) {
     return (coutBase + fraisFixes) / denominateur;
   }
 
-  async function chargerCoutsProduits() {
-    const [produits, couts] = await Promise.all([
-      lire("products", "id,nom,prix"),
-      lire(TABLES.couts, "*")
-    ]);
+  
+async function chargerCoutsProduits() {
+  const [produits, couts] = await Promise.all([
+    lire("products", "id,nom,prix"),
+    lire(TABLES.couts, "*")
+  ]);
 
-    const parProduit = Object.fromEntries(
-      couts.map(c => [c.produit_id, c])
-    );
+  const parProduit = Object.fromEntries(
+    couts.map(c => [c.produit_id, c])
+  );
 
-    const zone = document.getElementById("skCoutsProduitsListe");
-    if (!zone) return { produits, couts };
+  const zone = document.getElementById("skCoutsProduitsListe");
+  if (!zone) return { produits, couts };
 
-    zone.innerHTML = produits.length
-      ? produits.map(p => {
-          const c = parProduit[p.id];
-          const cout = c
-            ? nombre(c.cout_support) +
-              nombre(c.cout_livraison) +
-              nombre(c.cout_consommables) +
-              nombre(c.cout_emballage) +
-              nombre(c.cout_electricite) +
-              nombre(c.cout_temps_travail) +
-              nombre(c.cout_autres)
-            : null;
+  function afficherListe() {
+    const recherche = (
+      document.getElementById("skRechercheCoutProduit")?.value || ""
+    ).trim().toLocaleLowerCase("fr");
 
-          return `
-            <article class="sk-carte">
-              <strong>${echapper(p.nom)}</strong>
-              <p>Prix actuel de la boutique : ${euro(p.prix)}</p>
-              <p>Coût de revient renseigné :
-                ${cout === null ? "À compléter" : euro(cout)}</p>
-              <p>Prix conseillé :
-                ${c && c.prix_vente_conseille != null
-                  ? euro(c.prix_vente_conseille)
-                  : "À calculer"}</p>
-              <button type="button" data-sk-action="editer-cout"
-                data-id="${p.id}">Configurer le coût</button>
-            </article>
-          `;
-        }).join("")
-      : "<p>Aucun produit trouvé.</p>";
+    const filtre =
+      document.getElementById("skFiltreCoutProduit")?.value || "tous";
 
-    return { produits, couts };
+    const produitsFiltres = produits.filter(p => {
+      const nom = String(p.nom || "").toLocaleLowerCase("fr");
+      const c = parProduit[p.id];
+
+      const coutRenseigne = c
+        ? [
+            c.cout_support,
+            c.cout_livraison,
+            c.cout_consommables,
+            c.cout_emballage,
+            c.cout_electricite,
+            c.cout_temps_travail,
+            c.cout_autres
+          ].some(v => v !== null && v !== undefined && v !== "")
+        : false;
+
+      const correspondRecherche = nom.includes(recherche);
+      const correspondFiltre =
+        filtre === "tous" ||
+        (filtre === "a-completer" && !coutRenseigne) ||
+        (filtre === "renseigne" && coutRenseigne);
+
+      return correspondRecherche && correspondFiltre;
+    });
+
+    if (!produitsFiltres.length) {
+      zone.innerHTML = "<p>Aucun article correspondant.</p>";
+      return;
+    }
+
+    zone.innerHTML = produitsFiltres.map(p => {
+      const c = parProduit[p.id];
+
+      const valeursCout = c
+        ? [
+            c.cout_support,
+            c.cout_livraison,
+            c.cout_consommables,
+            c.cout_emballage,
+            c.cout_electricite,
+            c.cout_temps_travail,
+            c.cout_autres
+          ]
+        : [];
+
+      const cout = c
+        ? valeursCout.reduce((total, valeur) => total + nombre(valeur), 0)
+        : null;
+
+      const coutRenseigne = valeursCout.some(
+        valeur => valeur !== null &&
+          valeur !== undefined &&
+          valeur !== ""
+      );
+
+      const statut = coutRenseigne
+        ? "Coût renseigné"
+        : "À compléter";
+
+      return `
+        <details class="sk-carte sk-cout-produit"
+          style="margin:6px 0;padding:10px 12px;">
+          <summary style="cursor:pointer;display:flex;flex-wrap:wrap;
+            align-items:center;justify-content:space-between;gap:8px;">
+            <strong>${echapper(p.nom || "Article sans nom")}</strong>
+            <span style="font-size:0.9em;">
+              ${euro(p.prix)}
+            </span>
+            <span style="font-size:0.8em;opacity:0.8;">
+              ${statut}
+            </span>
+          </summary>
+
+          <div style="padding-top:10px;">
+            <p>Prix actuel de la boutique : ${euro(p.prix)}</p>
+            <p>Coût de revient :
+              ${coutRenseigne ? euro(cout) : "À compléter"}</p>
+            <p>Prix conseillé :
+              ${c && c.prix_vente_conseille != null
+                ? euro(c.prix_vente_conseille)
+                : "À calculer"}</p>
+
+            <button type="button"
+              data-sk-action="editer-cout"
+              data-id="${p.id}">
+              Configurer le coût
+            </button>
+          </div>
+        </details>
+      `;
+    }).join("");
   }
+
+  const rechercheInput = document.getElementById("skRechercheCoutProduit");
+  const filtreSelect = document.getElementById("skFiltreCoutProduit");
+
+  if (rechercheInput && rechercheInput.dataset.coutsEcoute !== "oui") {
+    rechercheInput.addEventListener("input", afficherListe);
+    rechercheInput.dataset.coutsEcoute = "oui";
+  }
+
+  if (filtreSelect && filtreSelect.dataset.coutsEcoute !== "oui") {
+    filtreSelect.addEventListener("change", afficherListe);
+    filtreSelect.dataset.coutsEcoute = "oui";
+  }
+
+  afficherListe();
+
+  return { produits, couts };
+}
 
   async function sauvegarderCout(formulaire) {
     const donnees = new FormData(formulaire);
