@@ -591,19 +591,24 @@ async function chargerCoutsProduits() {
         <details class="sk-carte sk-cout-produit"
           style="margin:6px 0;padding:10px 12px;">
           
-          <summary style="cursor:pointer;display:grid;
-            grid-template-columns:minmax(0,1fr) minmax(85px,auto);
-            align-items:center;column-gap:12px;row-gap:4px;">
-            <strong style="min-width:0;overflow-wrap:anywhere;">
-              ${echapper(p.nom || "Article sans nom")}
-            </strong>
-            <span style="text-align:right;white-space:nowrap;
-              font-size:0.95em;font-weight:600;">
-              ${euro(p.prix)}
-            </span>
-            <span style="grid-column:1 / -1;font-size:0.8em;opacity:0.8;">
+         
+          <summary style="cursor:pointer;display:block;width:100%;
+            box-sizing:border-box;">
+            <div style="display:grid;
+              grid-template-columns:minmax(0,1fr) 110px;
+              align-items:center;column-gap:12px;width:100%;
+              box-sizing:border-box;">
+              <strong style="min-width:0;overflow-wrap:anywhere;">
+                ${echapper(p.nom || "Article sans nom")}
+              </strong>
+              <span style="display:block;width:110px;text-align:right;
+                white-space:nowrap;font-size:0.95em;font-weight:600;">
+                ${euro(p.prix)}
+              </span>
+            </div>
+            <div style="margin-top:4px;font-size:0.8em;opacity:0.8;">
               ${statut}
-            </span>
+            </div>
           </summary>
 
           <div style="padding-top:10px;">
