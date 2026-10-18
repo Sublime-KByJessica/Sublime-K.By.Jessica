@@ -377,6 +377,88 @@
 
   /* ---------------- ACHATS FOURNISSEURS ---------------- */
 
+   // REPÈRE — GESTION DES LIGNES D'ARTICLES D'UN ACHAT
+function initialiserLignesArticlesAchat() {
+  const conteneur = document.getElementById("skAchatArticles");
+  const boutonAjouter = document.getElementById("skAjouterArticle");
+
+  if (!conteneur || !boutonAjouter || boutonAjouter.dataset.initialise === "oui") {
+    return;
+  }
+
+  boutonAjouter.dataset.initialise = "oui";
+
+  function actualiserNumeros() {
+    conteneur.querySelectorAll(".sk-achat-article").forEach((ligne, index) => {
+      ligne.dataset.articleIndex = index;
+
+      const titre = ligne.querySelector("h5");
+      if (titre) titre.textContent = `Article ${index + 1}`;
+
+      const boutonSupprimer = ligne.querySelector(".sk-supprimer-article");
+      if (boutonSupprimer) {
+        boutonSupprimer.disabled =
+          conteneur.querySelectorAll(".sk-achat-article").length === 1;
+      }
+    });
+  }
+
+  boutonAjouter.addEventListener("click", () => {
+    const modele = conteneur.querySelector(".sk-achat-article");
+    if (!modele) return;
+
+    const nouvelleLigne = modele.cloneNode(true);
+
+    nouvelleLigne.querySelectorAll("input, textarea").forEach(champ => {
+      if (champ.name === "ligne_id") {
+        champ.value = "";
+      } else if (champ.name === "quantite") {
+        champ.value = "1";
+      } else if (champ.name === "prix_unitaire" ||
+                 champ.name === "quantite_recue") {
+        champ.value = "0";
+      } else {
+        champ.value = "";
+      }
+    });
+
+    const selectType = nouvelleLigne.querySelector('select[name="type_article"]');
+    if (selectType) selectType.value = "autre";
+
+    conteneur.appendChild(nouvelleLigne);
+    actualiserNumeros();
+    nouvelleLigne.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+
+  conteneur.addEventListener("click", evenement => {
+    const bouton = evenement.target.closest(".sk-supprimer-article");
+    if (!bouton) return;
+
+    const lignes = conteneur.querySelectorAll(".sk-achat-article");
+
+    if (lignes.length <= 1) {
+      afficherMessage("Garde au moins une ligne dans le formulaire.", true);
+      return;
+    }
+
+    const ligne = bouton.closest(".sk-achat-article");
+    const idLigne = ligne?.querySelector('[name="ligne_id"]')?.value;
+
+    if (idLigne) {
+      afficherMessage(
+        "Cette ligne existe déjà dans Supabase. Nous sécuriserons sa suppression lors de l'étape d'enregistrement.",
+        true
+      );
+      return;
+    }
+
+    ligne?.remove();
+    actualiserNumeros();
+  });
+
+  actualiserNumeros();
+}
+   
   async function chargerAchats() {
     const [achats, fournisseurs, lignes] = await Promise.all([
       lire(TABLES.achats, "*"),
@@ -426,8 +508,7 @@
     return achats;
   }
 
-  
-async function sauvegarderAchat(formulaire) {
+  async function sauvegarderAchat(formulaire) {
   const donnees = new FormData(formulaire);
   const id = donnees.get("id") || null;
 
@@ -450,81 +531,101 @@ async function sauvegarderAchat(formulaire) {
     notes: String(donnees.get("notes") || "").trim() || null
   };
 
-  const resultat = await enregistrer(
-    TABLES.achats,
-    achat,
-    id
-  );
-
+  const resultat = await enregistrer(TABLES.achats, achat, id);
   const achatId = id || resultat?.[0]?.id;
 
   if (!achatId) {
     throw new Error(
-      "L'achat a été enregistré, mais son identifiant est introuvable."
+      "L'achat est enregistré, mais son identifiant est introuvable."
     );
   }
 
-  
-  const nomArticle = String(
-    donnees.get("nom_article") || ""
-  ).trim();
+  const conteneur = formulaire.querySelector("#skAchatArticles");
+  const lignesFormulaire = conteneur
+    ? [...conteneur.querySelectorAll(".sk-achat-article")]
+    : [];
 
-  if (nomArticle) {
-    const quantite = nombre(donnees.get("quantite"));
-    const prixUnitaire = nombre(donnees.get("prix_unitaire"));
-    const quantiteRecue = nombre(donnees.get("quantite_recue"));
+  const client = obtenirClient();
+
+  for (const [index, ligne] of lignesFormulaire.entries()) {
+    const lireChamp = nom =>
+      String(ligne.querySelector(`[name="${nom}"]`)?.value || "").trim();
+
+    const nomArticle = lireChamp("nom_article");
+    const urlArticle = lireChamp("url_article");
+    const typeArticle = lireChamp("type_article");
+    const quantiteBrute = lireChamp("quantite");
+    const prixBrut = lireChamp("prix_unitaire");
+    const recueBrute = lireChamp("quantite_recue");
+    const notesArticle = lireChamp("notes_article");
+    const ligneId = lireChamp("ligne_id") || null;
+
+    const ligneVide =
+      !nomArticle &&
+      !urlArticle &&
+      !notesArticle &&
+      (!quantiteBrute || quantiteBrute === "1") &&
+      (!prixBrut || nombre(prixBrut) === 0) &&
+      (!recueBrute || nombre(recueBrute) === 0);
+
+    if (ligneVide) continue;
+
+    if (!nomArticle) {
+      throw new Error(
+        `Article ${index + 1} : indique le nom de l'article.`
+      );
+    }
+
+    const quantite = nombre(quantiteBrute);
+    const prixUnitaire = nombre(prixBrut);
+    const quantiteRecue = nombre(recueBrute);
 
     if (quantite <= 0) {
       throw new Error(
-        "La quantité de l'article doit être supérieure à zéro."
+        `Article ${index + 1} : la quantité doit être supérieure à zéro.`
       );
     }
 
     if (prixUnitaire < 0 || quantiteRecue < 0) {
       throw new Error(
-        "Le prix et la quantité reçue ne peuvent pas être négatifs."
+        `Article ${index + 1} : le prix et la quantité reçue ne peuvent pas être négatifs.`
+      );
+    }
+
+    if (quantiteRecue > quantite) {
+      throw new Error(
+        `Article ${index + 1} : la quantité reçue ne peut pas dépasser la quantité commandée.`
       );
     }
 
     const valeursArticle = {
       achat_id: achatId,
       nom_article: nomArticle,
-      url_article: verifierUrl(
-        String(donnees.get("url_article") || "").trim()
-      ),
-      type_article: donnees.get("type_article") || "autre",
+      url_article: verifierUrl(urlArticle),
+      type_article: typeArticle || "autre",
       quantite,
       prix_unitaire: prixUnitaire,
       quantite_recue: quantiteRecue,
-      notes: String(
-        donnees.get("notes_article") || ""
-      ).trim() || null
+      notes: notesArticle || null
     };
-
-    const lignesExistantes = id
-      ? await lire(TABLES.lignesAchats, "*")
-      : [];
-
-    const premiereLigne = lignesExistantes.find(
-      ligne => ligne.achat_id === achatId
-    );
 
     let resultatArticle;
 
-    if (premiereLigne) {
-      resultatArticle = await obtenirClient()
+    if (ligneId) {
+      resultatArticle = await client
         .from(TABLES.lignesAchats)
         .update(valeursArticle)
-        .eq("id", premiereLigne.id);
+        .eq("id", ligneId)
+        .eq("achat_id", achatId);
     } else {
-      resultatArticle = await obtenirClient()
+      resultatArticle = await client
         .from(TABLES.lignesAchats)
         .insert(valeursArticle);
     }
 
     if (resultatArticle.error) {
       throw new Error(
-        "L'achat est enregistré, mais l'article n'a pas pu être enregistré : " +
+        `Achat enregistré, mais erreur sur l'article ${index + 1} : ` +
         resultatArticle.error.message
       );
     }
@@ -535,11 +636,7 @@ async function sauvegarderAchat(formulaire) {
   const champId = formulaire.querySelector('[name="id"]');
   if (champId) champId.value = "";
 
-  afficherMessage(
-    nomArticle
-      ? "Achat fournisseur et article enregistrés."
-      : "Achat fournisseur enregistré."
-  );
+  afficherMessage("Achat fournisseur et articles enregistrés.");
 
   await chargerAchats();
 }
@@ -806,21 +903,21 @@ async function chargerCoutsProduits() {
   /* ---------------- CHARGEMENT GÉNÉRAL ---------------- */
 
   async function chargerGestion() {
-    await securiser(async () => {
-      obtenirClient();
-      await Promise.all([
-        chargerFournisseurs(),
-        chargerConsommables(),
-        chargerAchats(),
-        chargerCoutsProduits()
-      ]);
-    });
-  }
+  await securiser(async () => {
+    obtenirClient();
+    initialiserLignesArticlesAchat();
+
+    await Promise.all([
+      chargerFournisseurs(),
+      chargerConsommables(),
+      chargerAchats(),
+      chargerCoutsProduits()
+    ]);
+  });
+}
 
   /* ---------------- ACTIONS DE L'INTERFACE ---------------- */
 
-  
-  
   // REPÈRE — ENREGISTREMENT DIRECT DES FORMULAIRES DE GESTION
   const formulairesGestion = {
     skFormFournisseur: sauvegarderFournisseur,
@@ -1150,7 +1247,7 @@ if (action === "modifier-achat") {
     throw new Error("Le formulaire d'achat est introuvable.");
   }
 
-  const [achats, lignes] = await Promise.all([
+  const [achats, toutesLesLignes] = await Promise.all([
     lire(TABLES.achats, "*"),
     lire(TABLES.lignesAchats, "*")
   ]);
@@ -1179,23 +1276,53 @@ if (action === "modifier-achat") {
     if (champ) champ.value = achat[nom] ?? "";
   });
 
-  const article = lignes.find(l => l.achat_id === id);
+  const conteneur = formulaire.querySelector("#skAchatArticles");
 
-  const champsArticle = [
-    ["nom_article", "nom_article"],
-    ["url_article", "url_article"],
-    ["type_article", "type_article"],
-    ["quantite", "quantite"],
-    ["prix_unitaire", "prix_unitaire"],
-    ["quantite_recue", "quantite_recue"],
-    ["notes_article", "notes"]
-  ];
+  if (!conteneur) {
+    throw new Error(
+      "Le conteneur des articles est introuvable dans le formulaire."
+    );
+  }
 
-  champsArticle.forEach(([champNom, colonne]) => {
-    const champ = formulaire.elements.namedItem(champNom);
-    if (champ) {
-      champ.value = article ? (article[colonne] ?? "") : "";
-    }
+  const lignesAchat = toutesLesLignes.filter(
+    ligne => ligne.achat_id === id
+  );
+
+  const modele = conteneur.querySelector(".sk-achat-article");
+
+  if (!modele) {
+    throw new Error("Le modèle de ligne d'article est introuvable.");
+  }
+
+  conteneur.replaceChildren();
+
+  const lignesAAfficher = lignesAchat.length ? lignesAchat : [null];
+
+  lignesAAfficher.forEach((article, index) => {
+    const ligne = modele.cloneNode(true);
+
+    ligne.dataset.articleIndex = index;
+
+    const titre = ligne.querySelector("h5");
+    if (titre) titre.textContent = `Article ${index + 1}`;
+
+    const valeurs = {
+      ligne_id: article?.id ?? "",
+      nom_article: article?.nom_article ?? "",
+      url_article: article?.url_article ?? "",
+      type_article: article?.type_article ?? "autre",
+      quantite: article?.quantite ?? 1,
+      prix_unitaire: article?.prix_unitaire ?? 0,
+      quantite_recue: article?.quantite_recue ?? 0,
+      notes_article: article?.notes ?? ""
+    };
+
+    Object.entries(valeurs).forEach(([nom, valeur]) => {
+      const champ = ligne.querySelector(`[name="${nom}"]`);
+      if (champ) champ.value = valeur;
+    });
+
+    conteneur.appendChild(ligne);
   });
 
   const panneau = formulaire.closest("details");
@@ -1207,9 +1334,9 @@ if (action === "modifier-achat") {
   });
 
   afficherMessage(
-    article && lignes.filter(l => l.achat_id === id).length > 1
-      ? "Achat chargé. Le formulaire affiche le premier article ; les autres lignes seront conservées."
-      : "Achat chargé : modifie les informations puis enregistre."
+    lignesAchat.length
+      ? `Achat chargé avec ${lignesAchat.length} article(s).`
+      : "Achat chargé. Tu peux ajouter ses premiers articles."
   );
 
   return;
