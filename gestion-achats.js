@@ -839,7 +839,11 @@ async function chargerCoutsProduits() {
   });
 
   document.addEventListener("click", evenement => {
-    const bouton = evenement.target.closest("[data-sk-action]");
+    const cible = evenement.target;
+
+    if (!(cible instanceof Element)) return;
+
+    const bouton = cible.closest('button[data-sk-action]');
     if (!bouton) return;
 
     const id = bouton.dataset.id;
