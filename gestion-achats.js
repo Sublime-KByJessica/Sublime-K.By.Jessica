@@ -464,6 +464,7 @@ async function sauvegarderAchat(formulaire) {
     );
   }
 
+  
   const nomArticle = String(
     donnees.get("nom_article") || ""
   ).trim();
@@ -485,27 +486,46 @@ async function sauvegarderAchat(formulaire) {
       );
     }
 
-    const { error } = await obtenirClient()
-      .from(TABLES.lignesAchats)
-      .insert({
-        achat_id: achatId,
-        nom_article: nomArticle,
-        url_article: verifierUrl(
-          String(donnees.get("url_article") || "").trim()
-        ),
-        type_article: donnees.get("type_article") || "autre",
-        quantite,
-        prix_unitaire: prixUnitaire,
-        quantite_recue: quantiteRecue,
-        notes: String(
-          donnees.get("notes_article") || ""
-        ).trim() || null
-      });
+    const valeursArticle = {
+      achat_id: achatId,
+      nom_article: nomArticle,
+      url_article: verifierUrl(
+        String(donnees.get("url_article") || "").trim()
+      ),
+      type_article: donnees.get("type_article") || "autre",
+      quantite,
+      prix_unitaire: prixUnitaire,
+      quantite_recue: quantiteRecue,
+      notes: String(
+        donnees.get("notes_article") || ""
+      ).trim() || null
+    };
 
-    if (error) {
+    const lignesExistantes = id
+      ? await lire(TABLES.lignesAchats, "*")
+      : [];
+
+    const premiereLigne = lignesExistantes.find(
+      ligne => ligne.achat_id === achatId
+    );
+
+    let resultatArticle;
+
+    if (premiereLigne) {
+      resultatArticle = await obtenirClient()
+        .from(TABLES.lignesAchats)
+        .update(valeursArticle)
+        .eq("id", premiereLigne.id);
+    } else {
+      resultatArticle = await obtenirClient()
+        .from(TABLES.lignesAchats)
+        .insert(valeursArticle);
+    }
+
+    if (resultatArticle.error) {
       throw new Error(
-        "L'achat est enregistré, mais l'article n'a pas pu être ajouté : " +
-        error.message
+        "L'achat est enregistré, mais l'article n'a pas pu être enregistré : " +
+        resultatArticle.error.message
       );
     }
   }
@@ -1076,6 +1096,120 @@ if (action === "modifier-fournisseur") {
 
   afficherMessage(
     "Fournisseur chargé : modifie les informations puis enregistre."
+  );
+
+  return;
+}
+
+       
+if (action === "modifier-consommable") {
+  const formulaire = document.getElementById("skFormConsommable");
+
+  if (!formulaire) {
+    throw new Error("Le formulaire consommable est introuvable.");
+  }
+
+  const consommables = await lire(TABLES.consommables, "*");
+  const consommable = consommables.find(c => c.id === id);
+
+  if (!consommable) {
+    throw new Error("Ce consommable est introuvable.");
+  }
+
+  [
+    "id",
+    "nom",
+    "unite",
+    "stock_actuel",
+    "seuil_alerte",
+    "prix_unitaire",
+    "fournisseur_id",
+    "url_achat",
+    "notes"
+  ].forEach(nom => {
+    const champ = formulaire.elements.namedItem(nom);
+    if (champ) champ.value = consommable[nom] ?? "";
+  });
+
+  formulaire.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+
+  afficherMessage(
+    "Consommable chargé : modifie les informations puis enregistre."
+  );
+
+  return;
+}
+
+if (action === "modifier-achat") {
+  const formulaire = document.getElementById("skFormAchat");
+
+  if (!formulaire) {
+    throw new Error("Le formulaire d'achat est introuvable.");
+  }
+
+  const [achats, lignes] = await Promise.all([
+    lire(TABLES.achats, "*"),
+    lire(TABLES.lignesAchats, "*")
+  ]);
+
+  const achat = achats.find(a => a.id === id);
+
+  if (!achat) {
+    throw new Error("Cet achat fournisseur est introuvable.");
+  }
+
+  const champsAchat = [
+    "id",
+    "fournisseur_id",
+    "reference",
+    "date_commande",
+    "date_reception",
+    "statut",
+    "statut_paiement",
+    "frais_livraison",
+    "frais_autres",
+    "notes"
+  ];
+
+  champsAchat.forEach(nom => {
+    const champ = formulaire.elements.namedItem(nom);
+    if (champ) champ.value = achat[nom] ?? "";
+  });
+
+  const article = lignes.find(l => l.achat_id === id);
+
+  const champsArticle = [
+    ["nom_article", "nom_article"],
+    ["url_article", "url_article"],
+    ["type_article", "type_article"],
+    ["quantite", "quantite"],
+    ["prix_unitaire", "prix_unitaire"],
+    ["quantite_recue", "quantite_recue"],
+    ["notes_article", "notes"]
+  ];
+
+  champsArticle.forEach(([champNom, colonne]) => {
+    const champ = formulaire.elements.namedItem(champNom);
+    if (champ) {
+      champ.value = article ? (article[colonne] ?? "") : "";
+    }
+  });
+
+  const panneau = formulaire.closest("details");
+  if (panneau) panneau.open = true;
+
+  formulaire.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+
+  afficherMessage(
+    article && lignes.filter(l => l.achat_id === id).length > 1
+      ? "Achat chargé. Le formulaire affiche le premier article ; les autres lignes seront conservées."
+      : "Achat chargé : modifie les informations puis enregistre."
   );
 
   return;
