@@ -805,6 +805,35 @@ async function chargerCoutsProduits() {
         return;
       }
 
+       if (action === "enregistrer-prix-fournisseur") {
+  const prix = Number(bouton.dataset.prix);
+  const date = bouton.dataset.date || new Date().toISOString();
+
+  if (!Number.isFinite(prix) || prix < 0) {
+    throw new Error("Le prix détecté est invalide.");
+  }
+
+  const { error } = await obtenirClient()
+    .from("products")
+    .update({
+      prix_achat_fournisseur: prix,
+      prix_achat_verifie_le: date
+    })
+    .eq("id", id);
+
+  if (error) throw error;
+
+  const affichage = document.getElementById(`prixFournisseur-${id}`);
+
+  if (affichage) {
+    affichage.textContent =
+      `Prix d'achat enregistré : ${euro(prix)} — vérifié le ${new Date(date).toLocaleDateString("fr-FR")}.`;
+  }
+
+  afficherMessage("Prix d'achat fournisseur enregistré. Le prix de vente reste inchangé.");
+  return;
+}
+       
       if (action === "actualiser-prix-fournisseur") {
         const champ = document.getElementById(`lienAchat-${id}`);
         const affichage = document.getElementById(`prixFournisseur-${id}`);
@@ -844,10 +873,24 @@ async function chargerCoutsProduits() {
           throw new Error("Aucun prix fiable n'a été détecté.");
         }
 
-        affichage.textContent =
-          `Prix détecté : ${euro(data.price)} — vérifie-le avant enregistrement.`;
+        affichage.innerHTML = `
+  <p>
+    Prix détecté :
+    <strong>${euro(data.price)}</strong>
+  </p>
+  <p>Vérifie le prix avant de l'enregistrer.</p>
+  <button
+    type="button"
+    data-sk-action="enregistrer-prix-fournisseur"
+    data-id="${id}"
+    data-prix="${data.price}"
+    data-date="${echapper(data.checkedAt || new Date().toISOString())}"
+    style="margin-top:8px;">
+    ✅ Enregistrer ce prix vérifié
+  </button>
+`;
 
-        return;
+return;
       }
 
       if (action === "supprimer-fournisseur") {
