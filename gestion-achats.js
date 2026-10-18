@@ -590,13 +590,18 @@ async function chargerCoutsProduits() {
       return `
         <details class="sk-carte sk-cout-produit"
           style="margin:6px 0;padding:10px 12px;">
-          <summary style="cursor:pointer;display:flex;flex-wrap:wrap;
-            align-items:center;justify-content:space-between;gap:8px;">
-            <strong>${echapper(p.nom || "Article sans nom")}</strong>
-            <span style="font-size:0.9em;">
+          
+          <summary style="cursor:pointer;display:grid;
+            grid-template-columns:minmax(0,1fr) minmax(85px,auto);
+            align-items:center;column-gap:12px;row-gap:4px;">
+            <strong style="min-width:0;overflow-wrap:anywhere;">
+              ${echapper(p.nom || "Article sans nom")}
+            </strong>
+            <span style="text-align:right;white-space:nowrap;
+              font-size:0.95em;font-weight:600;">
               ${euro(p.prix)}
             </span>
-            <span style="font-size:0.8em;opacity:0.8;">
+            <span style="grid-column:1 / -1;font-size:0.8em;opacity:0.8;">
               ${statut}
             </span>
           </summary>
