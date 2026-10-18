@@ -117,6 +117,52 @@
     }
   }
 
+   
+  // REPÈRE — AFFICHER LES ERREURS DE VALIDATION DES FORMULAIRES
+  // Le navigateur peut bloquer l'envoi avant l'événement "submit".
+  document.addEventListener("invalid", evenement => {
+    const champ = evenement.target;
+    const formulaire = champ?.form;
+
+    if (!formulaire || ![
+      "skFormFournisseur",
+      "skFormConsommable",
+      "skFormAchat",
+      "skFormCout"
+    ].includes(formulaire.id)) return;
+
+    let message = "Vérifie les champs obligatoires du formulaire.";
+
+    if (champ.validity?.valueMissing) {
+      const libelle = formulaire.querySelector(
+        `label[for="${champ.id}"]`
+      );
+
+      message = libelle
+        ? `Le champ « ${libelle.textContent.trim().replace(/\*$/, "").trim()} » est obligatoire.`
+        : "Un champ obligatoire doit être renseigné.";
+    } else if (champ.validity?.typeMismatch && champ.type === "url") {
+      message = "Le lien saisi n'est pas une adresse web valide. Utilise https://…";
+    } else if (
+      champ.validity?.rangeUnderflow ||
+      champ.validity?.rangeOverflow
+    ) {
+      message = "Une valeur est en dehors des limites autorisées.";
+    }
+
+    const zone = document.getElementById("skMessageGestion");
+
+    if (zone) {
+      zone.textContent = message;
+      zone.style.display = "block";
+      zone.style.padding = "10px";
+      zone.style.margin = "10px 0";
+      zone.style.borderRadius = "8px";
+      zone.style.background = "#fff0f0";
+      zone.style.color = "#8a3030";
+    }
+  }, true);
+
   /* ---------------- FOURNISSEURS ---------------- */
 
   
@@ -752,8 +798,11 @@ async function chargerCoutsProduits() {
 
   /* ---------------- ACTIONS DE L'INTERFACE ---------------- */
 
+  
+  // REPÈRE — ENREGISTREMENT DES FORMULAIRES DE GESTION
   document.addEventListener("submit", evenement => {
     const formulaire = evenement.target;
+
     if (!formulaire || !formulaire.id) return;
 
     const actions = {
@@ -767,19 +816,25 @@ async function chargerCoutsProduits() {
     if (!action) return;
 
     evenement.preventDefault();
-     afficherMessage("Clic détecté : traitement du formulaire…");
 
-securiser(async () => {
-  try {
-    await action(formulaire);
-  } catch (erreur) {
-    console.error("Erreur enregistrement formulaire :", erreur);
-    afficherMessage(
-      erreur?.message || "Une erreur est survenue pendant l'enregistrement.",
-      true
-    );
-  }
-});
+    afficherMessage("Enregistrement en cours…");
+
+    securiser(async () => {
+      try {
+        await action(formulaire);
+      } catch (erreur) {
+        console.error(
+          "Erreur enregistrement formulaire :",
+          erreur
+        );
+
+        afficherMessage(
+          erreur?.message ||
+          "L’enregistrement a échoué. Vérifie les champs et les autorisations.",
+          true
+        );
+      }
+    });
   });
 
   document.addEventListener("click", evenement => {
