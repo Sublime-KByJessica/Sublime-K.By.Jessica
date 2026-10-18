@@ -767,6 +767,7 @@ async function chargerCoutsProduits() {
     if (!action) return;
 
     evenement.preventDefault();
+     afficherMessage("Clic détecté : traitement du formulaire…");
 
 securiser(async () => {
   try {
