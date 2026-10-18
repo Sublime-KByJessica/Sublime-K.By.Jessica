@@ -1736,7 +1736,58 @@ button{cursor:pointer}
     line-height:1.4;
   }
 
-  
+ 
+/* Panneaux repliables — Achats & coûts */
+.sk-achats-panneau {
+  margin: 15px 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #d5dfcf;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.sk-achats-panneau > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  background: #edf2e8;
+  color: #354735;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+
+.sk-achats-panneau > summary::-webkit-details-marker {
+  display: none;
+}
+
+.sk-achats-panneau > summary::after {
+  content: "＋";
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.sk-achats-panneau[open] > summary::after {
+  content: "−";
+}
+
+.sk-achats-panneau > summary:hover {
+  background: #e2eadb;
+}
+
+.sk-achats-panneau > summary:focus-visible {
+  outline: 2px solid #71876a;
+  outline-offset: -3px;
+}
+
+.sk-achats-panneau > form,
+.sk-achats-panneau > div {
+  margin: 15px;
+}
+ 
 </style>
 </head>
 
@@ -3882,8 +3933,8 @@ button{cursor:pointer}
 
   <div id="skMessageGestion" role="status" aria-live="polite"></div>
 
-  <div class="bloc">
-    <h2>🏭 Mes fournisseurs</h2>
+  <details class="bloc sk-achats-panneau">
+    <summary>🏭 Mes fournisseurs</summary>
     <p>Retrouve ici les fournisseurs de Sublime’K.</p>
 
 <form id="skFormFournisseur" class="bloc">
@@ -3934,10 +3985,10 @@ button{cursor:pointer}
     <div id="skFournisseursListe">
       Les fournisseurs seront affichés ici.
     </div>
-  </div>
+    </details>
 
-  <div class="bloc">
-    <h2>📦 Mes consommables</h2>
+  <details class="bloc sk-achats-panneau">
+  <summary>📦 Mes consommables</summary>
     <p>
       Suis tes stocks de papier de sublimation,
       d’encre, d’emballages et d’autres fournitures.
@@ -4023,10 +4074,10 @@ button{cursor:pointer}
     <div id="skConsommablesListe">
       Les consommables seront affichés ici.
     </div>
-  </div>
+  </details>
 
-  <div class="bloc">
-    <h2>🛒 Mes achats fournisseurs</h2>
+  <details class="bloc sk-achats-panneau">
+  <summary>🛒 Mes achats fournisseurs</summary>
     <p>Consulte tes achats et leurs frais associés.</p>
 
 <form id="skFormAchat" class="bloc">
@@ -4177,10 +4228,10 @@ button{cursor:pointer}
     <div id="skAchatsListe">
       Les achats fournisseurs seront affichés ici.
     </div>
-  </div>
+  </details>
 
-  <div class="bloc">
-    <h2>🧮 Coût de revient de mes créations</h2>
+  <details class="bloc sk-achats-panneau">
+  <summary>🧮 Coût de revient de mes créations</summary>
     <p>
       Estime le coût de fabrication et un prix de vente conseillé.
       Le prix conseillé ne modifiera pas automatiquement
@@ -4260,7 +4311,7 @@ button{cursor:pointer}
     <div id="skCoutsProduitsListe">
       Les coûts de revient seront affichés ici.
     </div>
-  </div>
+  </details>
 
 </section>
 
