@@ -638,23 +638,14 @@ for (const [index, ligne] of lignesAvantEnregistrement.entries()) {
   verifierUrl(urlArticle);
 }
 
-const resultat = await enregistrer(TABLES.achats, achat, id);
-
-const achatId = id || resultat?.[0]?.id;
-
-if (!achatId) {
-throw new Error(
-"L'achat est enregistré, mais son identifiant est introuvable."
-);
-}
 
 const conteneur = formulaire.querySelector("#skAchatArticles");
 const lignesFormulaire = conteneur
-? [...conteneur.querySelectorAll(".sk-achat-article")]
-: [];
+  ? [...conteneur.querySelectorAll(".sk-achat-article")]
+  : [];
 
 const client = obtenirClient();
-     
+
 const champSuppressions = document.getElementById(
   "skLignesAchatsSupprimees"
 );
@@ -668,7 +659,9 @@ if (champSuppressions && champSuppressions.value.trim()) {
     if (
       !Array.isArray(idsASupprimer) ||
       !idsASupprimer.every(
-        id => typeof id === "string" && id.trim() !== ""
+        idLigne =>
+          typeof idLigne === "string" &&
+          idLigne.trim() !== ""
       )
     ) {
       throw new Error("Liste de suppressions invalide.");
@@ -682,6 +675,7 @@ if (champSuppressions && champSuppressions.value.trim()) {
   }
 }
 
+// Vérifier les suppressions AVANT d'enregistrer l'achat.
 if (idsASupprimer.length > 0) {
   if (!id) {
     throw new Error(
@@ -705,12 +699,23 @@ if (idsASupprimer.length > 0) {
 
   if (
     lignesVerifiees.length !== idsASupprimer.length ||
-    lignesVerifiees.some(ligne => ligne.achat_id !== achatId)
+    lignesVerifiees.some(ligne => ligne.achat_id !== id)
   ) {
     throw new Error(
-      "Sécurité : au moins un article à supprimer est introuvable ou n'appartient pas à cet achat. Aucune suppression effectuée."
+      "Sécurité : au moins un article à supprimer est introuvable ou n'appartient pas à cet achat. Aucune modification de l'achat effectuée."
     );
   }
+}
+
+// Les validations sont passées : on peut enregistrer l'achat.
+const resultat = await enregistrer(TABLES.achats, achat, id);
+
+const achatId = id || resultat?.[0]?.id;
+
+if (!achatId) {
+  throw new Error(
+    "L'achat est enregistré, mais son identifiant est introuvable."
+  );
 }
 
   for (const [index, ligne] of lignesFormulaire.entries()) {
