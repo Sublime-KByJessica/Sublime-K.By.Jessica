@@ -4148,71 +4148,62 @@ button{cursor:pointer}
     value="0"
   >
 
-  <hr>
+<hr>
 
-  <h4>📦 Premier article acheté (facultatif)</h4>
+<h4>📦 Articles de la commande</h4>
+<p>Ajoute tous les articles de cette commande fournisseur. Tu pourras ensuite modifier chaque ligne séparément.</p>
 
-  <label for="skAchatArticle">Nom de l’article</label>
-  <input
-    id="skAchatArticle"
-    type="text"
-    name="nom_article"
-    placeholder="Ex. : porte-clés sublimable"
-  >
+<div id="skAchatArticles">
+  <div class="sk-achat-article" data-article-index="0"
+    style="border:1px solid #ddd;border-radius:10px;padding:12px;margin:12px 0;">
 
-  <label for="skAchatArticleUrl">Lien de l’article</label>
-  <input
-    id="skAchatArticleUrl"
-    type="url"
-    name="url_article"
-    placeholder="https://..."
-  >
+    <h5>Article 1</h5>
 
-  <label for="skAchatTypeArticle">Type d’article</label>
-  <select id="skAchatTypeArticle" name="type_article">
-    <option value="support">Support à personnaliser</option>
-    <option value="consommable">Consommable</option>
-    <option value="emballage">Emballage</option>
-    <option value="autre">Autre</option>
-  </select>
+    <input type="hidden" name="ligne_id" value="">
 
-  <label for="skAchatQuantite">Quantité commandée</label>
-  <input
-    id="skAchatQuantite"
-    type="number"
-    name="quantite"
-    min="0.01"
-    step="0.01"
-    value="1"
-  >
+<button type="button" class="sk-supprimer-article"
+  style="margin-bottom:10px;">
+  🗑️ Supprimer cet article
+</button>
 
-  <label for="skAchatPrixUnitaire">Prix unitaire (€)</label>
-  <input
-    id="skAchatPrixUnitaire"
-    type="number"
-    name="prix_unitaire"
-    min="0"
-    step="0.0001"
-    value="0"
-  >
+    <label>Nom de l’article</label>
+    <input type="text" name="nom_article"
+      placeholder="Ex. : porte-clés sublimable">
 
-  <label for="skAchatQuantiteRecue">Quantité déjà reçue</label>
-  <input
-    id="skAchatQuantiteRecue"
-    type="number"
-    name="quantite_recue"
-    min="0"
-    step="0.01"
-    value="0"
-  >
+    <label>Lien de l’article</label>
+    <input type="url" name="url_article"
+      placeholder="https://...">
 
-  <label for="skAchatNotesArticle">Notes sur l’article</label>
-  <textarea
-    id="skAchatNotesArticle"
-    name="notes_article"
-    rows="2"
-  ></textarea>
+    <label>Type d’article</label>
+    <select name="type_article">
+      <option value="support">Support à personnaliser</option>
+      <option value="consommable">Consommable</option>
+      <option value="emballage">Emballage</option>
+      <option value="autre" selected>Autre</option>
+    </select>
 
+    <label>Quantité commandée</label>
+    <input type="number" name="quantite"
+      min="0.01" step="0.01" value="1">
+
+    <label>Prix unitaire (€)</label>
+    <input type="number" name="prix_unitaire"
+      min="0" step="0.0001" value="0">
+
+    <label>Quantité déjà reçue</label>
+    <input type="number" name="quantite_recue"
+      min="0" step="0.01" value="0">
+
+    <label>Notes sur l’article</label>
+    <textarea name="notes_article" rows="2"></textarea>
+
+  </div>
+</div>
+
+<button type="button" id="skAjouterArticle">
+  ➕ Ajouter un article
+</button>
+  
   <label for="skAchatNotes">Notes générales sur l’achat</label>
   <textarea
     id="skAchatNotes"
