@@ -576,7 +576,70 @@ frais_autres: autres,
 notes: String(donnees.get("notes") || "").trim() || null
 };
 
+
+const conteneurAvantEnregistrement =
+  formulaire.querySelector("#skAchatArticles");
+
+const lignesAvantEnregistrement = conteneurAvantEnregistrement
+  ? [...conteneurAvantEnregistrement.querySelectorAll(".sk-achat-article")]
+  : [];
+
+for (const [index, ligne] of lignesAvantEnregistrement.entries()) {
+  const lireChamp = nom =>
+    String(
+      ligne.querySelector(`[name="${nom}"]`)?.value || ""
+    ).trim();
+
+  const nomArticle = lireChamp("nom_article");
+  const urlArticle = lireChamp("url_article");
+  const quantiteBrute = lireChamp("quantite");
+  const prixBrut = lireChamp("prix_unitaire");
+  const recueBrute = lireChamp("quantite_recue");
+  const notesArticle = lireChamp("notes_article");
+
+  const ligneVide =
+    !nomArticle &&
+    !urlArticle &&
+    !notesArticle &&
+    (!quantiteBrute || quantiteBrute === "1") &&
+    (!prixBrut || nombre(prixBrut) === 0) &&
+    (!recueBrute || nombre(recueBrute) === 0);
+
+  if (ligneVide) continue;
+
+  if (!nomArticle) {
+    throw new Error(
+      `Article ${index + 1} : indique le nom de l'article.`
+    );
+  }
+
+  const quantite = nombre(quantiteBrute);
+  const prixUnitaire = nombre(prixBrut);
+  const quantiteRecue = nombre(recueBrute);
+
+  if (quantite <= 0) {
+    throw new Error(
+      `Article ${index + 1} : la quantité doit être supérieure à zéro.`
+    );
+  }
+
+  if (prixUnitaire < 0 || quantiteRecue < 0) {
+    throw new Error(
+      `Article ${index + 1} : le prix et la quantité reçue ne peuvent pas être négatifs.`
+    );
+  }
+
+  if (quantiteRecue > quantite) {
+    throw new Error(
+      `Article ${index + 1} : la quantité reçue ne peut pas dépasser la quantité commandée.`
+    );
+  }
+
+  verifierUrl(urlArticle);
+}
+
 const resultat = await enregistrer(TABLES.achats, achat, id);
+
 const achatId = id || resultat?.[0]?.id;
 
 if (!achatId) {
