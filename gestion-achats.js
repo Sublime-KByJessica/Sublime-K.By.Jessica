@@ -708,18 +708,11 @@ if (idsASupprimer.length > 0) {
   }
 }
 
-// Les validations sont passées : on peut enregistrer l'achat.
-const resultat = await enregistrer(TABLES.achats, achat, id);
+  // Toutes les validations sont passées.
+  // Préparer les articles avant l'enregistrement atomique.
+  const lignesAEnregistrer = [];
 
-const achatId = id || resultat?.[0]?.id;
-
-if (!achatId) {
-  throw new Error(
-    "L'achat est enregistré, mais son identifiant est introuvable."
-  );
-}
-
-  for (const [index, ligne] of lignesFormulaire.entries()) {
+  for (const ligne of lignesFormulaire) {
     const lireChamp = nom =>
       String(ligne.querySelector(`[name="${nom}"]`)?.value || "").trim();
 
@@ -740,110 +733,46 @@ if (!achatId) {
       (!prixBrut || nombre(prixBrut) === 0) &&
       (!recueBrute || nombre(recueBrute) === 0);
 
-    if (ligneVide) continue;
+    if (ligneVide && !ligneId) continue;
 
-    if (!nomArticle) {
-      throw new Error(
-        `Article ${index + 1} : indique le nom de l'article.`
-      );
-    }
-
-    const quantite = nombre(quantiteBrute);
-    const prixUnitaire = nombre(prixBrut);
-    const quantiteRecue = nombre(recueBrute);
-
-    if (quantite <= 0) {
-      throw new Error(
-        `Article ${index + 1} : la quantité doit être supérieure à zéro.`
-      );
-    }
-
-    if (prixUnitaire < 0 || quantiteRecue < 0) {
-      throw new Error(
-        `Article ${index + 1} : le prix et la quantité reçue ne peuvent pas être négatifs.`
-      );
-    }
-
-    if (quantiteRecue > quantite) {
-      throw new Error(
-        `Article ${index + 1} : la quantité reçue ne peut pas dépasser la quantité commandée.`
-      );
-    }
-
-    const valeursArticle = {
-      achat_id: achatId,
+    lignesAEnregistrer.push({
+      id: ligneId,
       nom_article: nomArticle,
       url_article: verifierUrl(urlArticle),
       type_article: typeArticle || "autre",
-      quantite,
-      prix_unitaire: prixUnitaire,
-      quantite_recue: quantiteRecue,
+      quantite: nombre(quantiteBrute),
+      prix_unitaire: nombre(prixBrut),
+      quantite_recue: nombre(recueBrute),
       notes: notesArticle || null
-    };
-
-    let resultatArticle;
-
-    
-if (ligneId) {
-  resultatArticle = await client
-    .from(TABLES.lignesAchats)
-    .update(valeursArticle)
-    .eq("id", ligneId)
-    .eq("achat_id", achatId)
-    .select("id");
-
-  if (
-    !resultatArticle.error &&
-    (!resultatArticle.data || resultatArticle.data.length !== 1)
-  ) {
-    throw new Error(
-      `Sécurité : l'article ${index + 1} n'a pas été modifié. ` +
-      "Il est peut-être introuvable ou la modification est refusée."
-    );
+    });
   }
-} else {
-  resultatArticle = await client
-    .from(TABLES.lignesAchats)
-    .insert(valeursArticle);
-}
 
-    if (resultatArticle.error) {
-      throw new Error(
-        `Achat enregistré, mais erreur sur l'article ${index + 1} : ` +
-        resultatArticle.error.message
-      );
+  // Enregistrer l'achat, ses articles et les suppressions
+  // dans une seule opération Supabase.
+  const resultatRPC = await client.rpc(
+    "sk_enregistrer_achat_complet",
+    {
+      p_achat_id: id,
+      p_achat: achat,
+      p_lignes: lignesAEnregistrer,
+      p_ids_supprimer: idsASupprimer
     }
-  }
-
-
-if (idsASupprimer.length > 0) {
-  const resultatSuppression = await client
-    .from(TABLES.lignesAchats)
-    .delete()
-    .eq("achat_id", achatId)
-    .in("id", idsASupprimer)
-    .select("id");
-
-  if (resultatSuppression.error) {
-    throw new Error(
-      "Les articles ont été enregistrés, mais la suppression de certaines lignes a échoué : " +
-      resultatSuppression.error.message
-    );
-  }
-
-  const idsSupprimes = (resultatSuppression.data || []).map(
-    ligne => ligne.id
   );
 
-  if (
-    idsSupprimes.length !== idsASupprimer.length ||
-    idsASupprimer.some(idSupprime => !idsSupprimes.includes(idSupprime))
-  ) {
+  if (resultatRPC.error) {
     throw new Error(
-      "La suppression n'a pas pu être confirmée pour tous les articles. Recharge l'achat et vérifie les lignes restantes."
+      "L'achat n'a pas pu être enregistré. Aucune modification partielle ne doit être conservée : " +
+      resultatRPC.error.message
     );
   }
-}
+
+  const achatId = resultatRPC.data || id;
+
+  if (!achatId) {
+    throw new Error(
+      "L'enregistrement a répondu sans identifiant d'achat. Recharge la liste pour vérifier le résultat."
+    );
+  }
 
 if (champSuppressions) {
   champSuppressions.value = "[]";
