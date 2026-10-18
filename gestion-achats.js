@@ -390,29 +390,83 @@ async function enregistrer(table, valeurs, id = null) {
   /* ---------------- ACHATS FOURNISSEURS ---------------- */
 
    // REPÈRE — GESTION DES LIGNES D'ARTICLES D'UN ACHAT
+
 function initialiserLignesArticlesAchat() {
   const conteneur = document.getElementById("skAchatArticles");
   const boutonAjouter = document.getElementById("skAjouterArticle");
 
-  if (!conteneur || !boutonAjouter || boutonAjouter.dataset.initialise === "oui") {
+  if (
+    !conteneur ||
+    !boutonAjouter ||
+    boutonAjouter.dataset.initialise === "oui"
+  ) {
     return;
   }
 
   boutonAjouter.dataset.initialise = "oui";
 
+  function lireIdsASupprimer() {
+    const champ = document.getElementById("skLignesAchatsSupprimees");
+
+    if (!champ) {
+      throw new Error(
+        "Impossible de sécuriser la suppression : champ de suivi introuvable."
+      );
+    }
+
+    try {
+      const ids = JSON.parse(champ.value || "[]");
+      return Array.isArray(ids) ? ids : [];
+    } catch {
+      return [];
+    }
+  }
+
   function actualiserNumeros() {
-    conteneur.querySelectorAll(".sk-achat-article").forEach((ligne, index) => {
+    const lignes = conteneur.querySelectorAll(".sk-achat-article");
+
+    lignes.forEach((ligne, index) => {
       ligne.dataset.articleIndex = index;
 
       const titre = ligne.querySelector("h5");
-      if (titre) titre.textContent = `Article ${index + 1}`;
+      if (titre) {
+        titre.textContent = `Article ${index + 1}`;
+      }
 
       const boutonSupprimer = ligne.querySelector(".sk-supprimer-article");
+      const idLigne = ligne.querySelector('[name="ligne_id"]')?.value;
+
       if (boutonSupprimer) {
-        boutonSupprimer.disabled =
-          conteneur.querySelectorAll(".sk-achat-article").length === 1;
+        // On peut supprimer le dernier article s'il est déjà enregistré.
+        // Une ligne vide non enregistrée doit toujours rester disponible.
+        boutonSupprimer.disabled = lignes.length === 1 && !idLigne;
       }
     });
+  }
+
+  function viderLigne(ligne) {
+    ligne.querySelectorAll("input, textarea").forEach(champ => {
+      if (champ.name === "ligne_id") {
+        champ.value = "";
+      } else if (champ.name === "quantite") {
+        champ.value = "1";
+      } else if (
+        champ.name === "prix_unitaire" ||
+        champ.name === "quantite_recue"
+      ) {
+        champ.value = "0";
+      } else {
+        champ.value = "";
+      }
+    });
+
+    const selectType = ligne.querySelector(
+      'select[name="type_article"]'
+    );
+
+    if (selectType) {
+      selectType.value = "autre";
+    }
   }
 
   boutonAjouter.addEventListener("click", () => {
@@ -421,88 +475,81 @@ function initialiserLignesArticlesAchat() {
 
     const nouvelleLigne = modele.cloneNode(true);
 
-    nouvelleLigne.querySelectorAll("input, textarea").forEach(champ => {
-      if (champ.name === "ligne_id") {
-        champ.value = "";
-      } else if (champ.name === "quantite") {
-        champ.value = "1";
-      } else if (champ.name === "prix_unitaire" ||
-                 champ.name === "quantite_recue") {
-        champ.value = "0";
-      } else {
-        champ.value = "";
-      }
-    });
-
-    const selectType = nouvelleLigne.querySelector('select[name="type_article"]');
-    if (selectType) selectType.value = "autre";
+    viderLigne(nouvelleLigne);
 
     conteneur.appendChild(nouvelleLigne);
     actualiserNumeros();
-    nouvelleLigne.scrollIntoView({ behavior: "smooth", block: "center" });
+
+    nouvelleLigne.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
   });
 
   conteneur.addEventListener("click", evenement => {
     const bouton = evenement.target.closest(".sk-supprimer-article");
     if (!bouton) return;
 
-    const lignes = conteneur.querySelectorAll(".sk-achat-article");
+    const ligne = bouton.closest(".sk-achat-article");
+    if (!ligne) return;
 
-    if (lignes.length <= 1) {
-      afficherMessage("Garde au moins une ligne dans le formulaire.", true);
+    const lignes = conteneur.querySelectorAll(".sk-achat-article");
+    const idLigne = ligne.querySelector('[name="ligne_id"]')?.value;
+
+    // Une ligne non enregistrée ne doit pas être la seule ligne restante.
+    if (lignes.length === 1 && !idLigne) {
+      afficherMessage(
+        "Garde cette ligne vide pour pouvoir ajouter un article.",
+        true
+      );
       return;
     }
 
-    const ligne = bouton.closest(".sk-achat-article");
-    const idLigne = ligne?.querySelector('[name="ligne_id"]')?.value;
+    if (idLigne) {
+      let idsASupprimer;
 
-    
-if (idLigne) {
-  const champSuppressions = document.getElementById(
-    "skLignesAchatsSupprimees"
-  );
+      try {
+        idsASupprimer = lireIdsASupprimer();
+      } catch (erreur) {
+        afficherMessage(erreur.message, true);
+        return;
+      }
 
-  if (!champSuppressions) {
-    afficherMessage(
-      "Impossible de sécuriser la suppression : champ de suivi introuvable.",
-      true
-    );
-    return;
-  }
+      if (!idsASupprimer.includes(idLigne)) {
+        idsASupprimer.push(idLigne);
+      }
 
-  let idsASupprimer = [];
+      const champSuppressions = document.getElementById(
+        "skLignesAchatsSupprimees"
+      );
 
-  try {
-    idsASupprimer = JSON.parse(champSuppressions.value || "[]");
-
-    if (!Array.isArray(idsASupprimer)) {
-      idsASupprimer = [];
+      champSuppressions.value = JSON.stringify(idsASupprimer);
     }
-  } catch {
-    idsASupprimer = [];
-  }
 
-  if (!idsASupprimer.includes(idLigne)) {
-    idsASupprimer.push(idLigne);
-  }
+    if (lignes.length === 1) {
+      // Dernier article enregistré : on le marque pour suppression,
+      // puis on conserve une ligne vide pour permettre un remplacement.
+      viderLigne(ligne);
 
-  champSuppressions.value = JSON.stringify(idsASupprimer);
+      afficherMessage(
+        "Article marqué pour suppression. Une ligne vide reste disponible ; enregistre l'achat pour confirmer."
+      );
+    } else {
+      ligne.remove();
 
-  ligne?.remove();
-  actualiserNumeros();
+      if (idLigne) {
+        afficherMessage(
+          "Article marqué pour suppression. La suppression sera appliquée à l'enregistrement."
+        );
+      }
+    }
 
-  afficherMessage(
-    "Article marqué pour suppression. La suppression sera appliquée à l'enregistrement."
-  );
-  return;
-}
-
-    ligne?.remove();
     actualiserNumeros();
   });
 
   actualiserNumeros();
 }
+
    
   async function chargerAchats() {
     const [achats, fournisseurs, lignes] = await Promise.all([
