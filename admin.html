@@ -4207,6 +4207,56 @@ button{cursor:pointer}
   </select>
 </div>
 
+<form id="skFormCout" style="display:none;margin:15px 0;padding:15px;border:1px solid #cbd5c0;border-radius:10px;">
+  <h3>🧮 Configurer le coût de revient</h3>
+
+  <label for="skCoutProduit" style="display:block;margin-top:10px;">Produit concerné</label>
+  <select id="skCoutProduit" name="produit_id" required style="width:100%;padding:10px;box-sizing:border-box;">
+    <option value="">Choisir un produit</option>
+  </select>
+
+  <p>Indique les coûts nécessaires à la fabrication d'une création.</p>
+
+  <label>Support / article (€)</label>
+  <input type="number" name="cout_support" min="0" step="0.01" value="0" required style="width:100%;padding:9px;box-sizing:border-box;">
+
+  <label>Livraison fournisseur (€)</label>
+  <input type="number" name="cout_livraison" min="0" step="0.01" value="0" required style="width:100%;padding:9px;box-sizing:border-box;">
+
+  <label>Consommables (€)</label>
+  <input type="number" name="cout_consommables" min="0" step="0.01" value="0" required style="width:100%;padding:9px;box-sizing:border-box;">
+
+  <label>Emballage (€)</label>
+  <input type="number" name="cout_emballage" min="0" step="0.01" value="0" required style="width:100%;padding:9px;box-sizing:border-box;">
+
+  <label>Électricité (€)</label>
+  <input type="number" name="cout_electricite" min="0" step="0.01" value="0" required style="width:100%;padding:9px;box-sizing:border-box;">
+
+  <label>Temps de travail valorisé (€)</label>
+  <input type="number" name="cout_temps_travail" min="0" step="0.01" value="0" required style="width:100%;padding:9px;box-sizing:border-box;">
+
+  <label>Autres coûts (€)</label>
+  <input type="number" name="cout_autres" min="0" step="0.01" value="0" required style="width:100%;padding:9px;box-sizing:border-box;">
+
+  <label>Frais de paiement (%)</label>
+  <input type="number" name="taux_frais_paiement" min="0" max="100" step="0.01" value="0" required style="width:100%;padding:9px;box-sizing:border-box;">
+
+  <label>Frais fixes de paiement (€)</label>
+  <input type="number" name="frais_paiement_fixe" min="0" step="0.01" value="0" required style="width:100%;padding:9px;box-sizing:border-box;">
+
+  <label>Charges estimées (%)</label>
+  <input type="number" name="taux_charges_estime" min="0" max="100" step="0.01" value="0" required style="width:100%;padding:9px;box-sizing:border-box;">
+
+  <label>Marge souhaitée (%)</label>
+  <input type="number" name="taux_marge_cible" min="0" max="100" step="0.01" value="30" required style="width:100%;padding:9px;box-sizing:border-box;">
+
+  <label>Notes (facultatif)</label>
+  <textarea name="notes" rows="2" style="width:100%;padding:9px;box-sizing:border-box;"></textarea>
+
+  <button type="submit" style="margin-top:12px;padding:10px 14px;">💾 Enregistrer et calculer</button>
+  <button type="button" id="skAnnulerCout" style="margin-top:12px;padding:10px 14px;">Annuler</button>
+</form>
+
     <div id="skCoutsProduitsListe">
       Les coûts de revient seront affichés ici.
     </div>
