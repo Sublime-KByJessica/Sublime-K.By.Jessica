@@ -767,7 +767,18 @@ async function chargerCoutsProduits() {
     if (!action) return;
 
     evenement.preventDefault();
-    securiser(() => action(formulaire));
+
+securiser(async () => {
+  try {
+    await action(formulaire);
+  } catch (erreur) {
+    console.error("Erreur enregistrement formulaire :", erreur);
+    afficherMessage(
+      erreur?.message || "Une erreur est survenue pendant l'enregistrement.",
+      true
+    );
+  }
+});
   });
 
   document.addEventListener("click", evenement => {
