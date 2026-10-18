@@ -1039,11 +1039,53 @@ return;
         return;
       }
 
-      if (action.startsWith("modifier-")) {
-        afficherMessage(
-          "La modification de cet élément sera raccordée dans une prochaine étape."
-        );
-      }
+      
+if (action === "modifier-fournisseur") {
+  const formulaire = document.getElementById("skFormFournisseur");
+
+  if (!formulaire) {
+    throw new Error("Le formulaire fournisseur est introuvable.");
+  }
+
+  const fournisseurs = await lire(
+    TABLES.fournisseurs,
+    "id,nom,site_url,contact,notes,actif"
+  );
+
+  const fournisseur = fournisseurs.find(f => f.id === id);
+
+  if (!fournisseur) {
+    throw new Error("Ce fournisseur est introuvable.");
+  }
+
+  formulaire.elements.namedItem("id").value = fournisseur.id;
+  formulaire.elements.namedItem("nom").value = fournisseur.nom || "";
+  formulaire.elements.namedItem("site_url").value =
+    fournisseur.site_url || "";
+  formulaire.elements.namedItem("contact").value =
+    fournisseur.contact || "";
+  formulaire.elements.namedItem("notes").value =
+    fournisseur.notes || "";
+  formulaire.elements.namedItem("actif").value =
+    String(fournisseur.actif);
+
+  formulaire.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+
+  afficherMessage(
+    "Fournisseur chargé : modifie les informations puis enregistre."
+  );
+
+  return;
+}
+
+if (action.startsWith("modifier-")) {
+  afficherMessage(
+    "La modification de cet élément sera raccordée dans une prochaine étape."
+  );
+}
     });
   });
 
