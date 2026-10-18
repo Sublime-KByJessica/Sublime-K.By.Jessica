@@ -642,6 +642,19 @@ async function chargerCoutsProduits() {
                 style="margin-top:8px;">
                 Enregistrer le lien
               </button>
+              
+              <button
+                type="button"
+                data-sk-action="actualiser-prix-fournisseur"
+                data-id="${p.id}"
+                style="margin-top:8px;margin-left:6px;">
+                🔄 Actualiser le prix fournisseur
+              </button>
+              <p id="prixFournisseur-${p.id}" style="margin-top:8px;font-size:0.9em;">
+                Prix d'achat : ${p.prix_achat_fournisseur != null
+                  ? euro(p.prix_achat_fournisseur)
+                  : "Non renseigné"}
+              </p>
             </div>
             <p>Prix actuel de la boutique : ${euro(p.prix)}</p>
             <p>Coût de revient :
@@ -789,6 +802,38 @@ async function chargerCoutsProduits() {
 
         afficherMessage("Lien d'achat fournisseur enregistré.");
         await chargerCoutsProduits();
+        return;
+      }
+
+      if (action === "actualiser-prix-fournisseur") {
+        const champ = document.getElementById(`lienAchat-${id}`);
+        const affichage = document.getElementById(`prixFournisseur-${id}`);
+
+        if (!champ || !champ.value.trim()) {
+          throw new Error("Ajoute d'abord le lien du fournisseur.");
+        }
+
+        affichage.textContent = "Récupération du prix en cours…";
+
+        const { data, error } = await obtenirClient()
+          .functions.invoke("recuperer-prix-fournisseur", {
+            body: { url: champ.value.trim() }
+          });
+
+        if (error) throw error;
+
+        if (data?.error) {
+          affichage.textContent = data.error;
+          return;
+        }
+
+        if (typeof data?.price !== "number") {
+          throw new Error("Aucun prix fiable n'a été détecté.");
+        }
+
+        affichage.textContent =
+          `Prix détecté : ${euro(data.price)} — vérifie-le avant enregistrement.`;
+
         return;
       }
 
