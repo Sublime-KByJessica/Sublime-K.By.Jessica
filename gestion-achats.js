@@ -1139,10 +1139,35 @@ async function chargerCoutsProduits() {
                 🔄 Actualiser le prix fournisseur
               </button>
               <p id="prixFournisseur-${p.id}" style="margin-top:8px;font-size:0.9em;">
-                Prix d'achat : ${p.prix_achat_fournisseur != null
-                  ? euro(p.prix_achat_fournisseur)
-                  : "Non renseigné"}
-              </p>
+  Prix d'achat : ${p.prix_achat_fournisseur != null
+    ? euro(p.prix_achat_fournisseur)
+    : "Non renseigné"}
+</p>
+
+<div style="margin-top:10px;padding:10px;border:1px solid #ddd;border-radius:8px;">
+  <label for="prixManuel-${p.id}"
+    style="display:block;margin-bottom:6px;font-weight:600;">
+    💶 Saisir le prix d'achat manuellement (€)
+  </label>
+
+  <input
+    type="number"
+    id="prixManuel-${p.id}"
+    min="0"
+    step="0.01"
+    inputmode="decimal"
+    placeholder="Ex. : 4.25"
+    style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccc;border-radius:6px;"
+  >
+
+  <button
+    type="button"
+    data-sk-action="enregistrer-prix-manuel"
+    data-id="${p.id}"
+    style="margin-top:8px;">
+    💾 Enregistrer le prix saisi
+  </button>
+</div>
             </div>
             <p>Prix actuel de la boutique : ${euro(p.prix)}</p>
             <p>Coût de revient :
@@ -1319,6 +1344,50 @@ async function chargerCoutsProduits() {
         return;
       }
 
+       
+      if (action === "enregistrer-prix-manuel") {
+        const champPrix = document.getElementById(`prixManuel-${id}`);
+
+        if (!champPrix || champPrix.value.trim() === "") {
+          throw new Error("Saisis le prix fournisseur avant de l'enregistrer.");
+        }
+
+        const prix = Number(champPrix.value);
+
+        if (!Number.isFinite(prix) || prix < 0) {
+          throw new Error(
+            "Le prix saisi doit être un montant valide, égal ou supérieur à zéro."
+          );
+        }
+
+        const date = new Date().toISOString();
+
+        const { error } = await obtenirClient()
+          .from("products")
+          .update({
+            prix_achat_fournisseur: prix,
+            prix_achat_verifie_le: date
+          })
+          .eq("id", id);
+
+        if (error) throw error;
+
+        const affichage = document.getElementById(`prixFournisseur-${id}`);
+
+        if (affichage) {
+          affichage.textContent =
+            `Prix d'achat enregistré manuellement : ${euro(prix)} — vérifié le ${new Date(date).toLocaleDateString("fr-FR")}.`;
+        }
+
+        champPrix.value = "";
+
+        afficherMessage(
+          "Prix fournisseur saisi manuellement et enregistré. Le prix de vente reste inchangé."
+        );
+
+        return;
+      }
+       
        if (action === "enregistrer-prix-fournisseur") {
   const prix = Number(bouton.dataset.prix);
   const date = bouton.dataset.date || new Date().toISOString();
