@@ -1380,7 +1380,13 @@ async function chargerCoutsProduits() {
 
   /* ---------------- ACTIONS DE L'INTERFACE ---------------- */
 
- 
+   const formulairesGestion = {
+    skFormFournisseur: sauvegarderFournisseur,
+    skFormConsommable: sauvegarderConsommable,
+    skFormAchat: sauvegarderAchat,
+    skFormCout: sauvegarderCout
+  };
+   
   Object.entries(formulairesGestion).forEach(([id, action]) => {
     const formulaire = document.getElementById(id);
 
