@@ -317,25 +317,27 @@ async function enregistrer(table, valeurs, id = null) {
     return consommables;
   }
 
+ 
   async function sauvegarderConsommable(formulaire) {
     const donnees = new FormData(formulaire);
-    const id = donnees.get("id") || null;
+    const id = String(donnees.get("id") || "").trim() || null;
     const nom = String(donnees.get("nom") || "").trim();
 
-    if (!nom) throw new Error("Indique le nom du consommable.");
+    if (!nom) {
+      throw new Error("Indique le nom du consommable.");
+    }
 
     const stock = nombre(donnees.get("stock_actuel"));
     const seuil = nombre(donnees.get("seuil_alerte"));
     const prix = nombre(donnees.get("prix_unitaire"));
 
-    if (stock < 0 || seuil < 0 || prix < 0) {
-      throw new Error("Les quantités et coûts ne peuvent pas être négatifs.");
+    if (seuil < 0 || prix < 0) {
+      throw new Error("Le seuil et le coût ne peuvent pas être négatifs.");
     }
 
-    await enregistrer(TABLES.consommables, {
+    const valeurs = {
       nom,
       unite: String(donnees.get("unite") || "piece"),
-      stock_actuel: stock,
       seuil_alerte: seuil,
       prix_unitaire: prix,
       fournisseur_id: donnees.get("fournisseur_id") || null,
@@ -344,16 +346,37 @@ async function enregistrer(table, valeurs, id = null) {
       ),
       notes: String(donnees.get("notes") || "").trim() || null,
       actif: true
-    }, id);
+    };
+
+    if (!id) {
+      if (!Number.isFinite(stock) || stock < 0) {
+        throw new Error("Le stock initial ne peut pas être négatif.");
+      }
+
+      valeurs.stock_actuel = stock;
+    }
+
+    await enregistrer(TABLES.consommables, valeurs, id);
 
     formulaire.reset();
+
     const champId = formulaire.querySelector('[name="id"]');
     if (champId) champId.value = "";
 
-    afficherMessage("Consommable enregistré.");
+    const champStock = formulaire.elements.namedItem("stock_actuel");
+    if (champStock) champStock.readOnly = false;
+
+    const titre = formulaire.querySelector("h3");
+    if (titre) titre.textContent = "➕ Ajouter un consommable";
+
+    afficherMessage(
+      id
+        ? "Fiche consommable modifiée. Le stock actuel a été préservé."
+        : "Consommable enregistré."
+    );
+
     await chargerConsommables();
   }
-
   
   async function ajusterStock(id, sens) {
     const saisie = prompt(
@@ -1421,6 +1444,7 @@ if (action === "modifier-consommable") {
     throw new Error("Ce consommable est introuvable.");
   }
 
+  
   [
     "id",
     "nom",
@@ -1435,6 +1459,16 @@ if (action === "modifier-consommable") {
     const champ = formulaire.elements.namedItem(nom);
     if (champ) champ.value = consommable[nom] ?? "";
   });
+
+  const champStock = formulaire.elements.namedItem("stock_actuel");
+  if (champStock) {
+    champStock.readOnly = true;
+    champStock.title =
+      "Pour modifier le stock, utilise les boutons Ajouter au stock ou Retirer du stock.";
+  }
+
+  const titre = formulaire.querySelector("h3");
+  if (titre) titre.textContent = "✏️ Modifier un consommable";
 
   formulaire.scrollIntoView({
     behavior: "smooth",
