@@ -681,54 +681,76 @@ conteneur.addEventListener("change", evenement => {
 }
 
    
-  async function chargerAchats() {
-    const [achats, fournisseurs, lignes] = await Promise.all([
-      lire(TABLES.achats, "*"),
-      lire(TABLES.fournisseurs, "id,nom"),
-      lire(TABLES.lignesAchats, "*")
-    ]);
+  
+async function chargerAchats() {
+  const [achats, fournisseurs, lignes] = await Promise.all([
+    lire(TABLES.achats, "*"),
+    lire(TABLES.fournisseurs, "id,nom"),
+    lire(TABLES.lignesAchats, "*")
+  ]);
 
-    const noms = Object.fromEntries(
-      fournisseurs.map(f => [f.id, f.nom])
-    );
+  const noms = Object.fromEntries(
+    fournisseurs.map(f => [f.id, f.nom])
+  );
 
-    const zone = document.getElementById("skAchatsListe");
-    if (!zone) return achats;
+  const zone = document.getElementById("skAchatsListe");
+  if (!zone) return achats;
 
-    zone.innerHTML = achats.length
-      ? achats.map(a => {
-          const lignesAchat = lignes.filter(l => l.achat_id === a.id);
-          const totalArticles = lignesAchat.reduce(
-            (somme, l) =>
-              somme + nombre(l.quantite) * nombre(l.prix_unitaire),
-            0
-          );
-          const total = totalArticles +
-            nombre(a.frais_livraison) + nombre(a.frais_autres);
+  zone.innerHTML = achats.length
+    ? achats.map(a => {
+        const lignesAchat = lignes.filter(l => l.achat_id === a.id);
 
-          return `
-            <article class="sk-carte">
-              <strong>Commande fournisseur :
-                ${echapper(a.reference || "Sans référence")}</strong>
-              <p>Fournisseur :
-                ${echapper(noms[a.fournisseur_id] || "Non renseigné")}</p>
-              <p>Date : ${echapper(a.date_commande || "Non renseignée")}</p>
-              <p>Statut : ${echapper(a.statut)}</p>
-              <p>Paiement : ${echapper(a.statut_paiement)}</p>
-              <p>Articles : ${euro(totalArticles)}</p>
-              <p>Livraison : ${euro(a.frais_livraison)}</p>
-              <p>Autres frais : ${euro(a.frais_autres)}</p>
-              <strong>Total estimé : ${euro(total)}</strong>
-              ${a.notes ? `<p>${echapper(a.notes)}</p>` : ""}
-              <button type="button" data-sk-action="modifier-achat"
-                data-id="${a.id}">Modifier</button>
-            </article>
-          `;
-        }).join("")
-      : "<p>Aucun achat fournisseur enregistré pour le moment.</p>";
+        const totalArticles = lignesAchat.reduce(
+          (somme, l) =>
+            somme + nombre(l.quantite) * nombre(l.prix_unitaire),
+          0
+        );
 
-    return achats;
-  }
+        const total = totalArticles
+          + nombre(a.frais_livraison)
+          + nombre(a.frais_autres);
+
+        return `
+          <article class="sk-carte">
+            <strong>Commande fournisseur :
+              ${echapper(a.reference || "Sans référence")}</strong>
+
+            <p>Fournisseur :
+              ${echapper(noms[a.fournisseur_id] || "Non renseigné")}</p>
+
+            <p>Date : ${echapper(a.date_commande || "Non renseignée")}</p>
+            <p>Statut : ${echapper(a.statut)}</p>
+            <p>Paiement : ${echapper(a.statut_paiement)}</p>
+            <p>Articles : ${euro(totalArticles)}</p>
+            <p>Livraison : ${euro(a.frais_livraison)}</p>
+            <p>Autres frais : ${euro(a.frais_autres)}</p>
+
+            <strong>Total estimé : ${euro(total)}</strong>
+
+            ${a.notes ? `<p>${echapper(a.notes)}</p>` : ""}
+
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;">
+              <button
+                type="button"
+                data-sk-action="voir-detail-achat"
+                data-id="${echapper(a.id)}">
+                📦 Voir le détail
+              </button>
+
+              <button
+                type="button"
+                data-sk-action="modifier-achat"
+                data-id="${echapper(a.id)}">
+                ✏️ Modifier
+              </button>
+            </div>
+          </article>
+        `;
+      }).join("")
+    : "<p>Aucun achat fournisseur enregistré pour le moment.</p>";
+
+  return achats;
+}
 
   async function sauvegarderAchat(formulaire) {
 const donnees = new FormData(formulaire);
@@ -1674,6 +1696,125 @@ if (action === "modifier-consommable") {
   return;
 }
 
+       
+if (action === "voir-detail-achat") {
+  const zone = document.getElementById("skDetailAchatContenu");
+  const message = document.getElementById("skDetailAchatMessage");
+
+  if (!zone) {
+    throw new Error("La page de détail de la commande est introuvable.");
+  }
+
+  const [achats, fournisseurs, lignes] = await Promise.all([
+    lire(TABLES.achats, "*"),
+    lire(TABLES.fournisseurs, "id,nom"),
+    lire(TABLES.lignesAchats, "*")
+  ]);
+
+  const achat = achats.find(a => a.id === id);
+
+  if (!achat) {
+    throw new Error("Cette commande fournisseur est introuvable.");
+  }
+
+  const fournisseur = fournisseurs.find(
+    f => f.id === achat.fournisseur_id
+  );
+
+  const articles = lignes.filter(l => l.achat_id === achat.id);
+
+  const totalArticles = articles.reduce(
+    (somme, article) =>
+      somme + nombre(article.quantite) * nombre(article.prix_unitaire),
+    0
+  );
+
+  const livraison = nombre(achat.frais_livraison);
+  const autresFrais = nombre(achat.frais_autres);
+  const total = totalArticles + livraison + autresFrais;
+
+  zone.innerHTML = `
+    <article class="sk-carte">
+      <h2>Commande ${echapper(achat.reference || "Sans référence")}</h2>
+
+      <p><strong>Fournisseur :</strong>
+        ${echapper(fournisseur?.nom || "Non renseigné")}</p>
+      <p><strong>Date de commande :</strong>
+        ${echapper(achat.date_commande || "Non renseignée")}</p>
+      <p><strong>Date de réception :</strong>
+        ${echapper(achat.date_reception || "Non renseignée")}</p>
+      <p><strong>Statut :</strong> ${echapper(achat.statut || "Non renseigné")}</p>
+      <p><strong>Paiement :</strong>
+        ${echapper(achat.statut_paiement || "Non renseigné")}</p>
+
+      <h3>🧾 Articles commandés</h3>
+
+      ${articles.length ? `
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead>
+              <tr>
+                <th style="text-align:left;padding:8px;">Article</th>
+                <th style="text-align:left;padding:8px;">Quantité</th>
+                <th style="text-align:left;padding:8px;">Prix unitaire</th>
+                <th style="text-align:left;padding:8px;">Total</th>
+                <th style="text-align:left;padding:8px;">Reçu</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${articles.map(article => `
+                <tr>
+                  <td style="padding:8px;">
+                    ${echapper(article.nom_article || "Article sans nom")}
+                    ${article.url_article ? `
+                      <p><a href="${echapper(article.url_article)}"
+                        target="_blank" rel="noopener noreferrer">
+                        Voir le produit fournisseur
+                      </a></p>
+                    ` : ""}
+                    ${article.notes ? `<p>${echapper(article.notes)}</p>` : ""}
+                  </td>
+                  <td style="padding:8px;">${echapper(article.quantite)}</td>
+                  <td style="padding:8px;">${euro(article.prix_unitaire)}</td>
+                  <td style="padding:8px;">
+                    ${euro(nombre(article.quantite) * nombre(article.prix_unitaire))}
+                  </td>
+                  <td style="padding:8px;">${echapper(article.quantite_recue ?? 0)}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      ` : "<p>Aucun article n'est enregistré pour cette commande.</p>"}
+
+      <hr>
+      <p><strong>Total des articles :</strong> ${euro(totalArticles)}</p>
+      <p><strong>Frais de livraison :</strong> ${euro(livraison)}</p>
+      <p><strong>Autres frais :</strong> ${euro(autresFrais)}</p>
+      <h3>Total estimé : ${euro(total)}</h3>
+
+      ${achat.notes ? `
+        <h3>Notes générales</h3>
+        <p>${echapper(achat.notes)}</p>
+      ` : ""}
+    </article>
+  `;
+
+  if (message) message.textContent = "";
+
+  if (typeof window.activerSection === "function") {
+    window.activerSection("detail-achat");
+  } else {
+    document.querySelectorAll(".section-admin").forEach(section => {
+      section.classList.remove("active");
+    });
+    document.getElementById("section-detail-achat")?.classList.add("active");
+  }
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  return;
+}
+
 if (action === "modifier-achat") {
   const formulaire = document.getElementById("skFormAchat");
 
@@ -1847,6 +1988,27 @@ if (action.startsWith("modifier-")) {
         void chargerGestion();
       });
     });
+
+   
+  // Retour à la liste des achats fournisseurs.
+  document.getElementById("skRetourAchats")?.addEventListener("click", () => {
+    if (typeof window.activerSection === "function") {
+      window.activerSection("achats-couts");
+    } else {
+      document.querySelectorAll(".section-admin").forEach(section => {
+        section.classList.remove("active");
+      });
+
+      document.getElementById("section-achats-couts")?.classList.add("active");
+    }
+
+    void chargerGestion();
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  });
 
   // Fonctions accessibles pour le branchement dans l'administration.
   window.skChargerGestion = chargerGestion;
