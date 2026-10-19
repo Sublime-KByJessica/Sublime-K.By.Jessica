@@ -262,6 +262,7 @@ async function enregistrer(table, valeurs, id = null) {
     await chargerFournisseurs();
   }
 
+  
   /* ---------------- CONSOMMABLES ---------------- */
 
   async function chargerConsommables() {
@@ -280,19 +281,21 @@ async function enregistrer(table, valeurs, id = null) {
 
     zone.innerHTML = consommables.length
       ? consommables.map(c => {
+          const actif = c.actif !== false;
           const alerte =
             nombre(c.stock_actuel) <= nombre(c.seuil_alerte);
 
           return `
             <article class="sk-carte">
               <strong>${echapper(c.nom)}</strong>
+              ${actif ? "" : '<p class="sk-alerte"><strong>📦 Consommable archivé</strong></p>'}
               <p>Stock : ${nombre(c.stock_actuel)}
                 ${echapper(c.unite || "pièce")}</p>
               <p>Coût unitaire : ${euro(c.prix_unitaire)}</p>
               <p>Fournisseur :
                 ${echapper(nomsFournisseurs[c.fournisseur_id] || "Non renseigné")}
               </p>
-              ${alerte
+              ${actif && alerte
                 ? '<p class="sk-alerte">Stock bas : pensez à réapprovisionner.</p>'
                 : ""}
               ${c.url_achat
@@ -301,14 +304,23 @@ async function enregistrer(table, valeurs, id = null) {
                      Retrouver l’article ↗
                    </a></p>`
                 : ""}
-              <button type="button" data-sk-action="ajuster-stock"
-                data-id="${c.id}" data-sens="ajouter">+ Ajouter au stock</button>
-              <button type="button" data-sk-action="ajuster-stock"
-                data-id="${c.id}" data-sens="retirer">− Retirer du stock</button>
-              <button type="button" data-sk-action="modifier-consommable"
-                data-id="${c.id}">Modifier</button>
-              <button type="button" data-sk-action="supprimer-consommable"
-                data-id="${c.id}">Supprimer</button>
+              ${actif
+                ? `
+                  <button type="button" data-sk-action="ajuster-stock"
+                    data-id="${c.id}" data-sens="ajouter">+ Ajouter au stock</button>
+                  <button type="button" data-sk-action="ajuster-stock"
+                    data-id="${c.id}" data-sens="retirer">− Retirer du stock</button>
+                  <button type="button" data-sk-action="modifier-consommable"
+                    data-id="${c.id}">Modifier</button>
+                  <button type="button" data-sk-action="supprimer-consommable"
+                    data-id="${c.id}">Archiver</button>
+                `
+                : `
+                  <button type="button" data-sk-action="modifier-consommable"
+                    data-id="${c.id}">Consulter / modifier</button>
+                  <button type="button" data-sk-action="reactiver-consommable"
+                    data-id="${c.id}">Réactiver</button>
+                `}
             </article>
           `;
         }).join("")
@@ -317,7 +329,6 @@ async function enregistrer(table, valeurs, id = null) {
     return consommables;
   }
 
- 
   async function sauvegarderConsommable(formulaire) {
     const donnees = new FormData(formulaire);
     const id = String(donnees.get("id") || "").trim() || null;
@@ -335,6 +346,19 @@ async function enregistrer(table, valeurs, id = null) {
       throw new Error("Le seuil et le coût ne peuvent pas être négatifs.");
     }
 
+    let actif = true;
+
+    if (id) {
+      const existants = await lire(TABLES.consommables, "id,actif");
+      const existant = existants.find(c => c.id === id);
+
+      if (!existant) {
+        throw new Error("Ce consommable est introuvable.");
+      }
+
+      actif = existant.actif !== false;
+    }
+
     const valeurs = {
       nom,
       unite: String(donnees.get("unite") || "piece"),
@@ -345,7 +369,7 @@ async function enregistrer(table, valeurs, id = null) {
         String(donnees.get("url_achat") || "").trim()
       ),
       notes: String(donnees.get("notes") || "").trim() || null,
-      actif: true
+      actif
     };
 
     if (!id) {
@@ -1321,13 +1345,42 @@ return;
         return;
       }
 
-      if (action === "supprimer-consommable") {
-        if (!confirm("Supprimer ce consommable ?")) return;
-        await supprimer(TABLES.consommables, id);
-        afficherMessage("Consommable supprimé.");
-        await chargerConsommables();
-        return;
-      }
+      
+if (action === "supprimer-consommable") {
+  if (
+    !confirm(
+      "Archiver ce consommable ? Ses données et ses liens avec les coûts seront conservés."
+    )
+  ) {
+    return;
+  }
+
+  await enregistrer(
+    TABLES.consommables,
+    { actif: false },
+    id
+  );
+
+  afficherMessage("Consommable archivé. Ses données sont conservées.");
+  await chargerConsommables();
+  return;
+}
+
+if (action === "reactiver-consommable") {
+  if (!confirm("Réactiver ce consommable ?")) {
+    return;
+  }
+
+  await enregistrer(
+    TABLES.consommables,
+    { actif: true },
+    id
+  );
+
+  afficherMessage("Consommable réactivé.");
+  await chargerConsommables();
+  return;
+}
 
       
       if (action === "editer-cout") {
