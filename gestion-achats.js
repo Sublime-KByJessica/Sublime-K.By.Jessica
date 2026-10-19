@@ -1422,7 +1422,11 @@ async function chargerCoutsProduits() {
       !cible.matches("[data-sk-facture-upload]")
     ) return;
 
-    (async () => {
+        (async () => {
+      let etapeFacture = "préparation";
+      let cheminFacture = "";
+      let envoiReussi = false;
+
       try {
         const fichier = cible.files?.[0];
         const achatId = cible.dataset.achatId;
@@ -1453,40 +1457,42 @@ async function chargerCoutsProduits() {
           message.textContent = "Enregistrement de la facture…";
         }
 
-        const chemin =
+                cheminFacture =
           `${achatId}/${crypto.randomUUID()}-${nomFichierSecurise(fichier.name)}`;
+
+        etapeFacture = "envoi du fichier vers le stockage Supabase";
 
         const { error: erreurEnvoi } = await obtenirClient()
           .storage
           .from(BUCKET_FACTURES)
-          .upload(chemin, fichier, {
+          .upload(cheminFacture, fichier, {
             contentType: fichier.type,
             upsert: false
           });
 
         if (erreurEnvoi) throw erreurEnvoi;
 
+        envoiReussi = true;
+        etapeFacture = "enregistrement des informations de la facture";
+
         const { error: erreurEnregistrement } = await obtenirClient()
           .from("sk_achats_factures")
           .insert({
             achat_id: achatId,
             nom_fichier: fichier.name,
-            chemin_stockage: chemin,
+            chemin_stockage: cheminFacture,
             type_mime: fichier.type,
             taille_octets: fichier.size
           });
 
         if (erreurEnregistrement) {
-          await obtenirClient()
-            .storage
-            .from(BUCKET_FACTURES)
-            .remove([chemin]);
-
+          // On conserve le fichier envoyé pour éviter une perte silencieuse.
           throw erreurEnregistrement;
         }
 
-        cible.value = "";
+                cible.value = "";
 
+        etapeFacture = "actualisation de la liste des factures";
         await actualiserZoneFactures(achatId);
 
         if (message) {
@@ -1494,20 +1500,45 @@ async function chargerCoutsProduits() {
         }
 
         afficherMessage("Facture d'achat enregistrée.");
-      } catch (erreur) {
-        console.error("Erreur facture fournisseur :", erreur);
+            } catch (erreur) {
+        console.error("Erreur facture fournisseur :", {
+          etape: etapeFacture,
+          chemin: cheminFacture || null,
+          fichierEnvoye: envoiReussi,
+          erreur
+        });
 
         const message = document.getElementById("skFactureMessage");
 
-        if (message) {
-          message.textContent =
-            erreur?.message || "Impossible d'enregistrer la facture.";
+        let messageErreur =
+          erreur?.message || "Erreur inconnue lors de l'enregistrement.";
+
+        if (etapeFacture === "envoi du fichier vers le stockage Supabase") {
+          messageErreur =
+            "Échec pendant l'envoi du fichier vers Supabase. Vérifie la connexion puis réessaie. Détail : " +
+            (erreur?.message || "aucun détail fourni");
+        } else if (
+          etapeFacture === "enregistrement des informations de la facture" &&
+          envoiReussi
+        ) {
+          messageErreur =
+            "Le fichier a été envoyé, mais ses informations n'ont pas été enregistrées. Ne renvoie pas plusieurs fois la facture. Détail : " +
+            (erreur?.message || "aucun détail fourni") +
+            " (référence technique : " + cheminFacture + ")";
+        } else if (
+          etapeFacture === "actualisation de la liste des factures" &&
+          envoiReussi
+        ) {
+          messageErreur =
+            "La facture a été enregistrée, mais la liste n'a pas pu être actualisée. Actualise la page avant de réessayer. Détail : " +
+            (erreur?.message || "aucun détail fourni");
         }
 
-        afficherMessage(
-          erreur?.message || "Impossible d'enregistrer la facture.",
-          true
-        );
+        if (message) {
+          message.textContent = messageErreur;
+        }
+
+        afficherMessage(messageErreur, true);
       }
     })();
   });
