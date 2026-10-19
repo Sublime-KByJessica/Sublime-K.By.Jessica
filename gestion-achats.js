@@ -1380,14 +1380,7 @@ async function chargerCoutsProduits() {
 
   /* ---------------- ACTIONS DE L'INTERFACE ---------------- */
 
-  // REPÈRE — ENREGISTREMENT DIRECT DES FORMULAIRES DE GESTION
-  const formulairesGestion = {
-    skFormFournisseur: sauvegarderFournisseur,
-    skFormConsommable: sauvegarderConsommable,
-    skFormAchat: sauvegarderAchat,
-    skFormCout: sauvegarderCout
-  };
-
+ 
   Object.entries(formulairesGestion).forEach(([id, action]) => {
     const formulaire = document.getElementById(id);
 
@@ -1398,6 +1391,37 @@ async function chargerCoutsProduits() {
     formulaire.addEventListener("submit", async evenement => {
       evenement.preventDefault();
       evenement.stopPropagation();
+
+      // Empêche les doubles envois pendant une sauvegarde.
+      if (formulaire.dataset.skEnregistrementEnCours === "oui") {
+        return;
+      }
+
+      formulaire.dataset.skEnregistrementEnCours = "oui";
+      formulaire.setAttribute("aria-busy", "true");
+
+      const boutons = Array.from(
+        formulaire.querySelectorAll(
+          'button[type="submit"], input[type="submit"]'
+        )
+      );
+
+      const etatsBoutons = boutons.map(bouton => ({
+        bouton,
+        desactiveAvant: bouton.disabled,
+        texteAvant:
+          bouton instanceof HTMLButtonElement
+            ? bouton.textContent
+            : null
+      }));
+
+      boutons.forEach(bouton => {
+        bouton.disabled = true;
+
+        if (bouton instanceof HTMLButtonElement) {
+          bouton.textContent = "⏳ Enregistrement…";
+        }
+      });
 
       afficherMessage("Enregistrement en cours…");
 
@@ -1411,12 +1435,25 @@ async function chargerCoutsProduits() {
             "L’enregistrement a échoué. Vérifie les champs et les autorisations.",
           true
         );
+      } finally {
+        // Réactive toujours le formulaire, même en cas d'erreur.
+        delete formulaire.dataset.skEnregistrementEnCours;
+        formulaire.removeAttribute("aria-busy");
+
+        etatsBoutons.forEach(
+          ({ bouton, desactiveAvant, texteAvant }) => {
+            bouton.disabled = desactiveAvant;
+
+            if (texteAvant !== null) {
+              bouton.textContent = texteAvant;
+            }
+          }
+        );
       }
     });
 
     formulaire.dataset.skEnvoiBranche = "oui";
   });
-
    
   // Import des factures fournisseurs dans le stockage privé.
   document.addEventListener("change", evenement => {
