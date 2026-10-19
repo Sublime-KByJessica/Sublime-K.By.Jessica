@@ -85,6 +85,91 @@
     return data || [];
   }
 
+   
+  // Factures fournisseurs : stockage privé Supabase.
+  const BUCKET_FACTURES = "supplier-invoices";
+
+  function nomFichierSecurise(nom) {
+    return String(nom || "facture")
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9._-]+/g, "_")
+      .replace(/^_+|_+$/g, "")
+      .slice(-120) || "facture";
+  }
+
+  function tailleLisible(octets) {
+    const taille = Number(octets) || 0;
+
+    return taille < 1024 * 1024
+      ? Math.max(1, Math.round(taille / 1024)) + " Ko"
+      : (taille / (1024 * 1024)).toLocaleString("fr-FR", {
+          maximumFractionDigits: 1
+        }) + " Mo";
+  }
+
+  async function htmlFacturesAchat(achatId) {
+    const { data, error } = await obtenirClient()
+      .from("sk_achats_factures")
+      .select("*")
+      .eq("achat_id", achatId)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return "<p>Aucune facture enregistrée pour cette commande.</p>";
+    }
+
+    const elements = await Promise.all(data.map(async facture => {
+      const { data: lien, error: erreurLien } = await obtenirClient()
+        .storage
+        .from(BUCKET_FACTURES)
+        .createSignedUrl(facture.chemin_stockage, 60, {
+          download: facture.nom_fichier
+        });
+
+      const actionLien = !erreurLien && lien?.signedUrl
+        ? `<a href="${echapper(lien.signedUrl)}"
+             target="_blank"
+             rel="noopener noreferrer">⬇️ Télécharger</a>`
+        : "<span>Lien temporairement indisponible</span>";
+
+      return `
+        <div class="sk-carte" style="margin:8px 0;padding:12px;">
+          <strong>🧾 ${echapper(facture.nom_fichier)}</strong>
+
+          <p style="margin:6px 0;">
+            ${tailleLisible(facture.taille_octets)}
+            · Ajoutée le
+            ${new Date(facture.created_at).toLocaleDateString("fr-FR")}
+          </p>
+
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+            ${actionLien}
+
+            <button
+              type="button"
+              data-sk-action="supprimer-facture"
+              data-id="${echapper(facture.id)}"
+              data-achat-id="${echapper(achatId)}"
+              data-chemin="${echapper(facture.chemin_stockage)}">
+              🗑️ Supprimer
+            </button>
+          </div>
+        </div>
+      `;
+    }));
+
+    return elements.join("");
+  }
+
+  async function actualiserZoneFactures(achatId) {
+    const zone = document.getElementById("skFacturesListe");
+    if (!zone) return;
+
+    zone.innerHTML = await htmlFacturesAchat(achatId);
+  }
   
 async function enregistrer(table, valeurs, id = null) {
   const requete = obtenirClient().from(table);
@@ -1327,6 +1412,106 @@ async function chargerCoutsProduits() {
     formulaire.dataset.skEnvoiBranche = "oui";
   });
 
+   
+  // Import des factures fournisseurs dans le stockage privé.
+  document.addEventListener("change", evenement => {
+    const cible = evenement.target;
+
+    if (
+      !(cible instanceof HTMLInputElement) ||
+      !cible.matches("[data-sk-facture-upload]")
+    ) return;
+
+    (async () => {
+      try {
+        const fichier = cible.files?.[0];
+        const achatId = cible.dataset.achatId;
+        const message = document.getElementById("skFactureMessage");
+
+        if (!fichier || !achatId) return;
+
+        const typesAutorises = [
+          "application/pdf",
+          "image/jpeg",
+          "image/png",
+          "image/webp"
+        ];
+
+        if (!typesAutorises.includes(fichier.type)) {
+          cible.value = "";
+          throw new Error(
+            "Format non accepté. Choisis un PDF, JPG, PNG ou WebP."
+          );
+        }
+
+        if (fichier.size <= 0 || fichier.size > 10 * 1024 * 1024) {
+          cible.value = "";
+          throw new Error("La facture doit peser moins de 10 Mo.");
+        }
+
+        if (message) {
+          message.textContent = "Enregistrement de la facture…";
+        }
+
+        const chemin =
+          `${achatId}/${crypto.randomUUID()}-${nomFichierSecurise(fichier.name)}`;
+
+        const { error: erreurEnvoi } = await obtenirClient()
+          .storage
+          .from(BUCKET_FACTURES)
+          .upload(chemin, fichier, {
+            contentType: fichier.type,
+            upsert: false
+          });
+
+        if (erreurEnvoi) throw erreurEnvoi;
+
+        const { error: erreurEnregistrement } = await obtenirClient()
+          .from("sk_achats_factures")
+          .insert({
+            achat_id: achatId,
+            nom_fichier: fichier.name,
+            chemin_stockage: chemin,
+            type_mime: fichier.type,
+            taille_octets: fichier.size
+          });
+
+        if (erreurEnregistrement) {
+          await obtenirClient()
+            .storage
+            .from(BUCKET_FACTURES)
+            .remove([chemin]);
+
+          throw erreurEnregistrement;
+        }
+
+        cible.value = "";
+
+        await actualiserZoneFactures(achatId);
+
+        if (message) {
+          message.textContent = "Facture enregistrée avec succès.";
+        }
+
+        afficherMessage("Facture d'achat enregistrée.");
+      } catch (erreur) {
+        console.error("Erreur facture fournisseur :", erreur);
+
+        const message = document.getElementById("skFactureMessage");
+
+        if (message) {
+          message.textContent =
+            erreur?.message || "Impossible d'enregistrer la facture.";
+        }
+
+        afficherMessage(
+          erreur?.message || "Impossible d'enregistrer la facture.",
+          true
+        );
+      }
+    })();
+  });
+
   document.addEventListener("click", evenement => {
     const cible = evenement.target;
 
@@ -1696,7 +1881,47 @@ if (action === "modifier-consommable") {
   return;
 }
 
-       
+      
+      if (action === "supprimer-facture") {
+        if (!confirm("Supprimer définitivement cette facture ?")) {
+          return;
+        }
+
+        const chemin = bouton.dataset.chemin;
+        const achatId = bouton.dataset.achatId;
+
+        if (!chemin || !achatId) {
+          throw new Error(
+            "Les informations de la facture sont incomplètes."
+          );
+        }
+
+        // Vérifier et supprimer d'abord l'enregistrement associé.
+        const { error } = await obtenirClient()
+          .from("sk_achats_factures")
+          .delete()
+          .eq("id", id)
+          .eq("achat_id", achatId);
+
+        if (error) throw error;
+
+        // Supprimer ensuite le fichier du stockage privé.
+        const { error: erreurFichier } = await obtenirClient()
+          .storage
+          .from(BUCKET_FACTURES)
+          .remove([chemin]);
+
+        if (erreurFichier) {
+          throw new Error(
+            "L'enregistrement a été supprimé, mais le fichier n'a pas pu être supprimé du stockage. Vérifie Supabase."
+          );
+        }
+
+        await actualiserZoneFactures(achatId);
+        afficherMessage("Facture supprimée.");
+        return;
+      }
+ 
 if (action === "voir-detail-achat") {
   const zone = document.getElementById("skDetailAchatContenu");
   const message = document.getElementById("skDetailAchatMessage");
@@ -1793,10 +2018,33 @@ if (action === "voir-detail-achat") {
       <p><strong>Autres frais :</strong> ${euro(autresFrais)}</p>
       <h3>Total estimé : ${euro(total)}</h3>
 
-      ${achat.notes ? `
+            ${achat.notes ? `
         <h3>Notes générales</h3>
         <p>${echapper(achat.notes)}</p>
       ` : ""}
+
+      <hr>
+      <h3>🧾 Factures d'achat</h3>
+      <p>Ajoute ici la facture PDF ou la photo de facture de cette commande.</p>
+
+      <label for="skFactureFichier">
+        Choisir une facture (PDF, JPG, PNG ou WebP — 10 Mo maximum)
+      </label>
+
+      <input
+        id="skFactureFichier"
+        type="file"
+        accept="application/pdf,image/jpeg,image/png,image/webp"
+        data-sk-facture-upload
+        data-achat-id="${echapper(achat.id)}"
+        style="display:block;max-width:100%;margin:10px 0;"
+      >
+
+      <p id="skFactureMessage" role="status" aria-live="polite"></p>
+
+      <div id="skFacturesListe">
+        ${await htmlFacturesAchat(achat.id)}
+      </div>
     </article>
   `;
 
