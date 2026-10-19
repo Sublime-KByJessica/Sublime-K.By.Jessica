@@ -300,26 +300,30 @@ async function enregistrer(table, valeurs, id = null) {
       "id,nom,site_url,contact,notes,actif"
     );
 
-    const selectAchat = document.getElementById("skAchatFournisseur");
+   
+const selecteursFournisseurs = [
+  document.getElementById("skAchatFournisseur"),
+  document.getElementById("skConsommableFournisseur")
+].filter(Boolean);
 
-    if (selectAchat) {
-      const valeurActuelle = selectAchat.value;
+selecteursFournisseurs.forEach(selecteur => {
+  const valeurActuelle = selecteur.value;
 
-      selectAchat.innerHTML =
-        '<option value="">Choisir un fournisseur</option>' +
-        fournisseurs
-          .filter(f => f.actif)
-          .map(f => `
-            <option value="${echapper(f.id)}">
-              ${echapper(f.nom)}
-            </option>
-          `)
-          .join("");
+  selecteur.innerHTML =
+    '<option value="">Choisir un fournisseur</option>' +
+    fournisseurs
+      .filter(f => f.actif)
+      .map(f => `
+        <option value="${echapper(f.id)}">
+          ${echapper(f.nom)}
+        </option>
+      `)
+      .join("");
 
-      if (valeurActuelle) {
-        selectAchat.value = valeurActuelle;
-      }
-    }
+  if (valeurActuelle) {
+    selecteur.value = valeurActuelle;
+  }
+});
 
     const zone = document.getElementById("skFournisseursListe");
     if (!zone) return fournisseurs;
