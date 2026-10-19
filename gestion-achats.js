@@ -16,6 +16,37 @@
     lignesCouts: "sk_couts_lignes"
   };
 
+   
+  let consommablesPourAchats = [];
+
+  function actualiserSelecteursConsommablesAchat() {
+    document.querySelectorAll(
+      '#skAchatArticles select[name="consommable_id"]'
+    ).forEach(select => {
+      const valeurActuelle = select.value;
+
+      select.innerHTML =
+        '<option value="">— Aucun consommable associé —</option>' +
+        consommablesPourAchats
+          .map(c => {
+            const actif = c.actif !== false;
+
+            return `
+              <option value="${echapper(c.id)}"
+                ${actif ? "" : "disabled"}>
+                ${actif ? "" : "📦 Archivé — "}
+                ${echapper(c.nom)} (${echapper(c.unite || "pièce")})
+              </option>
+            `;
+          })
+          .join("");
+
+      if (valeurActuelle) {
+        select.value = valeurActuelle;
+      }
+    });
+  }
+
   const euro = valeur =>
     (Number(valeur) || 0).toLocaleString("fr-FR", {
       style: "currency",
@@ -271,6 +302,9 @@ async function enregistrer(table, valeurs, id = null) {
         "id,nom,unite,stock_actuel,seuil_alerte,prix_unitaire,fournisseur_id,url_achat,notes,actif"),
       lire(TABLES.fournisseurs, "id,nom")
     ]);
+
+    consommablesPourAchats = consommables;
+    actualiserSelecteursConsommablesAchat();
 
     const nomsFournisseurs = Object.fromEntries(
       fournisseurs.map(f => [f.id, f.nom])
@@ -528,6 +562,13 @@ function initialiserLignesArticlesAchat() {
     if (selectType) {
       selectType.value = "autre";
     }
+     const selectConsommable = ligne.querySelector(
+  'select[name="consommable_id"]'
+);
+
+if (selectConsommable) {
+  selectConsommable.value = "";
+}
   }
 
   boutonAjouter.addEventListener("click", () => {
@@ -539,6 +580,7 @@ function initialiserLignesArticlesAchat() {
     viderLigne(nouvelleLigne);
 
     conteneur.appendChild(nouvelleLigne);
+    actualiserSelecteursConsommablesAchat();
     actualiserNumeros();
 
     nouvelleLigne.scrollIntoView({
@@ -607,7 +649,34 @@ function initialiserLignesArticlesAchat() {
 
     actualiserNumeros();
   });
+conteneur.addEventListener("change", evenement => {
+  const cible = evenement.target;
 
+  if (cible.matches('select[name="consommable_id"]')) {
+    const ligne = cible.closest(".sk-achat-article");
+    const selectType = ligne?.querySelector(
+      'select[name="type_article"]'
+    );
+
+    if (cible.value && selectType) {
+      selectType.value = "consommable";
+    }
+  }
+
+  if (
+    cible.matches('select[name="type_article"]') &&
+    cible.value !== "consommable"
+  ) {
+    const ligne = cible.closest(".sk-achat-article");
+    const selectConsommable = ligne?.querySelector(
+      'select[name="consommable_id"]'
+    );
+
+    if (selectConsommable) {
+      selectConsommable.value = "";
+    }
+  }
+});
   actualiserNumeros();
 }
 
@@ -848,6 +917,7 @@ if (idsASupprimer.length > 0) {
       nom_article: nomArticle,
       url_article: verifierUrl(urlArticle),
       type_article: typeArticle || "autre",
+      consommable_id: ligne.querySelector('[name="consommable_id"]')?.value || null,
       quantite: nombre(quantiteBrute),
       prix_unitaire: nombre(prixBrut),
       quantite_recue: nombre(recueBrute),
@@ -1614,6 +1684,7 @@ if (champSuppressions) {
       nom_article: article?.nom_article ?? "",
       url_article: article?.url_article ?? "",
       type_article: article?.type_article ?? "autre",
+      consommable_id: article?.consommable_id ?? "",
       quantite: article?.quantite ?? 1,
       prix_unitaire: article?.prix_unitaire ?? 0,
       quantite_recue: article?.quantite_recue ?? 0,
