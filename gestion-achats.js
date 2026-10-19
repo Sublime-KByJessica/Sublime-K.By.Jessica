@@ -77,16 +77,44 @@
     );
   }
 
+   
   async function lire(table, colonnes = "*") {
-    const { data, error } = await obtenirClient()
+    const client = obtenirClient();
+
+    let resultat = await client
       .from(table)
       .select(colonnes);
 
-    if (error) throw error;
-    return data || [];
+    if (
+      resultat.error &&
+      (
+        resultat.error.status === 401 ||
+        resultat.error.code === "PGRST301" ||
+        /jwt|token.*expired|expired.*token/i.test(
+          resultat.error.message || ""
+        )
+      )
+    ) {
+      const { data, error } = await client.auth.refreshSession();
+
+      if (error || !data.session) {
+        throw new Error(
+          "Ta session Supabase a expiré. Déconnecte-toi puis reconnecte-toi à l'administration."
+        );
+      }
+
+      resultat = await client
+        .from(table)
+        .select(colonnes);
+    }
+
+    if (resultat.error) {
+      throw resultat.error;
+    }
+
+    return resultat.data || [];
   }
 
-   
   // Factures fournisseurs : stockage privé Supabase.
   const BUCKET_FACTURES = "supplier-invoices";
 
